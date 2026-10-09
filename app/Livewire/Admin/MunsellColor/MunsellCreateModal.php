@@ -46,12 +46,12 @@ class MunsellCreateModal extends Component
         $this->status = 'Active';
         
         $user = auth()->user();
-        $adminId = $user?->Admin_ID;
+        $adminId = $user?->admin_id ?? $user?->user_id;
         if (!$adminId && $user) {
-            $userEmail = $user->Email ?? $user->email;
+            $userEmail = $user->email;
             if ($userEmail) {
-                $adminRecord = \App\Models\Admin::where('Email', $userEmail)->first();
-                $adminId = $adminRecord?->Admin_ID;
+                $adminRecord = \App\Models\Admin::where('email', $userEmail)->first();
+                $adminId = $adminRecord?->admin_id;
             }
         }
 

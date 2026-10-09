@@ -27,11 +27,11 @@ class RequestActionController extends Controller
             return Admin::formatId($user->last_admin_id);
         }
 
-        $email = $user->Email ?? $user->email ?? '';
+        $email = $user->email ?? '';
         if ($email) {
-            $admin = Admin::where('Email', $email)->first();
-            if ($admin?->Admin_ID) {
-                return Admin::formatId($admin->Admin_ID);
+            $admin = Admin::where('email', $email)->first();
+            if ($admin?->admin_id) {
+                return Admin::formatId($admin->admin_id);
             }
         }
 

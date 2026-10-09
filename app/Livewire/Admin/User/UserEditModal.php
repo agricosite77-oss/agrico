@@ -76,8 +76,8 @@ class UserEditModal extends Component
 
         $currentUser = Auth::guard('admin')->user();
         if ($currentUser && !empty($currentUser->email)) {
-            $adminRecord = \App\Models\Admin::where('Email', $currentUser->email)->first();
-            if ($adminRecord && $adminRecord->Password && Hash::check($this->adminPassword, $adminRecord->Password)) {
+            $adminRecord = \App\Models\Admin::where('email', $currentUser->email)->first();
+            if ($adminRecord && $adminRecord->password && Hash::check($this->adminPassword, $adminRecord->password)) {
                 $passwordMatches = true;
             }
         }
@@ -85,7 +85,7 @@ class UserEditModal extends Component
         if (!$passwordMatches) {
             $admins = \App\Models\Admin::all();
             foreach ($admins as $admin) {
-                if ($admin->Password && Hash::check($this->adminPassword, $admin->Password)) {
+                if ($admin->password && Hash::check($this->adminPassword, $admin->password)) {
                     $passwordMatches = true;
                     break;
                 }

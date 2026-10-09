@@ -38,7 +38,7 @@ class PasswordResetCodeController extends Controller
 
         // Verify account exists in database
         $userExists = User::where('email', $email)->exists();
-        $adminExists = Admin::where('email', $email)->orWhere('Email', $email)->exists();
+        $adminExists = Admin::where('email', $email)->exists();
 
         if (!$userExists && !$adminExists) {
             if ($request->wantsJson()) {
@@ -255,7 +255,6 @@ class PasswordResetCodeController extends Controller
 
         // Update Admin if found
         $updatedAdmin = Admin::where('email', $email)
-            ->orWhere('Email', $email)
             ->update([
                 'password' => $hashedPassword,
             ]);

@@ -673,22 +673,22 @@ class StudentRecord extends Component
 
         $currentUser = Auth::guard('admin')->user();
         if ($currentUser) {
-            if ($currentUser instanceof \App\Models\Admin && $currentUser->Password && Hash::check($this->adminPassword, $currentUser->Password)) {
+            if ($currentUser instanceof \App\Models\Admin && $currentUser->password && Hash::check($this->adminPassword, $currentUser->password)) {
                 $passwordMatches = true;
-                $matchedAdminId = $currentUser->Admin_ID;
+                $matchedAdminId = $currentUser->admin_id;
             } elseif (!empty($currentUser->password) && Hash::check($this->adminPassword, $currentUser->password)) {
                 $passwordMatches = true;
-                $adminRec = \App\Models\Admin::where('Email', $currentUser->email)->first();
-                $matchedAdminId = $adminRec ? $adminRec->Admin_ID : $currentUser->id;
+                $adminRec = \App\Models\Admin::where('email', $currentUser->email)->first();
+                $matchedAdminId = $adminRec ? $adminRec->admin_id : $currentUser->id;
             }
         }
 
         if (!$passwordMatches) {
             $admins = \App\Models\Admin::all();
             foreach ($admins as $admin) {
-                if ($admin->Password && Hash::check($this->adminPassword, $admin->Password)) {
+                if ($admin->password && Hash::check($this->adminPassword, $admin->password)) {
                     $passwordMatches = true;
-                    $matchedAdminId = $admin->Admin_ID;
+                    $matchedAdminId = $admin->admin_id;
                     break;
                 }
             }
@@ -699,8 +699,8 @@ class StudentRecord extends Component
             foreach ($userAdmins as $uAdmin) {
                 if ($uAdmin->password && Hash::check($this->adminPassword, $uAdmin->password)) {
                     $passwordMatches = true;
-                    $adminRec = \App\Models\Admin::where('Email', $uAdmin->email)->first();
-                    $matchedAdminId = $adminRec ? $adminRec->Admin_ID : $uAdmin->id;
+                    $adminRec = \App\Models\Admin::where('email', $uAdmin->email)->first();
+                    $matchedAdminId = $adminRec ? $adminRec->admin_id : $uAdmin->id;
                     break;
                 }
             }
@@ -863,14 +863,14 @@ class StudentRecord extends Component
                     $currentAuth = Auth::guard('admin')->user();
                     $adminIdToSave = 'ADM001';
                     if ($currentAuth && !empty($currentAuth->email)) {
-                        $adminRecord = \App\Models\Admin::where('Email', $currentAuth->email)->first();
+                        $adminRecord = \App\Models\Admin::where('email', $currentAuth->email)->first();
                         if ($adminRecord) {
-                            $adminIdToSave = $adminRecord->Admin_ID;
+                            $adminIdToSave = $adminRecord->admin_id;
                         }
                     } else {
                         $firstAdmin = \App\Models\Admin::first();
                         if ($firstAdmin) {
-                            $adminIdToSave = $firstAdmin->Admin_ID;
+                            $adminIdToSave = $firstAdmin->admin_id;
                         }
                     }
 
@@ -998,16 +998,16 @@ class StudentRecord extends Component
             $targetName = 'SuperAdmin';
 
             if (!empty($user->suspended_by_admin_id) && !in_array(strtolower($user->suspended_by_admin_id), ['system', 'system(superadmin)', 'superadmin'])) {
-                $issuer = \App\Models\Admin::where('Admin_ID', $user->suspended_by_admin_id)
-                    ->orWhere('Email', $user->suspended_by_admin_id)
+                $issuer = \App\Models\Admin::where('admin_id', $user->suspended_by_admin_id)
+                    ->orWhere('email', $user->suspended_by_admin_id)
                     ->first()
                     ?: \App\Models\User::where('user_id', $user->suspended_by_admin_id)
                     ->orWhere('email', $user->suspended_by_admin_id)
                     ->first();
 
                 if ($issuer) {
-                    $targetAdminId = $issuer->Admin_ID ?? $issuer->admin_id ?? $issuer->user_id ?? $user->suspended_by_admin_id;
-                    $targetName = $issuer->Full_Name ?? $issuer->full_name ?? $issuer->name ?? $targetAdminId;
+                    $targetAdminId = $issuer->admin_id ?? $issuer->user_id ?? $user->suspended_by_admin_id;
+                    $targetName = $issuer->full_name ?? $issuer->name ?? $targetAdminId;
                 } else {
                     $targetAdminId = $user->suspended_by_admin_id;
                     $targetName = $user->suspended_by_admin_detail ?: $targetAdminId;

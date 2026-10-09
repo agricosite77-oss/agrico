@@ -64,7 +64,7 @@ class UserAuthController extends Controller
                 // Role-based redirection: Admins go to Admin Dashboard
                 $role = strtolower($user->role ?? '');
                 if (in_array($role, ['admin', 'super admin', 'superadmin'])) {
-                    $adminRecord = Admin::where('email', $user->email)->orWhere('Email', $user->email)->first();
+                    $adminRecord = Admin::where('email', $user->email)->first();
                     if (!$adminRecord) {
                         $adminRecord = Admin::create([
                             'admin_id'  => $user->user_id ?? ('ADM-' . str_pad(Admin::count() + 1, 3, '0', STR_PAD_LEFT)),
@@ -87,9 +87,9 @@ class UserAuthController extends Controller
         }
 
         // 2. Check Admin model table fallback
-        $admin = Admin::where('email', $credentials['email'])->orWhere('Email', $credentials['email'])->first();
+        $admin = Admin::where('email', $credentials['email'])->first();
         if ($admin) {
-            $adminPassCheck = Hash::check($credentials['password'], $admin->password ?? $admin->Password ?? '')
+            $adminPassCheck = Hash::check($credentials['password'], $admin->password ?? '')
                            || (in_array($credentials['password'], ['password', 'Admin@Test2026!', 'password123']) 
                                && (Hash::check('Admin@Test2026!', $admin->password ?? '') || Hash::check('password', $admin->password ?? '') || Hash::check('password123', $admin->password ?? '')));
 
@@ -99,9 +99,9 @@ class UserAuthController extends Controller
 
                 Auth::guard('admin')->login($admin, false);
                 
-                $userRecord = User::where('email', $admin->email ?? $admin->Email)->first();
+                $userRecord = User::where('email', $admin->email)->first();
                 if (!$userRecord) {
-                    $realId = $admin->admin_id ?? $admin->Admin_ID ?? ('ADM-' . str_pad(User::count() + 1, 3, '0', STR_PAD_LEFT));
+                    $realId = $admin->admin_id ?? ('ADM-' . str_pad(User::count() + 1, 3, '0', STR_PAD_LEFT));
                     $userRecord = User::create([
                         'user_id' => $realId,
                         'name' => $admin->full_name ?? $admin->name ?? 'Admin User',

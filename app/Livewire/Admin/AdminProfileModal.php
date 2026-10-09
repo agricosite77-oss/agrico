@@ -100,8 +100,8 @@ class AdminProfileModal extends Component
         // Update Admin model if authenticated as Admin
         if ($user instanceof Admin) {
             $updateData = [
-                'Full_Name' => $this->name,
-                'Email' => $this->email,
+                'full_name' => $this->name,
+                'email' => $this->email,
             ];
 
             if ($this->removePhoto) {
@@ -117,12 +117,12 @@ class AdminProfileModal extends Component
             }
 
             if (!empty($this->password)) {
-                $updateData['Password'] = Hash::make($this->password);
+                $updateData['password'] = Hash::make($this->password);
             }
             $user->update($updateData);
 
             // Sync matching User table record if present
-            $matchingUser = User::where('email', $this->email)->orWhere('last_admin_id', $user->Admin_ID)->first();
+            $matchingUser = User::where('email', $this->email)->orWhere('last_admin_id', $user->admin_id)->first();
             if ($matchingUser) {
                 $userSyncData = ['name' => $this->name, 'email' => $this->email];
                 if ($this->removePhoto) {
@@ -154,17 +154,17 @@ class AdminProfileModal extends Component
             $user->update($updateData);
 
             // Sync matching Admin table record if present
-            $adminId = $user->Admin_ID;
-            $matchingAdmin = Admin::where('Email', $this->email)->orWhere('Admin_ID', $adminId)->first();
+            $adminId = $user->admin_id ?? $user->user_id;
+            $matchingAdmin = Admin::where('email', $this->email)->orWhere('admin_id', $adminId)->first();
             if ($matchingAdmin) {
-                $adminSyncData = ['Full_Name' => $this->name, 'Email' => $this->email];
+                $adminSyncData = ['full_name' => $this->name, 'email' => $this->email];
                 if ($this->removePhoto) {
                     if ($matchingAdmin->profile_photo_path) Storage::disk('public')->delete($matchingAdmin->profile_photo_path);
                     $adminSyncData['profile_photo_path'] = null;
                 } elseif ($photoPath) {
                     $adminSyncData['profile_photo_path'] = $photoPath;
                 }
-                if (!empty($this->password)) $adminSyncData['Password'] = Hash::make($this->password);
+                if (!empty($this->password)) $adminSyncData['password'] = Hash::make($this->password);
                 $matchingAdmin->update($adminSyncData);
             }
         }

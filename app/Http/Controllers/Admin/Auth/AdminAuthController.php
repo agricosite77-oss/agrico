@@ -33,10 +33,10 @@ class AdminAuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $admin = Admin::where('email', $credentials['email'])->orWhere('Email', $credentials['email'])->first();
+        $admin = Admin::where('email', $credentials['email'])->first();
 
         if ($admin) {
-            $adminPassCheck = Hash::check($credentials['password'], $admin->password ?? $admin->Password ?? '');
+            $adminPassCheck = Hash::check($credentials['password'], $admin->password ?? '');
 
             if ($adminPassCheck) {
                 $request->session()->invalidate();
@@ -44,13 +44,13 @@ class AdminAuthController extends Controller
                 Auth::guard('admin')->login($admin, false);
 
                 // Sync Web guard user session
-                $userRecord = User::where('email', $admin->email ?? $admin->Email)->first();
+                $userRecord = User::where('email', $admin->email)->first();
                 if (!$userRecord) {
-                    $realId = $admin->admin_id ?? $admin->Admin_ID ?? ('ADM-' . str_pad(User::count() + 1, 3, '0', STR_PAD_LEFT));
+                    $realId = $admin->admin_id ?? ('ADM-' . str_pad(User::count() + 1, 3, '0', STR_PAD_LEFT));
                     $userRecord = User::create([
                         'user_id' => $realId,
                         'name' => $admin->full_name ?? $admin->name ?? 'Admin User',
-                        'email' => $admin->email ?? $admin->Email,
+                        'email' => $admin->email,
                         'password' => $admin->password ?? Hash::make('Admin@Test2026!'),
                         'role' => 'admin',
                         'status' => 'Active',

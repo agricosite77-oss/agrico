@@ -67,8 +67,8 @@ class UserPasswordModal extends Component
 
         $currentUser = Auth::guard('admin')->user();
         if ($currentUser && !empty($currentUser->email)) {
-            $adminRecord = \App\Models\Admin::where('Email', $currentUser->email)->first();
-            if ($adminRecord && $adminRecord->Password && Hash::check($this->admin_password, $adminRecord->Password)) {
+            $adminRecord = \App\Models\Admin::where('email', $currentUser->email)->first();
+            if ($adminRecord && $adminRecord->password && Hash::check($this->admin_password, $adminRecord->password)) {
                 $passwordMatches = true;
             }
         }
@@ -76,7 +76,7 @@ class UserPasswordModal extends Component
         if (!$passwordMatches) {
             $admins = \App\Models\Admin::all();
             foreach ($admins as $admin) {
-                if ($admin->Password && Hash::check($this->admin_password, $admin->Password)) {
+                if ($admin->password && Hash::check($this->admin_password, $admin->password)) {
                     $passwordMatches = true;
                     break;
                 }

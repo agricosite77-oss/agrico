@@ -28,14 +28,14 @@ class ManageFaq extends Component
             $user = auth()->user();
             $adminIdToSave = 'ADM001';
             if ($user && !empty($user->email)) {
-                $adminRecord = \App\Models\Admin::where('Email', $user->email)->first();
+                $adminRecord = \App\Models\Admin::where('email', $user->email)->first();
                 if ($adminRecord) {
-                    $adminIdToSave = $adminRecord->Admin_ID;
+                    $adminIdToSave = $adminRecord->admin_id;
                 }
             } else {
                 $firstAdmin = \App\Models\Admin::first();
                 if ($firstAdmin) {
-                    $adminIdToSave = $firstAdmin->Admin_ID;
+                    $adminIdToSave = $firstAdmin->admin_id;
                 }
             }
 

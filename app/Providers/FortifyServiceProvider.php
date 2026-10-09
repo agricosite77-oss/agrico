@@ -41,9 +41,9 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::authenticateUsing(function (Request $request) {
 
-            $admin = Admin::where('Email', $request->email)->first();
+            $admin = Admin::where('email', $request->email)->first();
 
-            if ($admin && Hash::check($request->password, $admin->Password)) {
+            if ($admin && Hash::check($request->password, $admin->password)) {
 
                 return $admin;
             }

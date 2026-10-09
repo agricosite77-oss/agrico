@@ -111,7 +111,6 @@ class AuthController extends Controller
 
         // ── 2. Fallback: check the admins table ───────────────────────────
         $admin = \App\Models\Admin::where('email', $email)
-            ->orWhere('Email', $email)
             ->first();
 
         if ($admin && (Hash::check($password, $admin->password ?? '') || Hash::check($trimmedPassword, $admin->password ?? ''))) {
@@ -119,7 +118,7 @@ class AuthController extends Controller
             $userRecord = User::where('email', $email)->first();
 
             if (!$userRecord) {
-                $targetId = $admin->admin_id ?? $admin->Admin_ID;
+                $targetId = $admin->admin_id;
                 if (!$targetId || User::where('user_id', $targetId)->exists()) {
                     $nextNum   = User::count() + 1;
                     $targetId  = 'ADM-' . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
