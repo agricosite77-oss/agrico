@@ -14,7 +14,7 @@ RUN npm run build
 # ----------------------------------------------------
 # Stage 2: Production FrankenPHP / PHP 8.4 Application
 # ----------------------------------------------------
-FROM ghcr.io/dunglas/frankenphp:1-php8.4-bookworm
+FROM dunglas/frankenphp:1-php8.4-bookworm
 
 # Install system dependencies, Python 3, and scientific image libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
