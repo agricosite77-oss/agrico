@@ -1,7 +1,7 @@
 # ----------------------------------------------------
 # Stage 1: Build Frontend Assets with Node
 # ----------------------------------------------------
-FROM node:20-bookworm-slim AS node_builder
+FROM public.ecr.aws/docker/library/node:20-bookworm-slim AS node_builder
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN npm run build
 # ----------------------------------------------------
 # Stage 2: Production FrankenPHP / PHP 8.4 Application
 # ----------------------------------------------------
-FROM dunglas/frankenphp:1-php8.4-bookworm
+FROM ghcr.io/dunglas/frankenphp:1-php8.4-bookworm
 
 # Install system dependencies, Python 3, and scientific image libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -46,7 +46,7 @@ RUN install-php-extensions \
     pcntl
 
 # Install Composer from official image
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=public.ecr.aws/docker/library/composer:2 /usr/bin/composer /usr/bin/composer
 
 # Create virtual environment for Python dependencies to prevent PEP 668 errors
 RUN python3 -m venv /opt/venv
