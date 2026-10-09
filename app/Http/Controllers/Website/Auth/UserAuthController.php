@@ -126,6 +126,23 @@ class UserAuthController extends Controller
     }
 
     /**
+     * Real-time AJAX email existence check.
+     */
+    public function checkEmail(Request $request)
+    {
+        $email = trim((string) $request->query('email', ''));
+
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['exists' => false]);
+        }
+
+        $exists = User::where('email', $email)->exists()
+               || Admin::where('email', $email)->exists();
+
+        return response()->json(['exists' => $exists]);
+    }
+
+    /**
      * Display the User Website Registration view.
      */
     public function showRegisterForm()
