@@ -78,7 +78,17 @@ class AdminDashboard extends Component
                     ), 0) AS total_scans
                 ')
                 ->groupBy('munsell_colors.hue')
-                ->orderByRaw("FIELD(munsell_colors.hue, '10R', '2.5YR', '5YR', '7.5YR', '10YR', '2.5Y')")
+                ->orderByRaw("
+                    CASE munsell_colors.hue
+                        WHEN '10R' THEN 1
+                        WHEN '2.5YR' THEN 2
+                        WHEN '5YR' THEN 3
+                        WHEN '7.5YR' THEN 4
+                        WHEN '10YR' THEN 5
+                        WHEN '2.5Y' THEN 6
+                        ELSE 7
+                    END
+                ")
                 ->get()
                 ->map(function ($color) {
                     $scans = (int) $color->total_scans;
