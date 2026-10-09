@@ -1,6 +1,6 @@
 export const ENV = {
-  // 10.0.2.2:8080 connects Android Emulator to host PC localhost:8080
-  API_URL: 'http://10.0.2.2:8080/api',
+  // Production Railway URL
+  API_URL: 'https://agrico-production-1eb3.up.railway.app/api',
   GOOGLE_CLIENT_ID_IOS: '',
   GOOGLE_CLIENT_ID_ANDROID: '',
   GOOGLE_CLIENT_ID_WEB: '',
