@@ -1,0 +1,8 @@
+Pillow
+numpy
+scipy
+scikit-learn
+scikit-image
+opencv-python-headless
+colorthief
+joblib

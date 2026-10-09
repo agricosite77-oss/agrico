@@ -1,0 +1,166 @@
+<?php
+
+namespace App\Livewire\Admin\Request;
+
+use App\Models\UserRequest;
+use Livewire\Component;
+use Livewire\WithPagination;
+
+class ManageRequest extends Component
+{
+    use WithPagination;
+
+    public $search = '';
+    public $statusFilter = '';
+    public $selectedDate = '';
+    public $perPage = 10;
+
+    public $selectedRequestId = null;
+    public $showViewModal = false;
+
+    public function mount()
+    {
+    }
+
+    public function updatedPerPage()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingStatusFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSelectedDate()
+    {
+        $this->resetPage();
+    }
+
+    public function viewRequest($id)
+    {
+        $this->selectedRequestId = $id;
+        $this->showViewModal = true;
+    }
+
+    public function closeViewModal()
+    {
+        $this->showViewModal = false;
+        $this->selectedRequestId = null;
+    }
+
+    public function render()
+    {
+        $query = UserRequest::query();
+
+        if (!empty($this->selectedDate)) {
+            $query->whereDate('created_at', $this->selectedDate);
+        }
+
+        if (!empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('user_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('user_email', 'like', '%' . $this->search . '%')
+                  ->orWhere('type', 'like', '%' . $this->search . '%')
+                  ->orWhere('request_code', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        if (!empty($this->statusFilter)) {
+            $query->where('status', $this->statusFilter);
+        }
+
+        $userRequests = $query->orderBy('user_request_id', 'desc')->paginate($this->perPage);
+
+        // Single aggregated query instead of 3 separate COUNT queries
+        $counts = UserRequest::selectRaw("
+            SUM(CASE WHEN status = 'Pending'     THEN 1 ELSE 0 END) as pending,
+            SUM(CASE WHEN status = 'Approved'    THEN 1 ELSE 0 END) as approved,
+            SUM(CASE WHEN status = 'Disapproved' THEN 1 ELSE 0 END) as disapproved
+        ")->first();
+
+        $selectedRequest = $this->selectedRequestId ? UserRequest::find($this->selectedRequestId) : null;
+        $selectedRequestLocation = $this->getSelectedRequestLocation($selectedRequest);
+
+        return view('admin.livewire.request.manage-request', [
+            'userRequests'            => $userRequests,
+            'pendingCount'            => (int) ($counts->pending     ?? 0),
+            'approvedCount'           => (int) ($counts->approved    ?? 0),
+            'disapprovedCount'        => (int) ($counts->disapproved ?? 0),
+            'selectedRequest'         => $selectedRequest,
+            'selectedRequestLocation' => $selectedRequestLocation,
+            'showViewModal'           => $this->showViewModal,
+        ]);
+    }
+
+    protected function getSelectedRequestLocation(?UserRequest $req): ?array
+    {
+        if (!$req) return null;
+
+        $desc = $req->description ?? '';
+        $type = strtolower($req->type ?? '');
+
+        $isSoilCoord = str_contains($type, 'coordinate')
+            || str_contains($type, 'location')
+            || str_contains($type, 'pin')
+            || str_contains($type, 'soil')
+            || str_contains(strtolower($desc), 'soil sample location pin')
+            || str_contains(strtolower($desc), 'coords:');
+
+        if (!$isSoilCoord) return null;
+
+        $locationMapping = null;
+        if (preg_match('/Location Pin #(\d+)/i', $desc, $pinMatches)) {
+            $locationMapping = \App\Models\LocationMapping::with(['soil.munsellColor', 'soilScan'])->find($pinMatches[1]);
+        }
+
+        $lat = null;
+        $lng = null;
+        if ($locationMapping && $locationMapping->latitude && $locationMapping->longitude) {
+            $lat = (float) $locationMapping->latitude;
+            $lng = (float) $locationMapping->longitude;
+        } elseif (preg_match('/Coords:\s*\(([^,]+),\s*([^)]+)\)/i', $desc, $c)) {
+            $lat = (float) trim($c[1]);
+            $lng = (float) trim($c[2]);
+        }
+
+        if (!$lat || !$lng) return null;
+
+        $coverage = '';
+        if (preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $desc, $cov)) {
+            $coverage = trim($cov[1]);
+        }
+
+        $brgy = $locationMapping?->barangay;
+        if (!$brgy && preg_match('/Barangay:\s*([^.\[]+)/i', $desc, $bMatch)) {
+            $brgy = trim($bMatch[1]);
+        }
+
+        $soilName = $locationMapping?->soil?->soil_name ?? '';
+        $munsellCode = $locationMapping?->soil?->full_code ?? '';
+        $soilType = $locationMapping?->soil?->soil_type ?? $locationMapping?->soil?->munsellColor?->soil_type ?? '';
+        $hexColor = $locationMapping?->soil?->hex_color ?? $locationMapping?->soil?->munsellColor?->hex_code ?? '#8F694E';
+
+        if (!$soilName && preg_match('/classified as ([^(]+)\s*\(([^)]+)\)/i', $desc, $soilMatch)) {
+            $soilName = trim($soilMatch[1]);
+            $munsellCode = trim($soilMatch[2]);
+        }
+
+        return [
+            'lat'          => $lat,
+            'lng'          => $lng,
+            'barangay'     => $brgy ?: 'Lal-lo Jurisdiction',
+            'soil_name'    => $soilName ?: 'Soil Specimen',
+            'munsell_code' => $munsellCode,
+            'soil_type'    => $soilType,
+            'hex_color'    => $hexColor,
+            'coverage'     => $coverage,
+            'mapping_id'   => $locationMapping?->location_mapping_id,
+        ];
+    }
+}

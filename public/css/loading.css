@@ -1,0 +1,359 @@
+/**
+ * AgriCo Website Loading Screen — Production Ready Stylesheet
+ * 
+ * Timeline Architecture:
+ * - 0.0s – 1.5s: Initial Logo Reveal on Clean White (#FFFFFF)
+ * - 1.5s – 3.0s: Curved Organic Green Wave Reveal (expands to 100vw × 100vh)
+ * - 3.0s – 4.0s: Centered Logo Transformation (scales smoothly to 0.7)
+ * - 4.0s – 6.5s: AgriCo Wordmark Reveal ([Logo] AgriCo centered brand lockup)
+ * - 6.5s – 8.0s: Brand Hold on Full Vibrant Green (#169447)
+ * - 8.0s – 9.5s: Curved Green Retraction (reveals White, wordmark transitions to AgriCo Green)
+ * - 9.5s – 10.5s: Final Brand Hold on White
+ * - 10.5s – 11.0s: Seamless Exit Transition to Website
+ */
+
+/* --------------------------------------------------------------------------
+   1. Root Tokens & Global Reset
+   -------------------------------------------------------------------------- */
+:root {
+    --agrico-primary-green:   #169447;
+    --agrico-secondary-green: #35B84A;
+    --agrico-light-green:     #7BD957;
+    --agrico-deep-green:      #127838;
+    --agrico-white:           #FFFFFF;
+    --agrico-text-dark:       #0F172A;
+    --agrico-ease-out-expo:   cubic-bezier(0.22, 1, 0.36, 1);
+    --agrico-ease-in-out:     cubic-bezier(0.4, 0, 0.2, 1);
+    --agrico-ease-soft:       cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Prevent body scrolling while loader is active */
+body:not(.loaded) {
+    overflow: hidden !important;
+    height: 100vh !important;
+    position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   2. Main Loader Container
+   -------------------------------------------------------------------------- */
+#agrico-loader,
+.agrico-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    background-color: var(--agrico-white);
+    z-index: 999999;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.55s var(--agrico-ease-in-out),
+                visibility 0.55s var(--agrico-ease-in-out),
+                transform 0.55s var(--agrico-ease-in-out);
+    will-change: opacity, transform, visibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Exit state */
+.agrico-loader.loader-hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: scale(1.02);
+}
+
+/* --------------------------------------------------------------------------
+   3. Organic Curved Green Wave Background System
+   -------------------------------------------------------------------------- */
+.agrico-background {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Wave wrapper: spans viewport width and exceeds 100vh so wave crest goes fully offscreen */
+.agrico-wave-wrapper {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    /* Extra height ensures wave crest travels completely above top viewport boundary */
+    height: calc(100vh + clamp(160px, 26vh, 360px));
+    display: flex;
+    flex-direction: column;
+    /* Initial state: parked fully below viewport */
+    transform: translate3d(0, 100%, 0);
+    will-change: transform;
+    transition: transform 1.5s var(--agrico-ease-out-expo);
+}
+
+/* Phase 2 (1.5s - 3.0s) & Hold: Wave covers full screen */
+.agrico-loader.is-green-expanded .agrico-wave-wrapper,
+.agrico-loader.is-brand-holding .agrico-wave-wrapper {
+    transform: translate3d(0, 0, 0);
+    transition: transform 1.5s var(--agrico-ease-soft);
+}
+
+/* Phase 6 (8.0s - 9.5s): Wave retracts down revealing white background */
+.agrico-loader.is-green-retracted .agrico-wave-wrapper {
+    transform: translate3d(0, 100%, 0);
+    transition: transform 1.5s var(--agrico-ease-in-out);
+}
+
+/* The curved organic wave SVG element */
+.agrico-wave-svg {
+    display: block;
+    width: 100%;
+    height: clamp(160px, 26vh, 360px);
+    flex-shrink: 0;
+    margin-bottom: -1px; /* Avoid subpixel gap between SVG and wave body */
+    pointer-events: none;
+    shape-rendering: geometricPrecision;
+}
+
+/* Wave layers inside SVG */
+.agrico-wave-accent {
+    opacity: 0.85;
+}
+
+.agrico-wave-main {
+    opacity: 1;
+}
+
+/* Solid vibrant green body seamlessly extending from wave bottom */
+.agrico-wave-body {
+    width: 100%;
+    flex: 1;
+    background: linear-gradient(135deg, #169447 0%, #1da551 45%, #2db443 75%, #35B84A 100%);
+    position: relative;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Subtle radial glow inside green screen to make brand pop */
+.agrico-wave-body::before {
+    content: '';
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: clamp(300px, 50vw, 700px);
+    height: clamp(300px, 50vw, 700px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(123, 217, 87, 0.22) 0%, rgba(22, 148, 71, 0) 70%);
+    pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   4. Centered AgriCo Brand Lockup
+   -------------------------------------------------------------------------- */
+.agrico-brand {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Container keeping Logo & Wordmark unified */
+.agrico-brand-lockup {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    will-change: transform;
+    transition: transform 1.2s var(--agrico-ease-out-expo);
+}
+
+/* Logo Box */
+.agrico-logo-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    will-change: transform;
+}
+
+/* Exact AgriCo Logo Image */
+.agrico-logo {
+    display: block;
+    width: clamp(105px, 15vw, 175px);
+    height: auto;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.10));
+    opacity: 0;
+    transform: scale(0.85);
+    will-change: transform, opacity;
+    transition: opacity 1.3s var(--agrico-ease-out-expo),
+                transform 1.3s var(--agrico-ease-out-expo);
+}
+
+/* Phase 1 (0.0s - 1.5s): Logo revealed centered */
+.agrico-loader.is-logo-revealed .agrico-logo {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Phase 3 (3.0s - 4.0s): Logo smoothly scales down slightly */
+.agrico-loader.is-logo-scaled .agrico-logo {
+    opacity: 1;
+    transform: scale(0.70);
+    transition: transform 1.0s var(--agrico-ease-out-expo),
+                opacity 0.6s var(--agrico-ease-out-expo);
+}
+
+/* Wordmark Box (AgriCo) */
+.agrico-name-box {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 0;
+    opacity: 0;
+    margin-left: 0;
+    transform: translateX(20px);
+    will-change: max-width, margin-left, opacity, transform;
+    transition: max-width 1.2s var(--agrico-ease-out-expo),
+                margin-left 1.2s var(--agrico-ease-out-expo),
+                opacity 1.0s var(--agrico-ease-out-expo),
+                transform 1.2s var(--agrico-ease-out-expo);
+}
+
+/* Phase 4 (4.0s - 6.5s): Reveal wordmark next to logo */
+.agrico-loader.is-wordmark-revealed .agrico-name-box {
+    max-width: clamp(160px, 25vw, 340px);
+    margin-left: clamp(12px, 2vw, 24px);
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* AgriCo Wordmark Typography */
+.agrico-name {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: clamp(34px, 5vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    /* On green background, text is crisp pure white */
+    color: var(--agrico-white);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: color 1.2s var(--agrico-ease-in-out),
+                text-shadow 1.2s var(--agrico-ease-in-out);
+}
+
+/* Phase 6 (8.0s - 9.5s) & Final Phase: Wordmark transitions to vibrant AgriCo green on white */
+.agrico-loader.is-wordmark-green .agrico-name {
+    color: var(--agrico-primary-green);
+    text-shadow: 0 1px 4px rgba(22, 148, 71, 0.12);
+}
+
+/* Subtle organic settle during brand hold */
+.agrico-loader.is-brand-holding .agrico-brand-lockup {
+    animation: agricoSettleBreath 3.0s ease-in-out infinite alternate;
+}
+
+@keyframes agricoSettleBreath {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.018);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   5. Responsive Sizing & Viewport Guards
+   -------------------------------------------------------------------------- */
+/* Tablets & Mobile Landscape */
+@media (max-width: 768px) {
+    .agrico-logo {
+        width: clamp(85px, 18vw, 130px);
+    }
+    .agrico-name {
+        font-size: clamp(28px, 6.5vw, 44px);
+    }
+    .agrico-loader.is-wordmark-revealed .agrico-name-box {
+        margin-left: clamp(8px, 2.5vw, 16px);
+        max-width: clamp(130px, 35vw, 220px);
+    }
+}
+
+/* Mobile Phones (Portrait) */
+@media (max-width: 480px) {
+    .agrico-logo {
+        width: clamp(75px, 20vw, 110px);
+    }
+    .agrico-name {
+        font-size: clamp(24px, 7.5vw, 36px);
+    }
+    .agrico-loader.is-wordmark-revealed .agrico-name-box {
+        margin-left: 10px;
+        max-width: 170px;
+    }
+    .agrico-wave-svg {
+        height: clamp(140px, 22vh, 220px);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   6. Accessibility & Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    #agrico-loader,
+    .agrico-loader {
+        transition: opacity 0.25s ease !important;
+    }
+    .agrico-wave-wrapper {
+        display: none !important;
+    }
+    .agrico-logo {
+        opacity: 1 !important;
+        transform: scale(0.7) !important;
+        transition: none !important;
+    }
+    .agrico-name-box {
+        max-width: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        margin-left: 14px !important;
+        transition: none !important;
+    }
+    .agrico-name {
+        color: var(--agrico-primary-green) !important;
+        transition: none !important;
+    }
+    .agrico-brand-lockup {
+        animation: none !important;
+    }
+}
+
+/* Fallback for environments with JavaScript disabled */
+@media (scripting: none) {
+    #agrico-loader,
+    .agrico-loader {
+        display: none !important;
+    }
+    body:not(.loaded) {
+        overflow: auto !important;
+        height: auto !important;
+    }
+}

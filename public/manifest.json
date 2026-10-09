@@ -1,0 +1,41 @@
+{
+  "name": "AgriCo: Soil Color Determination & Scan Reporting System",
+  "short_name": "AgriCo",
+  "description": "A Web-Based Soil Color Determination and Scan-Based Soil Reporting System with Location Mapping and Offline Mobile Support for Lal-lo, Cagayan.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#22c55e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/agrico-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/agrico-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["agriculture", "utilities", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Scan Soil",
+      "short_name": "Scan",
+      "description": "Start camera soil color scan",
+      "url": "/scan",
+      "icons": [{ "src": "/images/agrico-logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Soil Map",
+      "short_name": "Map",
+      "description": "View interactive Lal-lo soil map",
+      "url": "/map",
+      "icons": [{ "src": "/images/agrico-logo.png", "sizes": "192x192" }]
+    }
+  ]
+}

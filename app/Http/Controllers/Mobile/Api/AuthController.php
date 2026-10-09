@@ -1,0 +1,231 @@
+<?php
+
+namespace App\Http\Controllers\Mobile\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\UserRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
+class AuthController extends Controller
+{
+    /**
+     * Handle mobile API registration.
+     */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'user',
+            'status' => 'Active',
+        ]);
+
+        $token = $user->createToken('mobile_sanctum_token')->plainTextToken;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Registration successful',
+            'token' => $token,
+            'user' => new \App\Http\Resources\UserResource($user),
+        ], 201);
+    }
+
+    /**
+     * Handle mobile API login.
+     *
+     * Checks the users table first, then falls back to the admins table
+     * so admin accounts can also log in from the mobile app.
+     */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $email          = trim($request->email);
+        $password       = $request->password;
+        $trimmedPassword = trim($password);
+
+        // ── 1. Try the users table first ──────────────────────────────────
+        $user = User::where('email', $email)->first();
+
+        if ($user && (Hash::check($password, $user->password) || Hash::check($trimmedPassword, $user->password))) {
+            // Account status gate
+            $status = strtolower($user->status ?? '');
+
+            if ($status === 'suspended') {
+                $pendingReq = UserRequest::where('user_email', $user->email)
+                    ->where('type', 'Account Reactivation Request')
+                    ->where('status', 'Pending')
+                    ->first();
+
+                return response()->json([
+                    'status'     => 'suspended',
+                    'message'    => 'Your account has been suspended.',
+                    'suspension' => [
+                        'reason'                    => $user->suspend_reason ?: 'Administrative Suspension',
+                        'suspended_by'              => $user->suspended_by_admin_detail ?: 'System (SuperAdmin)',
+                        'suspended_until'           => $user->suspended_until ? $user->suspended_until->format('M d, Y') : 'Manual',
+                        'time_remaining'            => $user->suspension_countdown ?? 'Permanent / Indefinite',
+                        'has_pending_reactivation'  => (bool) $pendingReq,
+                        'pending_request_code'      => $pendingReq?->request_code,
+                    ],
+                ], 403);
+            }
+
+            if ($status === 'pending') {
+                return response()->json([
+                    'status'  => 'pending',
+                    'message' => 'Your account is awaiting administrator approval. You will be able to log in once an admin approves your registration.',
+                ], 403);
+            }
+
+            if (!in_array($status, ['active', ''])) {
+                return response()->json([
+                    'status'  => 'inactive',
+                    'message' => 'Your account is not active. Please contact support.',
+                ], 403);
+            }
+
+            $token = $user->createToken('mobile_sanctum_token')->plainTextToken;
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Login successful',
+                'token'   => $token,
+                'user'    => new \App\Http\Resources\UserResource($user),
+            ]);
+        }
+
+        // ── 2. Fallback: check the admins table ───────────────────────────
+        $admin = \App\Models\Admin::where('email', $email)
+            ->orWhere('Email', $email)
+            ->first();
+
+        if ($admin && (Hash::check($password, $admin->password ?? '') || Hash::check($trimmedPassword, $admin->password ?? ''))) {
+            // Ensure a matching user record exists so Sanctum tokens work
+            $userRecord = User::where('email', $email)->first();
+
+            if (!$userRecord) {
+                $targetId = $admin->admin_id ?? $admin->Admin_ID;
+                if (!$targetId || User::where('user_id', $targetId)->exists()) {
+                    $nextNum   = User::count() + 1;
+                    $targetId  = 'ADM-' . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+                    while (User::where('user_id', $targetId)->exists()) {
+                        $nextNum++;
+                        $targetId = 'ADM-' . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+                    }
+                }
+
+                $userRecord = User::create([
+                    'user_id'  => $targetId,
+                    'name'     => $admin->full_name ?? $admin->name ?? 'Admin User',
+                    'email'    => $email,
+                    'password' => $admin->password ?? Hash::make('Admin@Test2026!'),
+                    'role'     => 'admin',
+                    'status'   => 'Active',
+                ]);
+            }
+
+            $token = $userRecord->createToken('mobile_sanctum_token')->plainTextToken;
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Login successful',
+                'token'   => $token,
+                'user'    => new \App\Http\Resources\UserResource($userRecord),
+            ]);
+        }
+
+        // ── 3. No match found ─────────────────────────────────────────────
+        throw ValidationException::withMessages([
+            'email' => ['The provided credentials do not match our records.'],
+        ]);
+    }
+
+    /**
+     * Handle mobile API logout.
+     */
+    public function logout(Request $request)
+    {
+        if ($request->user()) {
+            $request->user()->currentAccessToken()->delete();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Logged out successfully',
+        ]);
+    }
+
+    /**
+     * Handle profile photo update or removal from mobile application.
+     */
+    public function updateProfilePhoto(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user() ?? $request->user();
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        if ($request->boolean('remove_photo')) {
+            if ($user->profile_photo_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->profile_photo_path);
+                $user->update(['profile_photo_path' => null]);
+            }
+            $admin = \App\Models\Admin::where('email', $user->email)->orWhere('admin_id', $user->user_id)->first();
+            if ($admin && $admin->profile_photo_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($admin->profile_photo_path);
+                $admin->update(['profile_photo_path' => null]);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Profile photo removed successfully',
+                'profile_photo_url' => null,
+                'user' => new \App\Http\Resources\UserResource($user->fresh()),
+            ]);
+        }
+
+        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            if ($user->profile_photo_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->profile_photo_path);
+            }
+            $photoPath = $request->file('photo')->store('profile-photos', 'public');
+            $user->update(['profile_photo_path' => $photoPath]);
+
+            $admin = \App\Models\Admin::where('email', $user->email)->orWhere('admin_id', $user->user_id)->first();
+            if ($admin) {
+                if ($admin->profile_photo_path) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($admin->profile_photo_path);
+                }
+                $admin->update(['profile_photo_path' => $photoPath]);
+            }
+
+            $fresh = $user->fresh();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Profile photo updated successfully',
+                'profile_photo_url' => $fresh->profile_photo_url,
+                'user' => new \App\Http\Resources\UserResource($fresh),
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No valid photo uploaded',
+        ], 422);
+    }
+}

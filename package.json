@@ -1,0 +1,30 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite"
+    },
+    "dependencies": {
+        "@laravel/passkeys": "^0.2.0",
+        "@tailwindcss/vite": "^4.1.11",
+        "@tensorflow/tfjs": "^4.22.0",
+        "concurrently": "^9.0.1",
+        "culori": "^4.0.2",
+        "laravel-vite-plugin": "^3.1",
+        "mailcheck": "^1.1.1",
+        "munsell": "^1.1.7",
+        "tailwindcss": "^4.0.7",
+        "vite": "^8.0.0"
+    },
+    "optionalDependencies": {
+        "@rollup/rollup-linux-x64-gnu": "4.9.5",
+        "@tailwindcss/oxide-linux-x64-gnu": "^4.0.1",
+        "lightningcss-linux-x64-gnu": "^1.29.1"
+    },
+    "devDependencies": {
+        "eslint": "^10.7.0",
+        "prettier": "^3.9.5"
+    }
+}

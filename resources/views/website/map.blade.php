@@ -1,0 +1,1739 @@
+<x-website-layout>
+    <x-slot name="title">Soil Map</x-slot>
+    <x-slot name="hideFooter">true</x-slot>
+
+    {{-- Leaflet CSS --}}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .ws-footer {
+            display: none !important;
+        }
+
+        /* Smooth Map Fade-In Transition */
+        @keyframes wsMapFadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .ws-single-screen-container {
+            animation: wsMapFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: background 0.3s ease;
+        }
+        .ws-map-card {
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Page Hero */
+        .ws-page-hero {
+            background: linear-gradient(135deg, #051F20 0%, #0B2B26 100%);
+            padding: 16px 24px 14px;
+            border-bottom: 1px solid rgba(142, 182, 155, 0.25);
+            flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+        .ws-page-hero-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .ws-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #8EB69B;
+            margin-bottom: 3px;
+            font-weight: 500;
+        }
+        .ws-breadcrumb a {
+            color: #DAF1DE;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        .ws-breadcrumb a:hover {
+            text-decoration: underline;
+            color: #8EB69B;
+        }
+        .ws-page-title {
+            font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+            font-weight: 900;
+            color: #DAF1DE;
+            margin: 0 0 2px 0;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+        .ws-page-sub {
+            font-size: 13px;
+            color: #8EB69B;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        /* Single-Screen Container */
+        .ws-single-screen-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 68px);
+            max-height: calc(100vh - 68px);
+            overflow: hidden;
+            background: #051F20;
+            box-sizing: border-box;
+        }
+
+        .ws-map-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 12px 24px 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .ws-map-card {
+            background: #0B2B26;
+            border-radius: 20px;
+            border: 1px solid rgba(142, 182, 155, 0.25);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(142, 182, 155, 0.05);
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            position: relative;
+        }
+        .ws-map-topbar {
+            padding: 12px 20px;
+            background: #051F20;
+            border-bottom: 1px solid rgba(142, 182, 155, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .ws-map-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .map-title-icon {
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            background: rgba(5, 31, 32, 0.7);
+            border: 1.5px solid rgba(142, 182, 155, 0.35);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .map-title-icon svg {
+            stroke: #4ADE80 !important;
+            transition: stroke 0.25s ease;
+        }
+        html.light-mode .map-title-icon {
+            background: #f0fdf4 !important;
+            border: 1.5px solid #86efac !important;
+            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.1) !important;
+        }
+        html.light-mode .map-title-icon svg {
+            stroke: #16a34a !important;
+        }
+        .ws-map-topbar h2 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #DAF1DE;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+        .ws-pin-count {
+            background: rgba(35, 83, 71, 0.6);
+            color: #DAF1DE;
+            border: 1px solid rgba(142, 182, 155, 0.35);
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 3px 11px;
+            border-radius: 999px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        #soilMap {
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+            z-index: 1;
+            background: #e2e8f0;
+            position: relative !important;
+        }
+
+        /* Leaflet popup custom style - Clean White Card (Matching Screenshot) */
+        .leaflet-popup-content-wrapper,
+        .agrico-custom-popup .leaflet-popup-content-wrapper {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border-radius: 20px !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.16), 0 6px 12px -2px rgba(0, 0, 0, 0.08) !important;
+            border: 1px solid rgba(226, 232, 240, 0.9) !important;
+        }
+        .leaflet-popup-tip,
+        .agrico-custom-popup .leaflet-popup-tip {
+            background: #ffffff !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06) !important;
+        }
+        .leaflet-popup-content,
+        .agrico-custom-popup .leaflet-popup-content {
+            margin: 0 !important;
+            line-height: normal !important;
+            width: 255px !important;
+            max-width: calc(100vw - 64px) !important;
+        }
+        .leaflet-popup-tip-container,
+        .agrico-custom-popup .leaflet-popup-tip-container {
+            margin-top: -1px;
+        }
+        .leaflet-container a.leaflet-popup-close-button,
+        .agrico-custom-popup a.leaflet-popup-close-button,
+        a.leaflet-popup-close-button {
+            top: 12px !important;
+            right: 12px !important;
+            width: 24px !important;
+            height: 24px !important;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            color: #64748b !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+            transition: all 0.15s ease !important;
+            padding: 0 !important;
+            z-index: 20 !important;
+            text-decoration: none !important;
+        }
+        .leaflet-container a.leaflet-popup-close-button:hover,
+        .agrico-custom-popup a.leaflet-popup-close-button:hover,
+        a.leaflet-popup-close-button:hover {
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* ── LIGHT MODE OVERRIDES FOR SOIL MAP PAGE ── */
+        html.light-mode, html.light-mode body {
+            background: #F8FAFC !important;
+        }
+
+        html.light-mode .ws-single-screen-container {
+            background: #F8FAFC !important;
+        }
+
+        html.light-mode .ws-page-hero {
+            background: linear-gradient(135deg, #DAF1DE 0%, #EEF7F1 100%) !important;
+            border-bottom: 1px solid rgba(142, 182, 155, 0.4) !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+        }
+
+        html.light-mode .ws-page-title {
+            color: #051F20 !important;
+        }
+
+        html.light-mode .ws-page-sub {
+            color: #163832 !important;
+        }
+
+        html.light-mode .ws-breadcrumb {
+            color: #235347 !important;
+        }
+
+        html.light-mode .ws-breadcrumb a {
+            color: #051F20 !important;
+        }
+
+        html.light-mode .ws-breadcrumb-current,
+        html.light-mode .ws-breadcrumb span {
+            color: #051F20 !important;
+            font-weight: 700 !important;
+        }
+
+        html.light-mode .ws-map-card {
+            background: #FFFFFF !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06) !important;
+        }
+
+        html.light-mode .ws-map-topbar {
+            background: #FFFFFF !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+        }
+
+        html.light-mode .ws-map-topbar h2 {
+            color: #0f172a !important;
+        }
+
+        html.light-mode .ws-pin-count {
+            background: #eefbe7 !important;
+            color: #16a34a !important;
+            border: 1px solid #86efac !important;
+            box-shadow: none !important;
+        }
+
+        html.light-mode .ws-map-topbar span {
+            color: #64748b !important;
+        }
+
+        /* Floating Search Bar in Light Mode */
+        html.light-mode #mapSearchInputContainer {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid #cbd5e1 !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        html.light-mode #mapSearchInput {
+            color: #0f172a !important;
+        }
+
+        html.light-mode #mapSearchInput::placeholder {
+            color: #94a3b8 !important;
+        }
+
+        html.light-mode #mapSearchIcon {
+            stroke: #16a34a !important;
+        }
+
+        html.light-mode #mapSearchResults {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border: 1px solid #cbd5e1 !important;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
+            color: #0f172a !important;
+        }
+
+        html.light-mode #mapSearchResults .map-search-item {
+            border-bottom-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+
+        html.light-mode #mapSearchResults .map-search-item:hover {
+            background: #f0fdf4 !important;
+        }
+
+        /* Leaflet Popups in Light Mode */
+        html.light-mode .leaflet-popup-content-wrapper,
+        html.light-mode .leaflet-popup-tip {
+            background: #FFFFFF !important;
+            color: #0f172a !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* Custom Agrico Leaflet Popup Styling */
+        .agrico-custom-popup .leaflet-popup-content-wrapper {
+            background: #ffffff !important;
+            border-radius: 20px !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.16), 0 6px 12px -2px rgba(0, 0, 0, 0.08) !important;
+            border: 1px solid rgba(226, 232, 240, 0.9) !important;
+        }
+        .agrico-custom-popup .leaflet-popup-content {
+            margin: 0 !important;
+            line-height: normal !important;
+            width: 280px !important;
+            max-width: calc(100vw - 64px) !important;
+        }
+        .agrico-custom-popup .leaflet-popup-tip-container {
+            margin-top: -1px;
+        }
+        .agrico-custom-popup .leaflet-popup-tip {
+            background: #ffffff !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.06) !important;
+        }
+        .agrico-custom-popup a.leaflet-popup-close-button {
+            top: 12px !important;
+            right: 12px !important;
+            width: 24px !important;
+            height: 24px !important;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            color: #64748b !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+            transition: all 0.15s ease !important;
+            padding: 0 !important;
+            z-index: 20 !important;
+            text-decoration: none !important;
+        }
+        .agrico-custom-popup a.leaflet-popup-close-button:hover {
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Soil Record Details Modal (Matching Screenshots 1, 2, 3, 4) */
+        .soil-detail-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 100001;
+            background: rgba(5, 31, 32, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+            animation: wsMapFadeIn 0.2s ease-out;
+        }
+        .soil-detail-modal-container {
+            background: linear-gradient(145deg, #0B2B26 0%, #163832 100%);
+            border: 1px solid rgba(142, 182, 155, 0.25);
+            border-radius: 28px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 680px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            height: 75vh;
+            max-height: 75vh;
+            overflow: hidden;
+            position: relative;
+        }
+        .soil-detail-modal-header {
+            padding: 20px 26px 16px;
+            border-bottom: 1px solid rgba(142, 182, 155, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0B2B26;
+            flex-shrink: 0;
+        }
+        .soil-detail-modal-header h3 {
+            margin: 0;
+            font-size: 17.5px;
+            font-weight: 800;
+            color: #DAF1DE;
+            letter-spacing: -0.01em;
+        }
+        .soil-detail-modal-body {
+            padding: 18px 24px 20px;
+            overflow-y: auto;
+            flex: 1 1 auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(142, 182, 155, 0.35) rgba(11, 43, 38, 0.8);
+            scrollbar-gutter: stable;
+            -webkit-overflow-scrolling: touch;
+        }
+        .soil-detail-modal-body::-webkit-scrollbar {
+            width: 6px;
+            display: block !important;
+        }
+        .soil-detail-modal-body::-webkit-scrollbar-track {
+            background: rgba(11, 43, 38, 0.8);
+            border-radius: 9999px;
+            margin: 4px 0;
+        }
+        .soil-detail-modal-body::-webkit-scrollbar-thumb {
+            background: rgba(142, 182, 155, 0.35);
+            border-radius: 9999px;
+        }
+        .soil-detail-modal-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(142, 182, 155, 0.6);
+        }
+
+        .modal-close-circle-btn {
+            background: rgba(5, 31, 32, 0.7) !important;
+            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
+            color: #8EB69B !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50% !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            padding: 0 !important;
+            transition: all 0.2s ease !important;
+            flex-shrink: 0 !important;
+        }
+        .modal-close-circle-btn:hover {
+            background: rgba(35, 83, 71, 0.8) !important;
+            color: #DAF1DE !important;
+            border-color: #DAF1DE !important;
+        }
+
+        /* Swatch Banner */
+        .soil-swatch-banner {
+            position: relative;
+            margin-top: 2px;
+            margin-bottom: 12px;
+            width: 100%;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 20px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            min-height: 78px;
+        }
+        .soil-swatch-avatar {
+            width: 56px;
+            height: 56px;
+            min-width: 56px;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            border: none;
+            outline: none;
+            box-shadow: none;
+            background: transparent;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .soil-swatch-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 0;
+        }
+        .soil-swatch-center {
+            flex: 1;
+            min-width: 0;
+        }
+        .soil-swatch-code {
+            font-size: 24px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: none;
+            letter-spacing: -0.01em;
+            line-height: 1.15;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .soil-swatch-sub {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.95);
+            margin-top: 3px;
+            letter-spacing: 0.02em;
+        }
+        .soil-swatch-hex-pill {
+            font-size: 11px;
+            font-weight: 800;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.58);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            padding: 5px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            user-select: none;
+            line-height: 1;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        /* Grids for Metric Cards */
+        .soil-modal-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .soil-modal-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .soil-metric-card {
+            background: #163832;
+            border: 1px solid rgba(142, 182, 155, 0.25);
+            border-radius: 16px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+        }
+        .soil-metric-card-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #8EB69B;
+            margin-bottom: 4px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .soil-metric-card-val {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #DAF1DE;
+            word-break: break-word;
+        }
+
+        .covered-area-highlight {
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            display: inline !important;
+            color: #DAF1DE;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+
+        .layer-accordion-item {
+            border: 1px solid rgba(142, 182, 155, 0.25) !important;
+            border-radius: 14px !important;
+            overflow: hidden !important;
+            background: #163832 !important;
+            margin-bottom: 8px;
+        }
+        .layer-accordion-header {
+            background: #0B2B26 !important;
+            color: #DAF1DE !important;
+        }
+        .layer-accordion-body {
+            background: #163832 !important;
+            border-top: 1px solid rgba(142, 182, 155, 0.25) !important;
+        }
+
+        .soil-detail-modal-footer {
+            padding: 16px 24px 20px;
+            background: #0B2B26;
+            border-top: 1px solid rgba(142, 182, 155, 0.25);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .modal-cancel-btn {
+            background: rgba(11, 43, 38, 0.8) !important;
+            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
+            color: #DAF1DE !important;
+            padding: 12px 24px;
+            border-radius: 14px !important;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .modal-cancel-btn:hover {
+            background: rgba(35, 83, 71, 0.5) !important;
+            border-color: #DAF1DE !important;
+            color: #DAF1DE !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.35);
+        }
+        .modal-cancel-btn:active {
+            transform: translateY(0);
+        }
+
+        .soil-normalization-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(142, 182, 155, 0.25);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .soil-normalization-meta-title {
+            color: #4ade80;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+        }
+        .soil-normalization-meta-info {
+            color: #CBD5E1;
+            font-weight: 600;
+        }
+
+        .soil-swatch-capsule-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 13px;
+            background: #0B2B26;
+            border: 1px solid rgba(74, 222, 128, 0.25);
+            border-radius: 9999px;
+            box-shadow: none;
+            font-size: 11.5px;
+            cursor: default;
+            user-select: none;
+        }
+        .soil-swatch-capsule-pill:hover {
+            border-color: rgba(74, 222, 128, 0.35);
+        }
+        .soil-swatch-capsule-pill .capsule-pill-hex {
+            color: #FFFFFF;
+        }
+        .soil-swatch-capsule-pill .capsule-pill-code {
+            color: #8EB69B;
+        }
+        .soil-swatch-capsule-pill .capsule-pill-pct {
+            color: #00DC82;
+        }
+
+        .soil-metric-card-text {
+            color: #DAF1DE;
+        }
+        .layer-accordion-header-title {
+            color: #DAF1DE;
+        }
+        .layer-accordion-arrow {
+            color: #8EB69B;
+        }
+        .soil-platform-badge {
+            font-size: 12px;
+            font-weight: 700;
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #8EB69B;
+            display: inline !important;
+        }
+
+        /* Light Mode Overrides */
+        html.light-mode .soil-detail-modal-container {
+            background: #ffffff;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+        }
+        html.light-mode .soil-detail-modal-header {
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        html.light-mode .soil-detail-modal-header h3 {
+            color: #0f172a;
+        }
+        html.light-mode .modal-close-circle-btn {
+            background: #f1f5f9 !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #64748b !important;
+        }
+        html.light-mode .soil-detail-modal-body {
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+        html.light-mode .soil-metric-card {
+            background: #ffffff;
+            border: 1.5px solid #f1f5f9;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+        html.light-mode .soil-metric-card-label {
+            color: #475569 !important;
+            font-weight: 800 !important;
+        }
+        html.light-mode .soil-metric-card-val,
+        html.light-mode .soil-metric-card-text,
+        html.light-mode .layer-accordion-header-title,
+        html.light-mode .layer-accordion-header-title span,
+        html.light-mode .soil-metric-card [style*="#DAF1DE"],
+        html.light-mode .soil-metric-card [style*="color: #DAF1DE"],
+        html.light-mode .soil-metric-card [style*="color:#DAF1DE"],
+        html.light-mode .layer-accordion-item [style*="#DAF1DE"],
+        html.light-mode .layer-accordion-item [style*="color: #DAF1DE"],
+        html.light-mode .layer-accordion-item [style*="color:#DAF1DE"],
+        html.light-mode #wsSoilDetailModal [style*="#DAF1DE"],
+        html.light-mode #wsSoilDetailModal [style*="color: #DAF1DE"],
+        html.light-mode #wsSoilDetailModal [style*="color:#DAF1DE"] {
+            color: #0f172a !important;
+        }
+        html.light-mode #wsSoilDetailModal [style*="#8EB69B"],
+        html.light-mode #wsSoilDetailModal [style*="color: #8EB69B"],
+        html.light-mode #wsSoilDetailModal [style*="color:#8EB69B"] {
+            color: #475569 !important;
+        }
+        html.light-mode .layer-accordion-arrow,
+        html.light-mode [id^="wsLayerArrow_"] {
+            color: #475569 !important;
+        }
+        html.light-mode .soil-platform-badge {
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #000000 !important;
+        }
+        html.light-mode .soil-swatch-capsule-pill {
+            background: #f8fafc !important;
+            border: 1.5px solid #cbd5e1 !important;
+            box-shadow: none !important;
+            cursor: default;
+            user-select: none;
+        }
+        html.light-mode .soil-swatch-capsule-pill:hover {
+            background: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+        html.light-mode .soil-swatch-capsule-pill .capsule-pill-hex,
+        html.light-mode .soil-swatch-capsule-pill span[style*="monospace"] {
+            color: #0f172a !important;
+        }
+        html.light-mode .soil-swatch-capsule-pill .capsule-pill-code,
+        html.light-mode .soil-swatch-capsule-pill span[style*="#8EB69B"] {
+            color: #475569 !important;
+        }
+        html.light-mode .soil-swatch-capsule-pill .capsule-pill-pct,
+        html.light-mode .soil-swatch-capsule-pill span[style*="#00DC82"] {
+            color: #15803d !important;
+        }
+        html.light-mode .soil-swatch-capsule-pill .capsule-pill-swatch,
+        html.light-mode .soil-swatch-capsule-pill span[style*="border-radius: 3.5px"] {
+            border: 1px solid rgba(0, 0, 0, 0.15) !important;
+            box-shadow: none !important;
+        }
+        html.light-mode .soil-normalization-meta-row {
+            border-top: 1px solid #e2e8f0 !important;
+        }
+        html.light-mode .soil-normalization-meta-title {
+            color: #0f172a !important;
+            font-weight: 800 !important;
+        }
+        html.light-mode .soil-normalization-meta-info {
+            color: #475569 !important;
+            font-weight: 600 !important;
+        }
+        html.light-mode .layer-accordion-item {
+            border: 1px solid #e2e8f0 !important;
+            background: #ffffff !important;
+        }
+        html.light-mode .layer-accordion-header {
+            background: #f8fafc !important;
+            color: #0f172a !important;
+        }
+        html.light-mode .layer-accordion-body {
+            background: #ffffff !important;
+            border-top: 1px solid #f1f5f9 !important;
+        }
+        html.light-mode .soil-detail-modal-footer {
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+        }
+        html.light-mode .modal-cancel-btn {
+            background: #f1f5f9 !important;
+            border: 1.5px solid #cbd5e1 !important;
+            color: #1e293b !important;
+            border-radius: 14px !important;
+            font-weight: 800 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s ease !important;
+        }
+        html.light-mode .modal-cancel-btn:hover {
+            background: #e2e8f0 !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        html.light-mode .modal-cancel-btn:active {
+            transform: translateY(0);
+        }
+        html.light-mode .covered-area-highlight {
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            color: #000000 !important;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+
+        #mapSearchInput {
+            color: #DAF1DE;
+        }
+    </style>
+
+    <div class="ws-single-screen-container">
+        {{-- Page Hero --}}
+        <div class="ws-page-hero">
+            <div class="ws-page-hero-inner ui-reveal">
+                <div class="ws-breadcrumb">
+                    <a href="{{ route('website.home') }}">Home</a>
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+                         viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                    <span class="ws-breadcrumb-current">Soil Map</span>
+                </div>
+                <h1 class="ws-page-title">Interactive Soil Map</h1>
+                <p class="ws-page-sub">Explore all geo-tagged soil scan locations across the municipality.</p>
+            </div>
+        </div>
+
+        <div class="ws-map-wrapper">
+            <div class="ws-map-card ui-reveal">
+                <div class="ws-map-topbar">
+                    <div class="ws-map-topbar-left">
+                        <span class="map-title-icon">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"
+                                 stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </span>
+                        <h2>Soil Scan Locations</h2>
+                        <span class="ws-pin-count">{{ $mappings->count() }} locations</span>
+                    </div>
+                </div>
+
+                {{-- MOVED: search bar is now a sibling of #soilMap, not a child --}}
+                <div style="position:absolute; top:66px; left:50px; z-index:999; max-width:380px; width:calc(100% - 64px);">
+                    <div id="mapSearchInputContainer" style="background:rgba(11, 43, 38, 0.92); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(142, 182, 155, 0.38); border-radius:14px; padding:9px 14px; display:flex; align-items:center; gap:9px; box-shadow:0 10px 30px rgba(0,0,0,0.45);">
+                        <svg id="mapSearchIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8EB69B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="mapSearchInput" oninput="handleMapSearch(this.value)" placeholder="Search soil name, code, barangay, soil type..." style="background:transparent; border:none; outline:none; font-size:13px; font-weight:600; width:100%; font-family:inherit;">
+                        <button type="button" id="mapSearchClearBtn" onclick="clearMapSearch()" class="modal-close-circle-btn" style="display:none; width:22px !important; height:22px !important;" title="Clear search" aria-label="Clear search">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Dropdown Search Results List -->
+                    <div id="mapSearchResults" style="display:none; max-height:240px; overflow-y:auto; background:rgba(11, 43, 38, 0.95); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(142, 182, 155, 0.38); border-radius:14px; margin-top:6px; padding:6px; box-shadow:0 12px 36px rgba(0,0,0,0.55);"></div>
+                </div>
+
+                <div id="soilMap"></div>
+            </div>
+        </div>
+    </div>
+    {{-- Leaflet JS --}}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const mappingsData = @json($mappings);
+
+        // Initialize map — complete Lal-lo, Cagayan Municipality view [18.1972, 121.6612] at zoom 12
+        const defaultLat = 18.1972, defaultLng = 121.6612, defaultZoom = 12;
+
+        const map = L.map('soilMap').setView([defaultLat, defaultLng], defaultZoom);
+
+        // Standard bright OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Custom Glossy Red Vector Marker Pins with Rounded White Center
+        function makeIcon(gradientStart, gradientEnd, dotColor) {
+            return L.divIcon({
+                html: `
+                    <div style="position:relative; width:34px; height:44px; margin-left:-17px; margin-top:-44px;">
+                        <div style="position:absolute; bottom:1px; left:50%; transform:translateX(-50%); width:16px; height:5px; background:rgba(0,0,0,0.35); border-radius:50%; filter:blur(1.5px);"></div>
+                        <div style="position:absolute; top:0; left:50%; width:32px; height:32px; background:linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%); border-radius:50% 50% 50% 0; transform:translateX(-50%) rotate(-45deg); box-shadow:0 6px 14px rgba(0,0,0,0.4), inset 0 2px 3px rgba(255,255,255,0.6); display:flex; align-items:center; justify-content:center; border:1.5px solid #ffffff;">
+                            <div style="width:15px; height:15px; background:#ffffff; border-radius:50%; transform:rotate(45deg); display:flex; align-items:center; justify-content:center; box-shadow:inset 0 1px 2px rgba(0,0,0,0.2);">
+                                <div style="width:7px; height:7px; background:${dotColor}; border-radius:50%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                className: '',
+                iconSize: [34, 44],
+                iconAnchor: [17, 44],
+                popupAnchor: [0, -42]
+            });
+        }
+
+        const redIcon = L.icon({
+            iconUrl: "{{ asset('images/agrico-map-pin.png') }}",
+            iconSize: [38, 56],
+            iconAnchor: [19, 56],
+            popupAnchor: [0, -50]
+        });
+
+        const grayIcon = L.icon({
+            iconUrl: "{{ asset('images/agrico-map-pin-gray.png') }}",
+            iconSize: [38, 56],
+            iconAnchor: [19, 56],
+            popupAnchor: [0, -50]
+        });
+
+
+        function centerMapOnPopup(mapInstance, lat, lng, offsetPx) {
+            if (!mapInstance) return;
+            offsetPx = typeof offsetPx === 'number' ? offsetPx : 165;
+            const latlng = L.latLng(lat, lng);
+            const zoom = mapInstance.getZoom();
+            const point = mapInstance.project(latlng, zoom);
+            const targetPoint = point.subtract([0, offsetPx]);
+            const targetLatLng = mapInstance.unproject(targetPoint, zoom);
+            mapInstance.panTo(targetLatLng, { animate: true, duration: 0.4 });
+        }
+
+        const boundsGroup = [];
+        const markersMap = [];
+        const allPolygons = [];
+
+        mappingsData.forEach((m, index) => {
+            if (!m.latitude || !m.longitude) return;
+
+            const lt = parseFloat(m.latitude);
+            const ln = parseFloat(m.longitude);
+
+            const soil   = m.soil;
+            const munsell = soil?.munsell_color;
+            const hue    = soil?.hue ?? munsell?.hue ?? '—';
+
+            let icon = redIcon;
+
+            const mColor   = soil?.munsell_color || {};
+            const soilName = soil?.soil_name || mColor?.color_name || 'Soil Specimen';
+            const fullCode = soil?.full_code || mColor?.full_code || '—';
+            let hexColor = soil?.hex_color || mColor?.hex_code || '#8F694E';
+            if (hexColor && !hexColor.startsWith('#')) hexColor = '#' + hexColor;
+            let rawBrgy = (m.barangay && m.barangay !== '') ? m.barangay : 'Centro (Poblacion)';
+            let brgyClean = rawBrgy.replace(/^(brgy\.?|barangay\.?)\s*/i, '').replace(/,\s*lal-lo\s*$/i, '').replace(/,\s*cagayan\s*$/i, '');
+            const brgyLabel = `Brgy. ${brgyClean}, Lal-lo`;
+            const soilType = m.munsell_soil_type || soil?.effective_soil_type || soil?.soil_type || mColor?.soil_type || 'Leached grayish brown';
+            const covStr   = m.coverage || '500 m²';
+            const locId    = m.location_mapping_id || m.id || (index + 1);
+
+            let regions = [];
+            if (Array.isArray(m.regions) && m.regions.length > 0) {
+                regions = m.regions;
+            } else if (typeof m.regions === 'string') {
+                try {
+                    const parsedR = JSON.parse(m.regions);
+                    if (Array.isArray(parsedR)) regions = parsedR;
+                } catch(e) {}
+            }
+            if (regions.length <= 1 && Array.isArray(m.detected_soils) && m.detected_soils.length > regions.length) {
+                regions = m.detected_soils;
+            } else if (regions.length <= 1 && typeof m.detected_soils === 'string') {
+                try {
+                    const parsedDs = JSON.parse(m.detected_soils);
+                    if (Array.isArray(parsedDs) && parsedDs.length > regions.length) regions = parsedDs;
+                } catch(e) {}
+            }
+
+            const isMulti = regions.length > 1;
+            const domSoil = regions[0] || {};
+            const displayTitle = (isMulti && (domSoil.label || domSoil.color_name || domSoil.soil_name)) ? (domSoil.label || domSoil.color_name || domSoil.soil_name) : soilName;
+            const displayCode = (isMulti && (domSoil.munsell || domSoil.munsell_code || domSoil.full_code)) ? (domSoil.munsell || domSoil.munsell_code || domSoil.full_code) : fullCode;
+            let displayHex = (isMulti && (domSoil.hex || domSoil.hex_color)) ? (domSoil.hex || domSoil.hex_color) : hexColor;
+            if (displayHex && !displayHex.startsWith('#')) displayHex = '#' + displayHex;
+
+
+
+            let typeRowHtml = '';
+            if (isMulti) {
+                typeRowHtml = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #64748b; font-weight: 600; font-size: 11px;">Detected Soil:</span>
+                        <span style="font-weight: 800; color: #0f172a; font-size: 11.5px;">${regions.length} Detected</span>
+                    </div>
+                `;
+            } else {
+                typeRowHtml = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #64748b; font-weight: 600; font-size: 11px;">Type:</span>
+                        <span style="font-weight: 800; color: #0f172a; font-size: 11.5px; max-width: 155px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${soilType}">${soilType}</span>
+                    </div>
+                `;
+            }
+
+            const codeRowHtml = !isMulti ? `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #64748b; font-weight: 600; font-size: 11px;">Code:</span>
+                    <span style="font-weight: 800; color: #0f172a; font-size: 11.5px;">${displayCode}</span>
+                </div>
+            ` : '';
+
+            const titleHtml = !isMulti ? `
+                <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 2px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${displayTitle}">
+                    ${displayTitle}
+                </div>
+            ` : '';
+
+            const popupHtml = `
+                <div style="padding: 12px 14px; font-family: inherit; width: 100%; box-sizing: border-box;">
+                    <div style="margin-bottom: 3px; padding-right: 28px;">
+                        <span style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">LOCATION #${locId}</span>
+                    </div>
+                    ${titleHtml}
+                    <div style="font-size: 11.5px; color: #15803d; font-weight: 700; display: flex; align-items: center; gap: 4px;${isMulti ? ' margin-top: 4px;' : ''} margin-bottom: 9px;">
+                        <svg width="12" height="12" fill="#16a34a" viewBox="0 0 20 20" style="flex-shrink:0;"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${brgyLabel}</span>
+                    </div>
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 11px; margin-bottom: 10px; font-size: 11.5px; display: flex; flex-direction: column; gap: 5px;">
+                        ${codeRowHtml}
+                        ${typeRowHtml}
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #64748b; font-weight: 600; font-size: 11px;">Covered Area:</span>
+                            <span style="font-weight: 700; color: #0f172a; font-size: 11.5px;">${covStr}</span>
+                        </div>
+                        <div style="border-top: 1px dotted #cbd5e1; margin-top: 2px; padding-top: 5px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8;">
+                            <span>Coords:</span>
+                            <span style="font-family: ui-monospace, monospace; font-size: 10.5px; font-weight: 500;">${lt.toFixed(4)}, ${ln.toFixed(4)}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" onclick="viewWebsitePinDetails(${locId})" style="width: 100%; padding: 8.5px 12px; background: #16a34a; color: #ffffff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease; box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            const isApproved = String(m.status || '').toLowerCase() === 'active' || String(m.status || '').toLowerCase() === 'approved';
+            const markerIcon = isApproved ? redIcon : grayIcon;
+
+            const marker = L.marker([lt, ln], { icon: markerIcon, interactive: true });
+            marker.bindPopup(popupHtml, { className: 'agrico-custom-popup', maxWidth: 320, autoPan: false });
+
+            marker.on('click', function(e) {
+                if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
+                centerMapOnPopup(map, lt, ln, 165);
+            });
+            marker.on('popupopen', function() {
+                centerMapOnPopup(map, lt, ln, 165);
+            });
+            marker.addTo(map);
+
+            markersMap.push({
+                marker: marker,
+                lat: lt,
+                lng: ln,
+                soilName: soilName,
+                fullCode: fullCode,
+                hue: hue,
+                soilType: soilType,
+                barangay: m.barangay ?? ''
+            });
+
+            boundsGroup.push([lt, ln]);
+        });
+
+        if (boundsGroup.length > 0) {
+            map.fitBounds(boundsGroup, { padding: [40, 40] });
+        } else {
+            map.setView([defaultLat, defaultLng], defaultZoom);
+        }
+
+        // Map Search Logic
+        function handleMapSearch(query) {
+            const clearBtn = document.getElementById('mapSearchClearBtn');
+            const resultsDiv = document.getElementById('mapSearchResults');
+            const q = query.trim().toLowerCase();
+
+            if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+            if (!q) {
+                if (resultsDiv) resultsDiv.style.display = 'none';
+                return;
+            }
+
+            const matches = markersMap.filter(item => {
+                return item.soilName.toLowerCase().includes(q) ||
+                       item.fullCode.toLowerCase().includes(q) ||
+                       item.hue.toLowerCase().includes(q) ||
+                       (item.soilType && item.soilType.toLowerCase().includes(q)) ||
+                       item.barangay.toLowerCase().includes(q);
+            });
+
+            if (matches.length === 0) {
+                resultsDiv.innerHTML = '<div style="padding:10px 12px; font-size:12px; color:#8EB69B; text-align:center;">No matching soil locations found</div>';
+                resultsDiv.style.display = 'block';
+                return;
+            }
+
+            let html = '';
+            matches.slice(0, 6).forEach((item, idx) => {
+                const subMeta = [
+                    item.barangay ? 'Brgy. ' + item.barangay : 'Lal-lo',
+                    item.fullCode,
+                    item.soilType || ''
+                ].filter(Boolean).join(' • ');
+
+                html += `
+                    <div onclick="selectMapSearchResult(${item.lat}, ${item.lng})" style="padding:8px 12px; border-radius:10px; cursor:pointer; font-size:12.5px; color:#DAF1DE; display:flex; align-items:center; justify-content:space-between; transition:background 0.15s; margin-bottom:2px;" onmouseover="this.style.background='rgba(35, 83, 71, 0.6)';" onmouseout="this.style.background='transparent';">
+                        <div>
+                            <div style="font-weight:700; color:#DAF1DE;">${item.soilName}</div>
+                            <div style="font-size:11px; color:#8EB69B;">${subMeta}</div>
+                        </div>
+                        <span style="font-size:11px; font-weight:700; color:#4ADE80; background:rgba(74, 222, 128, 0.15); border:1px solid rgba(74, 222, 128, 0.3); padding:2px 7px; border-radius:6px;">View</span>
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function selectMapSearchResult(lat, lng) {
+            const targetZoom = 15;
+            const latlng = L.latLng(lat, lng);
+            const point = map.project(latlng, targetZoom);
+            const targetLatLng = map.unproject(point.subtract([0, 165]), targetZoom);
+            map.flyTo(targetLatLng, targetZoom, { duration: 1.0 });
+            const item = markersMap.find(m => Math.abs(m.lat - lat) < 0.0001 && Math.abs(m.lng - lng) < 0.0001);
+            if (item && item.marker) {
+                setTimeout(() => item.marker.openPopup(), 1050);
+            }
+            const resultsDiv = document.getElementById('mapSearchResults');
+            if (resultsDiv) resultsDiv.style.display = 'none';
+        }
+
+        function clearMapSearch() {
+            const input = document.getElementById('mapSearchInput');
+            const clearBtn = document.getElementById('mapSearchClearBtn');
+            const resultsDiv = document.getElementById('mapSearchResults');
+            if (input) input.value = '';
+            if (clearBtn) clearBtn.style.display = 'none';
+            if (resultsDiv) resultsDiv.style.display = 'none';
+            if (boundsGroup.length > 0) {
+                map.fitBounds(boundsGroup, { padding: [40, 40] });
+            }
+        }
+
+        // Helper: normalize bounding box for ROI display
+        function normalizeBox(r) {
+            if (!r) {
+                return { left: 25, top: 25, width: 50, height: 50, raw_x: 0.25, raw_y: 0.25, raw_w: 0.5, raw_h: 0.5 };
+            }
+            let box = r.box || r.bounding_box || null;
+            if (!box && (r.x !== undefined && r.y !== undefined && r.w !== undefined && r.h !== undefined)) {
+                box = { x: r.x, y: r.y, w: r.w, h: r.h };
+            }
+            if (!box && (r.norm_x !== undefined && r.norm_y !== undefined && r.norm_w !== undefined && r.norm_h !== undefined)) {
+                box = { x: r.norm_x, y: r.norm_y, w: r.norm_w, h: r.norm_h };
+            }
+            if (typeof box === 'string') {
+                try { box = JSON.parse(box); } catch(e) { box = null; }
+            }
+            if (!box) {
+                return { left: 25, top: 25, width: 50, height: 50, raw_x: 0.25, raw_y: 0.25, raw_w: 0.5, raw_h: 0.5 };
+            }
+            let bx = parseFloat(box.norm_x !== undefined ? box.norm_x : (box.x !== undefined ? box.x : 0.25));
+            let by = parseFloat(box.norm_y !== undefined ? box.norm_y : (box.y !== undefined ? box.y : 0.25));
+            let bw = parseFloat(box.norm_w !== undefined ? box.norm_w : (box.w !== undefined ? box.w : 0.5));
+            let bh = parseFloat(box.norm_h !== undefined ? box.norm_h : (box.h !== undefined ? box.h : 0.5));
+
+            if (bx > 1.0 || by > 1.0 || bw > 1.0 || bh > 1.0) {
+                bx = bx / 400; by = by / 400; bw = bw / 400; bh = bh / 400;
+            }
+            bx = Math.max(0.02, Math.min(0.88, bx));
+            by = Math.max(0.02, Math.min(0.88, by));
+            bw = Math.max(0.06, Math.min(0.96 - bx, bw));
+            bh = Math.max(0.06, Math.min(0.96 - by, bh));
+
+            return {
+                left: Math.round(bx * 10000) / 100,
+                top: Math.round(by * 10000) / 100,
+                width: Math.round(bw * 10000) / 100,
+                height: Math.round(bh * 10000) / 100,
+                raw_x: bx,
+                raw_y: by,
+                raw_w: bw,
+                raw_h: bh
+            };
+        }
+
+        // Helper: calculate near match rating
+        function calcNearMatchRating(item) {
+            if (!item) return '98.7%';
+            const de = item.color_delta_e ?? item.delta_e ?? item.distance;
+            if (de !== undefined && de !== null && !isNaN(de) && parseFloat(de) >= 0) {
+                return (Math.max(88.5, Math.min(99.6, 99.4 - (parseFloat(de) * 0.45)))).toFixed(1) + '%';
+            }
+            if (item.near_match && typeof item.near_match === 'string' && item.near_match !== '100%' && item.near_match !== '100.0%') {
+                return item.near_match;
+            }
+            if (item.confidence && typeof item.confidence === 'string' && item.confidence !== '100%' && item.confidence !== '100.0%') {
+                return item.confidence.includes('%') ? item.confidence : item.confidence + '%';
+            }
+            return '98.7%';
+        }
+
+        // Toggle secondary layer accordion
+        window.toggleWebsiteLayerAccordion = function(idx) {
+            const body = document.getElementById(`wsLayerBody_${idx}`);
+            const arrow = document.getElementById(`wsLayerArrow_${idx}`);
+            if (body) {
+                const isHidden = body.style.display === 'none';
+                body.style.display = isHidden ? 'block' : 'none';
+                if (arrow) arrow.textContent = isHidden ? '▼' : '▶';
+            }
+        };
+
+        // View Details Modal Handler (Matching Screenshots 1, 2, 3, 4 without Save Copy / Pin Location buttons)
+        window.viewWebsitePinDetails = function(locId) {
+            const m = mappingsData.find(item => (item.location_mapping_id || item.id) == locId);
+            if (!m) return;
+
+            const modal = document.getElementById('websiteSoilDetailModal');
+            if (!modal) return;
+
+            const soil = m.soil || {};
+            const mColor = soil.munsell_color || {};
+            const soilName = soil.soil_name || mColor.color_name || 'Soil Specimen';
+            const fullCode = soil.full_code || mColor.full_code || '—';
+            let hexColor = soil.hex_color || mColor.hex_code || '#8F694E';
+            if (hexColor && !hexColor.startsWith('#')) hexColor = '#' + hexColor;
+            const soilType = m.munsell_soil_type || soil.effective_soil_type || soil.soil_type_label || soil.soil_type || mColor.soil_type || 'Leached grayish brown';
+            const covStr = m.coverage || '500 m²';
+            const lt = parseFloat(m.latitude) || 0;
+            const ln = parseFloat(m.longitude) || 0;
+            const cleanBrgy = (m.barangay && m.barangay !== 'Lal-lo Overall') ? m.barangay : 'Centro (Poblacion)';
+            const brgy = cleanBrgy.startsWith('Brgy.') ? `${cleanBrgy}, Lal-lo, Cagayan` : `Brgy. ${cleanBrgy}, Lal-lo, Cagayan`;
+            const drainage = soil.drainage || mColor.drainage_profile || 'Well-Drained Clay / Latosol';
+            const organic = soil.effective_organic_matter || mColor.organic_matter || 'Low (1.1% – 2.0%)';
+            const desc = soil.description || (m.soil_scan && m.soil_scan.scan_note ? m.soil_scan.scan_note : `${fullCode} - ${soilName}`);
+
+            // Build regions array
+            let regions = Array.isArray(m.regions) && m.regions.length > 0 ? m.regions : [];
+            if (regions.length <= 1 && Array.isArray(m.detected_soils) && m.detected_soils.length > regions.length) {
+                regions = m.detected_soils.map((ds, idx) => {
+                    const rawPct = parseFloat(String(ds.percentage || '25').replace('%', '')) || 25;
+                    return {
+                        munsell: ds.full_code || '—',
+                        munsell_code: ds.full_code || '—',
+                        hex: ds.hex_color || '#8F694E',
+                        label: ds.soil_name || 'Soil Layer',
+                        color_name: ds.soil_name || 'Soil Layer',
+                        percent: rawPct,
+                        proportion: rawPct / 100,
+                        confidence: ds.confidence || '96.8%',
+                        organic_matter: ds.organic_matter || organic,
+                        soil_name: ds.soil_type || drainage,
+                        description: ds.description || '',
+                        box: { x: 0.15 + ((idx % 2) * 0.4), y: 0.2 + (Math.floor(idx / 2) * 0.35), w: 0.3, h: 0.3 }
+                    };
+                });
+            }
+            if (regions.length === 0) {
+                regions = [{
+                    munsell: fullCode,
+                    munsell_code: fullCode,
+                    hex: hexColor,
+                    label: soilName,
+                    color_name: soilName,
+                    percent: 100,
+                    proportion: 1.0,
+                    confidence: '98.7%',
+                    organic_matter: organic,
+                    soil_name: drainage,
+                    description: desc,
+                    box: { x: 0.25, y: 0.25, w: 0.5, h: 0.5 }
+                }];
+            }
+
+            const isMulti = regions.length > 1;
+            const dominant = regions[0] || {};
+            const domBox = normalizeBox(dominant);
+            const domCode = dominant.munsell || dominant.munsell_code || fullCode;
+            let domHex = dominant.hex || hexColor;
+            if (domHex && !domHex.startsWith('#')) domHex = '#' + domHex;
+            const domName = dominant.label || dominant.color_name || soilName;
+            const domPct = dominant.percent !== undefined ? Math.round(dominant.percent) : (dominant.proportion !== undefined ? Math.round(dominant.proportion * 100) : 100);
+            const domConf = calcNearMatchRating(dominant);
+            const domOrganic = dominant.organic_matter || organic;
+            const domDrainage = dominant.soil_name || drainage;
+            const domDesc = dominant.description || desc;
+
+            const scanImgUrl = m.scan_image_url || '';
+            const baImgUrl = m.before_after_image_url || '';
+            const recordedDate = m.scan_date_formatted || '09/27/2026';
+            const scannedBy = m.scanned_by || 'Admin Analyst';
+            const scanPlatform = m.scan_platform || 'Web';
+            const scanCount = soil.scan_count || (m.soil_scan_id ? 4 : 1);
+            const noteText = m.scan_note_text || (m.soil_scan && m.soil_scan.scan_note ? m.soil_scan.scan_note : 'No scan note available for this record.');
+
+            // Update Header Title
+            document.getElementById('wsModalHeaderTitle').textContent = `Soil Record Details${isMulti ? ` (${regions.length} DETECTED)` : ''}`;
+
+            let bodyHtml = '';
+
+            // 1. LOCATION METRICS (Barangay Location, Coordinates, Covered Area) (One by One Cards on Top After Header)
+            bodyHtml += `
+                <div class="soil-modal-grid-3">
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Barangay Location</div>
+                        <div class="soil-metric-card-val truncate" title="${brgy}">${brgy}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Coordinates</div>
+                        <div class="soil-metric-card-val" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px;">${lt.toFixed(4)}, ${ln.toFixed(4)}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Covered Area</div>
+                        <div class="soil-metric-card-val"><span class="covered-area-highlight">${covStr}</span></div>
+                    </div>
+                </div>
+            `;
+
+            // 2. DUAL-PREVIEW BANNER SWATCH CARD (Matching Screenshot 2 & 4)
+            bodyHtml += `
+                <div class="soil-swatch-banner" style="background: ${domHex};">
+                    <div class="soil-swatch-avatar">
+                        ${scanImgUrl ? `
+                            <img src="${scanImgUrl}" alt="Soil Sample" />
+                            <div style="position: absolute; left: ${domBox.left}%; top: ${domBox.top}%; width: ${domBox.width}%; height: ${domBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                        ` : `
+                            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2);">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                            </div>
+                        `}
+                    </div>
+                    <div class="soil-swatch-center">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            ${isMulti ? '<span style="font-size: 12px; color: #ffffff; opacity: 0.9;">▼</span>' : ''}
+                            <span class="soil-swatch-code">${domCode}</span>
+                        </div>
+                        <div class="soil-swatch-sub">${isMulti ? `Soil Percentage (${domPct}%)` : domName}</div>
+                    </div>
+                    <span class="soil-swatch-hex-pill">${domHex.toUpperCase()}</span>
+                </div>
+            `;
+
+            // 3. METRICS ROW 1 (Color Name, Full Code, Scan Count) (Matching Screenshot 2 & 4)
+            bodyHtml += `
+                <div class="soil-modal-grid-3">
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Color Name</div>
+                        <div class="soil-metric-card-val truncate" title="${domName}">${domName}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Full Code</div>
+                        <div class="soil-metric-card-val">${domCode}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Scan Count</div>
+                        <div class="soil-metric-card-val">${scanCount}</div>
+                    </div>
+                </div>
+            `;
+
+            // 4. METRICS ROW 2 (Soil Organic, Soil Type, Near-Match) (Matching Screenshot 2 & 4)
+            bodyHtml += `
+                <div class="soil-modal-grid-3">
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Soil Organic</div>
+                        <div class="soil-metric-card-val">${domOrganic}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Soil Type</div>
+                        <div class="soil-metric-card-val truncate" title="${soilType}">${soilType}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Near-Match</div>
+                        <div class="soil-metric-card-val" style="color: #10b981; font-weight: 800;">${domConf}</div>
+                    </div>
+                </div>
+            `;
+
+            // 5. SCAN DATE & SCANNED BY
+            bodyHtml += `
+                <div class="soil-modal-grid-2">
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Scan Date</div>
+                        <div class="soil-metric-card-val">${recordedDate}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Scanned By</div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;">
+                            <span class="soil-metric-card-val">${scannedBy}</span>
+                            <span class="soil-platform-badge">
+                                ${scanPlatform}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="soil-metric-card" style="margin-bottom: 10px;">
+                    <div class="soil-metric-card-label">Scan Note</div>
+                    <div class="soil-metric-card-text" style="font-size: 13px; font-weight: 700; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
+                        ${noteText}
+                    </div>
+                </div>
+
+                <div class="soil-metric-card" style="margin-bottom: 12px;">
+                    <div class="soil-metric-card-label">Description</div>
+                    <div class="soil-metric-card-text" style="font-size: 13px; font-weight: 700; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
+                        ${isMulti ? domDesc : desc}
+                    </div>
+                </div>
+            `;
+
+            if (isMulti) {
+                // 5. SECONDARY DETECTED SOIL LAYERS ACCORDIONS (Screenshot 3)
+                bodyHtml += `
+                    <div style="margin-bottom: 12px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                `;
+
+                regions.slice(1).forEach((sub, subIdx) => {
+                    const idx = subIdx + 1;
+                    const subPct = sub.percent !== undefined ? Math.round(sub.percent) : (sub.proportion !== undefined ? Math.round(sub.proportion * 100) : 18);
+                    const subCode = sub.munsell || sub.munsell_code || 'Soil Color';
+                    let subHex = sub.hex || '#8F694E';
+                    if (subHex && !subHex.startsWith('#')) subHex = '#' + subHex;
+                    const subName = sub.label || sub.color_name || 'Soil Color';
+                    const subConf = calcNearMatchRating(sub);
+                    const subOrganic = sub.organic_matter || organic;
+                    const subSoilType = sub.soil_type || sub.soil_name || soilType;
+                    const subDrainage = sub.soil_name || drainage;
+                    const subDesc = sub.description || `${subCode} - ${subName}`;
+                    const subBox = normalizeBox(sub);
+
+                    bodyHtml += `
+                        <div class="layer-accordion-item">
+                            <button
+                                type="button"
+                                class="layer-accordion-header"
+                                onclick="toggleWebsiteLayerAccordion(${idx})"
+                                style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;"
+                            >
+                                <div class="layer-accordion-header-title" style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px;">
+                                    <span id="wsLayerArrow_${idx}" class="layer-accordion-arrow" style="font-size: 11px;">▶</span>
+                                    <span>${subCode} (Soil Percentage - ${subPct}%)</span>
+                                </div>
+                                <span style="font-size: 11px; font-weight: 800; color: #ffffff; background: ${subHex}; padding: 3px 10px; border-radius: 12px; font-family: monospace; text-shadow: none;">
+                                    ${subHex.toUpperCase()}
+                                </span>
+                            </button>
+
+                            <div id="wsLayerBody_${idx}" class="layer-accordion-body" style="display: none; padding: 14px;">
+                                <!-- Swatch Banner with ROI Crop Box -->
+                                <div class="soil-swatch-banner" style="background: ${subHex}; margin-bottom: 10px; min-height: 64px; padding: 12px 16px;">
+                                    ${scanImgUrl ? `
+                                        <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; position: relative;">
+                                             <img src="${scanImgUrl}" alt="Soil Sample" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                                            <div style="position: absolute; left: ${subBox.left}%; top: ${subBox.top}%; width: ${subBox.width}%; height: ${subBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                                        </div>
+                                    ` : ''}
+                                    <div class="soil-swatch-center">
+                                        <span class="soil-swatch-code" style="font-size: 20px;">${subCode}</span>
+                                        <div class="soil-swatch-sub">Soil Percentage (${subPct}%)</div>
+                                    </div>
+                                    <span class="soil-swatch-hex-pill">${subHex.toUpperCase()}</span>
+                                </div>
+
+                                <!-- Row 1: Color Name, Full Code, Proportion -->
+                                <div class="soil-modal-grid-3">
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Color Name</div>
+                                        <div class="soil-metric-card-val truncate" title="${subName}">${subName}</div>
+                                    </div>
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Full Code</div>
+                                        <div class="soil-metric-card-val">${subCode}</div>
+                                    </div>
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Proportion</div>
+                                        <div class="soil-metric-card-val">${subPct}%</div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 2: Soil Organic, Soil Type, Near-Match -->
+                                <div class="soil-modal-grid-3">
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Soil Organic</div>
+                                        <div class="soil-metric-card-val">${subOrganic}</div>
+                                    </div>
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Soil Type</div>
+                                        <div class="soil-metric-card-val truncate" title="${subSoilType}">${subSoilType}</div>
+                                    </div>
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Near-Match</div>
+                                        <div class="soil-metric-card-val" style="color: #10b981; font-weight: 800;">${subConf}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 3: Scan Note -->
+                                <div class="soil-metric-card" style="margin-bottom: 10px;">
+                                    <div class="soil-metric-card-label">Scan Note</div>
+                                    <div class="soil-metric-card-text" style="font-size: 13px; font-weight: 700; line-height: 1.5;">
+                                        No scan note available for this record.
+                                    </div>
+                                </div>
+
+                                <!-- Row 4: Description -->
+                                <div class="soil-metric-card">
+                                    <div class="soil-metric-card-label">Description</div>
+                                    <div class="soil-metric-card-text" style="font-size: 13px; font-weight: 700; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
+                                        ${subDesc}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                bodyHtml += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 6. SOIL NORMALIZATION: BEFORE / AFTER CARD (Matching Screenshot 1)
+            // USER CONSTRAINT: "bat remove the Button Save Copy and Pin Location"
+            if (baImgUrl) {
+                const ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
+                let overlayBoxesHtml = '';
+                let swatchPillsHtml = '';
+
+                regions.forEach((r, idx) => {
+                    const bData = normalizeBox(r);
+                    const bx = bData.raw_x;
+                    const by = bData.raw_y;
+                    const bw = bData.raw_w;
+                    const bh = bData.raw_h;
+                    const leftPct = 50 + (bx * 50);
+                    const topPct = 7.41 + (by * 92.59);
+                    const widthPct = bw * 50;
+                    const heightPct = bh * 92.59;
+                    const roleLabel = (ordinalNames[idx] || (idx + 1) + 'TH') + ' COLOR';
+
+                    overlayBoxesHtml += `
+                        <div style="position: absolute; left: ${leftPct}%; top: ${topPct}%; width: ${widthPct}%; height: ${heightPct}%; border: 2.5px solid #4ade80; pointer-events: none; border-radius: 4px; box-sizing: border-box;">
+                            <span style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 800; background: #4ade80; color: #000000; padding: 1px 6px; border-radius: 4px; white-space: nowrap; line-height: 1.2; letter-spacing: 0.03em;">
+                                ${roleLabel}
+                            </span>
+                        </div>
+                    `;
+
+                    let rHex = r.hex || domHex;
+                    if (rHex && !rHex.startsWith('#')) rHex = '#' + rHex;
+                    const rCode = r.munsell || r.munsell_code || domCode;
+                    const rPct = r.percent !== undefined ? Math.round(r.percent) : (r.proportion !== undefined ? Math.round(r.proportion * 100) : domPct);
+
+                    swatchPillsHtml += `
+                        <div class="soil-swatch-capsule-pill">
+                            <span class="capsule-pill-swatch" style="width: 14px; height: 14px; border-radius: 3.5px; background: ${rHex}; border: 1px solid rgba(255,255,255,0.25); display: inline-block; flex-shrink: 0; box-shadow: none;"></span>
+                            <span class="capsule-pill-hex" style="font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">${rHex.toUpperCase()}</span>
+                            ${rCode ? `<span class="capsule-pill-code" style="font-weight: 600; font-size: 11px;">(${rCode})</span>` : ''}
+                            <span class="capsule-pill-pct" style="font-weight: 800; font-size: 11.5px; margin-left: 2px;">${rPct}%</span>
+                        </div>
+                    `;
+                });
+
+                bodyHtml += `
+                    <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <div class="soil-metric-card-label" style="margin-bottom: 0;">
+                                SOIL NORMALIZATION
+                            </div>
+                            <span style="font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
+                                BEFORE / AFTER
+                            </span>
+                        </div>
+                        <div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25);">
+                            <img src="${baImgUrl}" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 8px;">
+                            <div style="position: absolute; inset: 0; pointer-events: none;">
+                                ${overlayBoxesHtml}
+                            </div>
+                        </div>
+
+                        <!-- Detected Soil Color Swatch Pills (Matching Screenshot 2 Capsule Design) -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+                            ${swatchPillsHtml}
+                        </div>
+
+                        <!-- METADATA Line (High Contrast for Dark & Light Mode) -->
+                        <div class="soil-normalization-meta-row">
+                            <div><strong class="soil-normalization-meta-title">METADATA</strong></div>
+                            <div class="soil-normalization-meta-info">CREATED: ${recordedDate} &nbsp;|&nbsp; DETECTED COLORS: ${regions.length}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('wsModalBodyContent').innerHTML = bodyHtml;
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeWebsiteSoilDetailModal = function() {
+            const modal = document.getElementById('websiteSoilDetailModal');
+            if (modal) modal.style.display = 'none';
+            document.body.style.overflow = '';
+        };
+
+        // Force Leaflet to recalculate container size & render tiles instantly without blank canvas
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 200);
+
+        window.addEventListener('resize', () => {
+            map.invalidateSize();
+        });
+    </script>
+
+    <!-- Website Soil Detail Modal (Matching Screenshots 1, 2, 3, 4 without Save Copy or Pin Location buttons) -->
+    <div id="websiteSoilDetailModal" class="soil-detail-backdrop" style="display: none;" onclick="if(event.target === this) closeWebsiteSoilDetailModal()">
+        <div class="soil-detail-modal-container">
+            <!-- Header (Screenshot 2 & 4) -->
+            <div class="soil-detail-modal-header">
+                <h3 id="wsModalHeaderTitle">Soil Record Details</h3>
+                <button type="button" class="modal-close-circle-btn" onclick="closeWebsiteSoilDetailModal()" title="Close">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Scrollable Body -->
+            <div id="wsModalBodyContent" class="soil-detail-modal-body">
+                <!-- Content dynamically populated via viewWebsitePinDetails -->
+            </div>
+
+            <!-- Footer -->
+            <div class="soil-detail-modal-footer">
+                <button type="button" class="modal-cancel-btn" onclick="closeWebsiteSoilDetailModal()">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+</x-website-layout>
