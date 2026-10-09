@@ -12,9 +12,9 @@ COPY . .
 RUN npm run build
 
 # ----------------------------------------------------
-# Stage 2: Production FrankenPHP / PHP 8.3 Application
+# Stage 2: Production FrankenPHP / PHP 8.4 Application
 # ----------------------------------------------------
-FROM dunglas/frankenphp:1-php8.3-bookworm
+FROM dunglas/frankenphp:1-php8.4-bookworm
 
 # Install system dependencies, Python 3, and scientific image libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -66,7 +66,7 @@ COPY . /app
 COPY --from=node_builder /app/public/build /app/public/build
 
 # Install PHP production dependencies
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-req=php+
 
 # Copy Caddyfile and ensure entrypoint is executable
 COPY Caddyfile /etc/caddy/Caddyfile
