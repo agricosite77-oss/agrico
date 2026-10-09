@@ -36,7 +36,7 @@ class PythonProcessRunner
             2 => ['pipe', 'w'],
         ];
 
-        $python = config('services.soil_ml.python_binary') ?: env('PYTHON_BINARY', 'python');
+        $python = static::getPythonBinary();
         $command = escapeshellcmd($python) . ' ' . escapeshellarg($scriptPath) . ' ' . implode(' ', $args);
 
         $options = PHP_OS_FAMILY === 'Windows' ? ['bypass_shell' => true] : [];
@@ -100,7 +100,7 @@ class PythonProcessRunner
             'STAGE2_MODE'           => config('soil.stage2_mode', 'classical'),
         ]);
 
-        $python = config('services.soil_ml.python_binary') ?: env('PYTHON_BINARY', 'python');
+        $python = static::getPythonBinary();
         $command = escapeshellcmd($python) . ' ' . escapeshellarg($scriptPath) . ' ' . implode(' ', $args);
 
         if (PHP_OS_FAMILY === 'Windows') {
@@ -133,5 +133,30 @@ class PythonProcessRunner
             exec($bgCommand);
             Log::info("[PythonProcessRunner] Started detached Python process on Unix (log: {$logFile})");
         }
+    }
+
+    /**
+     * Resolves the Python executable binary, preferring python3 on Unix/Linux systems.
+     */
+    public static function getPythonBinary(): string
+    {
+        $python = config('services.soil_ml.python_binary');
+        if (!empty($python) && is_string($python)) {
+            return $python;
+        }
+
+        if (PHP_OS_FAMILY !== 'Windows') {
+            $py3 = trim((string) @shell_exec('which python3 2>/dev/null'));
+            if ($py3) {
+                return $py3;
+            }
+            $py = trim((string) @shell_exec('which python 2>/dev/null'));
+            if ($py) {
+                return $py;
+            }
+            return 'python3';
+        }
+
+        return 'python';
     }
 }

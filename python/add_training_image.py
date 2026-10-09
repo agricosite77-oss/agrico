@@ -21,8 +21,14 @@ import sys
 import uuid
 from datetime import datetime, timezone
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from storage import sha256_of_file
+import hashlib
+
+def sha256_of_file(path: str) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def _fmt_num(n) -> str:

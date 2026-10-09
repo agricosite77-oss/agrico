@@ -6799,12 +6799,6 @@ parameters:
 			path: app/Services/MunsellRenotationService.php
 
 		-
-			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 2
-			path: app/Services/PythonProcessRunner.php
-
-		-
 			message: '#^Method App\\Services\\PythonProcessRunner\:\:run\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1

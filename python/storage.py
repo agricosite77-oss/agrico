@@ -24,9 +24,10 @@ import sqlite3
 import uuid
 from dataclasses import asdict
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
-from soil_classifier import ClassificationResult
+if TYPE_CHECKING:
+    from soil_classifier import ClassificationResult
 
 DB_SCHEMA = """
 CREATE TABLE IF NOT EXISTS soil_scans (

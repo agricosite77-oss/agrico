@@ -64,4 +64,6 @@ jobs:
         run: composer types:check
 
       - name: Run Tests
+        env:
+          PYTHON_BINARY: python3
         run: php artisan test
