@@ -14,7 +14,7 @@ class UserAuthController extends Controller
     /**
      * Display the User Website Login view.
      */
-    public function showLoginForm()
+    public function showLoginForm(): \Illuminate\Contracts\View\View
     {
         if (request()->has('force')) {
             Auth::guard('web')->logout();
@@ -33,7 +33,7 @@ class UserAuthController extends Controller
     /**
      * Handle a User Login request.
      */
-    public function login(Request $request)
+    public function login(Request $request): \Illuminate\Http\RedirectResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -50,9 +50,18 @@ class UserAuthController extends Controller
 
             if ($passCheck) {
                 if (strtolower($user->status ?? '') === 'suspended') {
-                    return back()->withErrors([
-                        'email' => 'Your account has been suspended. Please contact AgriCo support.',
-                    ])->onlyInput('email');
+                    $hasPendingReactivation = \App\Models\UserRequest::where('user_email', $user->email)
+                        ->where('type', 'Account Reactivation Request')
+                        ->where('status', 'Pending')
+                        ->exists();
+
+                    return redirect()->route('login')->with('suspended_user_data', [
+                        'email'                    => $user->email,
+                        'name'                     => $user->name,
+                        'suspend_reason'           => $user->suspend_reason ?? 'Account suspended by administrator.',
+                        'suspended_until'          => $user->suspended_until ? $user->suspended_until->toIso8601String() : null,
+                        'has_pending_reactivation' => $hasPendingReactivation,
+                    ]);
                 }
 
                 $request->session()->invalidate();
@@ -67,7 +76,7 @@ class UserAuthController extends Controller
                     $adminRecord = Admin::where('email', $user->email)->first();
                     if (!$adminRecord) {
                         $adminRecord = Admin::create([
-                            'admin_id'  => $user->user_id ?? ('ADM-' . str_pad(Admin::count() + 1, 3, '0', STR_PAD_LEFT)),
+                            'admin_id'  => $user->user_id ?? ('ADM-' . str_pad((string) (Admin::count() + 1), 3, '0', STR_PAD_LEFT)),
                             'full_name' => $user->name,
                             'email'     => $user->email,
                             'password'  => $user->password,
@@ -101,7 +110,7 @@ class UserAuthController extends Controller
                 
                 $userRecord = User::where('email', $admin->email)->first();
                 if (!$userRecord) {
-                    $realId = $admin->admin_id ?? ('ADM-' . str_pad(User::count() + 1, 3, '0', STR_PAD_LEFT));
+                    $realId = $admin->admin_id ?? ('ADM-' . str_pad((string) (User::count() + 1), 3, '0', STR_PAD_LEFT));
                     $userRecord = User::create([
                         'user_id' => $realId,
                         'name' => $admin->full_name ?? $admin->name ?? 'Admin User',
@@ -128,7 +137,7 @@ class UserAuthController extends Controller
     /**
      * Real-time AJAX email existence check.
      */
-    public function checkEmail(Request $request)
+    public function checkEmail(Request $request): \Illuminate\Http\JsonResponse
     {
         $email = trim((string) $request->query('email', ''));
 
@@ -145,7 +154,7 @@ class UserAuthController extends Controller
     /**
      * Display the User Website Registration view.
      */
-    public function showRegisterForm()
+    public function showRegisterForm(): \Illuminate\Contracts\View\View
     {
         session()->forget('user_id');
         session()->forget('admin_id');
@@ -156,7 +165,7 @@ class UserAuthController extends Controller
     /**
      * Handle a User Registration request.
      */
-    public function register(Request $request)
+    public function register(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -175,7 +184,7 @@ class UserAuthController extends Controller
         // Create corresponding UserRequest entry for Admin approval
         $count = \App\Models\UserRequest::count() + 1;
         $year = date('Y');
-        $requestCode = 'REQ-' . $year . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+        $requestCode = 'REQ-' . $year . '-' . str_pad((string) $count, 3, '0', STR_PAD_LEFT);
 
         \App\Models\UserRequest::create([
             'request_code' => $requestCode,
@@ -195,9 +204,49 @@ class UserAuthController extends Controller
     }
 
     /**
+     * Request reactivation for a suspended account.
+     */
+    public function requestReactivation(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $request->validate([
+            'email'       => ['required', 'email'],
+            'appeal_note' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            $count = \App\Models\UserRequest::count() + 1;
+            $year = date('Y');
+            $requestCode = 'REQ-' . $year . '-' . str_pad((string) $count, 3, '0', STR_PAD_LEFT);
+
+            \App\Models\UserRequest::create([
+                'request_code' => $requestCode,
+                'user_name'    => $user->name,
+                'user_email'   => $user->email,
+                'type'         => 'Account Reactivation Request',
+                'description'  => $request->appeal_note ?: 'User requested account reactivation.',
+                'status'       => 'Pending',
+                'submitted_at' => now(),
+            ]);
+
+            return redirect()->route('login')->with('suspended_user_data', [
+                'email'                    => $user->email,
+                'name'                     => $user->name,
+                'suspend_reason'           => $user->suspend_reason,
+                'pending_request_code'     => $requestCode,
+                'pending_admin_id'         => $user->suspended_by_admin_id ?? 'Admin',
+                'has_pending_reactivation' => true,
+                'request_just_submitted'   => true,
+            ]);
+        }
+
+        return redirect()->route('login');
+    }
+
+    /**
      * Log the User out of the application.
      */
-    public function logout(Request $request)
+    public function logout(Request $request): \Illuminate\Http\RedirectResponse
     {
         Auth::guard('web')->logout();
         Auth::guard('admin')->logout();

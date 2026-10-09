@@ -60,9 +60,11 @@ class WebsiteController extends Controller
             ], 422);
         }
 
-        // Accept the client-generated scan UUID; validate to prevent path traversal
+        // Accept the client-generated scan UUID or generate one; validate to prevent path traversal
         $scanId = $request->input('scan_id', '');
-        if (!preg_match('/^[a-zA-Z0-9\-]{8,64}$/', $scanId)) {
+        if (empty($scanId)) {
+            $scanId = (string) \Illuminate\Support\Str::uuid();
+        } elseif (!preg_match('/^[a-zA-Z0-9\-]{8,64}$/', $scanId)) {
             return response()->json(['success' => false, 'message' => 'Invalid scan_id.'], 422);
         }
 

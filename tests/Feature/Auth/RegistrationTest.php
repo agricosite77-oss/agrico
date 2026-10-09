@@ -21,7 +21,7 @@ test('new users can register', function () {
     ]);
 
     $response->assertSessionHasNoErrors()
-        ->assertRedirect(route('login', absolute: false));
+        ->assertRedirect(route('website.home', absolute: false));
 
     $this->assertDatabaseHas('users', [
         'email' => 'testuser@gmail.com',

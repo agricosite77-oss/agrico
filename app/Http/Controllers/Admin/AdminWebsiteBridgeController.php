@@ -12,7 +12,7 @@ class AdminWebsiteBridgeController extends Controller
     /**
      * Bridge Admin session to Web session and redirect to Website Home.
      */
-    public function redirectToWebsite(Request $request)
+    public function redirectToWebsite(Request $request): \Illuminate\Http\RedirectResponse
     {
         $admin = Auth::guard('admin')->user() ?? Auth::guard('web')->user();
 
@@ -31,7 +31,7 @@ class AdminWebsiteBridgeController extends Controller
                 $userRecord = User::where('email', $email)->first();
 
                 if (!$userRecord) {
-                    $realId = $admin->admin_id ?? $admin->user_id ?? $admin->Admin_ID ?? ('ADM-' . str_pad(User::count() + 1, 3, '0', STR_PAD_LEFT));
+                    $realId = $admin->admin_id ?? $admin->user_id ?? $admin->Admin_ID ?? ('ADM-' . str_pad((string) (User::count() + 1), 3, '0', STR_PAD_LEFT));
                     $userRecord = User::create([
                         'user_id'       => $realId,
                         'name'          => $admin->full_name ?? $admin->name ?? 'Admin User',

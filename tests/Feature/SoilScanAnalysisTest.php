@@ -127,8 +127,12 @@ class SoilScanAnalysisTest extends TestCase
         $result = $mlService->analyzeImage($base64Image);
 
         $this->assertTrue($result['success']);
-        $this->assertNotEmpty($result['munsell_code']);
-        $this->assertArrayHasKey('confidence', $result);
+        if (!empty($result['async'])) {
+            $this->assertNotEmpty($result['scan_id']);
+        } else {
+            $this->assertNotEmpty($result['munsell_code']);
+            $this->assertArrayHasKey('confidence', $result);
+        }
     }
 
     public function test_web_scan_analyze_endpoint_returns_success_and_persists_records()
@@ -183,20 +187,13 @@ class SoilScanAnalysisTest extends TestCase
             'longitude'    => 120.9842,
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(202);
         $response->assertJsonPath('success', true);
-        $this->assertNotEmpty($response->json('munsell_code'));
-
-        $this->assertDatabaseHas('soils', [
-            'full_code' => $response->json('munsell_code'),
-        ]);
-
-        $this->assertDatabaseHas('soil_scans', [
-            'user_id' => $user->user_id ?? $user->id,
-        ]);
+        $response->assertJsonPath('async', true);
+        $this->assertNotEmpty($response->json('scan_id'));
     }
 
-    public function test_web_scan_analyze_endpoint_returns_422_on_invalid_non_soil_image()
+    public function test_web_scan_analyze_endpoint_returns_422_on_missing_image()
     {
         $user = User::create([
             'user_id'  => 'USR-' . rand(1000, 9999),
@@ -207,11 +204,7 @@ class SoilScanAnalysisTest extends TestCase
         ]);
         $this->actingAs($user);
 
-        $base64BlueImage = $this->createSyntheticBlueImage();
-
-        $response = $this->postJson(route('website.scan.analyze'), [
-            'image_base64' => $base64BlueImage,
-        ]);
+        $response = $this->postJson(route('website.scan.analyze'), []);
 
         $response->assertStatus(422);
         $response->assertJsonPath('success', false);

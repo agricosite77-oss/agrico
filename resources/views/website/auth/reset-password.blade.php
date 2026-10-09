@@ -2,6 +2,10 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
+    @php
+        $email = $email ?? request('email', '');
+        $code = $code ?? request('token', request('code', ''));
+    @endphp
     @include('website.partials.head')
     <title>Set New Password — AgriCo</title>
     <style>

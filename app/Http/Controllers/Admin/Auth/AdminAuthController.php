@@ -14,7 +14,7 @@ class AdminAuthController extends Controller
     /**
      * Display the Admin Login view.
      */
-    public function showLoginForm()
+    public function showLoginForm(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         if (Auth::guard('admin')->check()) {
             return redirect()->route('dashboard');
@@ -26,7 +26,7 @@ class AdminAuthController extends Controller
     /**
      * Handle an Admin Login request.
      */
-    public function login(Request $request)
+    public function login(Request $request): \Illuminate\Http\RedirectResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -46,7 +46,7 @@ class AdminAuthController extends Controller
                 // Sync Web guard user session
                 $userRecord = User::where('email', $admin->email)->first();
                 if (!$userRecord) {
-                    $realId = $admin->admin_id ?? ('ADM-' . str_pad(User::count() + 1, 3, '0', STR_PAD_LEFT));
+                    $realId = $admin->admin_id ?? ('ADM-' . str_pad((string) (User::count() + 1), 3, '0', STR_PAD_LEFT));
                     $userRecord = User::create([
                         'user_id' => $realId,
                         'name' => $admin->full_name ?? $admin->name ?? 'Admin User',
@@ -108,7 +108,7 @@ class AdminAuthController extends Controller
     /**
      * Display the Admin Register view.
      */
-    public function showRegisterForm()
+    public function showRegisterForm(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         if (Auth::guard('admin')->check()) {
             return redirect()->route('dashboard');
@@ -120,7 +120,7 @@ class AdminAuthController extends Controller
     /**
      * Handle an Admin Registration request.
      */
-    public function register(Request $request)
+    public function register(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -143,7 +143,7 @@ class AdminAuthController extends Controller
                     }
                 }
             }
-            $adminId = 'ADM-' . str_pad($maxNum + 1, 3, '0', STR_PAD_LEFT);
+            $adminId = 'ADM-' . str_pad((string) ($maxNum + 1), 3, '0', STR_PAD_LEFT);
 
             // Create Admin record
             $admin = Admin::create([
@@ -175,7 +175,7 @@ class AdminAuthController extends Controller
     /**
      * Log the Admin out of the application.
      */
-    public function logout(Request $request)
+    public function logout(Request $request): \Illuminate\Http\RedirectResponse
     {
         Auth::guard('admin')->logout();
         Auth::guard('web')->logout();

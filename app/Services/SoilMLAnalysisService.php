@@ -53,6 +53,8 @@ class SoilMLAnalysisService
             }
         }
 
+        $scanId = $scanId ?: (string) \Illuminate\Support\Str::uuid();
+
         // Try local Python Microservice Pipeline (non-blocking; result read from scan_result_{id}.json)
         $this->callPythonMicroservice($imageInput, $scanId);
 

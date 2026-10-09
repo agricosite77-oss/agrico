@@ -664,18 +664,18 @@
                         <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Suspended By</span>
                         <div style="font-size:13px; font-weight:700; color:#0f172a; display:flex; align-items:center; gap:6px;">
                             <svg width="15" height="15" fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            <span>{{ $susp['suspended_by_admin_detail'] ?: 'System (SuperAdmin)' }}</span>
+                            <span>{{ ($susp['suspended_by_admin_detail'] ?? null) ?: 'System (SuperAdmin)' }}</span>
                         </div>
                     </div>
                     <div style="height:1px; background:#e2e8f0; margin:4px 0;"></div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <div>
                             <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Suspended Until</span>
-                            <div style="font-size:13px; font-weight:700; color:#d97706;">{{ $susp['suspended_until'] ?: 'Manual' }}</div>
+                            <div style="font-size:13px; font-weight:700; color:#d97706;">{{ ($susp['suspended_until'] ?? null) ?: 'Manual' }}</div>
                         </div>
                         <div>
                             <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Time Remaining</span>
-                            <div id="suspension-countdown-display" style="font-size:13px; font-weight:700; color:#22c55e; font-family:monospace;">{{ $susp['suspension_countdown'] }}</div>
+                            <div id="suspension-countdown-display" style="font-size:13px; font-weight:700; color:#22c55e; font-family:monospace;">{{ ($susp['suspension_countdown'] ?? null) ?: 'Calculating...' }}</div>
                         </div>
                     </div>
                 </div>
@@ -685,7 +685,7 @@
                         <div style="font-size:18px;">✅</div>
                         <div>
                             <div style="font-size:12px; color:#15803d; font-weight:700;">Reactivation Request Submitted</div>
-                            <div style="font-size:11px; color:#166534;">Request <strong>{{ $susp['pending_request_code'] }}</strong> has been sent to {{ $susp['pending_admin_id'] }} for review.</div>
+                            <div style="font-size:11px; color:#166534;">Request <strong>{{ $susp['pending_request_code'] ?? 'Submitted' }}</strong> has been sent to {{ $susp['pending_admin_id'] ?? 'Admin' }} for review.</div>
                         </div>
                     </div>
                 @elseif(!empty($susp['has_pending_reactivation']))
@@ -693,7 +693,7 @@
                         <div style="font-size:18px;">⏳</div>
                         <div>
                             <div style="font-size:12px; color:#b45309; font-weight:700;">Reactivation Request Pending</div>
-                            <div style="font-size:11px; color:#92400e;">Request <strong>{{ $susp['pending_request_code'] }}</strong> was submitted to {{ $susp['pending_admin_id'] }} for approval.</div>
+                            <div style="font-size:11px; color:#92400e;">Request <strong>{{ $susp['pending_request_code'] ?? 'Pending' }}</strong> was submitted to {{ $susp['pending_admin_id'] ?? 'Admin' }} for approval.</div>
                         </div>
                     </div>
                 @endif
