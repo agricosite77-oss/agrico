@@ -19,7 +19,7 @@ return [
     ],
 
     'resend' => [
-        'key' => env('RESEND_API_KEY'),
+        'key' => env('RESEND_API_KEY', 're_4ZWQHtqY_BiqLj9e1krUdnUtshCVTnDpj'),
         'from' => env('RESEND_FROM', 'AgriCo Support <onboarding@resend.dev>'),
     ],
 

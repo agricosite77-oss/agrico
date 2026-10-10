@@ -73,10 +73,26 @@ class PasswordResetCodeController extends Controller
 
         // 1. Try Resend HTTP API if key is configured (avoids blocked SMTP ports on cloud hosts like Railway)
         $resendKey = config('services.resend.key');
-        if (is_string($resendKey) && trim($resendKey) !== '' && class_exists(\Resend::class)) {
+        if (is_string($resendKey)) {
+            $resendKey = trim($resendKey);
+            if (str_starts_with($resendKey, 'RESEND_API_KEY=')) {
+                $resendKey = substr($resendKey, strlen('RESEND_API_KEY='));
+            }
+            $resendKey = trim($resendKey, " \t\n\r\0\x0B\"'");
+        }
+        if (empty($resendKey)) {
+            $resendKey = 're_4ZWQHtqY_BiqLj9e1krUdnUtshCVTnDpj';
+        }
+
+        if (class_exists(\Resend::class)) {
             try {
-                $resend = \Resend::client(trim($resendKey));
+                $resend = \Resend::client($resendKey);
                 $fromEmail = (string) config('services.resend.from', 'AgriCo Support <onboarding@resend.dev>');
+                if (str_starts_with($fromEmail, 'RESEND_FROM=')) {
+                    $fromEmail = substr($fromEmail, strlen('RESEND_FROM='));
+                }
+                $fromEmail = trim($fromEmail, " \t\n\r\0\x0B\"'") ?: 'AgriCo Support <onboarding@resend.dev>';
+
                 $resend->emails->send([
                     'from' => $fromEmail,
                     'to' => [$email],
@@ -86,7 +102,8 @@ class PasswordResetCodeController extends Controller
                 $sent = true;
                 Log::info("AgriCo Password Reset Code sent via Resend HTTP API to {$email}");
             } catch (\Throwable $re) {
-                Log::warning("Resend HTTP API failed: " . $re->getMessage() . ", falling back to standard Mail driver");
+                $sendError = $re->getMessage();
+                Log::warning("Resend HTTP API failed: " . $sendError . ", falling back to standard Mail driver");
             }
         }
 
