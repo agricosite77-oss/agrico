@@ -1190,19 +1190,29 @@
             font-size: 14px;
             table-layout: fixed;
         }
+        table.ws-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 8;
+            background: #0B2B26;
+        }
         table.ws-table thead th {
-            padding: 14px 12px;
+            padding: 16px 12px;
             text-align: left;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #8EB69B;
-            background: #051F20;
-            border-bottom: 1px solid rgba(142, 182, 155, 0.2);
+            letter-spacing: 0.05em;
+            color: #DAF1DE;
+            background: #0B2B26;
+            border-bottom: 2px solid rgba(142, 182, 155, 0.35);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            position: sticky;
+            top: 0;
+            z-index: 8;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
         }
         table.ws-table tbody tr {
             border-bottom: 1px solid rgba(142, 182, 155, 0.1);
@@ -2004,19 +2014,29 @@
             border: 1px solid #86efac !important;
             font-weight: 700 !important;
         }
+        html.light-mode table.ws-table thead {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 8 !important;
+            background: #F1FBF1 !important;
+        }
         html.light-mode table.ws-table thead tr {
             background: #F1FBF1 !important;
-            border-bottom: 1px solid #e2e8f0 !important;
+            border-bottom: 2px solid #cbd5e1 !important;
         }
         html.light-mode table.ws-table thead th {
             background: #F1FBF1 !important;
-            color: #475569 !important;
-            border-bottom: 1px solid #e2e8f0 !important;
+            color: #0f172a !important;
+            border-bottom: 2px solid #cbd5e1 !important;
             font-size: 12px !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.04em !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.05em !important;
             text-transform: uppercase !important;
-            padding: 14px 12px !important;
+            padding: 16px 12px !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 8 !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
         }
         html.light-mode table.ws-table tbody tr {
             border-bottom: 1px solid #f1f5f9 !important;
@@ -4589,10 +4609,20 @@
 
     {{-- History Table Section (User Saved Scans) --}}
     @php $isLoggedIn = (Auth::check() || Auth::guard('admin')->check() || Auth::guard('web')->check() || session()->has('user_id') || session()->has('admin_id')); @endphp
-    <div class="ws-table-section" id="scanHistory" style="padding: 0 24px 60px;">
-        <div class="ws-table-card" style="max-width: 1200px; width: 100%; margin: 0 auto;">
+    <div class="ws-table-section" id="scanHistory" style="padding: 0 24px 60px; scroll-margin-top: calc(var(--agrico-nav-h, 68px) + 24px);">
+        <div class="ws-table-card" style="max-width: 1400px; width: 100%; margin: 0 auto;">
             <div class="ws-table-header">
-                <h2>Scan History</h2>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(34, 197, 94, 0.15); border: 1.5px solid rgba(34, 197, 94, 0.4); display: flex; align-items: center; justify-content: center; color: #22c55e; flex-shrink: 0;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 style="margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.01em;">Scan History</h2>
+                        <p style="margin: 2px 0 0; font-size: 12.5px; opacity: 0.8; font-weight: 500;">Past soil scan determinations, Munsell classification codes, and agronomic reports</p>
+                    </div>
+                </div>
                 <span class="ws-badge-count" id="savedScansCountBadge">{{ $isLoggedIn ? $scans->total() : '0' }} total scans</span>
             </div>
             @if($isLoggedIn)
@@ -4634,11 +4664,17 @@
                                 $scanPct = rtrim($pm[1], '%');
                             }
 
-                            $scanSeq = $fCode 
-                                ? \App\Models\SoilScan::whereHas('soil', function($q) use ($fCode) {
-                                    $q->where('full_code', $fCode);
-                                  })->where('soil_scan_id', '<=', $scan->soil_scan_id)->count()
-                                : 1;
+                            $scanSeq = 1;
+                            try {
+                                if (!empty($fCode) && $fCode !== '—') {
+                                    $scanSeq = \App\Models\SoilScan::whereHas('soil', function($q) use ($fCode) {
+                                        $q->where('full_code', $fCode);
+                                    })->where('soil_scan_id', '<=', $scan->soil_scan_id)->count() ?: 1;
+                                }
+                            } catch (\Throwable $e_seq) {
+                                $scanSeq = 1;
+                            }
+
                             $scanUser = $scan->user ?? Auth::user();
                             $uName = $scanUser->name ?? 'Agrico Administrator';
                             $uEmail = $scanUser->email ?? 'admin@agrico.com';
@@ -4701,24 +4737,34 @@
                                         $scanImg = asset('storage/' . ltrim($scan->soil->munsellColor->image, '/'));
                                     }
 
-                                    $loc = $scan->location ?: \App\Models\LocationMapping::where('soil_scan_id', $scan->soil_scan_id)->latest('location_mapping_id')->first();
-                                    if (!$loc && $scan->soil_id) {
-                                        $loc = \App\Models\LocationMapping::where('soil_id', $scan->soil_id)->latest('location_mapping_id')->first();
+                                    $loc = null;
+                                    try {
+                                        $loc = $scan->location ?: \App\Models\LocationMapping::where('soil_scan_id', $scan->soil_scan_id)->latest('location_mapping_id')->first();
+                                        if (!$loc && $scan->soil_id) {
+                                            $loc = \App\Models\LocationMapping::where('soil_id', $scan->soil_id)->latest('location_mapping_id')->first();
+                                        }
+                                    } catch (\Throwable $e_loc) {
+                                        $loc = null;
                                     }
+
                                     $scanLat = $loc?->latitude;
                                     $scanLng = $loc?->longitude;
                                     $scanBrgy = $loc?->barangay;
                                     $scanCoverage = '';
-                                    if ($scan->scan_note && preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $scan->scan_note, $covMatch)) {
-                                        $scanCoverage = trim($covMatch[1]);
-                                    }
-                                    if (!$scanCoverage && $loc) {
-                                        $uReq = \App\Models\UserRequest::where('description', 'like', "%#{$loc->location_mapping_id}%")
-                                            ->orWhere('description', 'like', "%({$scanLat}, {$scanLng})%")
-                                            ->latest('user_request_id')->first();
-                                        if ($uReq && preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $uReq->description, $uCov)) {
-                                            $scanCoverage = trim($uCov[1]);
+                                    try {
+                                        if ($scan->scan_note && preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $scan->scan_note, $covMatch)) {
+                                            $scanCoverage = trim($covMatch[1]);
                                         }
+                                        if (!$scanCoverage && $loc) {
+                                            $uReq = \App\Models\UserRequest::where('description', 'like', "%#{$loc->location_mapping_id}%")
+                                                ->orWhere('description', 'like', "%({$scanLat}, {$scanLng})%")
+                                                ->latest('user_request_id')->first();
+                                            if ($uReq && preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $uReq->description, $uCov)) {
+                                                $scanCoverage = trim($uCov[1]);
+                                            }
+                                        }
+                                    } catch (\Throwable $e_cov) {
+                                        $scanCoverage = '';
                                     }
                                 @endphp
                                 <button type="button" class="btn-view-scan" onclick="openScanModalFromBtn(this, event)"
