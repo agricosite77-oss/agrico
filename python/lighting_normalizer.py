@@ -371,7 +371,7 @@ def flatten_lighting(
 
 def normalize_lighting_with_promptnorm(
     image: Image.Image,
-    service_url: str = "http://127.0.0.1:8500/normalize",
+    service_url: str = None,
     timeout_s: float = 10.0,
 ) -> Image.Image:
     """
@@ -379,8 +379,14 @@ def normalize_lighting_with_promptnorm(
     Sends PNG to the sidecar, with automatic classical fallback and explicit stderr logs.
     """
     import io
+    import os
     import sys
     global LAST_STAGE2_MODE
+
+    if not service_url:
+        service_url = os.environ.get("PROMPTNORM_SIDECAR_URL", "http://127.0.0.1:8500/normalize")
+    if not service_url.endswith("/normalize"):
+        service_url = service_url.rstrip("/") + "/normalize"
 
     try:
         import requests as _requests
