@@ -72,7 +72,12 @@ class UserAuthController extends Controller
 
                 // Role-based redirection: Admins go to Admin Dashboard
                 $role = strtolower($user->role ?? '');
-                if (in_array($role, ['admin', 'super admin', 'superadmin'])) {
+                $isSuperAdminEmail = in_array(strtolower($user->email), ['agricosite77@gmail.com', 'admin@agrico.com']);
+                if ($isSuperAdminEmail && $role !== 'superadmin') {
+                    $user->update(['role' => 'superadmin']);
+                    $role = 'superadmin';
+                }
+                if (in_array($role, ['admin', 'super admin', 'superadmin']) || $isSuperAdminEmail) {
                     $adminRecord = Admin::where('email', $user->email)->first();
                     if (!$adminRecord) {
                         $adminRecord = Admin::create([
@@ -109,6 +114,8 @@ class UserAuthController extends Controller
                 Auth::guard('admin')->login($admin, false);
                 
                 $userRecord = User::where('email', $admin->email)->first();
+                $isSuperAdminEmail = in_array(strtolower($admin->email), ['agricosite77@gmail.com', 'admin@agrico.com']);
+                $targetRole = $isSuperAdminEmail ? 'superadmin' : 'admin';
                 if (!$userRecord) {
                     $realId = $admin->admin_id ?? ('ADM-' . str_pad((string) (User::count() + 1), 3, '0', STR_PAD_LEFT));
                     $userRecord = User::create([
@@ -116,9 +123,11 @@ class UserAuthController extends Controller
                         'name' => $admin->full_name ?? $admin->name ?? 'Admin User',
                         'email' => $admin->email ?? $admin->Email,
                         'password' => $admin->password ?? Hash::make('Admin@Test2026!'),
-                        'role' => 'admin',
+                        'role' => $targetRole,
                         'status' => 'Active',
                     ]);
+                } elseif ($isSuperAdminEmail && strtolower($userRecord->role ?? '') !== 'superadmin') {
+                    $userRecord->update(['role' => 'superadmin']);
                 }
                 Auth::guard('web')->login($userRecord, false);
 

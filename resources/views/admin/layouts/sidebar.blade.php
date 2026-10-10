@@ -50,8 +50,12 @@
     {{-- 2. MIDDLE NAVIGATION MENU --}}
     @php
         $authUser = auth()->user() ?? Auth::guard('admin')->user();
+        $adminEmail = strtolower(trim((string) ($authUser?->email ?: ($authUser?->Email ?: ''))));
         $rawRole = $authUser?->role ?: 'Admin';
-        $isSuperAdmin = in_array(strtolower($rawRole), ['superadmin', 'super admin']);
+        $isSuperAdmin = ($authUser && method_exists($authUser, 'isSuperAdmin') && $authUser->isSuperAdmin())
+            || in_array(strtolower($rawRole), ['superadmin', 'super admin'])
+            || in_array($adminEmail, ['agricosite77@gmail.com', 'admin@agrico.com'])
+            || strtoupper((string) ($authUser?->user_id ?? $authUser?->admin_id ?? '')) === 'ADM-001';
 
         $initialSuspendedQuery = \App\Models\User::where(function($q) {
                 $q->whereRaw('LOWER(role) = ?', ['student'])
@@ -352,9 +356,13 @@
     @php
         $authUser = auth()->user() ?? Auth::guard('admin')->user();
         $adminName = $authUser?->name ?: ($authUser?->Full_Name ?: ($authUser?->full_name ?: 'User'));
-        $adminEmail = $authUser?->email ?: ($authUser?->Email ?: '');
+        $adminEmail = strtolower(trim((string) ($authUser?->email ?: ($authUser?->Email ?: ''))));
         $rawRole = $authUser?->role ?: 'Admin';
-        $adminRole = (in_array(strtolower($rawRole), ['superadmin', 'super admin'])) ? 'Super Admin' : ucfirst($rawRole);
+        $isSuperAdmin = ($authUser && method_exists($authUser, 'isSuperAdmin') && $authUser->isSuperAdmin())
+            || in_array(strtolower($rawRole), ['superadmin', 'super admin'])
+            || in_array($adminEmail, ['agricosite77@gmail.com', 'admin@agrico.com'])
+            || strtoupper((string) ($authUser?->user_id ?? $authUser?->admin_id ?? '')) === 'ADM-001';
+        $adminRole = $isSuperAdmin ? 'Super Admin' : ucfirst($rawRole);
         $adminInitial = strtoupper(substr($adminName ?: 'U', 0, 1));
         $adminPhotoUrl = $authUser?->profile_photo_url;
     @endphp

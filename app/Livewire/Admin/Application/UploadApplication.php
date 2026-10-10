@@ -19,13 +19,16 @@ class UploadApplication extends Component
         'releaseNotes' => 'required|string',
     ];
 
-    protected function checkSuperAdmin()
+    protected function checkSuperAdmin(): void
     {
         $user = auth()->user() ?? \Illuminate\Support\Facades\Auth::guard('admin')->user();
-        $role = strtolower($user?->role ?? '');
-        if (!in_array($role, ['superadmin', 'super admin'])) {
-            abort(403, 'Unauthorized. Only Super Admin can access Upload Application.');
+        if ($user instanceof \App\Models\User || $user instanceof \App\Models\Admin) {
+            if ($user->isSuperAdmin()) {
+                return;
+            }
         }
+
+        abort(403, 'Unauthorized. Only Super Admin can access Upload Application.');
     }
 
     public function mount()

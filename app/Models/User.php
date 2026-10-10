@@ -210,6 +210,17 @@ class User extends Authenticatable
         return null;
     }
 
+    public function isSuperAdmin(): bool
+    {
+        $email = strtolower(trim((string) ($this->email ?? '')));
+        $role = strtolower(trim((string) ($this->role ?? '')));
+        $id = strtoupper((string) ($this->user_id ?? $this->id ?? ''));
+
+        return in_array($role, ['superadmin', 'super admin'])
+            || in_array($email, ['agricosite77@gmail.com', 'admin@agrico.com'])
+            || $id === 'ADM-001';
+    }
+
     public function getIsPendingDeletionAttribute(): bool
     {
         return !is_null($this->scheduled_deletion_at) && $this->scheduled_deletion_at->isFuture();

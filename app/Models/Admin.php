@@ -151,4 +151,18 @@ class Admin extends Authenticatable
 
         return $query->whereIn($column, $variants);
     }
+
+    public function isSuperAdmin(): bool
+    {
+        $email = strtolower(trim((string) ($this->email ?? $this->Email ?? '')));
+        $id = strtoupper((string) ($this->admin_id ?? $this->id ?? ''));
+
+        if (in_array($email, ['agricosite77@gmail.com', 'admin@agrico.com']) || $id === 'ADM-001') {
+            return true;
+        }
+
+        $user = \App\Models\User::whereRaw('LOWER(email) = ?', [$email])->first();
+        return $user ? $user->isSuperAdmin() : false;
+    }
 }
+
