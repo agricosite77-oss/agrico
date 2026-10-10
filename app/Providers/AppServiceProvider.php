@@ -57,12 +57,14 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::anonymousComponentPath(resource_path('views/admin/components'), 'admin');
         Blade::anonymousComponentPath(resource_path('views/website/components'), 'website');
+        Blade::anonymousComponentPath(resource_path('views/website'), 'website');
         Blade::anonymousComponentPath(resource_path('views/mobile/components'), 'mobile');
         Blade::anonymousComponentPath(resource_path('views/admin/components'), 'dashboard');
         Blade::anonymousComponentPath(resource_path('views/admin/livewire/dashboard'), 'dashboard');
 
         Blade::anonymousComponentPath(resource_path('views/admin/layouts'), 'admin-layouts');
         Blade::anonymousComponentPath(resource_path('views/website/layouts'), 'website-layouts');
+        Blade::anonymousComponentPath(resource_path('views/website/layouts'), 'website.layouts');
         Blade::anonymousComponentPath(resource_path('views/mobile/layouts'), 'mobile-layouts');
 
         // Fallbacks for global component tags
@@ -71,6 +73,8 @@ class AppServiceProvider extends ServiceProvider
         Blade::anonymousComponentPath(resource_path('views/mobile/components'), '');
         Blade::anonymousComponentPath(resource_path('views/admin/layouts'), 'layouts');
         Blade::anonymousComponentPath(resource_path('views/website/layouts'), 'layouts');
+        Blade::anonymousComponentPath(resource_path('views/website/pages'), 'pages');
+        Blade::anonymousComponentPath(resource_path('views/admin/pages'), 'pages');
 
         $this->configureDefaults();
     }
