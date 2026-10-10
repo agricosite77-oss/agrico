@@ -128,10 +128,17 @@ class PythonProcessRunner
                 Log::error("[PythonProcessRunner] Failed to start detached Python process on Windows");
             }
         } else {
-            // Linux/Mac: launch detached via nohup with inline environment variables
+            // Linux/Mac: launch detached via nohup with specific safe environment variables
+            $neededKeys = [
+                'SCAN_SOIL_ROOT'        => config('soil.scan_soil_root', base_path('python/Scan_Soil_Image')),
+                'MUNSELL_REFERENCE_CSV' => config('services.soil_ml.munsell_csv', base_path('python/munsell_reference_sample.csv')),
+                'STAGE2_MODE'           => config('soil.stage2_mode', 'classical'),
+                'PYTHONPATH'            => base_path('python'),
+                'PATH'                  => '/opt/venv/bin:' . (getenv('PATH') ?: '/usr/local/bin:/usr/bin:/bin'),
+            ];
             $envPrefix = '';
-            foreach ($env as $k => $v) {
-                if (is_scalar($v) && $v !== '') {
+            foreach ($neededKeys as $k => $v) {
+                if (!empty($v) && is_scalar($v)) {
                     $envPrefix .= $k . '=' . escapeshellarg((string)$v) . ' ';
                 }
             }
@@ -146,14 +153,15 @@ class PythonProcessRunner
      */
     public static function getPythonBinary(): string
     {
+        // 1. Docker container virtual environment
+        if (file_exists('/opt/venv/bin/python')) {
+            return '/opt/venv/bin/python';
+        }
+
+        // 2. Explicitly configured binary
         $python = config('services.soil_ml.python_binary');
         if (!empty($python) && is_string($python) && (PHP_OS_FAMILY === 'Windows' || file_exists($python))) {
             return $python;
-        }
-
-        // Docker container virtual environment
-        if (PHP_OS_FAMILY !== 'Windows' && file_exists('/opt/venv/bin/python')) {
-            return '/opt/venv/bin/python';
         }
 
         if (PHP_OS_FAMILY !== 'Windows') {
