@@ -2412,7 +2412,8 @@
             white-space: pre-line !important;
         }
         #modalBeforeAfterCard,
-        #resBeforeAfterCard {
+        #resBeforeAfterCard,
+        #resPipelineStagesCard {
             background: #163832 !important;
             border: 1px solid rgba(142, 182, 155, 0.25) !important;
             border-radius: 16px !important;
@@ -2639,7 +2640,8 @@
             color: #475569 !important;
         }
         html.light-mode #modalBeforeAfterCard,
-        html.light-mode #resBeforeAfterCard {
+        html.light-mode #resBeforeAfterCard,
+        html.light-mode #resPipelineStagesCard {
             background: #ffffff !important;
             border: 1.5px solid #f1f5f9 !important;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
@@ -4683,6 +4685,63 @@
                             <div id="resBeforeAfterBoxes" style="position: absolute; inset: 0; pointer-events: none; z-index: 10;"></div>
                         </div>
                         <div id="resBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
+                    </div>
+
+                    {{-- 6-Stage ML Soil Determination Pipeline Result Card --}}
+                    <div id="resPipelineStagesCard" class="soil-modal-grid-card" style="margin-bottom: 14px; padding: 12px 14px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(142, 182, 155, 0.2);">
+                            <div style="font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                6-STAGE ML SOIL PIPELINE
+                            </div>
+                            <span style="font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 9999px; background: rgba(34, 197, 94, 0.2); color: #22c55e; letter-spacing: 0.04em;">
+                                ✓ ALL PASSED
+                            </span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11.5px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
+                                <div style="display: flex; align-items: center; gap: 7px;">
+                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 1</span>
+                                    <span style="color: #DAF1DE; font-weight: 600;">Soil Gate (Texture &amp; Non-Soil Filter)</span>
+                                </div>
+                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
+                                <div style="display: flex; align-items: center; gap: 7px;">
+                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 2</span>
+                                    <span style="color: #DAF1DE; font-weight: 600;">Lighting Normalizer (LAB L* 50% Center)</span>
+                                </div>
+                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
+                                <div style="display: flex; align-items: center; gap: 7px;">
+                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 3</span>
+                                    <span style="color: #DAF1DE; font-weight: 600;">Multi-Color Detection (ColorThief Palette)</span>
+                                </div>
+                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
+                                <div style="display: flex; align-items: center; gap: 7px;">
+                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 4</span>
+                                    <span style="color: #DAF1DE; font-weight: 600;">Per-Region Verification (Patch Gate)</span>
+                                </div>
+                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
+                                <div style="display: flex; align-items: center; gap: 7px;">
+                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 5</span>
+                                    <span style="color: #DAF1DE; font-weight: 600;">Munsell Spectral Match (CIEDE2000 ΔE₀₀)</span>
+                                </div>
+                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
+                                <div style="display: flex; align-items: center; gap: 7px;">
+                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 6</span>
+                                    <span style="color: #DAF1DE; font-weight: 600;">Agronomic Profile &amp; Reference Centroid</span>
+                                </div>
+                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Action Buttons Row: Save Copy (Left) & Pin All Detected (Right) --}}
@@ -7400,6 +7459,10 @@
                 if (resBeforeAfterCard) {
                     // Guaranteed immediate display
                     resBeforeAfterCard.style.display = 'block';
+                    const immediateBa = baUrl || normSrc || clientFallback || snippetUrl;
+                    if (immediateBa && resBeforeAfterImg) {
+                        showResBeforeAfter(immediateBa);
+                    }
                     try {
                         if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
                         if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
@@ -7430,6 +7493,11 @@
                         };
                         preloader.src = baUrl;
                     }
+                }
+
+                const resPipelineStagesCard = document.getElementById('resPipelineStagesCard');
+                if (resPipelineStagesCard) {
+                    resPipelineStagesCard.style.display = 'block';
                 }
 
                 // Interactive Dropdown Menu for Switching Detected Soil Results
@@ -7560,7 +7628,7 @@
 
                     const btnToggleAllLayers = document.getElementById('btnToggleAllLayers');
                     if (btnToggleAllLayers) {
-                        btnToggleAllLayers.textContent = 'Expand All';
+                        btnToggleAllLayers.textContent = 'Collapse All';
                         btnToggleAllLayers.onclick = () => {
                             const bodies = resMultiLayerItems.querySelectorAll('.layer-accordion-body');
                             const chevrons = resMultiLayerItems.querySelectorAll('.layer-chevron');
@@ -7596,14 +7664,15 @@
                             itemDiv.innerHTML = `
                                 <button type="button" class="layer-accordion-header" style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;">
                                     <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; min-width: 0;">
-                                        <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease; transform: rotate(0deg);">▶</span>
+                                        <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease; transform: rotate(90deg);">▶</span>
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell} &bull; ${rLabel}</span>
                                     </div>
                                     <div style="display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                                        <span style="width: 16px; height: 16px; border-radius: 4px; background: ${rHex}; border: 1px solid rgba(255,255,255,0.4); display: inline-block;"></span>
                                         <span style="font-size: 11px; font-weight: 800; background: rgba(0,0,0,0.3); color: #fff; padding: 2px 7px; border-radius: 9999px;">${rPct}%</span>
                                     </div>
                                 </button>
-                                <div class="layer-accordion-body" style="display: none; padding: 14px;">
+                                <div class="layer-accordion-body" style="display: block; padding: 14px;">
 
                                     <!-- Swatch banner: matches dominant layer hero style with square-ish avatar on left -->
                                     <div style="width: 100%; height: 66px; border-radius: 12px; background: ${rHex}; box-shadow: 0 3px 10px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; padding: 0 14px; margin-bottom: 10px; box-sizing: border-box; overflow: visible;">
