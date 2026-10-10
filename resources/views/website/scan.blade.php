@@ -6503,6 +6503,7 @@
             const scannerCard = document.querySelector('.scanner-card');
             const resultCard = document.querySelector('.result-card');
             const resultContent = document.getElementById('resultContent');
+            const resultPlaceholder = document.getElementById('resultPlaceholder');
 
             if (scannerCard && resultCard) {
                 if (resultCard.classList.contains('is-expanded')) {
@@ -6513,8 +6514,11 @@
                 if (window.innerWidth > 900) {
                     const leftH = scannerCard.offsetHeight;
                     if (leftH > 0) {
-                        const isContentVisible = resultContent && resultContent.style.display !== 'none' && window.getComputedStyle(resultContent).display !== 'none';
-                        if (!isContentVisible) {
+                        const hasScanResult = (resultPlaceholder && resultPlaceholder.style.display === 'none') ||
+                                              (resultContent && resultContent.style.display !== 'none' && window.getComputedStyle(resultContent).display !== 'none') ||
+                                              (typeof lastScanMatch !== 'undefined' && lastScanMatch !== null) ||
+                                              (typeof window.currentScanResult !== 'undefined' && window.currentScanResult !== null);
+                        if (!hasScanResult) {
                             resultCard.style.height = leftH + 'px';
                             resultCard.style.minHeight = leftH + 'px';
                         } else {
@@ -7427,6 +7431,7 @@
                         } catch (err) {
                             console.warn('[showResBeforeAfter] boxes/swatches error:', err);
                         }
+                        syncScannerCardHeights();
                     };
                     resBeforeAfterImg.onerror = () => {
                         const clientSrc = clientFallback;
@@ -7807,29 +7812,44 @@
                 if (resErrorState) resErrorState.style.display = 'none';
                 if (resPlaceholder) resPlaceholder.style.display = 'none';
 
-                if (window.AgriMotion && typeof window.AgriMotion.transitionSkeleton === 'function' && scanLoadingOverlay && scanLoadingOverlay.style.display !== 'none') {
-                    window.AgriMotion.transitionSkeleton(scanLoadingOverlay, resContent, { minShow: 220, step: 110 });
-                } else {
-                    if (scanLoadingOverlay) scanLoadingOverlay.style.display = 'none';
-                    if (resContent) resContent.style.display = 'block';
+                lastScanMatch = match;
+                if (lastScanMatch) {
+                    lastScanMatch.regions = regions;
+                    lastScanMatch.before_after_image_url = data.before_after_image_url || baUrl || null;
                 }
 
                 const resCardContainer = document.querySelector('.result-card');
                 if (resCardContainer) {
                     resCardContainer.style.height = 'auto';
-                    resCardContainer.style.minHeight = '100%';
+                    resCardContainer.style.minHeight = '480px';
                 }
+
+                if (window.AgriMotion && typeof window.AgriMotion.transitionSkeleton === 'function' && scanLoadingOverlay && scanLoadingOverlay.style.display !== 'none') {
+                    const transPromise = window.AgriMotion.transitionSkeleton(scanLoadingOverlay, resContent, { minShow: 220, step: 110 });
+                    if (transPromise && typeof transPromise.then === 'function') {
+                        transPromise.then(() => {
+                            if (resCardContainer) resCardContainer.style.height = 'auto';
+                            syncScannerCardHeights();
+                        }).catch(() => {
+                            if (resCardContainer) resCardContainer.style.height = 'auto';
+                            syncScannerCardHeights();
+                        });
+                    }
+                } else {
+                    if (scanLoadingOverlay) scanLoadingOverlay.style.display = 'none';
+                    if (resContent) resContent.style.display = 'block';
+                    if (resCardContainer) resCardContainer.style.height = 'auto';
+                    syncScannerCardHeights();
+                }
+
                 setTimeout(syncScannerCardHeights, 50);
+                setTimeout(syncScannerCardHeights, 150);
+                setTimeout(syncScannerCardHeights, 350);
+                setTimeout(syncScannerCardHeights, 650);
 
                 const targetCompletedCard = document.getElementById('resultCard') || resCard;
                 if (targetCompletedCard) {
                     targetCompletedCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-
-                lastScanMatch = match;
-                if (lastScanMatch) {
-                    lastScanMatch.regions = regions;
-                    lastScanMatch.before_after_image_url = data.before_after_image_url || baUrl || null;
                 }
                 lastScanLat = null;
                 lastScanLng = null;
