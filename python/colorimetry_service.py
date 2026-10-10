@@ -78,10 +78,6 @@ import time
 # Allow running this script from any working directory.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from munsell_lookup import MunsellTable          # noqa: E402
-from soil_classifier import classify_soil        # noqa: E402
-from storage import SoilScanStore                # noqa: E402
-
 
 def _env(name: str, default: str) -> str:
     return os.environ.get(name, default)
@@ -221,6 +217,10 @@ def main() -> int:
     source = _env("SCAN_SOURCE", "user_scan")
 
     try:
+        from munsell_lookup import MunsellTable          # noqa: E402
+        from soil_classifier import classify_soil        # noqa: E402
+        from storage import SoilScanStore                # noqa: E402
+
         munsell_table = MunsellTable(munsell_csv, scan_root=scan_root)
 
         # Build a progress callback that writes scan_progress_{id}.json after each stage
