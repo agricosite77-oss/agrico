@@ -7560,7 +7560,7 @@
 
                     const btnToggleAllLayers = document.getElementById('btnToggleAllLayers');
                     if (btnToggleAllLayers) {
-                        btnToggleAllLayers.textContent = 'Collapse All';
+                        btnToggleAllLayers.textContent = 'Expand All';
                         btnToggleAllLayers.onclick = () => {
                             const bodies = resMultiLayerItems.querySelectorAll('.layer-accordion-body');
                             const chevrons = resMultiLayerItems.querySelectorAll('.layer-chevron');
@@ -7568,6 +7568,7 @@
                             bodies.forEach(b => b.style.display = shouldExpand ? 'block' : 'none');
                             chevrons.forEach(c => c.style.transform = shouldExpand ? 'rotate(90deg)' : 'rotate(0deg)');
                             btnToggleAllLayers.textContent = shouldExpand ? 'Collapse All' : 'Expand All';
+                            syncScannerCardHeights();
                         };
                     }
 
@@ -7595,15 +7596,14 @@
                             itemDiv.innerHTML = `
                                 <button type="button" class="layer-accordion-header" style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;">
                                     <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; min-width: 0;">
-                                        <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease; transform: rotate(90deg);">▶</span>
+                                        <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease; transform: rotate(0deg);">▶</span>
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell} &bull; ${rLabel}</span>
                                     </div>
                                     <div style="display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                                        <span style="width: 16px; height: 16px; border-radius: 4px; background: ${rHex}; border: 1px solid rgba(255,255,255,0.4); display: inline-block;"></span>
                                         <span style="font-size: 11px; font-weight: 800; background: rgba(0,0,0,0.3); color: #fff; padding: 2px 7px; border-radius: 9999px;">${rPct}%</span>
                                     </div>
                                 </button>
-                                <div class="layer-accordion-body" style="display: block; padding: 14px;">
+                                <div class="layer-accordion-body" style="display: none; padding: 14px;">
 
                                     <!-- Swatch banner: matches dominant layer hero style with square-ish avatar on left -->
                                     <div style="width: 100%; height: 66px; border-radius: 12px; background: ${rHex}; box-shadow: 0 3px 10px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; padding: 0 14px; margin-bottom: 10px; box-sizing: border-box; overflow: visible;">
@@ -7700,6 +7700,7 @@
                                     const willOpen = bodyEl.style.display !== 'block';
                                     bodyEl.style.display = willOpen ? 'block' : 'none';
                                     if (chevronEl) chevronEl.style.transform = willOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+                                    syncScannerCardHeights();
                                 });
                             }
 
