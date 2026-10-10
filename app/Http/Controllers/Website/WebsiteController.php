@@ -168,7 +168,18 @@ class WebsiteController extends Controller
                     ]);
                 }
             }
-            return response()->json(['events' => [], 'stage' => 0, 'status' => 'pending', 'cursor' => 0]);
+            $debug = [];
+            if (config('app.debug')) {
+                $debug = [
+                    'tmpDir'     => $tmpDir,
+                    'logFile'    => $logFile,
+                    'logExists'  => file_exists($logFile),
+                    'logSize'    => file_exists($logFile) ? filesize($logFile) : 0,
+                    'logContent' => file_exists($logFile) ? substr((string) file_get_contents($logFile), 0, 500) : null,
+                    'pyBinary'   => \App\Services\PythonProcessRunner::getPythonBinary(),
+                ];
+            }
+            return response()->json(['events' => [], 'stage' => 0, 'status' => 'pending', 'cursor' => 0, 'debug' => $debug]);
         }
 
         $history = json_decode(file_get_contents($progressFile), true) ?? [];
