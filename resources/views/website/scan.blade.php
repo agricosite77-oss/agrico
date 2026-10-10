@@ -2536,6 +2536,18 @@
             background: #f8fafc !important;
             border: 1px solid #e2e8f0 !important;
         }
+        html.light-mode #resMultiLayerChips {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+        html.light-mode #resMultiLayerChips span[style*="color: #8EB69B"] {
+            color: #64748b !important;
+        }
+        html.light-mode .layer-quick-chip {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #1e293b !important;
+        }
         html.light-mode #modalSoilLocationCard {
             background: #ffffff !important;
             border: 1.5px solid #f1f5f9 !important;
@@ -4431,6 +4443,15 @@
                         </div>
                     </div>
 
+                    <!-- Multi-Layer Quick Color Chips (visible when multiple colors are detected) -->
+                    <div id="resMultiLayerChips" style="display: none; margin-top: -6px; margin-bottom: 14px; padding: 10px 14px; border-radius: 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(142, 182, 155, 0.2);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px;">
+                            <span style="font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">Detected Soil Colors (<span id="resMultiLayerChipsCount">0</span>)</span>
+                            <span style="font-size: 10px; color: #8EB69B; opacity: 0.85;">Click color to view details</span>
+                        </div>
+                        <div id="resMultiLayerChipsContainer" style="display: flex; flex-wrap: wrap; gap: 6px; width: 100%;"></div>
+                    </div>
+
                     <!-- Row 1: Code Details (3 Columns: Color Name, Full Code, Scan Count) -->
                     <div class="soil-modal-grid-3 soil-metrics-row-1" style="margin-bottom: 8px;">
                         <div class="soil-modal-grid-card">
@@ -4483,29 +4504,13 @@
                         </div>
                     </div>
 
-                    {{-- Primary Soil Result: Pin Location Button (Placed directly after Description - Pins THIS single soil) --}}
-                    <div id="resPrimaryPinLocationWrapper" style="margin-bottom: 12px;">
-                        <button type="button" id="btnPinLocationScan" class="btn-res-action btn-res-pin-location" onclick="openPinLocationModal(null, false)" style="width: 100%; justify-content: center;" title="Pin This Soil Specimen to Map">
-                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            <span>Pin Location</span>
-                        </button>
-                    </div>
-
-                    {{-- Multi-Layer Accordion Section (Secondary & Tertiary Layers) --}}
-                    <div id="resMultiLayerSection" style="display: none; margin-top: 14px; margin-bottom: 14px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 14px;">
-                        <div id="resMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
-                    </div>
-
-                    {{-- Soil Normalization: Before & After Card (With Detected Soil Color on BEFORE side & ColorThief Palette) --}}
-                    <div id="resBeforeAfterCard" class="soil-modal-grid-card" style="margin-bottom: 12px; padding: 10px 14px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
-                            <div class="soil-modal-label" style="font-size: 11px; font-weight: 700; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.03em;">
+                    {{-- Soil Normalization: Before & After Card (Prominently displayed right after Description) --}}
+                    <div id="resBeforeAfterCard" class="soil-modal-grid-card" style="margin-bottom: 12px; padding: 12px 14px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <div class="soil-modal-label" style="font-size: 11px; font-weight: 800; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.04em;">
                                 SOIL NORMALIZATION
                             </div>
-                            <span class="before-after-badge" style="font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 5px; background: rgba(16, 185, 129, 0.15); color: #10b981; text-transform: uppercase; letter-spacing: 0.03em;">
+                            <span class="before-after-badge" style="font-size: 9.5px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.18); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
                                 BEFORE / AFTER
                             </span>
                         </div>
@@ -4518,7 +4523,20 @@
                         <div id="resBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
                     </div>
 
-                    {{-- Action Buttons Row: Save Copy (Left) & Pin Location (Right - Pins ALL detected soils from scan) --}}
+                    {{-- Multi-Layer Accordion Section (Secondary & Tertiary Layers) --}}
+                    <div id="resMultiLayerSection" style="display: none; margin-top: 4px; margin-bottom: 14px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <div style="font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
+                                ALL DETECTED SOIL LAYERS (<span id="resMultiLayerCount">0</span>)
+                            </div>
+                            <button type="button" id="btnToggleAllLayers" style="background: none; border: none; font-size: 11px; font-weight: 700; color: #8EB69B; cursor: pointer; text-decoration: underline;">
+                                Expand All
+                            </button>
+                        </div>
+                        <div id="resMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    </div>
+
+                    {{-- Action Buttons Row: Save Copy (Left) & Pin Location (Right) --}}
                     <div id="resActionButtonsRow" class="res-action-buttons-row">
                         <button type="button" id="btnSaveCopyScan" class="btn-res-action btn-res-save-copy" onclick="saveCurrentScanCopy()" title="Save Copy of Soil Record">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -4526,12 +4544,19 @@
                             </svg>
                             <span>Save Copy</span>
                         </button>
-                        <button type="button" id="btnPinAllLocationScan" class="btn-res-action btn-res-pin-location" onclick="openPinAllLocationModal()" title="Pin All Detected Soils to Map">
+                        <button type="button" id="btnPinLocationScan" class="btn-res-action btn-res-pin-location" onclick="openPinLocationModal(null, false)" title="Pin Soil Specimen to Map">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
                             <span>Pin Location</span>
+                        </button>
+                        <button type="button" id="btnPinAllLocationScan" class="btn-res-action btn-res-pin-location" style="display: none;" onclick="openPinAllLocationModal()" title="Pin All Detected Soils to Map">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span>Pin All</span>
                         </button>
                     </div>
 
@@ -5406,6 +5431,26 @@
                     }
                     return;
                 }
+
+                zoomImg.onerror = () => {
+                    const clientFallback = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || window.currentCleanScanImage;
+                    if (clientFallback && zoomImg.src !== clientFallback) {
+                        zoomImg.src = clientFallback;
+                        return;
+                    }
+                    zoomImg.style.display = 'none';
+                    if (fallback) fallback.style.display = 'flex';
+                    if (boxHost) {
+                        const oldBox = boxHost.querySelector('.soil-roi-box');
+                        if (oldBox) oldBox.style.display = 'none';
+                    }
+                };
+
+                zoomImg.onload = () => {
+                    zoomImg.style.display = 'block';
+                    if (fallback) fallback.style.display = 'none';
+                };
+
                 zoomImg.src = src;
                 zoomImg.style.display = 'block';
                 if (fallback) fallback.style.display = 'none';
@@ -7130,8 +7175,68 @@
                     actualScanImage = '/' + actualScanImage;
                 }
                 window.currentCleanScanImage = actualScanImage;
+                if (snippetUrl || base64Image) {
+                    window.currentClientSoilPhoto = snippetUrl || base64Image;
+                }
                 match.image = actualScanImage;
                 match.scan_image = actualScanImage;
+
+                // Render Quick Multi-Layer Color Chips (Top Bar - instantly shows all detected colors)
+                const resMultiLayerChips = document.getElementById('resMultiLayerChips');
+                const resMultiLayerChipsContainer = document.getElementById('resMultiLayerChipsContainer');
+                const resMultiLayerChipsCount = document.getElementById('resMultiLayerChipsCount');
+                if (resMultiLayerChips && resMultiLayerChipsContainer) {
+                    if (isMultiLayer) {
+                        resMultiLayerChips.style.display = 'block';
+                        if (resMultiLayerChipsCount) resMultiLayerChipsCount.textContent = regions.length;
+                        resMultiLayerChipsContainer.innerHTML = '';
+                        regions.forEach((r, rIdx) => {
+                            const pct = r.percent || Math.round((r.proportion || 0.2) * 100);
+                            const mCode = r.munsell || r.munsell_code || match.code;
+                            const rHex = r.hex || getMunsellColorHex(mCode, '') || '#8F694E';
+                            const isDom = rIdx === 0;
+
+                            const chip = document.createElement('button');
+                            chip.type = 'button';
+                            chip.className = 'layer-quick-chip';
+                            chip.style.cssText = `
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 6px;
+                                padding: 5px 11px;
+                                border-radius: 9999px;
+                                background: ${isDom ? 'rgba(34, 197, 94, 0.22)' : 'rgba(255, 255, 255, 0.1)'};
+                                border: 1.5px solid ${isDom ? '#22c55e' : 'rgba(255, 255, 255, 0.2)'};
+                                color: #ffffff;
+                                font-size: 11px;
+                                font-weight: 700;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                            `;
+                            chip.innerHTML = `
+                                <span style="width: 10px; height: 10px; border-radius: 50%; background: ${rHex}; border: 1px solid rgba(255,255,255,0.4); display: inline-block;"></span>
+                                <span>${mCode} (${pct}%)</span>
+                                ${isDom ? '<span style="font-size: 9px; color: #4ade80; font-weight: 800; text-transform: uppercase;">DOMINANT</span>' : ''}
+                            `;
+                            chip.addEventListener('click', () => {
+                                if (isDom) {
+                                    document.getElementById('soilDualPreviewBadge')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                } else {
+                                    const bodyEl = document.querySelector(`#res-region-avatar-${rIdx - 1}`)?.closest('.layer-accordion-body');
+                                    const chevronEl = bodyEl?.previousElementSibling?.querySelector('.layer-chevron');
+                                    if (bodyEl) {
+                                        bodyEl.style.display = 'block';
+                                        if (chevronEl) chevronEl.style.transform = 'rotate(90deg)';
+                                        bodyEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                    }
+                                }
+                            });
+                            resMultiLayerChipsContainer.appendChild(chip);
+                        });
+                    } else {
+                        resMultiLayerChips.style.display = 'none';
+                    }
+                }
 
                 // Soil Normalization: Before & After Card Display (With Detected Soil Color Boxes & Swatches)
                 const resBeforeAfterCard = document.getElementById('resBeforeAfterCard');
@@ -7154,24 +7259,25 @@
                     window.currentDetectedSoilRegion = targetReg;
 
                     function showResBeforeAfter(src) {
+                        resBeforeAfterCard.style.display = 'block';
                         resBeforeAfterImg.onload = () => {
                             resBeforeAfterCard.style.display = 'block';
-                            // Show dynamic color-coded boxes on the AFTER side per region
                             if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
                             if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
                         };
                         resBeforeAfterImg.onerror = () => {
                             if (resBeforeAfterBoxes) resBeforeAfterBoxes.innerHTML = '';
-                            if (rawSrc && normSrc) {
-                                generateBeforeAfterCanvas(rawSrc, normSrc, match.code, targetReg, (stitchedDataUrl) => {
+                            const clientSrc = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || rawSrc || normSrc;
+                            if (clientSrc && src !== clientSrc) {
+                                generateBeforeAfterCanvas(clientSrc, clientSrc, match.code, targetReg, (stitchedDataUrl) => {
                                     if (stitchedDataUrl) {
                                         showResBeforeAfter(stitchedDataUrl);
                                     } else {
-                                        resBeforeAfterCard.style.display = 'none';
+                                        resBeforeAfterCard.style.display = 'block';
                                     }
                                 });
                             } else {
-                                resBeforeAfterCard.style.display = 'none';
+                                resBeforeAfterCard.style.display = 'block';
                             }
                         };
                         resBeforeAfterImg.src = src;
@@ -7182,24 +7288,37 @@
 
                     if (baUrl) {
                         showResBeforeAfter(baUrl);
-                    } else if (rawSrc && normSrc) {
-                        generateBeforeAfterCanvas(rawSrc, normSrc, match.code, targetReg, (stitchedDataUrl) => {
+                    } else if (rawSrc || normSrc || base64Image) {
+                        const fallbackSrc = rawSrc || normSrc || base64Image;
+                        generateBeforeAfterCanvas(fallbackSrc, normSrc || fallbackSrc, match.code, targetReg, (stitchedDataUrl) => {
                             if (stitchedDataUrl) {
                                 showResBeforeAfter(stitchedDataUrl);
-                            } else {
-                                if (resBeforeAfterBoxes) resBeforeAfterBoxes.innerHTML = '';
-                                resBeforeAfterCard.style.display = 'none';
                             }
                         });
-                    } else {
-                        if (resBeforeAfterBoxes) resBeforeAfterBoxes.innerHTML = '';
-                        resBeforeAfterCard.style.display = 'none';
                     }
                 }
 
                 // Multi-Layer Accordion Rows (Secondary & Tertiary Layers)
                 if (isMultiLayer && resMultiLayerSection && resMultiLayerItems) {
                     resMultiLayerSection.style.display = 'block';
+                    const resMultiLayerCount = document.getElementById('resMultiLayerCount');
+                    if (resMultiLayerCount) resMultiLayerCount.textContent = regions.length;
+
+                    const btnToggleAllLayers = document.getElementById('btnToggleAllLayers');
+                    if (btnToggleAllLayers) {
+                        btnToggleAllLayers.onclick = () => {
+                            const bodies = resMultiLayerItems.querySelectorAll('.layer-accordion-body');
+                            const chevrons = resMultiLayerItems.querySelectorAll('.layer-chevron');
+                            const shouldExpand = btnToggleAllLayers.textContent.includes('Expand');
+                            bodies.forEach(b => b.style.display = shouldExpand ? 'block' : 'none');
+                            chevrons.forEach(c => c.style.transform = shouldExpand ? 'rotate(90deg)' : 'rotate(0deg)');
+                            btnToggleAllLayers.textContent = shouldExpand ? 'Collapse All' : 'Expand All';
+                        };
+                    }
+
+                    const btnPinAll = document.getElementById('btnPinAllLocationScan');
+                    if (btnPinAll) btnPinAll.style.display = 'inline-flex';
+
                     resMultiLayerItems.innerHTML = '';
                     regions.slice(1).forEach((r, idx) => {
                         const rPct = r.percent || Math.round((r.proportion || 0.2) * 100);
@@ -7218,13 +7337,17 @@
                         const avatarId = `res-region-avatar-${idx}`;
 
                         itemDiv.innerHTML = `
-                            <button type="button" class="layer-accordion-header">
-                                <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
-                                    <svg class="layer-chevron" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 18 12 6 20"></polygon></svg>
-                                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell} (Soil Percentage - ${rPct}%)</span>
+                            <button type="button" class="layer-accordion-header" style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;">
+                                <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; min-width: 0;">
+                                    <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease;">▶</span>
+                                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell} &bull; ${rLabel}</span>
+                                </div>
+                                <div style="display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                                    <span style="width: 16px; height: 16px; border-radius: 4px; background: ${rHex}; border: 1px solid rgba(255,255,255,0.4); display: inline-block;"></span>
+                                    <span style="font-size: 11px; font-weight: 800; background: rgba(0,0,0,0.3); color: #fff; padding: 2px 7px; border-radius: 9999px;">${rPct}%</span>
                                 </div>
                             </button>
-                            <div class="layer-accordion-body" style="display: none;">
+                            <div class="layer-accordion-body" style="display: none; padding: 14px;">
 
                                 <!-- Swatch banner: matches dominant layer hero style with square-ish avatar on left -->
                                 <div style="width: 100%; height: 66px; border-radius: 12px; background: ${rHex}; box-shadow: 0 3px 10px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; padding: 0 14px; margin-bottom: 10px; box-sizing: border-box; overflow: visible;">
@@ -7297,7 +7420,7 @@
                         populateZoomAvatar(
                             itemDiv.querySelector(`#${avatarId}`),
                             r,
-                            actualScanImage
+                            window.currentClientSoilPhoto || actualScanImage
                         );
 
                         const layerPinBtn = itemDiv.querySelector('.btn-layer-pin-btn');
@@ -7314,13 +7437,15 @@
                         headerBtn.addEventListener('click', () => {
                             const isOpen = bodyEl.style.display === 'block';
                             bodyEl.style.display = isOpen ? 'none' : 'block';
-                            chevronEl.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(90deg)';
+                            chevronEl.style.transform = isOpen ? 'rotate(90deg)' : 'rotate(0deg)';
                         });
 
                         resMultiLayerItems.appendChild(itemDiv);
                     });
                 } else if (resMultiLayerSection) {
                     resMultiLayerSection.style.display = 'none';
+                    const btnPinAll = document.getElementById('btnPinAllLocationScan');
+                    if (btnPinAll) btnPinAll.style.display = 'none';
                 }
 
                 // Metadata Footer (Always show on completed scan)
@@ -7347,9 +7472,10 @@
                 if (resSwatchBlock) resSwatchBlock.style.backgroundColor = match.hex || '#594433';
                 if (resHexPill) resHexPill.textContent = match.hex ? match.hex.toUpperCase() : match.code;
 
-                if (resSoilCircleSnippet && actualScanImage) {
+                if (resSoilCircleSnippet) {
                     const targetReg = (regions && regions[0]) || { hex: match.hex, bounding_box: null };
-                    populateZoomAvatar(resSoilCircleSnippet, targetReg, actualScanImage);
+                    const snippetSource = window.currentClientSoilPhoto || actualScanImage || snippetUrl || (typeof base64Image !== 'undefined' ? base64Image : null);
+                    populateZoomAvatar(resSoilCircleSnippet, targetReg, snippetSource);
                 }
 
                 if (resErrorState) resErrorState.style.display = 'none';
@@ -7762,9 +7888,10 @@
                         };
                         modalBeforeAfterImg.onerror = () => {
                             if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = '';
-                            if (rawSrc && normSrc) {
-                                generateBeforeAfterCanvas(rawSrc, normSrc, code, targetRegion, (stitchedDataUrl) => {
-                                    if (stitchedDataUrl) {
+                            const fallbackSrc = rawSrc || normSrc;
+                            if (fallbackSrc) {
+                                generateBeforeAfterCanvas(fallbackSrc, fallbackSrc, code, targetRegion, (stitchedDataUrl) => {
+                                    if (stitchedDataUrl && stitchedDataUrl !== src) {
                                         showModalBeforeAfter(stitchedDataUrl);
                                     } else {
                                         modalBeforeAfterImg.dataset.loaded = 'false';
@@ -8069,88 +8196,120 @@
                 region = regionOrCallback;
             }
 
-            if (!rawSrc || !normSrc) {
+            const clientPhoto = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || window.currentCleanScanImage;
+            const effectiveRaw = rawSrc || clientPhoto;
+            const effectiveNorm = normSrc || effectiveRaw || clientPhoto;
+
+            if (!effectiveRaw && !effectiveNorm) {
                 if (onComplete) onComplete(null);
                 return;
             }
-            const imgBefore = new Image();
-            const imgAfter = new Image();
+
+            let imgBefore = new Image();
+            let imgAfter = new Image();
             imgBefore.crossOrigin = 'anonymous';
             imgAfter.crossOrigin = 'anonymous';
-            let loadedCount = 0;
-            let errorCount = 0;
+            let beforeLoaded = false;
+            let afterLoaded = false;
+            let beforeError = false;
+            let afterError = false;
+
+            const stitch = () => {
+                try {
+                    const targetW = 640;
+                    const scale = targetW / (imgBefore.naturalWidth || targetW);
+                    const w = targetW;
+                    const h = Math.max(160, Math.round((imgBefore.naturalHeight || 360) * scale));
+                    const barH = Math.max(30, Math.round(h * 0.08)); // matches Python: max(30, int(rh * 0.08))
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w * 2;
+                    canvas.height = h + barH;
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) {
+                        if (onComplete) onComplete(null);
+                        return;
+                    }
+
+                    // Top Bar background
+                    ctx.fillStyle = '#121e18';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw Before and After images
+                    ctx.drawImage(imgBefore, 0, barH, w, h);
+                    ctx.drawImage(imgAfter, w, barH, w, h);
+
+                    // Bar text
+                    ctx.font = 'bold 12px Inter, ui-sans-serif, system-ui, sans-serif';
+                    ctx.textBaseline = 'middle';
+
+                    // BEFORE label (amber)
+                    ctx.fillStyle = '#fbbf24';
+                    ctx.fillText('BEFORE', 12, barH / 2);
+
+                    // AFTER label (mint green)
+                    ctx.fillStyle = '#8ef2b2';
+                    const afterText = 'AFTER (NORMALIZED)' + (label ? ' -- ' + label : '');
+                    ctx.fillText(afterText, w + 12, barH / 2);
+
+                    // Center divider line (visual separator between BEFORE and AFTER)
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(w, 0);
+                    ctx.lineTo(w, canvas.height);
+                    ctx.stroke();
+                    ctx.restore();
+
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                    if (onComplete) onComplete(dataUrl);
+                } catch (err) {
+                    console.warn('[generateBeforeAfterCanvas] Error stitching canvas:', err);
+                    if (onComplete) onComplete(null);
+                }
+            };
 
             const checkComplete = () => {
-                if (errorCount > 0) {
-                    if (onComplete) onComplete(null);
-                    return;
-                }
-                if (loadedCount === 2) {
-                    try {
-                        const targetW = 640;
-                        const scale = targetW / (imgBefore.naturalWidth || targetW);
-                        const w = targetW;
-                        const h = Math.max(160, Math.round((imgBefore.naturalHeight || 360) * scale));
-                        const barH = Math.max(30, Math.round(h * 0.08)); // matches Python: max(30, int(rh * 0.08))
-                        const canvas = document.createElement('canvas');
-                        canvas.width = w * 2;
-                        canvas.height = h + barH;
-                        const ctx = canvas.getContext('2d');
-                        if (!ctx) {
-                            if (onComplete) onComplete(null);
-                            return;
-                        }
-
-                        // Top Bar background
-                        ctx.fillStyle = '#121e18';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                        // Draw Before and After images
-                        ctx.drawImage(imgBefore, 0, barH, w, h);
-                        ctx.drawImage(imgAfter, w, barH, w, h);
-
-                        // Bar text
-                        ctx.font = 'bold 12px Inter, ui-sans-serif, system-ui, sans-serif';
-                        ctx.textBaseline = 'middle';
-
-                        // BEFORE label (amber)
-                        ctx.fillStyle = '#fbbf24';
-                        ctx.fillText('BEFORE', 12, barH / 2);
-
-                        // AFTER label (mint green)
-                        ctx.fillStyle = '#8ef2b2';
-                        const afterText = 'AFTER (NORMALIZED)' + (label ? ' -- ' + label : '');
-                        ctx.fillText(afterText, w + 12, barH / 2);
-
-                        // Center divider line (visual separator between BEFORE and AFTER)
-                        ctx.save();
-                        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(w, 0);
-                        ctx.lineTo(w, canvas.height);
-                        ctx.stroke();
-                        ctx.restore();
-
-                        // Green ROI box is drawn by the HTML overlay only (not baked into the canvas).
-                        // This prevents the box from ever appearing on the AFTER side.
-
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-                        if (onComplete) onComplete(dataUrl);
-                    } catch (err) {
-                        console.warn('[generateBeforeAfterCanvas] Error stitching canvas:', err);
+                if (beforeLoaded && afterLoaded) {
+                    stitch();
+                } else if (beforeLoaded && afterError) {
+                    imgAfter = imgBefore;
+                    afterLoaded = true;
+                    stitch();
+                } else if (afterLoaded && beforeError) {
+                    imgBefore = imgAfter;
+                    beforeLoaded = true;
+                    stitch();
+                } else if (beforeError && afterError) {
+                    if (clientPhoto && effectiveRaw !== clientPhoto) {
+                        beforeError = false;
+                        afterError = false;
+                        imgBefore.src = clientPhoto;
+                        imgAfter.src = clientPhoto;
+                    } else {
                         if (onComplete) onComplete(null);
                     }
                 }
             };
 
-            imgBefore.onload = () => { loadedCount++; checkComplete(); };
-            imgBefore.onerror = () => { errorCount++; checkComplete(); };
-            imgAfter.onload = () => { loadedCount++; checkComplete(); };
-            imgAfter.onerror = () => { errorCount++; checkComplete(); };
+            imgBefore.onload = () => { beforeLoaded = true; checkComplete(); };
+            imgBefore.onerror = () => {
+                if (clientPhoto && imgBefore.src !== clientPhoto) {
+                    imgBefore.src = clientPhoto;
+                } else {
+                    beforeError = true;
+                    checkComplete();
+                }
+            };
 
-            imgBefore.src = rawSrc;
-            imgAfter.src = normSrc;
+            imgAfter.onload = () => { afterLoaded = true; checkComplete(); };
+            imgAfter.onerror = () => {
+                afterError = true;
+                checkComplete();
+            };
+
+            imgBefore.src = effectiveRaw;
+            imgAfter.src = effectiveNorm;
         }
 
         function handleBeforeAfterZoomError(imgEl) {

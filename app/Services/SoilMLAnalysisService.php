@@ -356,11 +356,15 @@ class SoilMLAnalysisService
         if ($disk === 's3') {
             try {
                 if (file_exists($fullNormJpg)) {
-                    Storage::disk('s3')->put($normJpgName, file_get_contents($fullNormJpg), 'public');
-                    $publicScanRelativePath = Storage::disk('s3')->url($normJpgName);
+                    $uploadedNorm = Storage::disk('s3')->put($normJpgName, file_get_contents($fullNormJpg), 'public');
+                    if ($uploadedNorm) {
+                        $publicScanRelativePath = Storage::disk('s3')->url($normJpgName);
+                    }
                 } elseif (file_exists($fullPublicJpg)) {
-                    Storage::disk('s3')->put($scanJpgName, file_get_contents($fullPublicJpg), 'public');
-                    $publicScanRelativePath = Storage::disk('s3')->url($scanJpgName);
+                    $uploadedScan = Storage::disk('s3')->put($scanJpgName, file_get_contents($fullPublicJpg), 'public');
+                    if ($uploadedScan) {
+                        $publicScanRelativePath = Storage::disk('s3')->url($scanJpgName);
+                    }
                 }
             } catch (\Throwable $e) {
                 Log::warning('[SoilMLAnalysisService] S3 scan upload failed: ' . $e->getMessage());
@@ -632,8 +636,33 @@ class SoilMLAnalysisService
             }
         }
 
-        $beforeAfterUrl = file_exists($fullBaJpg) ? (asset('storage/' . $baJpgName) . $cacheBuster) : null;
-        $rawUrl = file_exists($fullRawJpg) ? (asset('storage/' . $rawJpgName) . $cacheBuster) : null;
+        $beforeAfterUrl = null;
+        $rawUrl = null;
+        if ($disk === 's3') {
+            try {
+                if (file_exists($fullBaJpg)) {
+                    $uploadedBa = Storage::disk('s3')->put($baJpgName, file_get_contents($fullBaJpg), 'public');
+                    if ($uploadedBa) {
+                        $beforeAfterUrl = Storage::disk('s3')->url($baJpgName);
+                    }
+                }
+                if (file_exists($fullRawJpg)) {
+                    $uploadedRaw = Storage::disk('s3')->put($rawJpgName, file_get_contents($fullRawJpg), 'public');
+                    if ($uploadedRaw) {
+                        $rawUrl = Storage::disk('s3')->url($rawJpgName);
+                    }
+                }
+            } catch (\Throwable $e) {
+                Log::warning('[SoilMLAnalysisService] S3 BA/Raw upload failed: ' . $e->getMessage());
+            }
+        }
+
+        if (empty($beforeAfterUrl)) {
+            $beforeAfterUrl = file_exists($fullBaJpg) ? (asset('storage/' . $baJpgName) . $cacheBuster) : null;
+        }
+        if (empty($rawUrl)) {
+            $rawUrl = file_exists($fullRawJpg) ? (asset('storage/' . $rawJpgName) . $cacheBuster) : null;
+        }
 
         $analysis['scan_model']             = $soilScan;
         $analysis['soil_model']             = $soil;
