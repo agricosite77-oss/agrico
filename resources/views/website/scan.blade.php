@@ -1373,43 +1373,6 @@
             overflow-wrap: break-word;
         }
 
-        /* Left-Side Scrollbar for Detected Soil Layers Container */
-        .res-multilayer-scroll-container,
-        .modal-multilayer-scroll-container {
-            direction: rtl !important; /* Positions vertical scrollbar at the LEFT edge */
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            max-height: 540px;
-            padding-left: 10px; /* spacing away from left scrollbar */
-            padding-right: 4px;
-            box-sizing: border-box;
-            scrollbar-width: thin;
-            scrollbar-color: #10b981 rgba(11, 43, 38, 0.45);
-        }
-        .res-multilayer-scroll-container > *,
-        .modal-multilayer-scroll-container > * {
-            direction: ltr !important; /* Preserves standard Left-to-Right content flow */
-        }
-        .res-multilayer-scroll-container::-webkit-scrollbar,
-        .modal-multilayer-scroll-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        .res-multilayer-scroll-container::-webkit-scrollbar-track,
-        .modal-multilayer-scroll-container::-webkit-scrollbar-track {
-            background: rgba(11, 43, 38, 0.45);
-            border-radius: 9999px;
-        }
-        .res-multilayer-scroll-container::-webkit-scrollbar-thumb,
-        .modal-multilayer-scroll-container::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 9999px;
-            border: 1.5px solid #0B2B26;
-        }
-        .res-multilayer-scroll-container::-webkit-scrollbar-thumb:hover,
-        .modal-multilayer-scroll-container::-webkit-scrollbar-thumb:hover {
-            background: #22c55e;
-        }
-
         /* Expanded Result Card (Spans full width across grid when user toggles Expand) */
         .result-card.is-expanded {
             grid-column: 1 / -1 !important;
@@ -2702,31 +2665,6 @@
         html.light-mode #resBeforeAfterContainer {
             background: #f8fafc !important;
             border: 1px solid #e2e8f0 !important;
-        }
-        html.light-mode #resMultiLayerChips {
-            background: #f8fafc !important;
-            border: 1px solid #e2e8f0 !important;
-        }
-        html.light-mode #resMultiLayerChips span[style*="color: #8EB69B"] {
-            color: #64748b !important;
-        }
-        html.light-mode .layer-quick-chip {
-            background: #ffffff !important;
-            border-color: #cbd5e1 !important;
-            color: #1e293b !important;
-        }
-        html.light-mode .res-multilayer-scroll-container,
-        html.light-mode .modal-multilayer-scroll-container {
-            scrollbar-color: #10b981 #e2e8f0;
-        }
-        html.light-mode .res-multilayer-scroll-container::-webkit-scrollbar-track,
-        html.light-mode .modal-multilayer-scroll-container::-webkit-scrollbar-track {
-            background: #e2e8f0;
-        }
-        html.light-mode .res-multilayer-scroll-container::-webkit-scrollbar-thumb,
-        html.light-mode .modal-multilayer-scroll-container::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border: 1.5px solid #ffffff;
         }
         html.light-mode #btnToggleExpandResultCard {
             background: #f1f5f9;
@@ -4687,15 +4625,6 @@
                         </div>
                     </div>
 
-                    <!-- Multi-Layer Quick Color Chips (visible when multiple colors are detected) -->
-                    <div id="resMultiLayerChips" style="display: none; margin-top: -6px; margin-bottom: 14px; padding: 10px 14px; border-radius: 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(142, 182, 155, 0.2);">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px;">
-                            <span style="font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">Detected Soil Colors (<span id="resMultiLayerChipsCount">0</span>)</span>
-                            <span style="font-size: 10px; color: #8EB69B; opacity: 0.85;">Click color to view details</span>
-                        </div>
-                        <div id="resMultiLayerChipsContainer" style="display: flex; flex-wrap: wrap; gap: 6px; width: 100%;"></div>
-                    </div>
-
                     <!-- Row 1: Code Details (3 Columns: Color Name, Full Code, Scan Count) -->
                     <div class="soil-modal-grid-3 soil-metrics-row-1" style="margin-bottom: 8px;">
                         <div class="soil-modal-grid-card">
@@ -4759,8 +4688,21 @@
                         </button>
                     </div>
 
-                    {{-- Soil Normalization: Before & After Card (Always visible once scan completes) --}}
-                    <div id="resBeforeAfterCard" class="soil-modal-grid-card" style="margin-bottom: 12px; padding: 12px 14px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
+                    {{-- Multi-Layer Accordion Section (All Detected Soil Layers with Drop-down results) --}}
+                    <div id="resMultiLayerSection" style="display: none; margin-top: 4px; margin-bottom: 14px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <div style="font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
+                                ALL DETECTED SOIL LAYERS (<span id="resMultiLayerCount">0</span>)
+                            </div>
+                            <button type="button" id="btnToggleAllLayers" style="background: none; border: none; font-size: 11px; font-weight: 700; color: #8EB69B; cursor: pointer; text-decoration: underline;">
+                                Expand All
+                            </button>
+                        </div>
+                        <div id="resMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    </div>
+
+                    {{-- Soil Normalization: Before & After Card (Placed AFTER the last result of soil before the two action buttons) --}}
+                    <div id="resBeforeAfterCard" class="soil-modal-grid-card" style="margin-bottom: 14px; padding: 12px 14px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <div class="soil-modal-label" style="font-size: 11px; font-weight: 800; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.04em;">
                                 SOIL NORMALIZATION
@@ -4776,19 +4718,6 @@
                             <div id="resBeforeAfterBoxes" style="position: absolute; inset: 0; pointer-events: none; z-index: 10;"></div>
                         </div>
                         <div id="resBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
-                    </div>
-
-                    {{-- Multi-Layer Accordion Section (All Detected Soil Layers with Drop-down results) --}}
-                    <div id="resMultiLayerSection" style="display: none; margin-top: 4px; margin-bottom: 14px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                            <div style="font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
-                                ALL DETECTED SOIL LAYERS (<span id="resMultiLayerCount">0</span>)
-                            </div>
-                            <button type="button" id="btnToggleAllLayers" style="background: none; border: none; font-size: 11px; font-weight: 700; color: #8EB69B; cursor: pointer; text-decoration: underline;">
-                                Expand All
-                            </button>
-                        </div>
-                        <div id="resMultiLayerItems" class="res-multilayer-scroll-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
 
                     {{-- Action Buttons Row: Save Copy (Left) & Pin All Detected (Right) --}}
@@ -7460,63 +7389,6 @@
                 }
                 match.image = actualScanImage;
                 match.scan_image = actualScanImage;
-
-                // Render Quick Multi-Layer Color Chips (Top Bar - instantly shows all detected colors)
-                const resMultiLayerChips = document.getElementById('resMultiLayerChips');
-                const resMultiLayerChipsContainer = document.getElementById('resMultiLayerChipsContainer');
-                const resMultiLayerChipsCount = document.getElementById('resMultiLayerChipsCount');
-                if (resMultiLayerChips && resMultiLayerChipsContainer) {
-                    if (isMultiLayer) {
-                        resMultiLayerChips.style.display = 'block';
-                        if (resMultiLayerChipsCount) resMultiLayerChipsCount.textContent = regions.length;
-                        resMultiLayerChipsContainer.innerHTML = '';
-                        regions.forEach((r, rIdx) => {
-                            const pct = r.percent || Math.round((r.proportion || 0.2) * 100);
-                            const mCode = r.munsell || r.munsell_code || match.code;
-                            const rHex = r.hex || getMunsellColorHex(mCode, '') || '#8F694E';
-                            const isDom = rIdx === 0;
-
-                            const chip = document.createElement('button');
-                            chip.type = 'button';
-                            chip.className = 'layer-quick-chip';
-                            chip.style.cssText = `
-                                display: inline-flex;
-                                align-items: center;
-                                gap: 6px;
-                                padding: 5px 11px;
-                                border-radius: 9999px;
-                                background: ${isDom ? 'rgba(34, 197, 94, 0.22)' : 'rgba(255, 255, 255, 0.1)'};
-                                border: 1.5px solid ${isDom ? '#22c55e' : 'rgba(255, 255, 255, 0.2)'};
-                                color: #ffffff;
-                                font-size: 11px;
-                                font-weight: 700;
-                                cursor: pointer;
-                                transition: all 0.2s ease;
-                            `;
-                            chip.innerHTML = `
-                                <span style="width: 10px; height: 10px; border-radius: 50%; background: ${rHex}; border: 1px solid rgba(255,255,255,0.4); display: inline-block;"></span>
-                                <span>${mCode} (${pct}%)</span>
-                                ${isDom ? '<span style="font-size: 9px; color: #4ade80; font-weight: 800; text-transform: uppercase;">DOMINANT</span>' : ''}
-                            `;
-                            chip.addEventListener('click', () => {
-                                if (isDom) {
-                                    document.getElementById('soilDualPreviewBadge')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                                } else {
-                                    const bodyEl = document.querySelector(`#res-region-avatar-${rIdx - 1}`)?.closest('.layer-accordion-body');
-                                    const chevronEl = bodyEl?.previousElementSibling?.querySelector('.layer-chevron');
-                                    if (bodyEl) {
-                                        bodyEl.style.display = 'block';
-                                        if (chevronEl) chevronEl.style.transform = 'rotate(90deg)';
-                                        bodyEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                                    }
-                                }
-                            });
-                            resMultiLayerChipsContainer.appendChild(chip);
-                        });
-                    } else {
-                        resMultiLayerChips.style.display = 'none';
-                    }
-                }
 
                 // Soil Normalization: Before & After Card Display (With Detected Soil Color Boxes & Swatches)
                 const resBeforeAfterCard = document.getElementById('resBeforeAfterCard');
@@ -10741,7 +10613,7 @@
 
                 <!-- Multi-Layer Accordion Section (Secondary & Tertiary Layers) -->
                 <div id="modalMultiLayerSection" style="display: none; margin-bottom: 12px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
-                    <div id="modalMultiLayerItems" class="modal-multilayer-scroll-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    <div id="modalMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
                 </div>
 
                 <!-- Soil Pin Location & Covered Area Card (Modal - Placed BEFORE Soil Normalization) -->
