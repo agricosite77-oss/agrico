@@ -57,20 +57,25 @@
             || in_array($adminEmail, ['agricosite77@gmail.com', 'admin@agrico.com'])
             || strtoupper((string) ($authUser?->user_id ?? $authUser?->admin_id ?? '')) === 'ADM-001';
 
-        $initialSuspendedQuery = \App\Models\User::where(function($q) {
-                $q->whereRaw('LOWER(role) = ?', ['student'])
-                  ->orWhereNotNull('student_id');
-            })
-            ->where(function($q) {
-                $q->whereRaw('LOWER(status) = ?', ['suspended'])
-                  ->orWhere(function($sub) {
-                      $sub->whereNotNull('suspended_until')->where('suspended_until', '>', now());
-                  });
-            });
+        $adminIdKey = \App\Models\Admin::currentAdminId();
+        $initialSuspendedCount = \Illuminate\Support\Facades\Cache::remember("sb_susp_{$adminIdKey}", 20, function () {
+            $q = \App\Models\User::where(function($q) {
+                    $q->whereRaw('LOWER(role) = ?', ['student'])
+                      ->orWhereNotNull('student_id');
+                })
+                ->where(function($q) {
+                    $q->whereRaw('LOWER(status) = ?', ['suspended'])
+                      ->orWhere(function($sub) {
+                          $sub->whereNotNull('suspended_until')->where('suspended_until', '>', now());
+                      });
+                });
+            \App\Models\Admin::scopeForCurrentAdmin($q);
+            return $q->count();
+        });
 
-        \App\Models\Admin::scopeForCurrentAdmin($initialSuspendedQuery);
-        $initialSuspendedCount = $initialSuspendedQuery->count();
-        $initialPendingCount = \App\Models\UserRequest::where('status', 'Pending')->count();
+        $initialPendingCount = \Illuminate\Support\Facades\Cache::remember('sb_pend_req_count', 20, function () {
+            return \App\Models\UserRequest::where('status', 'Pending')->count();
+        });
     @endphp
     <nav
         x-data="{

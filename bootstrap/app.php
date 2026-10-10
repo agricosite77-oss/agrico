@@ -27,11 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/*',
         ]);
 
-        // Append PreventResponseCaching to the 'web' middleware group so all
-        // HTTP responses strictly enforce no-cache headers.
+        // Ensure auth guards are synchronized and dynamic HTML responses are not cached stale
         $middleware->web(append: [
             \App\Http\Middleware\SyncAuthGuards::class,
-            \App\Http\Middleware\PreventResponseCaching::class,
             \App\Http\Middleware\NoCacheHeaders::class,
         ]);
 

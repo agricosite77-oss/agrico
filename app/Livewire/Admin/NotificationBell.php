@@ -17,27 +17,41 @@ class NotificationBell extends Component
     #[On('refresh-notifications')]
     public function handleRefresh(): void
     {
-        // Triggers re-render and updates notification counts
+        \Illuminate\Support\Facades\Cache::forget('sidebar_pending_requests_count');
     }
 
     public function render()
     {
-        // Auto-unsuspend any expired student suspensions so count stays accurate
-        User::where(function ($q) {
-            $q->whereRaw('LOWER(role) = ?', ['student'])
-              ->orWhereNotNull('student_id');
-        })
-        ->where('status', 'Suspended')
-        ->whereNotNull('suspended_until')
-        ->where('suspended_until', '<=', now())
-        ->update([
-            'status' => 'Active',
-            'suspended_until' => null,
-            'suspend_reason' => null,
-            'suspended_by_admin_id' => null,
-        ]);
+        // Auto-unsuspend check throttled to once every 30 seconds to avoid heavy DB roundtrips
+        if (!\Illuminate\Support\Facades\Cache::has('auto_unsuspend_last_checked')) {
+            \Illuminate\Support\Facades\Cache::put('auto_unsuspend_last_checked', true, 30);
+            
+            $hasExpired = User::where('status', 'Suspended')
+                ->whereNotNull('suspended_until')
+                ->where('suspended_until', '<=', now())
+                ->exists();
 
-        $headerPendingCount = UserRequest::where('status', 'Pending')->count();
+            if ($hasExpired) {
+                User::where(function ($q) {
+                    $q->whereRaw('LOWER(role) = ?', ['student'])
+                      ->orWhereNotNull('student_id');
+                })
+                ->where('status', 'Suspended')
+                ->whereNotNull('suspended_until')
+                ->where('suspended_until', '<=', now())
+                ->update([
+                    'status' => 'Active',
+                    'suspended_until' => null,
+                    'suspend_reason' => null,
+                    'suspended_by_admin_id' => null,
+                ]);
+            }
+        }
+
+        $headerPendingCount = \Illuminate\Support\Facades\Cache::remember('sidebar_pending_requests_count', 20, function () {
+            return UserRequest::where('status', 'Pending')->count();
+        });
+
         $recentPendingRequests = $headerPendingCount > 0
             ? UserRequest::where('status', 'Pending')->latest('submitted_at')->take(4)->get()
             : collect();
