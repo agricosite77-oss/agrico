@@ -1373,6 +1373,73 @@
             overflow-wrap: break-word;
         }
 
+        /* Left-Side Scrollbar for Detected Soil Layers Container */
+        .res-multilayer-scroll-container,
+        .modal-multilayer-scroll-container {
+            direction: rtl !important; /* Positions vertical scrollbar at the LEFT edge */
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            max-height: 540px;
+            padding-left: 10px; /* spacing away from left scrollbar */
+            padding-right: 4px;
+            box-sizing: border-box;
+            scrollbar-width: thin;
+            scrollbar-color: #10b981 rgba(11, 43, 38, 0.45);
+        }
+        .res-multilayer-scroll-container > *,
+        .modal-multilayer-scroll-container > * {
+            direction: ltr !important; /* Preserves standard Left-to-Right content flow */
+        }
+        .res-multilayer-scroll-container::-webkit-scrollbar,
+        .modal-multilayer-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .res-multilayer-scroll-container::-webkit-scrollbar-track,
+        .modal-multilayer-scroll-container::-webkit-scrollbar-track {
+            background: rgba(11, 43, 38, 0.45);
+            border-radius: 9999px;
+        }
+        .res-multilayer-scroll-container::-webkit-scrollbar-thumb,
+        .modal-multilayer-scroll-container::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 9999px;
+            border: 1.5px solid #0B2B26;
+        }
+        .res-multilayer-scroll-container::-webkit-scrollbar-thumb:hover,
+        .modal-multilayer-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #22c55e;
+        }
+
+        /* Expanded Result Card (Spans full width across grid when user toggles Expand) */
+        .result-card.is-expanded {
+            grid-column: 1 / -1 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        #btnToggleExpandResultCard {
+            background: rgba(142, 182, 155, 0.12);
+            border: 1px solid rgba(142, 182, 155, 0.3);
+            color: #8EB69B;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        #btnToggleExpandResultCard:hover {
+            background: rgba(142, 182, 155, 0.22);
+            color: #DAF1DE;
+            border-color: #8EB69B;
+        }
+
         /* Detected Soil Results Dropdown Menus */
         .res-layer-dropdown-menu,
         .modal-layer-dropdown-menu {
@@ -2648,6 +2715,33 @@
             border-color: #cbd5e1 !important;
             color: #1e293b !important;
         }
+        html.light-mode .res-multilayer-scroll-container,
+        html.light-mode .modal-multilayer-scroll-container {
+            scrollbar-color: #10b981 #e2e8f0;
+        }
+        html.light-mode .res-multilayer-scroll-container::-webkit-scrollbar-track,
+        html.light-mode .modal-multilayer-scroll-container::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        html.light-mode .res-multilayer-scroll-container::-webkit-scrollbar-thumb,
+        html.light-mode .modal-multilayer-scroll-container::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border: 1.5px solid #ffffff;
+        }
+        html.light-mode #btnToggleExpandResultCard {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+        html.light-mode #btnToggleExpandResultCard:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+            border-color: #94a3b8;
+        }
+        html.light-mode .result-card.is-expanded {
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12) !important;
+        }
+
         html.light-mode .res-layer-dropdown-menu,
         html.light-mode .modal-layer-dropdown-menu {
             background: #ffffff !important;
@@ -4540,8 +4634,16 @@
 
                 <div id="resultContent" style="display: none;">
                     <div class="result-header" style="margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(142, 182, 155, 0.2); display: flex; align-items: center; justify-content: space-between;">
-                        <h3 id="resHeaderTitle" class="result-header-title" style="font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin: 0; color: #16a34a;">DETERMINED SOIL RECORD</h3>
-                        <span id="resMultiBadgeCount" style="display: none; font-size: 11px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 8px; border-radius: 9999px; border: 1px solid rgba(34, 197, 94, 0.3);">1 DETECTED</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <h3 id="resHeaderTitle" class="result-header-title" style="font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin: 0; color: #16a34a;">DETERMINED SOIL RECORD</h3>
+                            <span id="resMultiBadgeCount" style="display: none; font-size: 11px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 8px; border-radius: 9999px; border: 1px solid rgba(34, 197, 94, 0.3);">1 DETECTED</span>
+                        </div>
+                        <button type="button" id="btnToggleExpandResultCard" onclick="toggleResultCardExpansion()" title="Expand or Compress Result View">
+                            <svg id="expandResultIcon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                            </svg>
+                            <span id="expandResultText">Expand Result</span>
+                        </button>
                     </div>
 
                     <!-- Dual-Preview Soil Badge Banner (Overlapping Left Circular Soil Snippet + Center Munsell Code + Right Hex Pill) -->
@@ -4686,7 +4788,7 @@
                                 Expand All
                             </button>
                         </div>
-                        <div id="resMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                        <div id="resMultiLayerItems" class="res-multilayer-scroll-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
 
                     {{-- Action Buttons Row: Save Copy (Left) & Pin All Detected (Right) --}}
@@ -6469,6 +6571,11 @@
             const resultContent = document.getElementById('resultContent');
 
             if (scannerCard && resultCard) {
+                if (resultCard.classList.contains('is-expanded')) {
+                    resultCard.style.height = 'auto';
+                    resultCard.style.minHeight = '480px';
+                    return;
+                }
                 if (window.innerWidth > 900) {
                     const leftH = scannerCard.offsetHeight;
                     if (leftH > 0) {
@@ -6487,6 +6594,27 @@
                 }
             }
         }
+
+        window.toggleResultCardExpansion = function() {
+            const resCard = document.getElementById('resultCard');
+            const expandText = document.getElementById('expandResultText');
+            const expandIcon = document.getElementById('expandResultIcon');
+            if (!resCard) return;
+
+            const isExpanded = resCard.classList.toggle('is-expanded');
+            if (expandText) {
+                expandText.textContent = isExpanded ? 'Collapse View' : 'Expand Result';
+            }
+            if (expandIcon) {
+                expandIcon.innerHTML = isExpanded 
+                    ? '<path stroke-linecap="round" stroke-linejoin="round" d="M9 9L4 4m0 0h4m-4 0v4m11 5l5 5m0 0h-4m4 0v-4M9 15l-5 5m0 0h4m-4 0v-4m11-11l5-5m0 0h-4m4 0v4"/>'
+                    : '<path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>';
+            }
+            setTimeout(() => {
+                syncScannerCardHeights();
+                resCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
+        };
 
         window.addEventListener('resize', syncScannerCardHeights);
         document.addEventListener('DOMContentLoaded', () => {
@@ -7724,9 +7852,9 @@
                         const bodyEl = itemDiv.querySelector('.layer-accordion-body');
                         const chevronEl = itemDiv.querySelector('.layer-chevron');
                         headerBtn.addEventListener('click', () => {
-                            const isOpen = bodyEl.style.display === 'block';
-                            bodyEl.style.display = isOpen ? 'none' : 'block';
-                            chevronEl.style.transform = isOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+                            const willOpen = bodyEl.style.display !== 'block';
+                            bodyEl.style.display = willOpen ? 'block' : 'none';
+                            chevronEl.style.transform = willOpen ? 'rotate(90deg)' : 'rotate(0deg)';
                         });
 
                         resMultiLayerItems.appendChild(itemDiv);
@@ -8461,9 +8589,9 @@
                         const bodyEl = itemDiv.querySelector('.layer-accordion-body');
                         const chevronEl = itemDiv.querySelector('.layer-chevron');
                         headerBtn.addEventListener('click', () => {
-                            const isOpen = bodyEl.style.display === 'block';
-                            bodyEl.style.display = isOpen ? 'none' : 'block';
-                            chevronEl.textContent = isOpen ? '▶' : '▼';
+                            const willOpen = bodyEl.style.display !== 'block';
+                            bodyEl.style.display = willOpen ? 'block' : 'none';
+                            chevronEl.textContent = willOpen ? '▼' : '▶';
                         });
 
                         modalMultiLayerItems.appendChild(itemDiv);
@@ -10613,7 +10741,7 @@
 
                 <!-- Multi-Layer Accordion Section (Secondary & Tertiary Layers) -->
                 <div id="modalMultiLayerSection" style="display: none; margin-bottom: 12px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
-                    <div id="modalMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    <div id="modalMultiLayerItems" class="modal-multilayer-scroll-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
                 </div>
 
                 <!-- Soil Pin Location & Covered Area Card (Modal - Placed BEFORE Soil Normalization) -->
