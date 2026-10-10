@@ -22,6 +22,7 @@ class Admin extends Authenticatable
         'email',
         'password',
         'profile_photo_path',
+        'remember_token',
     ];
 
     public function getProfilePhotoUrlAttribute()

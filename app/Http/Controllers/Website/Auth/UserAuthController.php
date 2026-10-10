@@ -14,7 +14,7 @@ class UserAuthController extends Controller
     /**
      * Display the User Website Login view.
      */
-    public function showLoginForm(): \Illuminate\Contracts\View\View
+    public function showLoginForm(): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
         if (request()->has('force')) {
             Auth::guard('web')->logout();
@@ -24,8 +24,13 @@ class UserAuthController extends Controller
             return view('website.auth.login');
         }
 
-        session()->forget('user_id');
-        session()->forget('admin_id');
+        if (Auth::guard('admin')->check() || (Auth::guard('web')->check() && in_array(strtolower(Auth::guard('web')->user()->role ?? ''), ['admin', 'super admin', 'superadmin']))) {
+            return redirect()->route('dashboard');
+        }
+
+        if (Auth::guard('web')->check()) {
+            return redirect()->route('website.home');
+        }
 
         return view('website.auth.login');
     }
@@ -39,6 +44,8 @@ class UserAuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
+
+        $remember = $request->boolean('remember', true);
 
         // 1. Check User model table
         $user = User::where('email', $credentials['email'])->first();
@@ -67,7 +74,7 @@ class UserAuthController extends Controller
                 $request->session()->invalidate();
                 $request->session()->regenerate();
 
-                Auth::guard('web')->login($user, false);
+                Auth::guard('web')->login($user, $remember);
                 $request->session()->put('user_id', $user->user_id);
 
                 // Role-based redirection: Admins go to Admin Dashboard
@@ -87,7 +94,7 @@ class UserAuthController extends Controller
                             'password'  => $user->password,
                         ]);
                     }
-                    Auth::guard('admin')->login($adminRecord, false);
+                    Auth::guard('admin')->login($adminRecord, $remember);
                     $request->session()->put('admin_id', $adminRecord->admin_id);
                     $request->session()->put('user_id', $user->user_id);
                     $request->session()->save();
@@ -111,7 +118,7 @@ class UserAuthController extends Controller
                 $request->session()->invalidate();
                 $request->session()->regenerate();
 
-                Auth::guard('admin')->login($admin, false);
+                Auth::guard('admin')->login($admin, $remember);
                 
                 $userRecord = User::where('email', $admin->email)->first();
                 $isSuperAdminEmail = in_array(strtolower($admin->email), ['agricosite77@gmail.com', 'admin@agrico.com']);
@@ -129,7 +136,7 @@ class UserAuthController extends Controller
                 } elseif ($isSuperAdminEmail && strtolower($userRecord->role ?? '') !== 'superadmin') {
                     $userRecord->update(['role' => 'superadmin']);
                 }
-                Auth::guard('web')->login($userRecord, false);
+                Auth::guard('web')->login($userRecord, $remember);
 
                 $request->session()->put('admin_id', $userRecord->user_id);
                 $request->session()->put('user_id', $userRecord->user_id);

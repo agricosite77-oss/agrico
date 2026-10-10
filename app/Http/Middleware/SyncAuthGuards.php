@@ -29,7 +29,7 @@ class SyncAuthGuards
                 if ($email && (!$webUser || strtolower($webUser->email ?? '') !== strtolower($email))) {
                     $userRecord = \App\Models\User::where('email', $email)->first();
                     if (!$userRecord) {
-                        $realId = $admin->admin_id ?? $admin->user_id ?? $admin->Admin_ID ?? ('ADM-' . str_pad(\App\Models\User::count() + 1, 3, '0', STR_PAD_LEFT));
+                        $realId = $admin->admin_id ?? $admin->user_id ?? $admin->Admin_ID ?? ('ADM-' . str_pad((string)(\App\Models\User::count() + 1), 3, '0', STR_PAD_LEFT));
                         $userRecord = \App\Models\User::create([
                             'user_id'       => $realId,
                             'name'          => $admin->full_name ?? $admin->name ?? 'Admin User',
@@ -40,9 +40,25 @@ class SyncAuthGuards
                             'last_admin_id' => $realId,
                         ]);
                     }
-                    Auth::guard('web')->login($userRecord, false);
+                    Auth::guard('web')->login($userRecord, true);
                     $request->session()->put('admin_id', $userRecord->user_id);
                     $request->session()->put('user_id', $userRecord->user_id);
+                }
+            }
+        } elseif (Auth::guard('web')->check()) {
+            // If web guard has an admin user, align admin guard as well
+            $user = Auth::guard('web')->user();
+            $role = strtolower($user->role ?? '');
+            $isSuperAdmin = in_array(strtolower($user->email ?? ''), ['agricosite77@gmail.com', 'admin@agrico.com']);
+            if (in_array($role, ['admin', 'super admin', 'superadmin']) || $isSuperAdmin) {
+                $email = $user->email ?? null;
+                if ($email) {
+                    $admin = \App\Models\Admin::where('email', $email)->first();
+                    if ($admin) {
+                        Auth::guard('admin')->login($admin, true);
+                        $request->session()->put('admin_id', $admin->admin_id);
+                        $request->session()->put('user_id', $user->user_id);
+                    }
                 }
             }
         }
