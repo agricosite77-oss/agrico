@@ -4616,7 +4616,7 @@
                         <!-- Overlapping Soil Snippet on Left (Square-ish with subtle rounded corners) -->
                         <div id="resSoilSnippetContainer"
                              style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 96px; height: 96px; aspect-ratio: 1 / 1; border-radius: 12px; box-shadow: none !important; background: transparent; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; pointer-events: none; border: none; outline: none;">
-                            <img id="resSoilCircleSnippet" src="" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; border-radius: 0; border: none; outline: none;" />
+                            <img id="resSoilCircleSnippet" src="" alt="" onerror="this.style.display='none'; const fb = document.getElementById('resSoilSnippetFallback'); if (fb) fb.style.display='flex';" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; border-radius: 0; border: none; outline: none;" />
                             <div id="resSoilSnippetFallback" style="position: absolute; inset: 0; border-radius: 0; display: flex; align-items: center; justify-content: center; background: #163832; color: #8EB69B;">
                                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -5917,8 +5917,13 @@
 
         // Circular ROI Avatar Snippet Crop Engine
         function extractCircularSoilSnippet(sourceElement, bgHex = null) {
-            const cropCanvas = createIsolatedCircularRoiCanvas(sourceElement, bgHex);
-            return cropCanvas ? cropCanvas.toDataURL('image/png') : null;
+            try {
+                const cropCanvas = createIsolatedCircularRoiCanvas(sourceElement, bgHex);
+                return cropCanvas ? cropCanvas.toDataURL('image/png') : null;
+            } catch (e) {
+                console.warn('Error extracting circular soil snippet:', e);
+                return null;
+            }
         }
 
         // Asynchronous AJAX Pagination Engine (No Page Reload / No Label Movement)
@@ -7407,52 +7412,72 @@
                 window.currentBeforeAfterRegion = targetReg;
                 window.currentDetectedSoilRegion = targetReg;
 
+                const rawSrc = data.raw_image_url || snippetUrl || base64Image;
+                const normSrc = actualScanImage;
+                const clientFallback = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || rawSrc || normSrc;
+
                 function showResBeforeAfter(src) {
                     if (!src || !resBeforeAfterCard || !resBeforeAfterImg) return;
                     resBeforeAfterCard.style.display = 'block';
                     resBeforeAfterImg.onload = () => {
                         resBeforeAfterCard.style.display = 'block';
-                        if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
-                        if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
+                        try {
+                            if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
+                            if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
+                        } catch (err) {
+                            console.warn('[showResBeforeAfter] boxes/swatches error:', err);
+                        }
                     };
                     resBeforeAfterImg.onerror = () => {
-                        const clientSrc = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || rawSrc || normSrc;
+                        const clientSrc = clientFallback;
                         if (clientSrc && resBeforeAfterImg.src !== clientSrc) {
-                            generateBeforeAfterCanvas(clientSrc, clientSrc, match.code, targetReg, (stitchedDataUrl) => {
-                                if (stitchedDataUrl) {
-                                    showResBeforeAfter(stitchedDataUrl);
-                                } else {
-                                    resBeforeAfterCard.style.display = 'block';
-                                    resBeforeAfterImg.src = clientSrc;
-                                }
-                            });
+                            try {
+                                generateBeforeAfterCanvas(clientSrc, clientSrc, match.code, targetReg, (stitchedDataUrl) => {
+                                    if (stitchedDataUrl) {
+                                        showResBeforeAfter(stitchedDataUrl);
+                                    } else {
+                                        resBeforeAfterCard.style.display = 'block';
+                                        resBeforeAfterImg.src = clientSrc;
+                                    }
+                                });
+                            } catch (e) {
+                                resBeforeAfterCard.style.display = 'block';
+                            }
                         } else {
                             resBeforeAfterCard.style.display = 'block';
                         }
                     };
                     resBeforeAfterImg.src = src;
-                    if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
-                    if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
+                    try {
+                        if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
+                        if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
+                    } catch (err) {
+                        console.warn('[showResBeforeAfter] boxes/swatches error:', err);
+                    }
                     resBeforeAfterCard.style.display = 'block';
                 }
 
-                if (resBeforeAfterCard && resBeforeAfterImg) {
+                if (resBeforeAfterCard) {
                     // Guaranteed immediate display
                     resBeforeAfterCard.style.display = 'block';
-                    if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
-                    if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
-
-                    const rawSrc = data.raw_image_url || snippetUrl || base64Image;
-                    const normSrc = actualScanImage;
-                    const clientFallback = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || rawSrc || normSrc;
+                    try {
+                        if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
+                        if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
+                    } catch (e) {
+                        console.warn('Initial before/after boxes error:', e);
+                    }
 
                     // Immediately generate local canvas so the user NEVER sees missing content
                     if (clientFallback) {
-                        generateBeforeAfterCanvas(clientFallback, normSrc || clientFallback, match.code, targetReg, (stitchedDataUrl) => {
-                            if (stitchedDataUrl) {
-                                showResBeforeAfter(stitchedDataUrl);
-                            }
-                        });
+                        try {
+                            generateBeforeAfterCanvas(clientFallback, normSrc || clientFallback, match.code, targetReg, (stitchedDataUrl) => {
+                                if (stitchedDataUrl) {
+                                    showResBeforeAfter(stitchedDataUrl);
+                                }
+                            });
+                        } catch (err) {
+                            console.warn('Initial generateBeforeAfterCanvas error:', err);
+                        }
                     }
 
                     // Preload server normalized before/after image if available and upgrade smoothly
@@ -7595,6 +7620,7 @@
 
                     const btnToggleAllLayers = document.getElementById('btnToggleAllLayers');
                     if (btnToggleAllLayers) {
+                        btnToggleAllLayers.textContent = 'Collapse All';
                         btnToggleAllLayers.onclick = () => {
                             const bodies = resMultiLayerItems.querySelectorAll('.layer-accordion-body');
                             const chevrons = resMultiLayerItems.querySelectorAll('.layer-chevron');
@@ -7610,126 +7636,137 @@
 
                     resMultiLayerItems.innerHTML = '';
                     regions.slice(1).forEach((r, idx) => {
-                        const rPct = r.percent || Math.round((r.proportion || 0.2) * 100);
-                        const rMunsell = r.munsell || r.munsell_code || 'Soil Color';
-                        const rHex = r.hex || getMunsellColorHex(rMunsell, '') || '#8F694E';
-                        const rLabel = r.label || r.color_name || 'Soil Color';
-                        const rConf = window.getNearMatchScore(r, '96.8%');
+                        try {
+                            const rPct = r.percent || Math.round((r.proportion || 0.2) * 100);
+                            const rMunsell = r.munsell || r.munsell_code || 'Soil Color';
+                            const rHex = r.hex || getMunsellColorHex(rMunsell, '') || '#8F694E';
+                            const rLabel = r.label || r.color_name || 'Soil Color';
+                            const rConf = window.getNearMatchScore(r, '96.8%');
 
-                        const rOrganic = r.organic_matter || match.organic || 'Moderate (2.2% – 3.7%)';
-                        const rDrainage = r.soil_name || match.drainage || 'Well-Drained Clay / Latosol';
-                        const rDesc = r.description || `${rMunsell} - ${rLabel}`;
+                            const rOrganic = r.organic_matter || match.organic || 'Moderate (2.2% – 3.7%)';
+                            const rDrainage = r.soil_name || match.drainage || 'Well-Drained Clay / Latosol';
+                            const rDesc = r.description || `${rMunsell} - ${rLabel}`;
 
-                        const itemDiv = document.createElement('div');
-                        itemDiv.className = 'layer-accordion-item';
+                            const itemDiv = document.createElement('div');
+                            itemDiv.className = 'layer-accordion-item';
 
-                        const avatarId = `res-region-avatar-${idx}`;
+                            const avatarId = `res-region-avatar-${idx}`;
 
-                        itemDiv.innerHTML = `
-                            <button type="button" class="layer-accordion-header" style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;">
-                                <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; min-width: 0;">
-                                    <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease;">▶</span>
-                                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell} &bull; ${rLabel}</span>
-                                </div>
-                                <div style="display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                                    <span style="width: 16px; height: 16px; border-radius: 4px; background: ${rHex}; border: 1px solid rgba(255,255,255,0.4); display: inline-block;"></span>
-                                    <span style="font-size: 11px; font-weight: 800; background: rgba(0,0,0,0.3); color: #fff; padding: 2px 7px; border-radius: 9999px;">${rPct}%</span>
-                                </div>
-                            </button>
-                            <div class="layer-accordion-body" style="display: none; padding: 14px;">
-
-                                <!-- Swatch banner: matches dominant layer hero style with square-ish avatar on left -->
-                                <div style="width: 100%; height: 66px; border-radius: 12px; background: ${rHex}; box-shadow: 0 3px 10px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; padding: 0 14px; margin-bottom: 10px; box-sizing: border-box; overflow: visible;">
-                                    <span id="${avatarId}" style="width:56px;height:56px;aspect-ratio:1/1;border-radius:10px;background:rgba(0,0,0,0.2);border:none;outline:none;flex-shrink:0;overflow:hidden;box-shadow:none;position:relative;display:flex;align-items:center;justify-content:center;">
-                                        <img class="layer-zoom-img" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;border-radius:0;border:none;outline:none;" />
-                                        <span class="layer-zoom-fallback" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:0;"></span>
-                                    </span>
-                                    <span style="font-size: 17px; font-weight: 800; color: #ffffff; text-shadow: none; flex: 1; min-width: 0;">${rMunsell}</span>
-                                    <span style="font-size: 10.5px; font-weight: 800; color: #ffffff; background: rgba(0,0,0,0.5); padding: 3px 9px; border-radius: 9999px; font-family: monospace; flex-shrink: 0;">${rHex.toUpperCase()}</span>
-                                </div>
-
-                                <!-- Row 1: Color Name, Full Code, Proportion -->
-                                <div class="soil-modal-grid-3" style="margin-bottom: 8px;">
-                                    <div class="soil-modal-grid-card">
-                                        <div class="soil-modal-label">Color Name</div>
-                                        <div class="soil-modal-value">${rLabel}</div>
+                            itemDiv.innerHTML = `
+                                <button type="button" class="layer-accordion-header" style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;">
+                                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; min-width: 0;">
+                                        <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease; transform: rotate(90deg);">▶</span>
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell} &bull; ${rLabel}</span>
                                     </div>
-                                    <div class="soil-modal-grid-card">
-                                        <div class="soil-modal-label">Full Code</div>
-                                        <div class="soil-modal-value">${rMunsell}</div>
+                                    <div style="display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                                        <span style="width: 16px; height: 16px; border-radius: 4px; background: ${rHex}; border: 1px solid rgba(255,255,255,0.4); display: inline-block;"></span>
+                                        <span style="font-size: 11px; font-weight: 800; background: rgba(0,0,0,0.3); color: #fff; padding: 2px 7px; border-radius: 9999px;">${rPct}%</span>
                                     </div>
+                                </button>
+                                <div class="layer-accordion-body" style="display: block; padding: 14px;">
+
+                                    <!-- Swatch banner: matches dominant layer hero style with square-ish avatar on left -->
+                                    <div style="width: 100%; height: 66px; border-radius: 12px; background: ${rHex}; box-shadow: 0 3px 10px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; padding: 0 14px; margin-bottom: 10px; box-sizing: border-box; overflow: visible;">
+                                        <span id="${avatarId}" style="width:56px;height:56px;aspect-ratio:1/1;border-radius:10px;background:rgba(0,0,0,0.2);border:none;outline:none;flex-shrink:0;overflow:hidden;box-shadow:none;position:relative;display:flex;align-items:center;justify-content:center;">
+                                            <img class="layer-zoom-img" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;border-radius:0;border:none;outline:none;" />
+                                            <span class="layer-zoom-fallback" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:0;"></span>
+                                        </span>
+                                        <span style="font-size: 17px; font-weight: 800; color: #ffffff; text-shadow: none; flex: 1; min-width: 0;">${rMunsell}</span>
+                                        <span style="font-size: 10.5px; font-weight: 800; color: #ffffff; background: rgba(0,0,0,0.5); padding: 3px 9px; border-radius: 9999px; font-family: monospace; flex-shrink: 0;">${rHex.toUpperCase()}</span>
+                                    </div>
+
+                                    <!-- Row 1: Color Name, Full Code, Proportion -->
+                                    <div class="soil-modal-grid-3" style="margin-bottom: 8px;">
+                                        <div class="soil-modal-grid-card">
+                                            <div class="soil-modal-label">Color Name</div>
+                                            <div class="soil-modal-value">${rLabel}</div>
+                                        </div>
+                                        <div class="soil-modal-grid-card">
+                                            <div class="soil-modal-label">Full Code</div>
+                                            <div class="soil-modal-value">${rMunsell}</div>
+                                        </div>
+                                        <div class="soil-modal-grid-card">
+                                            <div class="soil-modal-label">Proportion</div>
+                                            <div class="soil-modal-value">${rPct}%</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 2: Soil Organic, Soil Type, Near-Match -->
+                                    <div class="soil-modal-grid-3" style="margin-bottom: 8px;">
+                                        <div class="soil-modal-grid-card">
+                                            <div class="soil-modal-label">Soil Organic</div>
+                                            <div class="soil-modal-value">${rOrganic}</div>
+                                        </div>
+                                        <div class="soil-modal-grid-card">
+                                            <div class="soil-modal-label">Soil Type</div>
+                                            <div class="soil-modal-value">${rDrainage}</div>
+                                        </div>
+                                        <div class="soil-modal-grid-card">
+                                            <div class="soil-modal-label">Near-Match</div>
+                                            <div class="soil-modal-value" style="color: #10b981;">${rConf}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Scan Note -->
+                                    <div class="soil-modal-grid-card" style="margin-bottom: 8px;">
+                                        <div class="soil-modal-label">Scan Note</div>
+                                        <div class="soil-modal-value layer-accordion-desc" style="font-size: 13px; font-weight: 700; line-height: 1.5; white-space: pre-line;">${(r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') ? r.scan_note : 'No scan note available for this record.'}</div>
+                                    </div>
+
+                                    <!-- Description -->
                                     <div class="soil-modal-grid-card">
-                                        <div class="soil-modal-label">Proportion</div>
-                                        <div class="soil-modal-value">${rPct}%</div>
+                                        <div class="soil-modal-label">Description</div>
+                                        <div class="soil-modal-value layer-accordion-desc" style="font-size: 13px; font-weight: 700; line-height: 1.5; white-space: pre-line;">${rDesc}</div>
+                                    </div>
+
+                                    <!-- Layer Pin Location Button (Placed directly after Description) -->
+                                    <div style="margin-top: 10px;">
+                                        <button type="button" class="btn-res-action btn-res-pin-location btn-layer-pin-btn" style="width: 100%; justify-content: center; padding: 10px 14px; font-size: 12.5px;" title="Pin This Soil Layer to Map">
+                                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span>Pin Location</span>
+                                        </button>
                                     </div>
                                 </div>
+                            `;
 
-                                <!-- Row 2: Soil Organic, Soil Type, Near-Match -->
-                                <div class="soil-modal-grid-3" style="margin-bottom: 8px;">
-                                    <div class="soil-modal-grid-card">
-                                        <div class="soil-modal-label">Soil Organic</div>
-                                        <div class="soil-modal-value">${rOrganic}</div>
-                                    </div>
-                                    <div class="soil-modal-grid-card">
-                                        <div class="soil-modal-label">Soil Type</div>
-                                        <div class="soil-modal-value">${rDrainage}</div>
-                                    </div>
-                                    <div class="soil-modal-grid-card">
-                                        <div class="soil-modal-label">Near-Match</div>
-                                        <div class="soil-modal-value" style="color: #10b981;">${rConf}</div>
-                                    </div>
-                                </div>
+                            // Populate the avatar with whole image + colored bounding box for this sub-layer
+                            try {
+                                populateZoomAvatar(
+                                    itemDiv.querySelector(`#${avatarId}`),
+                                    r,
+                                    window.currentClientSoilPhoto || actualScanImage
+                                );
+                            } catch (e) {
+                                console.warn('[processSelectedPhoto] populateZoomAvatar error:', e);
+                            }
 
-                                <!-- Scan Note -->
-                                <div class="soil-modal-grid-card" style="margin-bottom: 8px;">
-                                    <div class="soil-modal-label">Scan Note</div>
-                                    <div class="soil-modal-value layer-accordion-desc" style="font-size: 13px; font-weight: 700; line-height: 1.5; white-space: pre-line;">${(r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') ? r.scan_note : 'No scan note available for this record.'}</div>
-                                </div>
+                            const layerPinBtn = itemDiv.querySelector('.btn-layer-pin-btn');
+                            if (layerPinBtn) {
+                                layerPinBtn.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    openPinLocationModal(r, false);
+                                });
+                            }
 
-                                <!-- Description -->
-                                <div class="soil-modal-grid-card">
-                                    <div class="soil-modal-label">Description</div>
-                                    <div class="soil-modal-value layer-accordion-desc" style="font-size: 13px; font-weight: 700; line-height: 1.5; white-space: pre-line;">${rDesc}</div>
-                                </div>
+                            const headerBtn = itemDiv.querySelector('.layer-accordion-header');
+                            const bodyEl = itemDiv.querySelector('.layer-accordion-body');
+                            const chevronEl = itemDiv.querySelector('.layer-chevron');
+                            if (headerBtn) {
+                                headerBtn.addEventListener('click', () => {
+                                    if (!bodyEl) return;
+                                    const willOpen = bodyEl.style.display !== 'block';
+                                    bodyEl.style.display = willOpen ? 'block' : 'none';
+                                    if (chevronEl) chevronEl.style.transform = willOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+                                });
+                            }
 
-                                <!-- Layer Pin Location Button (Placed directly after Description) -->
-                                <div style="margin-top: 10px;">
-                                    <button type="button" class="btn-res-action btn-res-pin-location btn-layer-pin-btn" style="width: 100%; justify-content: center; padding: 10px 14px; font-size: 12.5px;" title="Pin This Soil Layer to Map">
-                                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        </svg>
-                                        <span>Pin Location</span>
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-
-                        // Populate the avatar with whole image + colored bounding box for this sub-layer
-                        populateZoomAvatar(
-                            itemDiv.querySelector(`#${avatarId}`),
-                            r,
-                            window.currentClientSoilPhoto || actualScanImage
-                        );
-
-                        const layerPinBtn = itemDiv.querySelector('.btn-layer-pin-btn');
-                        if (layerPinBtn) {
-                            layerPinBtn.addEventListener('click', (e) => {
-                                e.stopPropagation();
-                                openPinLocationModal(r, false);
-                            });
+                            resMultiLayerItems.appendChild(itemDiv);
+                        } catch (layerErr) {
+                            console.warn('[processSelectedPhoto] Error rendering layer row:', layerErr);
                         }
-
-                        const headerBtn = itemDiv.querySelector('.layer-accordion-header');
-                        const bodyEl = itemDiv.querySelector('.layer-accordion-body');
-                        const chevronEl = itemDiv.querySelector('.layer-chevron');
-                        headerBtn.addEventListener('click', () => {
-                            const willOpen = bodyEl.style.display !== 'block';
-                            bodyEl.style.display = willOpen ? 'block' : 'none';
-                            chevronEl.style.transform = willOpen ? 'rotate(90deg)' : 'rotate(0deg)';
-                        });
-
-                        resMultiLayerItems.appendChild(itemDiv);
                     });
                 } else if (resMultiLayerSection) {
                     resMultiLayerSection.style.display = 'none';
