@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Request;
 
+use App\Models\Admin;
 use App\Models\UserRequest;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -54,6 +55,44 @@ class ManageRequest extends Component
         $this->selectedRequestId = null;
     }
 
+    public function approve(int|string|null $id = null): void
+    {
+        $id = $id ?? $this->selectedRequestId;
+        if (!$id) return;
+
+        $result = UserRequest::approveRequest($id, Admin::currentAdminId());
+
+        if ($result['success']) {
+            session()->flash('message', $result['message']);
+            $this->dispatch('request-updated');
+            $this->dispatch('sidebar-counts-updated');
+        } else {
+            session()->flash('error', $result['message']);
+        }
+
+        $this->showViewModal = false;
+        $this->selectedRequestId = null;
+    }
+
+    public function disapprove(int|string|null $id = null): void
+    {
+        $id = $id ?? $this->selectedRequestId;
+        if (!$id) return;
+
+        $result = UserRequest::disapproveRequest($id, Admin::currentAdminId());
+
+        if ($result['success']) {
+            session()->flash('message', $result['message']);
+            $this->dispatch('request-updated');
+            $this->dispatch('sidebar-counts-updated');
+        } else {
+            session()->flash('error', $result['message']);
+        }
+
+        $this->showViewModal = false;
+        $this->selectedRequestId = null;
+    }
+
     public function render()
     {
         $query = UserRequest::query();
@@ -102,8 +141,8 @@ class ManageRequest extends Component
     {
         if (!$req) return null;
 
-        $desc = $req->description ?? '';
-        $type = strtolower($req->type ?? '');
+        $desc = (string) ($req->description ?? '');
+        $type = strtolower((string) ($req->type ?? ''));
 
         $isSoilCoord = str_contains($type, 'coordinate')
             || str_contains($type, 'location')

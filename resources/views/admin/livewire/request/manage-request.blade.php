@@ -133,14 +133,24 @@
         </div>
     </div>
 
-    {{-- FLASH NOTIFICATION --}}
-    @if (session()->has('message'))
+    {{-- FLASH NOTIFICATIONS --}}
+    @if (session()->has('message') || session()->has('success'))
         <div style="background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; padding:12px 16px; border-radius:14px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px;">
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
                 <polyline points="22 4 12 14.01 9 11.01"/>
             </svg>
-            <span>{{ session('message') }}</span>
+            <span>{{ session('message') ?? session('success') }}</span>
+        </div>
+    @endif
+    @if (session()->has('error'))
+        <div style="background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:12px 16px; border-radius:14px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="15" y1="9" x2="9" y2="15"/>
+                <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            <span>{{ session('error') }}</span>
         </div>
     @endif
 
@@ -179,22 +189,26 @@
                                     if (this.status !== 'Pending') return;
                                     this.status = 'Approved';
                                     try {
-                                        await fetch('/user-requests/{{ $req->id }}/approve', {
+                                        const res = await fetch('/user-requests/{{ $req->user_request_id ?? $req->id }}/approve', {
                                             method: 'POST',
                                             headers: { 'X-CSRF-TOKEN': this.csrfToken, 'Accept': 'application/json' },
                                         });
+                                        if (!res.ok) { this.status = 'Pending'; return; }
                                         $wire.$refresh();
+                                        window.dispatchEvent(new CustomEvent('request-updated'));
                                     } catch(e) { this.status = 'Pending'; }
                                 },
                                 async doDisapprove() {
                                     if (this.status !== 'Pending') return;
                                     this.status = 'Disapproved';
                                     try {
-                                        await fetch('/user-requests/{{ $req->id }}/disapprove', {
+                                        const res = await fetch('/user-requests/{{ $req->user_request_id ?? $req->id }}/disapprove', {
                                             method: 'POST',
                                             headers: { 'X-CSRF-TOKEN': this.csrfToken, 'Accept': 'application/json' },
                                         });
+                                        if (!res.ok) { this.status = 'Pending'; return; }
                                         $wire.$refresh();
+                                        window.dispatchEvent(new CustomEvent('request-updated'));
                                     } catch(e) { this.status = 'Pending'; }
                                 }
                             }"
@@ -701,21 +715,25 @@
                     @if($selectedRequest->status === 'Pending')
                         <button
                             type="button"
-                            wire:click="disapprove({{ $selectedRequest->id }})"
-                            class="flex-1 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white font-bold text-sm shadow-md shadow-red-500/35 transition cursor-pointer text-center"
+                            wire:click="disapprove({{ $selectedRequest->user_request_id ?? $selectedRequest->id }})"
+                            wire:loading.attr="disabled"
+                            class="flex-1 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white font-bold text-sm shadow-md shadow-red-500/35 transition cursor-pointer text-center disabled:opacity-50"
                             style="box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);"
                             title="Disapprove"
                         >
-                            Disapprove
+                            <span wire:loading.remove wire:target="disapprove">Disapprove</span>
+                            <span wire:loading wire:target="disapprove">Processing...</span>
                         </button>
                         <button
                             type="button"
-                            wire:click="approve({{ $selectedRequest->id }})"
-                            class="flex-1 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-sm shadow-md shadow-green-500/35 transition cursor-pointer text-center flex items-center justify-center gap-2"
+                            wire:click="approve({{ $selectedRequest->user_request_id ?? $selectedRequest->id }})"
+                            wire:loading.attr="disabled"
+                            class="flex-1 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-sm shadow-md shadow-green-500/35 transition cursor-pointer text-center flex items-center justify-center gap-2 disabled:opacity-50"
                             style="box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);"
                             title="Approve Request"
                         >
-                            Approve Request
+                            <span wire:loading.remove wire:target="approve">Approve Request</span>
+                            <span wire:loading wire:target="approve">Processing...</span>
                         </button>
                     @endif
                 </div>

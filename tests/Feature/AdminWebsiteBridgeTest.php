@@ -70,4 +70,96 @@ class AdminWebsiteBridgeTest extends TestCase
             ->assertSee('121.6800')
             ->assertSee('Jurisdiction');
     }
+
+    public function test_manage_request_livewire_can_approve_request(): void
+    {
+        $admin = Admin::create([
+            'admin_id'  => 'ADM-APP-TEST',
+            'full_name' => 'Approver Admin',
+            'email'     => 'approver@agrico.com',
+            'password'  => bcrypt('password'),
+        ]);
+
+        $req = \App\Models\UserRequest::create([
+            'request_code' => 'REQ-TEST-APP',
+            'user_name'    => 'Approve User',
+            'user_email'   => 'approve_user@agrico.test',
+            'type'         => 'Account Request',
+            'description'  => 'New account request',
+            'status'       => 'Pending',
+            'submitted_at' => now(),
+        ]);
+
+        \Livewire\Livewire::actingAs($admin, 'admin')
+            ->test(\App\Livewire\Admin\Request\ManageRequest::class)
+            ->call('approve', $req->user_request_id)
+            ->assertSet('showViewModal', false)
+            ->assertDispatched('request-updated');
+
+        $req->refresh();
+        $this->assertEquals('Approved', $req->status);
+        $this->assertNotEmpty($req->admin_id);
+    }
+
+    public function test_manage_request_livewire_can_disapprove_request(): void
+    {
+        $admin = Admin::create([
+            'admin_id'  => 'ADM-DIS-TEST',
+            'full_name' => 'Disapprover Admin',
+            'email'     => 'disapprover@agrico.com',
+            'password'  => bcrypt('password'),
+        ]);
+
+        $req = \App\Models\UserRequest::create([
+            'request_code' => 'REQ-TEST-DIS',
+            'user_name'    => 'Disapprove User',
+            'user_email'   => 'disapprove_user@agrico.test',
+            'type'         => 'Account Request',
+            'description'  => 'New account request to reject',
+            'status'       => 'Pending',
+            'submitted_at' => now(),
+        ]);
+
+        \Livewire\Livewire::actingAs($admin, 'admin')
+            ->test(\App\Livewire\Admin\Request\ManageRequest::class)
+            ->call('disapprove', $req->user_request_id)
+            ->assertSet('showViewModal', false)
+            ->assertDispatched('request-updated');
+
+        $req->refresh();
+        $this->assertEquals('Disapproved', $req->status);
+        $this->assertNotEmpty($req->admin_id);
+    }
+
+    public function test_post_endpoint_can_approve_request(): void
+    {
+        $admin = Admin::create([
+            'admin_id'  => 'ADM-EP-TEST',
+            'full_name' => 'Endpoint Admin',
+            'email'     => 'endpoint@agrico.com',
+            'password'  => bcrypt('password'),
+        ]);
+
+        $req = \App\Models\UserRequest::create([
+            'request_code' => 'REQ-TEST-EP',
+            'user_name'    => 'Endpoint User',
+            'user_email'   => 'endpoint_user@agrico.test',
+            'type'         => 'Account Request',
+            'description'  => 'Test endpoint approve',
+            'status'       => 'Pending',
+            'submitted_at' => now(),
+        ]);
+
+        $response = $this->actingAs($admin, 'admin')
+            ->postJson(route('requests.approve', ['id' => $req->user_request_id]));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'status'  => 'Approved',
+            ]);
+
+        $req->refresh();
+        $this->assertEquals('Approved', $req->status);
+    }
 }
