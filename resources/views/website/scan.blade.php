@@ -4643,47 +4643,160 @@
                     <tbody id="savedScansTbody">
                         @foreach($scans as $idx => $scan)
                         @php
-                            $fCode = $scan->soil->full_code ?? $scan->soil?->munsellColor?->full_code ?? '—';
-                            $mColor = $scan->soil?->dynamic_munsell_color;
-                            $sHue  = $scan->soil->hue ?? ($mColor->hue ?? '10YR');
-                            $soilName = $scan->soil?->effective_soil_name ?? ($mColor?->color_name ?? '—');
-                            $soilDesc = $scan->soil?->effective_description ?? ($mColor?->description ?? 'Sample processed successfully using AgriCo Munsell Determination Algorithm.');
-                            $sHex = $scan->soil?->effective_hex_color ?? ($mColor?->hex_code ?? '#8F694E');
-                            $sOrganic = $scan->soil?->effective_organic_matter ?? 'Moderate (2.2% – 3.7%)';
-                            $sSoilType = $scan->soil?->effective_soil_type ?? 'Well-Drained Clay / Latosol';
-                            
-                            $confidenceVal = '97.4%';
-                            if (!empty($scan->scan_note) && preg_match('/Confidence:\s*([\d\.]+%?)/i', $scan->scan_note, $cm)) {
-                                $confidenceVal = str_contains($cm[1], '%') ? $cm[1] : $cm[1] . '%';
-                            }
-
-                            $scanPct = null;
-                            if (!empty($scan->regions) && isset($scan->regions[0]['percent'])) {
-                                $scanPct = $scan->regions[0]['percent'];
-                            } elseif (!empty($scan->scan_note) && preg_match('/Percentage:\s*([\d\.]+%?)/i', $scan->scan_note, $pm)) {
-                                $scanPct = rtrim($pm[1], '%');
-                            }
-
-                            $scanSeq = 1;
                             try {
-                                if (!empty($fCode) && $fCode !== '—') {
-                                    $scanSeq = \App\Models\SoilScan::whereHas('soil', function($q) use ($fCode) {
-                                        $q->where('full_code', $fCode);
-                                    })->where('soil_scan_id', '<=', $scan->soil_scan_id)->count() ?: 1;
+                                $fCode = $scan->soil->full_code ?? $scan->soil?->munsellColor?->full_code ?? '—';
+                                $mColor = $scan->soil?->dynamic_munsell_color;
+                                $sHue  = $scan->soil->hue ?? ($mColor->hue ?? '10YR');
+                                $soilName = $scan->soil?->effective_soil_name ?? ($mColor?->color_name ?? '—');
+                                $soilDesc = $scan->soil?->effective_description ?? ($mColor?->description ?? 'Sample processed successfully using AgriCo Munsell Determination Algorithm.');
+                                $sHex = $scan->soil?->effective_hex_color ?? ($mColor?->hex_code ?? '#8F694E');
+                                $sOrganic = $scan->soil?->effective_organic_matter ?? 'Moderate (2.2% – 3.7%)';
+                                $sSoilType = $scan->soil?->effective_soil_type ?? 'Well-Drained Clay / Latosol';
+                                
+                                $confidenceVal = '97.4%';
+                                if (!empty($scan->scan_note) && preg_match('/Confidence:\s*([\d\.]+%?)/i', $scan->scan_note, $cm)) {
+                                    $confidenceVal = str_contains($cm[1], '%') ? $cm[1] : $cm[1] . '%';
                                 }
-                            } catch (\Throwable $e_seq) {
-                                $scanSeq = 1;
-                            }
 
-                            $scanUser = $scan->user ?? Auth::user();
-                            $uName = $scanUser->name ?? 'Agrico Administrator';
-                            $uEmail = $scanUser->email ?? 'admin@agrico.com';
-                            $uCode = $scanUser->user_id ?? $scanUser->id ?? 'ADM-001';
-                            $uAvatar = strtoupper(substr($uName, 0, 1));
+                                $scanPct = null;
+                                if (!empty($scan->regions) && isset($scan->regions[0]['percent'])) {
+                                    $scanPct = $scan->regions[0]['percent'];
+                                } elseif (!empty($scan->scan_note) && preg_match('/Percentage:\s*([\d\.]+%?)/i', $scan->scan_note, $pm)) {
+                                    $scanPct = rtrim($pm[1], '%');
+                                }
+
+                                $scanSeq = 1;
+                                try {
+                                    if (!empty($fCode) && $fCode !== '—') {
+                                        $scanSeq = \App\Models\SoilScan::whereHas('soil', function($q) use ($fCode) {
+                                            $q->where('full_code', $fCode);
+                                        })->where('soil_scan_id', '<=', $scan->soil_scan_id)->count() ?: 1;
+                                    }
+                                } catch (\Throwable $e_seq) {
+                                    $scanSeq = 1;
+                                }
+
+                                $scanUser = $scan->user ?? Auth::user();
+                                $uName = $scanUser->name ?? 'Agrico Administrator';
+                                $uEmail = $scanUser->email ?? 'admin@agrico.com';
+                                $uCode = $scanUser->user_id ?? $scanUser->id ?? 'ADM-001';
+                                $uAvatar = strtoupper(substr($uName, 0, 1));
+
+                                $rawImg = $scan->scan_image;
+                                $scanImg = '';
+                                $baImg = '';
+                                $rawPhotoImg = '';
+                                if (!empty($rawImg)) {
+                                    if (str_starts_with($rawImg, 'http') || str_starts_with($rawImg, 'data:')) {
+                                        $scanImg = $rawImg;
+                                    } elseif (str_starts_with($rawImg, 'storage/')) {
+                                        $scanImg = asset($rawImg);
+                                    } else {
+                                        $scanImg = asset('storage/' . ltrim($rawImg, '/'));
+                                    }
+
+                                    try {
+                                        if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
+                                            $scanUuid = $m[1];
+                                            $baRel = "storage/scans/scan_{$scanUuid}_before_after.jpg";
+                                            $rawRel = "storage/scans/scan_{$scanUuid}_raw.jpg";
+                                            if (@file_exists(public_path($baRel))) {
+                                                $baImg = asset($baRel);
+                                            } elseif (@file_exists(storage_path("app/public/scans/scan_{$scanUuid}_before_after.jpg"))) {
+                                                $baImg = asset($baRel);
+                                            }
+                                            if (@file_exists(public_path($rawRel))) {
+                                                $rawPhotoImg = asset($rawRel);
+                                            }
+                                        }
+                                    } catch (\Throwable $e_img) {}
+                                }
+                                if (!$scanImg && $scan->soil?->munsellColor?->image) {
+                                    $scanImg = asset('storage/' . ltrim($scan->soil->munsellColor->image, '/'));
+                                }
+
+                                $loc = null;
+                                try {
+                                    $loc = $scan->location ?: \App\Models\LocationMapping::where('soil_scan_id', $scan->soil_scan_id)->latest('location_mapping_id')->first();
+                                    if (!$loc && $scan->soil_id) {
+                                        $loc = \App\Models\LocationMapping::where('soil_id', $scan->soil_id)->latest('location_mapping_id')->first();
+                                    }
+                                } catch (\Throwable $e_loc) {
+                                    $loc = null;
+                                }
+
+                                $scanLat = $loc?->latitude;
+                                $scanLng = $loc?->longitude;
+                                $scanBrgy = $loc?->barangay;
+                                $scanCoverage = '';
+                                try {
+                                    if ($scan->scan_note && preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $scan->scan_note, $covMatch)) {
+                                        $scanCoverage = trim($covMatch[1]);
+                                    }
+                                    if (!$scanCoverage && $loc) {
+                                        $uReq = \App\Models\UserRequest::where('description', 'like', "%#{$loc->location_mapping_id}%")
+                                            ->orWhere('description', 'like', "%({$scanLat}, {$scanLng})%")
+                                            ->latest('user_request_id')->first();
+                                        if ($uReq && preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $uReq->description, $uCov)) {
+                                            $scanCoverage = trim($uCov[1]);
+                                        }
+                                    }
+                                } catch (\Throwable $e_cov) {
+                                    $scanCoverage = '';
+                                }
+
+                                $scanDateCol = '—';
+                                $scanDateModal = '—';
+                                try {
+                                    if ($scan->scan_date) {
+                                        $scanDateCol = \Carbon\Carbon::parse($scan->scan_date)->format('d M Y');
+                                        $scanDateModal = \Carbon\Carbon::parse($scan->scan_date)->format('m/d/Y');
+                                    }
+                                } catch (\Throwable $e_d) {}
+
+                                $userNote = '';
+                                try {
+                                    $userNote = $scan->has_user_scan_note ? $scan->scan_note : ($scan->scan_note && !str_starts_with(trim($scan->scan_note), 'Determined Soil:') && trim($scan->scan_note) !== '—' && trim($scan->scan_note) !== '-' ? $scan->scan_note : '');
+                                } catch (\Throwable $e_n) {}
+
+                                $regionsJson = '[]';
+                                try {
+                                    $regionsJson = json_encode($scan->regions ?? []);
+                                } catch (\Throwable $e_r) {}
+
+                                $rowSeqNum = $scans->total() - ($scans->firstItem() - 1 + $idx);
+                            } catch (\Throwable $e_fatal) {
+                                $soilName = 'Determined Soil';
+                                $soilDesc = 'Sample processed successfully using AgriCo Munsell Determination Algorithm.';
+                                $fCode = '—';
+                                $sHue = '10YR';
+                                $scanSeq = 1;
+                                $scanDateCol = '—';
+                                $scanDateModal = '—';
+                                $sHex = '#8F694E';
+                                $userNote = '';
+                                $sOrganic = 'Moderate (2.2% – 3.7%)';
+                                $sSoilType = 'Well-Drained Clay / Latosol';
+                                $confidenceVal = '95%';
+                                $scanPct = '100';
+                                $scanImg = '';
+                                $baImg = '';
+                                $rawPhotoImg = '';
+                                $scanLat = null;
+                                $scanLng = null;
+                                $scanBrgy = '';
+                                $scanCoverage = '';
+                                $uName = 'User';
+                                $uEmail = '';
+                                $uCode = '';
+                                $uAvatar = 'U';
+                                $regionsJson = '[]';
+                                $rowSeqNum = $idx + 1;
+                            }
                         @endphp
                         <tr>
                             <td class="col-seq" style="font-size:13px; font-weight:600; padding-left:16px; padding-right:6px; overflow:visible; text-overflow:clip; white-space:nowrap;">
-                                {{ $scans->total() - ($scans->firstItem() - 1 + $idx) }}
+                                {{ $rowSeqNum }}
                             </td>
                             <td class="col-soil-name" style="font-size:14px; font-weight:700; text-overflow:clip; white-space:nowrap;" title="{{ $soilName }}">
                                 {{ $soilName }}
@@ -4701,81 +4814,18 @@
                                 {{ $scanSeq }}
                             </td>
                             <td class="col-soil-date" style="font-size:13px; font-weight:600;">
-                                {{ $scan->scan_date ? \Carbon\Carbon::parse($scan->scan_date)->format('d M Y') : '—' }}
+                                {{ $scanDateCol }}
                             </td>
                             <td class="col-action" style="font-size:13px; font-weight:700; overflow:visible !important; text-overflow:clip !important; white-space:nowrap !important;">
-                                @php
-                                    $rawImg = $scan->scan_image;
-                                    $scanImg = '';
-                                    $baImg = '';
-                                    $rawPhotoImg = '';
-                                    if (!empty($rawImg)) {
-                                        if (str_starts_with($rawImg, 'http') || str_starts_with($rawImg, 'data:')) {
-                                            $scanImg = $rawImg;
-                                        } elseif (str_starts_with($rawImg, 'storage/')) {
-                                            $scanImg = asset($rawImg);
-                                        } else {
-                                            $scanImg = asset('storage/' . ltrim($rawImg, '/'));
-                                        }
-
-                                        // Extract scan UUID if present in scan_image path
-                                        if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
-                                            $scanUuid = $m[1];
-                                            $baRel = "storage/scans/scan_{$scanUuid}_before_after.jpg";
-                                            $rawRel = "storage/scans/scan_{$scanUuid}_raw.jpg";
-                                            if (file_exists(public_path($baRel))) {
-                                                $baImg = asset($baRel) . '?v=' . filemtime(public_path($baRel));
-                                            } elseif (file_exists(storage_path("app/public/scans/scan_{$scanUuid}_before_after.jpg"))) {
-                                                $baImg = asset($baRel) . '?v=' . filemtime(storage_path("app/public/scans/scan_{$scanUuid}_before_after.jpg"));
-                                            }
-                                            if (file_exists(public_path($rawRel))) {
-                                                $rawPhotoImg = asset($rawRel);
-                                            }
-                                        }
-                                    }
-                                    if (!$scanImg && $scan->soil?->munsellColor?->image) {
-                                        $scanImg = asset('storage/' . ltrim($scan->soil->munsellColor->image, '/'));
-                                    }
-
-                                    $loc = null;
-                                    try {
-                                        $loc = $scan->location ?: \App\Models\LocationMapping::where('soil_scan_id', $scan->soil_scan_id)->latest('location_mapping_id')->first();
-                                        if (!$loc && $scan->soil_id) {
-                                            $loc = \App\Models\LocationMapping::where('soil_id', $scan->soil_id)->latest('location_mapping_id')->first();
-                                        }
-                                    } catch (\Throwable $e_loc) {
-                                        $loc = null;
-                                    }
-
-                                    $scanLat = $loc?->latitude;
-                                    $scanLng = $loc?->longitude;
-                                    $scanBrgy = $loc?->barangay;
-                                    $scanCoverage = '';
-                                    try {
-                                        if ($scan->scan_note && preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $scan->scan_note, $covMatch)) {
-                                            $scanCoverage = trim($covMatch[1]);
-                                        }
-                                        if (!$scanCoverage && $loc) {
-                                            $uReq = \App\Models\UserRequest::where('description', 'like', "%#{$loc->location_mapping_id}%")
-                                                ->orWhere('description', 'like', "%({$scanLat}, {$scanLng})%")
-                                                ->latest('user_request_id')->first();
-                                            if ($uReq && preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $uReq->description, $uCov)) {
-                                                $scanCoverage = trim($uCov[1]);
-                                            }
-                                        }
-                                    } catch (\Throwable $e_cov) {
-                                        $scanCoverage = '';
-                                    }
-                                @endphp
                                 <button type="button" class="btn-view-scan" onclick="openScanModalFromBtn(this, event)"
                                     data-name="{{ $soilName }}"
                                     data-code="{{ $fCode }}"
                                     data-hue="{{ $sHue }}"
                                     data-hex="{{ $sHex }}"
                                     data-seq="{{ $scanSeq }}"
-                                    data-date="{{ $scan->scan_date ? \Carbon\Carbon::parse($scan->scan_date)->format('m/d/Y') : '—' }}"
+                                    data-date="{{ $scanDateModal }}"
                                     data-desc="{{ $soilDesc }}"
-                                    data-scan-note="{{ $scan->has_user_scan_note ? $scan->scan_note : ($scan->scan_note && !str_starts_with(trim($scan->scan_note), 'Determined Soil:') && trim($scan->scan_note) !== '—' && trim($scan->scan_note) !== '-' ? $scan->scan_note : '') }}"
+                                    data-scan-note="{{ $userNote }}"
                                     data-organic="{{ $sOrganic }}"
                                     data-drainage="{{ $sSoilType }}"
                                     data-confidence="{{ $confidenceVal }}"
@@ -4783,7 +4833,7 @@
                                     data-image="{{ $scanImg }}"
                                     data-before-after="{{ $baImg }}"
                                     data-raw-image="{{ $rawPhotoImg }}"
-                                    data-scan-id="{{ $scan->soil_scan_id }}"
+                                    data-scan-id="{{ $scan->soil_scan_id ?? 0 }}"
                                     data-lat="{{ $scanLat }}"
                                     data-lng="{{ $scanLng }}"
                                     data-barangay="{{ $scanBrgy }}"
@@ -4792,7 +4842,8 @@
                                     data-uemail="{{ $uEmail }}"
                                     data-ucode="{{ $uCode }}"
                                     data-uavatar="{{ $uAvatar }}"
-                                    data-regions="{{ json_encode($scan->regions ?? []) }}">View</button></td>
+                                    data-regions="{{ $regionsJson }}">View</button>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>

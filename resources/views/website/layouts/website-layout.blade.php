@@ -1,5 +1,15 @@
-﻿@php
-    $wsAuthUser = Auth::guard('web')->user() ?? Auth::user();
+@php
+    $wsAuthUser = Auth::guard('web')->user() ?? Auth::user() ?? Auth::guard('admin')->user();
+    if (!$wsAuthUser && session()->has('user_id')) {
+        $wsAuthUser = \App\Models\User::where('user_id', session('user_id'))->first();
+    }
+    if (!$wsAuthUser && session()->has('admin_id')) {
+        $wsAuthUser = \App\Models\User::where('user_id', session('admin_id'))->first();
+    }
+    $isWsAuth = (bool) $wsAuthUser;
+    $isWsAdmin = $isWsAuth && (in_array(strtolower($wsAuthUser->role ?? ''), ['admin', 'superadmin', 'super admin']) || Auth::guard('admin')->check());
+    $isApproved = $isWsAuth && ($isWsAdmin || in_array(strtolower(trim($wsAuthUser->status ?? '')), ['active', 'approved']));
+    $isPending  = $isWsAuth && !$isApproved;
     // Default theme is dark mode for AgriCo (rich dark forest green).
     // If user is logged in, use their saved account theme preference (defaulting to dark).
     $currentTheme = $wsAuthUser ? ($wsAuthUser->theme ?? 'dark') : 'dark';
@@ -273,8 +283,12 @@
             background: var(--bg-main, #051F20);
             color: var(--text-primary, #DAF1DE);
             margin: 0;
+            padding-top: var(--agrico-nav-h, 68px) !important;
             line-height: 1.6;
             transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.has-pending-banner {
+            padding-top: calc(var(--agrico-nav-h, 68px) + 54px) !important;
         }
 
         /* â”€â”€ UNIVERSAL TEXT-OVERFLOW & CONTAINER CONTAINMENT â”€â”€ */
@@ -337,11 +351,14 @@
 
         /* â”€â”€ TOP NAV (LUXURY DARK FOREST GREEN PALETTE) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .ws-nav {
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 9999 !important;
             height: var(--agrico-nav-h);
-            background: rgba(5, 31, 32, 0.88);
+            background: rgba(5, 31, 32, 0.94);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(142, 182, 155, 0.2);
@@ -468,11 +485,11 @@
         html.light-mode .ws-theme-toggle .icon-sun  { display: block; }
         html.light-mode .ws-theme-toggle .icon-moon { display: none; }
 
-        /* â”€â”€ LIGHT MODE HEADER OVERRIDES (MATCHING IMAGE 17) â”€â”€â”€â”€ */
+        /* ── LIGHT MODE HEADER OVERRIDES (MATCHING IMAGE 17) ── */
         html.light-mode .ws-nav {
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 1px solid #f1f5f9;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.96) !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06) !important;
         }
         html.light-mode .ws-logo-text h1 {
             color: #22c55e !important;
@@ -888,7 +905,7 @@
             .ws-nav-auth { display: none; }
         }
 
-        /* â”€â”€ ACCOUNT APPROVAL PENDING NOTIFICATION BANNER â”€â”€ */
+        /* ── ACCOUNT APPROVAL PENDING NOTIFICATION BANNER ── */
         .ws-pending-notification {
             width: 100%;
             background: linear-gradient(90deg, rgba(16, 42, 37, 0.98) 0%, rgba(22, 56, 50, 0.95) 50%, rgba(16, 42, 37, 0.98) 100%);
@@ -896,8 +913,11 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(245, 158, 11, 0.12);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            position: relative;
-            z-index: 95;
+            position: fixed !important;
+            top: var(--agrico-nav-h, 68px) !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 9998 !important;
             transition: all 0.3s ease;
             box-sizing: border-box;
         }
@@ -1074,7 +1094,7 @@
         }
     </style>
 </head>
-<body>
+<body class="{{ $isPending ? 'has-pending-banner' : '' }}">
 
 {{-- â”€â”€ TOP NAVIGATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
 <nav class="ws-nav" id="wsNav">
