@@ -367,7 +367,10 @@ class SoilScanController extends Controller
         @file_put_contents($metaFile, json_encode($sidecar));
 
         try {
-            $mlService->analyzeImage($imageInput, $scanId);
+            $analysisInput = (isset($targetPublicJpg) && file_exists($targetPublicJpg) && filesize($targetPublicJpg) > 0)
+                ? $targetPublicJpg
+                : $imageInput;
+            $mlService->analyzeImage($analysisInput, $scanId);
         } catch (\Throwable $e) {
             @unlink($metaFile);
             return response()->json([
@@ -415,6 +418,26 @@ class SoilScanController extends Controller
         $metaFile     = $tmpDir . DIRECTORY_SEPARATOR . "scan_meta_{$scanId}.json";
 
         if (!file_exists($progressFile)) {
+            $scanIdSafe = preg_replace('/[^a-zA-Z0-9_\-]/', '', $scanId);
+            $logFile = $tmpDir . DIRECTORY_SEPARATOR . "scan_python_{$scanIdSafe}.log";
+            if (file_exists($logFile) && filesize($logFile) > 0) {
+                $rawContent = file_get_contents($logFile);
+                $errContent = is_string($rawContent) ? trim($rawContent) : '';
+                if (!empty($errContent) && (
+                    str_contains($errContent, 'Traceback') ||
+                    str_contains($errContent, '"success": false') ||
+                    str_contains($errContent, 'Image not found') ||
+                    str_contains($errContent, 'Error:')
+                )) {
+                    return response()->json([
+                        'status'  => 'error',
+                        'stage'   => 0,
+                        'cursor'  => 1,
+                        'events'  => [['stage' => 0, 'status' => 'error', 'error' => $errContent]],
+                        'message' => 'Analysis process failed: ' . $errContent,
+                    ]);
+                }
+            }
             return response()->json([
                 'status' => 'pending',
                 'stage'  => 0,

@@ -102,10 +102,12 @@ class WebsiteController extends Controller
         } catch (\Throwable $e) {
             Log::warning('[WebsiteController] Could not pre-save public scan photo: ' . $e->getMessage());
         }
-
         try {
-            // Kick off the non-blocking Python pipeline; returns immediately
-            $mlService->analyzeImage($imageInput, $scanId);
+            // Pass pre-saved public JPG if available to guarantee file persistence for detached Python
+            $analysisInput = (isset($targetPublicJpg) && file_exists($targetPublicJpg) && filesize($targetPublicJpg) > 0)
+                ? $targetPublicJpg
+                : $imageInput;
+            $mlService->analyzeImage($analysisInput, $scanId);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
@@ -152,7 +154,12 @@ class WebsiteController extends Controller
             if (file_exists($logFile) && filesize($logFile) > 0) {
                 $rawContent = file_get_contents($logFile);
                 $errContent = is_string($rawContent) ? trim($rawContent) : '';
-                if (!empty($errContent) && str_contains($errContent, 'Traceback')) {
+                if (!empty($errContent) && (
+                    str_contains($errContent, 'Traceback') ||
+                    str_contains($errContent, '"success": false') ||
+                    str_contains($errContent, 'Image not found') ||
+                    str_contains($errContent, 'Error:')
+                )) {
                     return response()->json([
                         'events' => [['stage' => 0, 'status' => 'error', 'error' => $errContent]],
                         'stage'  => 0,

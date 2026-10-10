@@ -219,7 +219,11 @@ class SoilMLAnalysisService
                     $inputArg = $tempFile;
                 }
             } elseif ($imageInput instanceof \Illuminate\Http\UploadedFile) {
-                $inputArg = $imageInput->getRealPath();
+                $ext = $imageInput->getClientOriginalExtension() ?: 'jpg';
+                $safeScanId = $scanId ? preg_replace('/[^a-zA-Z0-9_\-]/', '', $scanId) : uniqid('scan_');
+                $tempFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'soil_upload_' . $safeScanId . '.' . $ext;
+                @copy($imageInput->getRealPath(), $tempFile);
+                $inputArg = $tempFile;
             }
 
             if (empty($inputArg) || !file_exists($inputArg)) {

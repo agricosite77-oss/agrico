@@ -128,8 +128,14 @@ class PythonProcessRunner
                 Log::error("[PythonProcessRunner] Failed to start detached Python process on Windows");
             }
         } else {
-            // Linux/Mac: launch detached via nohup or background proc
-            $bgCommand = 'nohup ' . $command . ' >> ' . escapeshellarg($logFile) . ' 2>&1 &';
+            // Linux/Mac: launch detached via nohup with inline environment variables
+            $envPrefix = '';
+            foreach ($env as $k => $v) {
+                if (is_scalar($v) && $v !== '') {
+                    $envPrefix .= $k . '=' . escapeshellarg((string)$v) . ' ';
+                }
+            }
+            $bgCommand = 'nohup ' . $envPrefix . $command . ' >> ' . escapeshellarg($logFile) . ' 2>&1 &';
             exec($bgCommand);
             Log::info("[PythonProcessRunner] Started detached Python process on Unix (log: {$logFile})");
         }
@@ -141,8 +147,13 @@ class PythonProcessRunner
     public static function getPythonBinary(): string
     {
         $python = config('services.soil_ml.python_binary');
-        if (!empty($python) && is_string($python)) {
+        if (!empty($python) && is_string($python) && (PHP_OS_FAMILY === 'Windows' || file_exists($python))) {
             return $python;
+        }
+
+        // Docker container virtual environment
+        if (PHP_OS_FAMILY !== 'Windows' && file_exists('/opt/venv/bin/python')) {
+            return '/opt/venv/bin/python';
         }
 
         if (PHP_OS_FAMILY !== 'Windows') {
