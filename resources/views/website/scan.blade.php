@@ -7437,13 +7437,12 @@
                             if (resStage2Desc) {
                                 resStage2Desc.textContent = 'PromptNorm sidecar unreachable — Corrected lighting via Classical LAB flat-fielding & CLAHE fallback.';
                             }
-                        } else {
                             resStage2Badge.textContent = 'CLASSICAL LAB NORMALIZER';
-                            resStage2Badge.style.background = 'rgba(142, 182, 155, 0.18)';
-                            resStage2Badge.style.color = '#8EB69B';
-                            resStage2Badge.style.border = '1px solid rgba(142, 182, 155, 0.3)';
+                            resStage2Badge.style.background = 'rgba(16, 185, 129, 0.18)';
+                            resStage2Badge.style.color = '#10b981';
+                            resStage2Badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
                             if (resStage2Desc) {
-                                resStage2Desc.textContent = 'Classical LAB Engine — Uneven shadows & gradients corrected via flat-fielding & CLAHE before Munsell matching.';
+                                resStage2Desc.textContent = 'Classical LAB Engine Active — Uneven illumination & gradients corrected via flat-fielding & CLAHE.';
                             }
                         }
                     }
