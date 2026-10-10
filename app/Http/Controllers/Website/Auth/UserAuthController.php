@@ -139,14 +139,14 @@ class UserAuthController extends Controller
      */
     public function checkEmail(Request $request): \Illuminate\Http\JsonResponse
     {
-        $email = trim((string) $request->query('email', ''));
+        $email = strtolower(trim((string) $request->query('email', '')));
 
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return response()->json(['exists' => false]);
         }
 
-        $exists = User::where('email', $email)->exists()
-               || Admin::where('email', $email)->exists();
+        $exists = User::whereRaw('LOWER(email) = ?', [$email])->exists()
+               || Admin::whereRaw('LOWER(email) = ?', [$email])->exists();
 
         return response()->json(['exists' => $exists]);
     }

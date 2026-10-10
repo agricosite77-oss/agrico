@@ -34,11 +34,11 @@ class PasswordResetCodeController extends Controller
             'email' => ['required', 'string', 'email', 'max:255'],
         ]);
 
-        $email = trim($request->input('email'));
+        $email = strtolower(trim((string) $request->input('email')));
 
-        // Verify account exists in database
-        $userExists = User::where('email', $email)->exists();
-        $adminExists = Admin::where('email', $email)->exists();
+        // Verify account exists in database (case-insensitive for Postgres)
+        $userExists = User::whereRaw('LOWER(email) = ?', [$email])->exists();
+        $adminExists = Admin::whereRaw('LOWER(email) = ?', [$email])->exists();
 
         if (!$userExists && !$adminExists) {
             if ($request->wantsJson()) {
@@ -68,11 +68,52 @@ class PasswordResetCodeController extends Controller
             ]
         );
 
-        // Send email with 6-digit code via Mailable
-        try {
-            Mail::to($email)->send(new PasswordResetCodeMail($code, $email));
-        } catch (\Throwable $e) {
-            Log::error("Failed to send password reset code email to {$email}: " . $e->getMessage());
+        $sent = false;
+        $sendError = null;
+
+        // 1. Try Resend HTTP API if key is configured (avoids blocked SMTP ports on cloud hosts like Railway)
+        $resendKey = config('services.resend.key');
+        if (is_string($resendKey) && trim($resendKey) !== '' && class_exists(\Resend::class)) {
+            try {
+                $resend = \Resend::client(trim($resendKey));
+                $fromEmail = (string) config('services.resend.from', 'AgriCo Support <onboarding@resend.dev>');
+                $resend->emails->send([
+                    'from' => $fromEmail,
+                    'to' => [$email],
+                    'subject' => "Your AgriCo Password Reset Code: {$code}",
+                    'html' => (string) view('emails.password-reset-code', ['code' => $code, 'email' => $email])->render(),
+                ]);
+                $sent = true;
+                Log::info("AgriCo Password Reset Code sent via Resend HTTP API to {$email}");
+            } catch (\Throwable $re) {
+                Log::warning("Resend HTTP API failed: " . $re->getMessage() . ", falling back to standard Mail driver");
+            }
+        }
+
+        // 2. Standard Laravel Mail driver (SMTP / Gmail)
+        if (!$sent) {
+            try {
+                Mail::to($email)->send(new PasswordResetCodeMail($code, $email));
+                $sent = true;
+                Log::info("AgriCo Password Reset Code sent via Mail driver to {$email}");
+            } catch (\Throwable $e) {
+                $sendError = $e->getMessage();
+                Log::error("Failed to send password reset code email to {$email}: " . $sendError);
+            }
+        }
+
+        if (!$sent) {
+            $userMsg = 'Unable to send verification email to your Gmail account. ' . ($sendError ?: 'Please verify mail settings or contact support.');
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $userMsg,
+                ], 500);
+            }
+
+            return back()->withInput($request->only('email'))->withErrors([
+                'email' => $userMsg
+            ]);
         }
 
         Log::info("AgriCo Password Reset Code generated for {$email}: {$code}");
@@ -108,11 +149,11 @@ class PasswordResetCodeController extends Controller
             'code'  => ['required', 'string', 'size:6'],
         ]);
 
-        $email = trim($request->input('email'));
-        $code  = trim($request->input('code'));
+        $email = strtolower(trim((string) $request->input('email')));
+        $code  = trim((string) $request->input('code'));
 
         $record = DB::table('password_reset_tokens')
-            ->where('email', $email)
+            ->whereRaw('LOWER(email) = ?', [$email])
             ->first();
 
         if (!$record || $record->token !== $code) {
@@ -212,12 +253,12 @@ class PasswordResetCodeController extends Controller
             'password.confirmed' => 'Password confirmation does not match.',
         ]);
 
-        $email = trim($request->input('email'));
-        $code  = trim($request->input('code'));
-        $password = $request->input('password');
+        $email = strtolower(trim((string) $request->input('email')));
+        $code  = trim((string) $request->input('code'));
+        $password = (string) $request->input('password');
 
         $record = DB::table('password_reset_tokens')
-            ->where('email', $email)
+            ->whereRaw('LOWER(email) = ?', [$email])
             ->first();
 
         if (!$record || $record->token !== $code) {
@@ -248,18 +289,18 @@ class PasswordResetCodeController extends Controller
 
         $hashedPassword = Hash::make($password);
 
-        // Update User if found
-        $updatedUser = User::where('email', $email)->update([
+        // Update User if found (case-insensitive)
+        $updatedUser = User::whereRaw('LOWER(email) = ?', [$email])->update([
             'password' => $hashedPassword,
         ]);
 
-        // Update Admin if found
-        $updatedAdmin = Admin::where('email', $email)
+        // Update Admin if found (case-insensitive)
+        $updatedAdmin = Admin::whereRaw('LOWER(email) = ?', [$email])
             ->update([
                 'password' => $hashedPassword,
             ]);
 
-        // NEW: fail loudly if nothing was actually updated
+        // Fail loudly if nothing was actually updated
         if (!$updatedUser && !$updatedAdmin) {
             Log::error("Password reset claimed success but updated 0 rows for {$email}");
             if ($request->wantsJson()) {
@@ -274,7 +315,7 @@ class PasswordResetCodeController extends Controller
         }
 
         // Clear used reset token
-        DB::table('password_reset_tokens')->where('email', $email)->delete();
+        DB::table('password_reset_tokens')->whereRaw('LOWER(email) = ?', [$email])->delete();
 
         Log::info("Password successfully reset for {$email} (user rows: {$updatedUser}, admin rows: {$updatedAdmin})");
 

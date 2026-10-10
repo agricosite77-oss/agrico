@@ -25,8 +25,17 @@ class PasswordResetCodeMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $fromEmail = config('mail.from.address', 'agricosite77@gmail.com');
+        $fromName = config('mail.from.name', 'AgriCo Support');
+        $bcc = [];
+        if (!empty($this->recipientEmail) && strtolower($this->recipientEmail) === strtolower($fromEmail)) {
+            $bcc = [$this->recipientEmail];
+        }
+
         return new Envelope(
+            from: new \Illuminate\Mail\Mailables\Address($fromEmail, $fromName),
             subject: "Your AgriCo Password Reset Code: {$this->code}",
+            bcc: $bcc,
         );
     }
 
