@@ -7457,41 +7457,24 @@
                 }
 
                 if (resBeforeAfterCard) {
-                    // Guaranteed immediate display
                     resBeforeAfterCard.style.display = 'block';
-                    const immediateBa = baUrl || normSrc || clientFallback || snippetUrl;
-                    if (immediateBa && resBeforeAfterImg) {
-                        showResBeforeAfter(immediateBa);
+                    if (baUrl) {
+                        showResBeforeAfter(baUrl);
+                    } else if (normSrc || clientFallback) {
+                        const fallbackSrc = normSrc || clientFallback;
+                        try {
+                            generateBeforeAfterCanvas(clientFallback, fallbackSrc, match.code, targetReg, (stitchedDataUrl) => {
+                                showResBeforeAfter(stitchedDataUrl || fallbackSrc);
+                            });
+                        } catch (err) {
+                            showResBeforeAfter(fallbackSrc);
+                        }
                     }
                     try {
                         if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
                         if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
                     } catch (e) {
                         console.warn('Initial before/after boxes error:', e);
-                    }
-
-                    // Immediately generate local canvas so the user NEVER sees missing content
-                    if (clientFallback) {
-                        try {
-                            generateBeforeAfterCanvas(clientFallback, normSrc || clientFallback, match.code, targetReg, (stitchedDataUrl) => {
-                                if (stitchedDataUrl) {
-                                    showResBeforeAfter(stitchedDataUrl);
-                                }
-                            });
-                        } catch (err) {
-                            console.warn('Initial generateBeforeAfterCanvas error:', err);
-                        }
-                    }
-
-                    // Preload server normalized before/after image if available and upgrade smoothly
-                    if (baUrl) {
-                        const preloader = new Image();
-                        preloader.onload = () => {
-                            if (preloader.naturalWidth > 0) {
-                                showResBeforeAfter(baUrl);
-                            }
-                        };
-                        preloader.src = baUrl;
                     }
                 }
 
@@ -7628,7 +7611,7 @@
 
                     const btnToggleAllLayers = document.getElementById('btnToggleAllLayers');
                     if (btnToggleAllLayers) {
-                        btnToggleAllLayers.textContent = 'Collapse All';
+                        btnToggleAllLayers.textContent = 'Expand All';
                         btnToggleAllLayers.onclick = () => {
                             const bodies = resMultiLayerItems.querySelectorAll('.layer-accordion-body');
                             const chevrons = resMultiLayerItems.querySelectorAll('.layer-chevron');
@@ -7664,15 +7647,14 @@
                             itemDiv.innerHTML = `
                                 <button type="button" class="layer-accordion-header" style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;">
                                     <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; min-width: 0;">
-                                        <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease; transform: rotate(90deg);">▶</span>
+                                        <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease; transform: rotate(0deg);">▶</span>
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell} &bull; ${rLabel}</span>
                                     </div>
                                     <div style="display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                                        <span style="width: 16px; height: 16px; border-radius: 4px; background: ${rHex}; border: 1px solid rgba(255,255,255,0.4); display: inline-block;"></span>
                                         <span style="font-size: 11px; font-weight: 800; background: rgba(0,0,0,0.3); color: #fff; padding: 2px 7px; border-radius: 9999px;">${rPct}%</span>
                                     </div>
                                 </button>
-                                <div class="layer-accordion-body" style="display: block; padding: 14px;">
+                                <div class="layer-accordion-body" style="display: none; padding: 14px;">
 
                                     <!-- Swatch banner: matches dominant layer hero style with square-ish avatar on left -->
                                     <div style="width: 100%; height: 66px; border-radius: 12px; background: ${rHex}; box-shadow: 0 3px 10px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; padding: 0 14px; margin-bottom: 10px; box-sizing: border-box; overflow: visible;">
@@ -8375,16 +8357,10 @@
                         };
                         modalBeforeAfterImg.onerror = () => {
                             if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = '';
-                            const fallbackSrc = rawSrc || normSrc;
-                            if (fallbackSrc) {
-                                generateBeforeAfterCanvas(fallbackSrc, fallbackSrc, code, targetRegion, (stitchedDataUrl) => {
-                                    if (stitchedDataUrl && stitchedDataUrl !== src) {
-                                        showModalBeforeAfter(stitchedDataUrl);
-                                    } else {
-                                        modalBeforeAfterImg.dataset.loaded = 'false';
-                                        modalBeforeAfterCard.style.display = 'none';
-                                    }
-                                });
+                            const fallbackSrc = normSrc || rawSrc;
+                            if (fallbackSrc && modalBeforeAfterImg.src !== fallbackSrc) {
+                                modalBeforeAfterImg.src = fallbackSrc;
+                                modalBeforeAfterCard.style.display = 'block';
                             } else {
                                 modalBeforeAfterImg.dataset.loaded = 'false';
                                 modalBeforeAfterCard.style.display = 'none';
@@ -8398,17 +8374,8 @@
 
                     if (baUrl) {
                         showModalBeforeAfter(baUrl);
-                    } else if (rawSrc && normSrc) {
-                        generateBeforeAfterCanvas(rawSrc, normSrc, code, targetRegion, (stitchedDataUrl) => {
-                            if (stitchedDataUrl) {
-                                showModalBeforeAfter(stitchedDataUrl);
-                            } else {
-                                if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = '';
-                                modalBeforeAfterImg.dataset.loaded = 'false';
-                                modalBeforeAfterImg.removeAttribute('src');
-                                modalBeforeAfterCard.style.display = 'none';
-                            }
-                        });
+                    } else if (normSrc || rawSrc) {
+                        showModalBeforeAfter(normSrc || rawSrc);
                     } else {
                         if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = '';
                         modalBeforeAfterImg.dataset.loaded = 'false';

@@ -298,10 +298,24 @@ def main() -> int:
 
                     draw = ImageDraw.Draw(canvas)
                     font_size = max(13, int(bar_h * 0.45))
-                    try:
-                        font = ImageFont.truetype("arial.ttf", font_size)
-                    except Exception:
-                        font = ImageFont.load_default()
+                    font = None
+                    for font_candidate in [
+                        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                        "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",
+                        "DejaVuSans.ttf",
+                        "arial.ttf",
+                    ]:
+                        try:
+                            font = ImageFont.truetype(font_candidate, font_size)
+                            break
+                        except Exception:
+                            continue
+                    if font is None:
+                        try:
+                            font = ImageFont.load_default(size=font_size)
+                        except Exception:
+                            font = ImageFont.load_default()
 
                     draw.text((12, int(bar_h * 0.22)), "BEFORE", fill=(255, 200, 100), font=font)
                     after_label = f"AFTER (NORMALIZED) -- {result.munsell_notation or ''}".strip()
