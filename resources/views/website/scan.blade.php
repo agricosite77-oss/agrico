@@ -751,6 +751,8 @@
             box-sizing: border-box;
             position: relative;
             min-height: 480px;
+            height: auto !important;
+            overflow: visible !important;
             transition: min-height 0.2s ease;
         }
 
@@ -1373,35 +1375,6 @@
             overflow-wrap: break-word;
         }
 
-        /* Expanded Result Card (Spans full width across grid when user toggles Expand) */
-        .result-card.is-expanded {
-            grid-column: 1 / -1 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6) !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }
-
-        #btnToggleExpandResultCard {
-            background: rgba(142, 182, 155, 0.12);
-            border: 1px solid rgba(142, 182, 155, 0.3);
-            color: #8EB69B;
-            border-radius: 8px;
-            padding: 4px 10px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-        #btnToggleExpandResultCard:hover {
-            background: rgba(142, 182, 155, 0.22);
-            color: #DAF1DE;
-            border-color: #8EB69B;
-        }
 
         /* Detected Soil Results Dropdown Menus */
         .res-layer-dropdown-menu,
@@ -2665,19 +2638,6 @@
         html.light-mode #resBeforeAfterContainer {
             background: #f8fafc !important;
             border: 1px solid #e2e8f0 !important;
-        }
-        html.light-mode #btnToggleExpandResultCard {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
-            color: #475569;
-        }
-        html.light-mode #btnToggleExpandResultCard:hover {
-            background: #e2e8f0;
-            color: #0f172a;
-            border-color: #94a3b8;
-        }
-        html.light-mode .result-card.is-expanded {
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12) !important;
         }
 
         html.light-mode .res-layer-dropdown-menu,
@@ -4576,12 +4536,6 @@
                             <h3 id="resHeaderTitle" class="result-header-title" style="font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin: 0; color: #16a34a;">DETERMINED SOIL RECORD</h3>
                             <span id="resMultiBadgeCount" style="display: none; font-size: 11px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 8px; border-radius: 9999px; border: 1px solid rgba(34, 197, 94, 0.3);">1 DETECTED</span>
                         </div>
-                        <button type="button" id="btnToggleExpandResultCard" onclick="toggleResultCardExpansion()" title="Expand or Compress Result View">
-                            <svg id="expandResultIcon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
-                            </svg>
-                            <span id="expandResultText">Expand Result</span>
-                        </button>
                     </div>
 
                     <!-- Dual-Preview Soil Badge Banner (Overlapping Left Circular Soil Snippet + Center Munsell Code + Right Hex Pill) -->
@@ -6506,67 +6460,23 @@
             const resultPlaceholder = document.getElementById('resultPlaceholder');
 
             if (scannerCard && resultCard) {
-                if (resultCard.classList.contains('is-expanded')) {
-                    resultCard.style.height = 'auto';
-                    resultCard.style.minHeight = '480px';
-                    return;
-                }
+                resultCard.style.height = 'auto';
                 if (window.innerWidth > 900) {
                     const leftH = scannerCard.offsetHeight;
-                    if (leftH > 0) {
-                        const hasScanResult = (resultPlaceholder && resultPlaceholder.style.display === 'none') ||
-                                              (resultContent && resultContent.style.display !== 'none' && window.getComputedStyle(resultContent).display !== 'none') ||
-                                              (typeof lastScanMatch !== 'undefined' && lastScanMatch !== null) ||
-                                              (typeof window.currentScanResult !== 'undefined' && window.currentScanResult !== null);
-                        if (!hasScanResult) {
-                            resultCard.style.height = leftH + 'px';
-                            resultCard.style.minHeight = leftH + 'px';
-                        } else {
-                            resultCard.style.height = 'auto';
-                            resultCard.style.minHeight = leftH + 'px';
-                        }
+                    const hasScanResult = (resultPlaceholder && resultPlaceholder.style.display === 'none') ||
+                                          (resultContent && resultContent.style.display !== 'none' && window.getComputedStyle(resultContent).display !== 'none') ||
+                                          (typeof lastScanMatch !== 'undefined' && lastScanMatch !== null) ||
+                                          (typeof window.currentScanResult !== 'undefined' && window.currentScanResult !== null);
+                    if (!hasScanResult && leftH > 0) {
+                        resultCard.style.minHeight = leftH + 'px';
+                    } else {
+                        resultCard.style.minHeight = '480px';
                     }
                 } else {
                     resultCard.style.minHeight = '420px';
-                    resultCard.style.height = 'auto';
                 }
             }
         }
-
-        window.setResultCardExpanded = function(expanded) {
-            const resCard = document.getElementById('resultCard');
-            const expandText = document.getElementById('expandResultText');
-            const expandIcon = document.getElementById('expandResultIcon');
-            if (!resCard) return;
-
-            if (expanded) {
-                resCard.classList.add('is-expanded');
-            } else {
-                resCard.classList.remove('is-expanded');
-            }
-            const isExpanded = resCard.classList.contains('is-expanded');
-            if (expandText) {
-                expandText.textContent = isExpanded ? 'Collapse View' : 'Expand Result';
-            }
-            if (expandIcon) {
-                expandIcon.innerHTML = isExpanded 
-                    ? '<path stroke-linecap="round" stroke-linejoin="round" d="M9 9L4 4m0 0h4m-4 0v4m11 5l5 5m0 0h-4m4 0v-4M9 15l-5 5m0 0h4m-4 0v-4m11-11l5-5m0 0h-4m4 0v4"/>'
-                    : '<path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>';
-            }
-            resCard.style.height = 'auto';
-            resCard.style.minHeight = '480px';
-            setTimeout(() => {
-                syncScannerCardHeights();
-                resCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 50);
-        };
-
-        window.toggleResultCardExpansion = function() {
-            const resCard = document.getElementById('resultCard');
-            if (!resCard) return;
-            const isExpanded = resCard.classList.contains('is-expanded');
-            window.setResultCardExpanded(!isExpanded);
-        };
 
         window.addEventListener('resize', syncScannerCardHeights);
         document.addEventListener('DOMContentLoaded', () => {
@@ -6951,9 +6861,6 @@
                 if (resContent) resContent.style.display = 'none';
                 if (resPlaceholder) resPlaceholder.style.display = 'block';
                 lastScanMatch = null;
-                if (typeof window.setResultCardExpanded === 'function') {
-                    window.setResultCardExpanded(false);
-                }
                 const btnSave = document.getElementById('btnSaveSoilScan');
                 if (btnSave) btnSave.disabled = true;
 
@@ -7845,39 +7752,24 @@
                     const transPromise = window.AgriMotion.transitionSkeleton(scanLoadingOverlay, resContent, { minShow: 220, step: 110 });
                     if (transPromise && typeof transPromise.then === 'function') {
                         transPromise.then(() => {
-                            if (typeof window.setResultCardExpanded === 'function') {
-                                window.setResultCardExpanded(true);
-                            } else {
-                                if (resCardContainer) resCardContainer.style.height = 'auto';
-                                syncScannerCardHeights();
-                            }
+                            if (resCardContainer) resCardContainer.style.height = 'auto';
+                            syncScannerCardHeights();
                         }).catch(() => {
-                            if (typeof window.setResultCardExpanded === 'function') {
-                                window.setResultCardExpanded(true);
-                            } else {
-                                if (resCardContainer) resCardContainer.style.height = 'auto';
-                                syncScannerCardHeights();
-                            }
+                            if (resCardContainer) resCardContainer.style.height = 'auto';
+                            syncScannerCardHeights();
                         });
                     }
                 } else {
                     if (scanLoadingOverlay) scanLoadingOverlay.style.display = 'none';
                     if (resContent) resContent.style.display = 'block';
-                    if (typeof window.setResultCardExpanded === 'function') {
-                        window.setResultCardExpanded(true);
-                    } else {
-                        if (resCardContainer) resCardContainer.style.height = 'auto';
-                        syncScannerCardHeights();
-                    }
+                    if (resCardContainer) resCardContainer.style.height = 'auto';
+                    syncScannerCardHeights();
                 }
 
-                // Automatically expand result card so all detected layers, before-after, and action buttons are fully displayed
-                if (typeof window.setResultCardExpanded === 'function') {
-                    window.setResultCardExpanded(true);
-                }
-
-                setTimeout(() => { if (typeof window.setResultCardExpanded === 'function') window.setResultCardExpanded(true); }, 150);
-                setTimeout(() => { if (typeof window.setResultCardExpanded === 'function') window.setResultCardExpanded(true); }, 350);
+                // Automatically recalculate height so all detected layers, before-after, and action buttons are fully displayed
+                syncScannerCardHeights();
+                setTimeout(syncScannerCardHeights, 150);
+                setTimeout(syncScannerCardHeights, 350);
 
                 const targetCompletedCard = document.getElementById('resultCard') || resCard;
                 if (targetCompletedCard) {
