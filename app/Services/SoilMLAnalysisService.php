@@ -119,6 +119,10 @@ class SoilMLAnalysisService
         if (isset($pythonResult['stage2_normalized_color'])) {
             $analysis['stage2_normalized_color'] = $pythonResult['stage2_normalized_color'];
         }
+        if (isset($pythonResult['stage2_mode'])) {
+            $analysis['stage2_mode'] = $pythonResult['stage2_mode'];
+            $analysis['stage2_engine'] = $pythonResult['stage2_mode'];
+        }
         $analysis['status'] = $this->resolveStatus($pythonResult);
 
         // ── regions[] — new multi-color result set (Stages 3–6) ──────────────

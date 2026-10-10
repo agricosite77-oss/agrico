@@ -179,6 +179,10 @@ def build_output(record, result, api_regions: list) -> dict:
     if _get(record, "stage2_comparison"):
         out["stage2_comparison"] = _get(record, "stage2_comparison")
 
+    stage2_mode = getattr(result, "stage2_mode", None) or _get(record, "stage2_mode", "classical")
+    out["stage2_mode"] = stage2_mode
+    out["stage2_engine"] = stage2_mode
+
     out.update({
         "image_id": image_id,
         "stored_path": stored_path,

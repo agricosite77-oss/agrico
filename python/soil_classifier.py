@@ -49,6 +49,7 @@ class ClassificationResult:
     regions: List[dict] = field(default_factory=list)   # per-region results (Stages 3–6)
     status: str = "needs_review"        # from dominant region's Stage 6 status
     normalized_image: Optional[object] = None  # Stage 2 lighting-normalized image (PIL Image)
+    stage2_mode: str = "classical"       # Stage 2 normalization mode used (e.g. promptnorm, classical)
 
 
 def _texture_score(image_path: str) -> float:
@@ -373,6 +374,7 @@ def classify_soil(
         regions=final_regions,
         status=dom_status,
         normalized_image=normalized_img,
+        stage2_mode=_actual_mode,
     )
     if _prog:
         _prog(6, "Agronomic Profile & Reference Centroid", "running", {

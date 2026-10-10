@@ -2412,8 +2412,7 @@
             white-space: pre-line !important;
         }
         #modalBeforeAfterCard,
-        #resBeforeAfterCard,
-        #resPipelineStagesCard {
+        #resBeforeAfterCard {
             background: #163832 !important;
             border: 1px solid rgba(142, 182, 155, 0.25) !important;
             border-radius: 16px !important;
@@ -2640,8 +2639,7 @@
             color: #475569 !important;
         }
         html.light-mode #modalBeforeAfterCard,
-        html.light-mode #resBeforeAfterCard,
-        html.light-mode #resPipelineStagesCard {
+        html.light-mode #resBeforeAfterCard {
             background: #ffffff !important;
             border: 1.5px solid #f1f5f9 !important;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
@@ -4655,6 +4653,39 @@
                         </button>
                     </div>
 
+                    {{-- Soil Normalization: Stage 2 Lighting Normalizer (Before & After Comparison) --}}
+                    <div id="resBeforeAfterCard" class="soil-modal-grid-card" style="margin-bottom: 14px; padding: 13px 15px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <div class="soil-modal-label" style="font-size: 11px; font-weight: 800; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px; color: #10b981;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="5"></circle>
+                                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                                </svg>
+                                STAGE 2: LIGHTING NORMALIZATION
+                            </div>
+                            <span id="resStage2EngineBadge" class="before-after-badge" style="font-size: 9.5px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.18); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                STAGE 2 NORMALIZED
+                            </span>
+                        </div>
+                        <div id="resStage2EngineDesc" style="font-size: 11px; color: #8EB69B; margin-bottom: 9px; line-height: 1.4;">
+                            Uneven illumination &amp; shadows corrected before Munsell color matching.
+                        </div>
+                        <div id="resBeforeAfterContainer" style="position: relative; width: 100%; min-height: 160px; border-radius: 8px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.2); cursor: pointer;" onclick="openBeforeAfterLightbox('resBeforeAfterImg')" title="Click to view full resolution comparison">
+                            <img id="resBeforeAfterImg" src="" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 6px; object-fit: contain;">
+
+                            <!-- Replaces the single static box — populated per-region by renderBeforeAfterBoxes() -->
+                            <div id="resBeforeAfterBoxes" style="position: absolute; inset: 0; pointer-events: none; z-index: 10;"></div>
+                        </div>
+                        <div id="resBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
+                    </div>
+
                     {{-- Multi-Layer Accordion Section (All Detected Soil Layers with Drop-down results) --}}
                     <div id="resMultiLayerSection" style="display: none; margin-top: 4px; margin-bottom: 14px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
@@ -4666,82 +4697,6 @@
                             </button>
                         </div>
                         <div id="resMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
-                    </div>
-
-                    {{-- Soil Normalization: Before & After Card (Placed AFTER the last result of soil before the two action buttons) --}}
-                    <div id="resBeforeAfterCard" class="soil-modal-grid-card" style="margin-bottom: 14px; padding: 12px 14px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <div class="soil-modal-label" style="font-size: 11px; font-weight: 800; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.04em;">
-                                SOIL NORMALIZATION
-                            </div>
-                            <span class="before-after-badge" style="font-size: 9.5px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.18); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
-                                BEFORE / AFTER
-                            </span>
-                        </div>
-                        <div id="resBeforeAfterContainer" style="position: relative; width: 100%; border-radius: 8px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.2); cursor: pointer;" onclick="openBeforeAfterLightbox('resBeforeAfterImg')" title="Click to view full resolution comparison">
-                            <img id="resBeforeAfterImg" src="" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 6px; object-fit: contain;">
-
-                            <!-- Replaces the single static box — populated per-region by renderBeforeAfterBoxes() -->
-                            <div id="resBeforeAfterBoxes" style="position: absolute; inset: 0; pointer-events: none; z-index: 10;"></div>
-                        </div>
-                        <div id="resBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
-                    </div>
-
-                    {{-- 6-Stage ML Soil Determination Pipeline Result Card --}}
-                    <div id="resPipelineStagesCard" class="soil-modal-grid-card" style="margin-bottom: 14px; padding: 12px 14px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(142, 182, 155, 0.2);">
-                            <div style="font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                                6-STAGE ML SOIL PIPELINE
-                            </div>
-                            <span style="font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 9999px; background: rgba(34, 197, 94, 0.2); color: #22c55e; letter-spacing: 0.04em;">
-                                ✓ ALL PASSED
-                            </span>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11.5px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
-                                <div style="display: flex; align-items: center; gap: 7px;">
-                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 1</span>
-                                    <span style="color: #DAF1DE; font-weight: 600;">Soil Gate (Texture &amp; Non-Soil Filter)</span>
-                                </div>
-                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
-                                <div style="display: flex; align-items: center; gap: 7px;">
-                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 2</span>
-                                    <span style="color: #DAF1DE; font-weight: 600;">Lighting Normalizer (LAB L* 50% Center)</span>
-                                </div>
-                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
-                                <div style="display: flex; align-items: center; gap: 7px;">
-                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 3</span>
-                                    <span style="color: #DAF1DE; font-weight: 600;">Multi-Color Detection (ColorThief Palette)</span>
-                                </div>
-                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
-                                <div style="display: flex; align-items: center; gap: 7px;">
-                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 4</span>
-                                    <span style="color: #DAF1DE; font-weight: 600;">Per-Region Verification (Patch Gate)</span>
-                                </div>
-                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
-                                <div style="display: flex; align-items: center; gap: 7px;">
-                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 5</span>
-                                    <span style="color: #DAF1DE; font-weight: 600;">Munsell Spectral Match (CIEDE2000 ΔE₀₀)</span>
-                                </div>
-                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(5, 31, 32, 0.4); border-radius: 8px; border: 1px solid rgba(142, 182, 155, 0.12);">
-                                <div style="display: flex; align-items: center; gap: 7px;">
-                                    <span style="font-size: 9px; font-weight: 800; background: rgba(34, 197, 94, 0.18); color: #22c55e; padding: 2px 5px; border-radius: 4px;">STAGE 6</span>
-                                    <span style="color: #DAF1DE; font-weight: 600;">Agronomic Profile &amp; Reference Centroid</span>
-                                </div>
-                                <span style="font-size: 10px; font-weight: 800; color: #22c55e;">✓ PASSED</span>
-                            </div>
-                        </div>
                     </div>
 
                     {{-- Action Buttons Row: Save Copy (Left) & Pin All Detected (Right) --}}
@@ -7428,15 +7383,16 @@
                         syncScannerCardHeights();
                     };
                     resBeforeAfterImg.onerror = () => {
-                        const clientSrc = clientFallback;
-                        if (clientSrc && resBeforeAfterImg.src !== clientSrc) {
+                        const effectiveRaw = rawSrc || clientFallback;
+                        const effectiveNorm = normSrc || actualScanImage || clientFallback;
+                        if (effectiveRaw && effectiveNorm) {
                             try {
-                                generateBeforeAfterCanvas(clientSrc, clientSrc, match.code, targetReg, (stitchedDataUrl) => {
+                                generateBeforeAfterCanvas(effectiveRaw, effectiveNorm, match.code, targetReg, (stitchedDataUrl) => {
                                     if (stitchedDataUrl) {
                                         showResBeforeAfter(stitchedDataUrl);
                                     } else {
                                         resBeforeAfterCard.style.display = 'block';
-                                        resBeforeAfterImg.src = clientSrc;
+                                        resBeforeAfterImg.src = effectiveNorm;
                                     }
                                 });
                             } catch (e) {
@@ -7458,6 +7414,40 @@
 
                 if (resBeforeAfterCard) {
                     resBeforeAfterCard.style.display = 'block';
+
+                    // Update Stage 2 Engine Badge and Description
+                    const resStage2Badge = document.getElementById('resStage2EngineBadge');
+                    const resStage2Desc = document.getElementById('resStage2EngineDesc');
+                    const stage2Mode = (data.stage2_mode || data.stage2_engine || '').toLowerCase();
+
+                    if (resStage2Badge) {
+                        if (stage2Mode === 'promptnorm') {
+                            resStage2Badge.textContent = 'PROMPTNORM (ACTIVE)';
+                            resStage2Badge.style.background = 'rgba(16, 185, 129, 0.18)';
+                            resStage2Badge.style.color = '#10b981';
+                            resStage2Badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                            if (resStage2Desc) {
+                                resStage2Desc.textContent = 'Neural Sidecar Active — Corrected illumination & surface normals via PromptNorm before color detection.';
+                            }
+                        } else if (stage2Mode.includes('fallback')) {
+                            resStage2Badge.textContent = 'CLASSICAL FALLBACK (SIDECAR OFFLINE)';
+                            resStage2Badge.style.background = 'rgba(245, 158, 11, 0.18)';
+                            resStage2Badge.style.color = '#fbbf24';
+                            resStage2Badge.style.border = '1px solid rgba(245, 158, 11, 0.3)';
+                            if (resStage2Desc) {
+                                resStage2Desc.textContent = 'PromptNorm sidecar unreachable — Corrected lighting via Classical LAB flat-fielding & CLAHE fallback.';
+                            }
+                        } else {
+                            resStage2Badge.textContent = 'CLASSICAL LAB NORMALIZER';
+                            resStage2Badge.style.background = 'rgba(142, 182, 155, 0.18)';
+                            resStage2Badge.style.color = '#8EB69B';
+                            resStage2Badge.style.border = '1px solid rgba(142, 182, 155, 0.3)';
+                            if (resStage2Desc) {
+                                resStage2Desc.textContent = 'Classical LAB Engine — Uneven shadows & gradients corrected via flat-fielding & CLAHE before Munsell matching.';
+                            }
+                        }
+                    }
+
                     if (baUrl) {
                         showResBeforeAfter(baUrl);
                     } else if (normSrc || clientFallback) {
@@ -7476,11 +7466,6 @@
                     } catch (e) {
                         console.warn('Initial before/after boxes error:', e);
                     }
-                }
-
-                const resPipelineStagesCard = document.getElementById('resPipelineStagesCard');
-                if (resPipelineStagesCard) {
-                    resPipelineStagesCard.style.display = 'block';
                 }
 
                 // Interactive Dropdown Menu for Switching Detected Soil Results
