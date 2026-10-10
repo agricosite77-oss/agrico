@@ -680,6 +680,8 @@ class SoilMLAnalysisService
         $analysis['normalized_image_url']   = $normalizedUrl;
         $analysis['before_after_image_url'] = $beforeAfterUrl;
         $analysis['raw_image_url']          = $rawUrl;
+        $analysis['stage2_mode']            = $analysis['stage2_mode'] ?? $pythonResult['stage2_mode'] ?? env('STAGE2_MODE', 'classical');
+        $analysis['stage2_engine']          = $analysis['stage2_engine'] ?? $analysis['stage2_mode'];
         $analysis['success']                = true;
         $analysis['rejected']               = false;
 
