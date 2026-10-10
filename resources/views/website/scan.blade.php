@@ -111,14 +111,18 @@
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: 28px;
             align-items: start;
             width: 100%;
         }
-        @media (max-width: 900px) {
+        @media (max-width: 640px) {
             .scanner-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr !important;
+            }
+            .scanner-card,
+            .result-card {
+                grid-column: auto !important;
             }
         }
 
@@ -365,6 +369,9 @@
 
         /* Camera / Upload Card */
         .scanner-card {
+            grid-column: 1;
+            width: 100%;
+            min-width: 0;
             background: linear-gradient(145deg, #0B2B26 0%, #163832 100%);
             border-radius: 24px;
             border: 1px solid rgba(142, 182, 155, 0.25);
@@ -740,6 +747,9 @@
 
         /* Result Display Card */
         .result-card {
+            grid-column: 2;
+            width: 100%;
+            min-width: 0;
             scroll-margin-top: calc(var(--agrico-nav-h, 68px) + 20px);
             background: linear-gradient(145deg, #0B2B26 0%, #163832 100%);
             border-radius: 24px;
@@ -3301,6 +3311,7 @@
         html.light-mode #resultErrorState .error-state-title { color: #dc2626 !important; }
         html.light-mode #resultErrorState .error-state-desc { color: #475569 !important; }
         html.light-mode #resultErrorState .error-shield-icon-box { background: #fef2f2 !important; border-color: #fca5a5 !important; color: #dc2626 !important; }
+        html.light-mode .btn-save-hardcopy {
             color: #ffffff !important;
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
         }
@@ -6461,7 +6472,7 @@
 
             if (scannerCard && resultCard) {
                 resultCard.style.height = 'auto';
-                if (window.innerWidth > 900) {
+                if (window.innerWidth > 640) {
                     const leftH = scannerCard.offsetHeight;
                     const hasScanResult = (resultPlaceholder && resultPlaceholder.style.display === 'none') ||
                                           (resultContent && resultContent.style.display !== 'none' && window.getComputedStyle(resultContent).display !== 'none') ||
@@ -6927,7 +6938,7 @@
                 // Automatically scroll into view of the scan result card
                 const targetResultCard = document.getElementById('resultCard') || resCard;
                 if (targetResultCard) {
-                    targetResultCard.style.minHeight = (window.innerWidth > 900 ? '480px' : '420px');
+                    targetResultCard.style.minHeight = (window.innerWidth > 640 ? '480px' : '420px');
                     targetResultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
 
