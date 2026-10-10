@@ -137,10 +137,30 @@ class WebsiteController extends Controller
         }
 
         $tmpDir       = sys_get_temp_dir();
+        // Return cached payload immediately if already finalized
+        $cachedPayload = \Illuminate\Support\Facades\Cache::get("scan_result_payload_{$scanId}");
+        if ($cachedPayload) {
+            return response()->json($cachedPayload);
+        }
+
         $progressFile = $tmpDir . DIRECTORY_SEPARATOR . "scan_progress_{$scanId}.json";
         $resultFile   = $tmpDir . DIRECTORY_SEPARATOR . "scan_result_{$scanId}.json";
 
         if (!file_exists($progressFile)) {
+            $scanIdSafe = preg_replace('/[^a-zA-Z0-9_\-]/', '', $scanId);
+            $logFile = $tmpDir . DIRECTORY_SEPARATOR . "scan_python_{$scanIdSafe}.log";
+            if (file_exists($logFile) && filesize($logFile) > 0) {
+                $rawContent = file_get_contents($logFile);
+                $errContent = is_string($rawContent) ? trim($rawContent) : '';
+                if (!empty($errContent) && str_contains($errContent, 'Traceback')) {
+                    return response()->json([
+                        'events' => [['stage' => 0, 'status' => 'error', 'error' => $errContent]],
+                        'stage'  => 0,
+                        'status' => 'error',
+                        'cursor' => 1,
+                    ]);
+                }
+            }
             return response()->json(['events' => [], 'stage' => 0, 'status' => 'pending', 'cursor' => 0]);
         }
 
@@ -159,36 +179,50 @@ class WebsiteController extends Controller
         ];
 
         if (($latest['stage'] ?? 0) === 6 && ($latest['status'] ?? '') === 'done') {
-            if (file_exists($resultFile)) {
-                $rawResult = json_decode(file_get_contents($resultFile), true);
-                if ($rawResult && ($rawResult['success'] ?? false)) {
-                    // Resolve authenticated user for web
-                    $authUser = Auth::guard('web')->user() ?? Auth::user() ?? Auth::guard('admin')->user();
-                    if (!$authUser && session()->has('user_id')) {
-                        $authUser = User::where('user_id', session('user_id'))->first();
-                    }
-                    if (!$authUser && session()->has('admin_id')) {
-                        $authUser = User::where('user_id', session('admin_id'))->first();
-                    }
-                    if (!$authUser) {
-                        $authUser = User::first();
-                    }
-                    $userId = $authUser?->user_id ?? $authUser?->id ?? null;
-                    if (!$userId || !User::where('user_id', $userId)->exists()) {
-                        $userId = User::first()?->user_id ?? 'ADM-001';
-                    }
+            $lockKey = "scan_finalizing_{$scanId}";
+            $acquired = \Illuminate\Support\Facades\Cache::add($lockKey, true, 30);
 
-                    $fullResult = $mlService->persistScanResult($rawResult, $scanId, $userId, 'website');
-                    $payload['result'] = $fullResult;
-                    if (!empty($fullResult['rejected'])) {
-                        $payload['status'] = 'rejected';
-                        $payload['rejected'] = true;
+            if ($acquired && file_exists($resultFile)) {
+                try {
+                    $rawResult = json_decode(file_get_contents($resultFile), true);
+                    if ($rawResult && ($rawResult['success'] ?? false)) {
+                        // Resolve authenticated user for web
+                        $authUser = Auth::guard('web')->user() ?? Auth::user() ?? Auth::guard('admin')->user();
+                        if (!$authUser && session()->has('user_id')) {
+                            $authUser = User::where('user_id', session('user_id'))->first();
+                        }
+                        if (!$authUser && session()->has('admin_id')) {
+                            $authUser = User::where('user_id', session('admin_id'))->first();
+                        }
+                        if (!$authUser) {
+                            $authUser = User::first();
+                        }
+                        $userId = $authUser?->user_id ?? $authUser?->id ?? null;
+                        if (!$userId || !User::where('user_id', $userId)->exists()) {
+                            $userId = User::first()?->user_id ?? 'ADM-001';
+                        }
+
+                        $fullResult = $mlService->persistScanResult($rawResult, $scanId, $userId, 'website');
+                        $payload['result'] = $fullResult;
+                        $payload['stage'] = 6;
+                        $payload['status'] = 'done';
+                        if (!empty($fullResult['rejected'])) {
+                            $payload['status'] = 'rejected';
+                            $payload['rejected'] = true;
+                        }
                     }
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('[WebsiteController] Error finalizing scan: ' . $e->getMessage());
+                } finally {
+                    @unlink($progressFile);
+                    @unlink($resultFile);
+                    \Illuminate\Support\Facades\Cache::put("scan_result_payload_{$scanId}", $payload, 180);
+                    \Illuminate\Support\Facades\Cache::forget($lockKey);
                 }
-                @unlink($progressFile);
-                @unlink($resultFile);
-            } else {
-                $payload['status'] = 'running';
+            } elseif (\Illuminate\Support\Facades\Cache::has($lockKey)) {
+                // Background worker is currently writing to DB; tell frontend to keep polling
+                $payload['stage'] = 6;
+                $payload['status'] = 'finalizing';
             }
         }
 

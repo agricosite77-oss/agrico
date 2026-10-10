@@ -6829,7 +6829,11 @@
 
                         const stage  = payload.stage  ?? 0;
                         const status = payload.status ?? 'pending';
-                        if (stage === 6 && status === 'done') {
+                        if (status === 'finalizing') {
+                            targetPct = Math.max(targetPct, 98);
+                            updateStageText('Stage 6/6: Saving Record…', 'Saving agronomic soil record to database');
+                        }
+                        if ((stage === 6 && status === 'done') || (payload.result && status === 'done')) {
                             updateStageText('Complete', 'Analysis finished');
                             await finishProgressAnimation();
                             data = payload.result ?? {};

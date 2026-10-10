@@ -403,6 +403,12 @@ class SoilScanController extends Controller
             ], 401);
         }
 
+        // Return cached payload immediately if already finalized
+        $cachedPayload = \Illuminate\Support\Facades\Cache::get("scan_result_payload_{$scanId}");
+        if ($cachedPayload) {
+            return response()->json($cachedPayload);
+        }
+
         $tmpDir       = sys_get_temp_dir();
         $progressFile = $tmpDir . DIRECTORY_SEPARATOR . "scan_progress_{$scanId}.json";
         $resultFile   = $tmpDir . DIRECTORY_SEPARATOR . "scan_result_{$scanId}.json";
@@ -442,42 +448,52 @@ class SoilScanController extends Controller
         }
 
         if (($latest['stage'] ?? 0) === 6 && ($latest['status'] ?? '') === 'done') {
-            if (file_exists($resultFile)) {
-                $rawResult = json_decode(file_get_contents($resultFile), true);
-                if ($rawResult && ($rawResult['success'] ?? false)) {
-                    $locationData = [];
-                    if (file_exists($metaFile)) {
-                        $meta = json_decode(file_get_contents($metaFile), true);
-                        if (is_array($meta)) {
-                            $locationData = $meta;
+            $lockKey = "scan_finalizing_{$scanId}";
+            $acquired = \Illuminate\Support\Facades\Cache::add($lockKey, true, 30);
+
+            if ($acquired && file_exists($resultFile)) {
+                try {
+                    $rawResult = json_decode(file_get_contents($resultFile), true);
+                    if ($rawResult && ($rawResult['success'] ?? false)) {
+                        $locationData = [];
+                        if (file_exists($metaFile)) {
+                            $meta = json_decode(file_get_contents($metaFile), true);
+                            if (is_array($meta)) {
+                                $locationData = $meta;
+                            }
+                        }
+
+                        $fullResult = $mlService->persistScanResult(
+                            $rawResult,
+                            $scanId,
+                            $userId,
+                            'mobile',
+                            $locationData
+                        );
+
+                        if (!empty($fullResult['rejected'])) {
+                            $payload['status']   = 'rejected';
+                            $payload['rejected'] = true;
+                            $payload['message']  = $fullResult['message'] ?? 'No valid soil sample detected.';
+                        } else {
+                            $payload['status'] = 'done';
+                            $payload['data']   = $fullResult;
+                            if (!empty($fullResult['scan_model'])) {
+                                $payload['scan'] = (new SoilScanResource($fullResult['scan_model']))->toArray($request);
+                            }
                         }
                     }
-
-                    $fullResult = $mlService->persistScanResult(
-                        $rawResult,
-                        $scanId,
-                        $userId,
-                        'mobile',
-                        $locationData
-                    );
-
-                    if (!empty($fullResult['rejected'])) {
-                        $payload['status']   = 'rejected';
-                        $payload['rejected'] = true;
-                        $payload['message']  = $fullResult['message'] ?? 'No valid soil sample detected.';
-                    } else {
-                        $payload['status'] = 'done';
-                        $payload['data']   = $fullResult;
-                        if (!empty($fullResult['scan_model'])) {
-                            $payload['scan'] = (new SoilScanResource($fullResult['scan_model']))->toArray($request);
-                        }
-                    }
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('[SoilScanController] Error finalizing mobile scan: ' . $e->getMessage());
+                } finally {
+                    @unlink($progressFile);
+                    @unlink($resultFile);
+                    @unlink($metaFile);
+                    \Illuminate\Support\Facades\Cache::put("scan_result_payload_{$scanId}", $payload, 180);
+                    \Illuminate\Support\Facades\Cache::forget($lockKey);
                 }
-                @unlink($progressFile);
-                @unlink($resultFile);
-                @unlink($metaFile);
-            } else {
-                $payload['status'] = 'running';
+            } elseif (\Illuminate\Support\Facades\Cache::has($lockKey)) {
+                $payload['status'] = 'finalizing';
             }
         }
 

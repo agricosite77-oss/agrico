@@ -29,8 +29,11 @@ class SoilScan extends Model
 
     protected static function booted(): void
     {
+        // Enforce limit periodically
         static::created(function () {
-            static::enforceLimit(300);
+            if (mt_rand(1, 10) === 1) {
+                static::enforceLimit(300);
+            }
         });
     }
 
@@ -41,11 +44,12 @@ class SoilScan extends Model
             $excess = $total - $limit;
             $oldestIds = static::orderBy('soil_scan_id', 'asc')
                 ->limit($excess)
-                ->pluck('soil_scan_id');
+                ->pluck('soil_scan_id')
+                ->toArray();
 
-            static::whereIn('soil_scan_id', $oldestIds)->get()->each(function ($scan) {
-                $scan->delete();
-            });
+            if (!empty($oldestIds)) {
+                static::whereIn('soil_scan_id', $oldestIds)->delete();
+            }
         }
     }
 
