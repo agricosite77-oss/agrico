@@ -142,7 +142,7 @@ class PythonProcessRunner
                     $envPrefix .= $k . '=' . escapeshellarg((string)$v) . ' ';
                 }
             }
-            $bgCommand = 'nohup ' . $envPrefix . $command . ' >> ' . escapeshellarg($logFile) . ' 2>&1 &';
+            $bgCommand = 'nohup env ' . $envPrefix . $command . ' >> ' . escapeshellarg($logFile) . ' 2>&1 &';
             exec($bgCommand);
             Log::info("[PythonProcessRunner] Started detached Python process on Unix (log: {$logFile})");
         }
