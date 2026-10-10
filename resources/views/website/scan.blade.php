@@ -4653,6 +4653,19 @@
                         </button>
                     </div>
 
+                    {{-- Multi-Layer Accordion Section (All Detected Soil Layers with Drop-down results) --}}
+                    <div id="resMultiLayerSection" style="display: none; margin-top: 4px; margin-bottom: 14px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <div style="font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
+                                ALL DETECTED SOIL LAYERS (<span id="resMultiLayerCount">0</span>)
+                            </div>
+                            <button type="button" id="btnToggleAllLayers" style="background: none; border: none; font-size: 11px; font-weight: 700; color: #8EB69B; cursor: pointer; text-decoration: underline;">
+                                Expand All
+                            </button>
+                        </div>
+                        <div id="resMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    </div>
+
                     {{-- Soil Normalization: Stage 2 Lighting Normalizer (Before & After Comparison) --}}
                     <div id="resBeforeAfterCard" class="soil-modal-grid-card" style="margin-bottom: 14px; padding: 13px 15px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -4684,19 +4697,6 @@
                             <div id="resBeforeAfterBoxes" style="position: absolute; inset: 0; pointer-events: none; z-index: 10;"></div>
                         </div>
                         <div id="resBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
-                    </div>
-
-                    {{-- Multi-Layer Accordion Section (All Detected Soil Layers with Drop-down results) --}}
-                    <div id="resMultiLayerSection" style="display: none; margin-top: 4px; margin-bottom: 14px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                            <div style="font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
-                                ALL DETECTED SOIL LAYERS (<span id="resMultiLayerCount">0</span>)
-                            </div>
-                            <button type="button" id="btnToggleAllLayers" style="background: none; border: none; font-size: 11px; font-weight: 700; color: #8EB69B; cursor: pointer; text-decoration: underline;">
-                                Expand All
-                            </button>
-                        </div>
-                        <div id="resMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
 
                     {{-- Action Buttons Row: Save Copy (Left) & Pin All Detected (Right) --}}
