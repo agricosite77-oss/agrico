@@ -1349,7 +1349,7 @@ class StudentRecord extends Component
             });
 
         $counts = (clone $baseScopedQuery)
-            ->selectRaw('COUNT(*) as total, SUM(CASE WHEN is_online = 1 THEN 1 ELSE 0 END) as online')
+            ->selectRaw('COUNT(*) as total, SUM(CASE WHEN is_online IS TRUE THEN 1 ELSE 0 END) as online')
             ->first();
 
         $totalRegistered = (int) ($counts->total ?? 0);

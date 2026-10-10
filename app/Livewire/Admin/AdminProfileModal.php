@@ -222,7 +222,8 @@ class AdminProfileModal extends Component
 
         $adminId = $user?->admin_id ?? $user?->user_id ?? $user?->id ?? 'ADM-001';
         $rawRole = $user?->role ?? 'Admin';
-        $adminRole = (in_array(strtolower($rawRole), ['superadmin', 'super admin'])) ? 'Super Admin' : ucfirst($rawRole);
+        $isSuperAdmin = $user ? $user->isSuperAdmin() : false;
+        $adminRole = $isSuperAdmin ? 'Super Admin' : ucfirst($rawRole);
         $adminInitial = strtoupper(substr($adminName, 0, 1));
         
         $profilePhotoUrl = $user?->profile_photo_url;
