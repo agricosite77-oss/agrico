@@ -6533,13 +6533,18 @@
             }
         }
 
-        window.toggleResultCardExpansion = function() {
+        window.setResultCardExpanded = function(expanded) {
             const resCard = document.getElementById('resultCard');
             const expandText = document.getElementById('expandResultText');
             const expandIcon = document.getElementById('expandResultIcon');
             if (!resCard) return;
 
-            const isExpanded = resCard.classList.toggle('is-expanded');
+            if (expanded) {
+                resCard.classList.add('is-expanded');
+            } else {
+                resCard.classList.remove('is-expanded');
+            }
+            const isExpanded = resCard.classList.contains('is-expanded');
             if (expandText) {
                 expandText.textContent = isExpanded ? 'Collapse View' : 'Expand Result';
             }
@@ -6548,10 +6553,19 @@
                     ? '<path stroke-linecap="round" stroke-linejoin="round" d="M9 9L4 4m0 0h4m-4 0v4m11 5l5 5m0 0h-4m4 0v-4M9 15l-5 5m0 0h4m-4 0v-4m11-11l5-5m0 0h-4m4 0v4"/>'
                     : '<path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>';
             }
+            resCard.style.height = 'auto';
+            resCard.style.minHeight = '480px';
             setTimeout(() => {
                 syncScannerCardHeights();
                 resCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }, 50);
+        };
+
+        window.toggleResultCardExpansion = function() {
+            const resCard = document.getElementById('resultCard');
+            if (!resCard) return;
+            const isExpanded = resCard.classList.contains('is-expanded');
+            window.setResultCardExpanded(!isExpanded);
         };
 
         window.addEventListener('resize', syncScannerCardHeights);
@@ -6937,6 +6951,9 @@
                 if (resContent) resContent.style.display = 'none';
                 if (resPlaceholder) resPlaceholder.style.display = 'block';
                 lastScanMatch = null;
+                if (typeof window.setResultCardExpanded === 'function') {
+                    window.setResultCardExpanded(false);
+                }
                 const btnSave = document.getElementById('btnSaveSoilScan');
                 if (btnSave) btnSave.disabled = true;
 
@@ -7828,24 +7845,39 @@
                     const transPromise = window.AgriMotion.transitionSkeleton(scanLoadingOverlay, resContent, { minShow: 220, step: 110 });
                     if (transPromise && typeof transPromise.then === 'function') {
                         transPromise.then(() => {
-                            if (resCardContainer) resCardContainer.style.height = 'auto';
-                            syncScannerCardHeights();
+                            if (typeof window.setResultCardExpanded === 'function') {
+                                window.setResultCardExpanded(true);
+                            } else {
+                                if (resCardContainer) resCardContainer.style.height = 'auto';
+                                syncScannerCardHeights();
+                            }
                         }).catch(() => {
-                            if (resCardContainer) resCardContainer.style.height = 'auto';
-                            syncScannerCardHeights();
+                            if (typeof window.setResultCardExpanded === 'function') {
+                                window.setResultCardExpanded(true);
+                            } else {
+                                if (resCardContainer) resCardContainer.style.height = 'auto';
+                                syncScannerCardHeights();
+                            }
                         });
                     }
                 } else {
                     if (scanLoadingOverlay) scanLoadingOverlay.style.display = 'none';
                     if (resContent) resContent.style.display = 'block';
-                    if (resCardContainer) resCardContainer.style.height = 'auto';
-                    syncScannerCardHeights();
+                    if (typeof window.setResultCardExpanded === 'function') {
+                        window.setResultCardExpanded(true);
+                    } else {
+                        if (resCardContainer) resCardContainer.style.height = 'auto';
+                        syncScannerCardHeights();
+                    }
                 }
 
-                setTimeout(syncScannerCardHeights, 50);
-                setTimeout(syncScannerCardHeights, 150);
-                setTimeout(syncScannerCardHeights, 350);
-                setTimeout(syncScannerCardHeights, 650);
+                // Automatically expand result card so all detected layers, before-after, and action buttons are fully displayed
+                if (typeof window.setResultCardExpanded === 'function') {
+                    window.setResultCardExpanded(true);
+                }
+
+                setTimeout(() => { if (typeof window.setResultCardExpanded === 'function') window.setResultCardExpanded(true); }, 150);
+                setTimeout(() => { if (typeof window.setResultCardExpanded === 'function') window.setResultCardExpanded(true); }, 350);
 
                 const targetCompletedCard = document.getElementById('resultCard') || resCard;
                 if (targetCompletedCard) {
