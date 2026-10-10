@@ -1373,6 +1373,106 @@
             overflow-wrap: break-word;
         }
 
+        /* Detected Soil Results Dropdown Menus */
+        .res-layer-dropdown-menu,
+        .modal-layer-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: #0B2B26;
+            border: 1.5px solid rgba(142, 182, 155, 0.35);
+            border-radius: 14px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+            z-index: 120;
+            overflow: hidden;
+            padding: 6px;
+            box-sizing: border-box;
+        }
+        .res-layer-dropdown-header,
+        .modal-layer-dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px 6px;
+            font-size: 10.5px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            color: #8EB69B;
+            border-bottom: 1px solid rgba(142, 182, 155, 0.2);
+            text-transform: uppercase;
+        }
+        .res-layer-dropdown-count,
+        .modal-layer-dropdown-count {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            padding: 2px 7px;
+            border-radius: 9999px;
+            font-size: 9.5px;
+            font-weight: 800;
+        }
+        .res-layer-dropdown-list,
+        .modal-layer-dropdown-list {
+            max-height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-top: 4px;
+        }
+        .res-layer-dropdown-item,
+        .modal-layer-dropdown-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+            user-select: none;
+            gap: 10px;
+        }
+        .res-layer-dropdown-item:hover,
+        .modal-layer-dropdown-item:hover {
+            background: rgba(35, 83, 71, 0.4);
+        }
+        .res-layer-dropdown-item.is-selected,
+        .modal-layer-dropdown-item.is-selected {
+            background: rgba(34, 197, 94, 0.22);
+            border-color: rgba(34, 197, 94, 0.45);
+        }
+        .res-dropdown-swatch-dot,
+        .modal-dropdown-swatch-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            flex-shrink: 0;
+        }
+        .res-dropdown-item-code,
+        .modal-dropdown-item-code {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .res-dropdown-item-label,
+        .modal-dropdown-item-label {
+            font-size: 11.5px;
+            color: #8EB69B;
+            font-weight: 600;
+        }
+        .res-dropdown-item-pct,
+        .modal-dropdown-item-pct {
+            font-size: 11px;
+            font-weight: 800;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-family: monospace;
+        }
+
         /* ── LIGHT MODE OVERRIDES ── */
         html.light-mode .ws-page-hero {
             background: linear-gradient(135deg, #DAF1DE 0%, #EEF7F1 100%) !important;
@@ -2547,6 +2647,39 @@
             background: #ffffff !important;
             border-color: #cbd5e1 !important;
             color: #1e293b !important;
+        }
+        html.light-mode .res-layer-dropdown-menu,
+        html.light-mode .modal-layer-dropdown-menu {
+            background: #ffffff !important;
+            border: 1.5px solid #cbd5e1 !important;
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18) !important;
+        }
+        html.light-mode .res-layer-dropdown-header,
+        html.light-mode .modal-layer-dropdown-header {
+            color: #475569 !important;
+            border-bottom-color: #f1f5f9 !important;
+        }
+        html.light-mode .res-layer-dropdown-item:hover,
+        html.light-mode .modal-layer-dropdown-item:hover {
+            background: #f1f5f9 !important;
+        }
+        html.light-mode .res-layer-dropdown-item.is-selected,
+        html.light-mode .modal-layer-dropdown-item.is-selected {
+            background: #ecfdf5 !important;
+            border-color: #86efac !important;
+        }
+        html.light-mode .res-dropdown-item-code,
+        html.light-mode .modal-dropdown-item-code {
+            color: #0f172a !important;
+        }
+        html.light-mode .res-dropdown-item-label,
+        html.light-mode .modal-dropdown-item-label {
+            color: #64748b !important;
+        }
+        html.light-mode .res-dropdown-item-pct,
+        html.light-mode .modal-dropdown-item-pct {
+            background: #e2e8f0 !important;
+            color: #0f172a !important;
         }
         html.light-mode #modalSoilLocationCard {
             background: #ffffff !important;
@@ -4414,10 +4547,10 @@
                     <!-- Dual-Preview Soil Badge Banner (Overlapping Left Circular Soil Snippet + Center Munsell Code + Right Hex Pill) -->
                     <div id="soilDualPreviewBadge" style="position: relative; margin-top: 10px; margin-bottom: 16px; width: 100%; display: flex; align-items: center;">
                         <!-- Rectangular Color Swatch Block -->
-                        <div id="resSwatchBlock" style="width: 100%; height: 78px; border-radius: 14px; background: #594433; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); transition: background-color 0.4s ease; display: flex; align-items: center; justify-content: space-between; padding: 0 20px 0 126px; position: relative; box-sizing: border-box;">
-                            <div>
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <span id="resDominantChevron" style="display: none; font-size: 12px; color: #ffffff; opacity: 0.9;">▼</span>
+                        <div id="resSwatchBlock" style="width: 100%; height: 78px; border-radius: 14px; background: #594433; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); transition: background-color 0.4s ease; display: flex; align-items: center; justify-content: space-between; padding: 0 20px 0 126px; position: relative; box-sizing: border-box; cursor: pointer;" title="Click to view or switch detected soil layers">
+                            <div style="cursor: pointer; user-select: none;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span id="resDominantChevron" style="display: none; font-size: 13px; color: #ffffff; opacity: 0.95; transition: transform 0.2s ease;">▼</span>
                                     <span id="resCodeDisplay" style="font-size: 26px; font-weight: 900; color: #ffffff; text-shadow: none; letter-spacing: -0.01em; line-height: 1;">
                                         10YR 4/3
                                     </span>
@@ -4431,10 +4564,19 @@
                             </span>
                         </div>
 
+                        <!-- Dropdown Menu of Detected Soil Results -->
+                        <div id="resLayerDropdownMenu" class="res-layer-dropdown-menu" style="display: none;">
+                            <div class="res-layer-dropdown-header">
+                                <span>SELECT DETECTED SOIL RESULT</span>
+                                <span id="resLayerDropdownCount" class="res-layer-dropdown-count">6 DETECTED</span>
+                            </div>
+                            <div id="resLayerDropdownList" class="res-layer-dropdown-list"></div>
+                        </div>
+
                         <!-- Overlapping Soil Snippet on Left (Square-ish with subtle rounded corners) -->
                         <div id="resSoilSnippetContainer"
                              style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 96px; height: 96px; aspect-ratio: 1 / 1; border-radius: 12px; box-shadow: none !important; background: transparent; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; pointer-events: none; border: none; outline: none;">
-                            <img id="resSoilCircleSnippet" src="" alt="Cropped Soil Snippet" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; border-radius: 0; border: none; outline: none;" />
+                            <img id="resSoilCircleSnippet" src="" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; border-radius: 0; border: none; outline: none;" />
                             <div id="resSoilSnippetFallback" style="position: absolute; inset: 0; border-radius: 0; display: flex; align-items: center; justify-content: center; background: #163832; color: #8EB69B;">
                                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -4504,7 +4646,18 @@
                         </div>
                     </div>
 
-                    {{-- Soil Normalization: Before & After Card (Prominently displayed right after Description) --}}
+                    {{-- Primary Soil Result: Pin Location Button (Placed directly after Description - Pins active selected soil) --}}
+                    <div id="resPrimaryPinLocationWrapper" style="margin-bottom: 12px;">
+                        <button type="button" id="btnPinLocationScan" class="btn-res-action btn-res-pin-location" onclick="openPinLocationModal(null, false)" style="width: 100%; justify-content: center;" title="Pin Soil Specimen to Map">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span>Pin Location</span>
+                        </button>
+                    </div>
+
+                    {{-- Soil Normalization: Before & After Card (Always visible once scan completes) --}}
                     <div id="resBeforeAfterCard" class="soil-modal-grid-card" style="margin-bottom: 12px; padding: 12px 14px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <div class="soil-modal-label" style="font-size: 11px; font-weight: 800; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.04em;">
@@ -4523,7 +4676,7 @@
                         <div id="resBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
                     </div>
 
-                    {{-- Multi-Layer Accordion Section (Secondary & Tertiary Layers) --}}
+                    {{-- Multi-Layer Accordion Section (All Detected Soil Layers with Drop-down results) --}}
                     <div id="resMultiLayerSection" style="display: none; margin-top: 4px; margin-bottom: 14px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                             <div style="font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
@@ -4536,20 +4689,13 @@
                         <div id="resMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
 
-                    {{-- Action Buttons Row: Save Copy (Left) & Pin Location (Right) --}}
+                    {{-- Action Buttons Row: Save Copy (Left) & Pin All Detected (Right) --}}
                     <div id="resActionButtonsRow" class="res-action-buttons-row">
                         <button type="button" id="btnSaveCopyScan" class="btn-res-action btn-res-save-copy" onclick="saveCurrentScanCopy()" title="Save Copy of Soil Record">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
                             </svg>
                             <span>Save Copy</span>
-                        </button>
-                        <button type="button" id="btnPinLocationScan" class="btn-res-action btn-res-pin-location" onclick="openPinLocationModal(null, false)" title="Pin Soil Specimen to Map">
-                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            <span>Pin Location</span>
                         </button>
                         <button type="button" id="btnPinAllLocationScan" class="btn-res-action btn-res-pin-location" style="display: none;" onclick="openPinAllLocationModal()" title="Pin All Detected Soils to Map">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -5446,14 +5592,20 @@
                     }
                 };
 
+                zoomImg.alt = '';
                 zoomImg.onload = () => {
                     zoomImg.style.display = 'block';
                     if (fallback) fallback.style.display = 'none';
                 };
 
+                // Keep image hidden and fallback visible until image is fully loaded
+                zoomImg.style.display = 'none';
+                if (fallback) fallback.style.display = 'flex';
                 zoomImg.src = src;
-                zoomImg.style.display = 'block';
-                if (fallback) fallback.style.display = 'none';
+                if (zoomImg.complete && zoomImg.naturalWidth > 0) {
+                    zoomImg.style.display = 'block';
+                    if (fallback) fallback.style.display = 'none';
+                }
 
                 // Render vector-sharp CSS green bounding box on top of the avatar (never blurred!)
                 if (boxHost) {
@@ -7243,60 +7395,197 @@
                 const resBeforeAfterImg = document.getElementById('resBeforeAfterImg');
                 const resBeforeAfterBoxes = document.getElementById('resBeforeAfterBoxes');
                 const resBeforeAfterSwatches = document.getElementById('resBeforeAfterSwatches');
-                if (resBeforeAfterCard && resBeforeAfterImg) {
-                    const rawSrc = data.raw_image_url || snippetUrl || base64Image;
-                    const normSrc = actualScanImage;
-                    let baUrl = data.before_after_image_url;
-                    if (!baUrl && data.scan_id) {
-                        baUrl = `/storage/scans/scan_${data.scan_id}_before_after.jpg?t=${Date.now()}`;
-                    }
+                let baUrl = data.before_after_image_url;
+                if (!baUrl && data.scan_id) {
+                    baUrl = `/storage/scans/scan_${data.scan_id}_before_after.jpg?t=${Date.now()}`;
+                }
 
-                    const targetReg = (regions && regions[0]) || { hex: match.hex, bounding_box: null };
-                    window.currentScanResult = data;
-                    window.currentActiveScanRegions = regions;
-                    window.currentBeforeAfterRegions = regions;
-                    window.currentBeforeAfterRegion = targetReg;
-                    window.currentDetectedSoilRegion = targetReg;
+                const targetReg = (regions && regions[0]) || { hex: match.hex, bounding_box: null };
+                window.currentScanResult = data;
+                window.currentActiveScanRegions = regions;
+                window.currentBeforeAfterRegions = regions;
+                window.currentBeforeAfterRegion = targetReg;
+                window.currentDetectedSoilRegion = targetReg;
 
-                    function showResBeforeAfter(src) {
+                function showResBeforeAfter(src) {
+                    if (!src || !resBeforeAfterCard || !resBeforeAfterImg) return;
+                    resBeforeAfterCard.style.display = 'block';
+                    resBeforeAfterImg.onload = () => {
                         resBeforeAfterCard.style.display = 'block';
-                        resBeforeAfterImg.onload = () => {
-                            resBeforeAfterCard.style.display = 'block';
-                            if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
-                            if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
-                        };
-                        resBeforeAfterImg.onerror = () => {
-                            if (resBeforeAfterBoxes) resBeforeAfterBoxes.innerHTML = '';
-                            const clientSrc = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || rawSrc || normSrc;
-                            if (clientSrc && src !== clientSrc) {
-                                generateBeforeAfterCanvas(clientSrc, clientSrc, match.code, targetReg, (stitchedDataUrl) => {
-                                    if (stitchedDataUrl) {
-                                        showResBeforeAfter(stitchedDataUrl);
-                                    } else {
-                                        resBeforeAfterCard.style.display = 'block';
-                                    }
-                                });
-                            } else {
-                                resBeforeAfterCard.style.display = 'block';
-                            }
-                        };
-                        resBeforeAfterImg.src = src;
                         if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
                         if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
-                        resBeforeAfterCard.style.display = 'block';
-                    }
+                    };
+                    resBeforeAfterImg.onerror = () => {
+                        const clientSrc = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || rawSrc || normSrc;
+                        if (clientSrc && resBeforeAfterImg.src !== clientSrc) {
+                            generateBeforeAfterCanvas(clientSrc, clientSrc, match.code, targetReg, (stitchedDataUrl) => {
+                                if (stitchedDataUrl) {
+                                    showResBeforeAfter(stitchedDataUrl);
+                                } else {
+                                    resBeforeAfterCard.style.display = 'block';
+                                    resBeforeAfterImg.src = clientSrc;
+                                }
+                            });
+                        } else {
+                            resBeforeAfterCard.style.display = 'block';
+                        }
+                    };
+                    resBeforeAfterImg.src = src;
+                    if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
+                    if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
+                    resBeforeAfterCard.style.display = 'block';
+                }
 
-                    if (baUrl) {
-                        showResBeforeAfter(baUrl);
-                    } else if (rawSrc || normSrc || base64Image) {
-                        const fallbackSrc = rawSrc || normSrc || base64Image;
-                        generateBeforeAfterCanvas(fallbackSrc, normSrc || fallbackSrc, match.code, targetReg, (stitchedDataUrl) => {
+                if (resBeforeAfterCard && resBeforeAfterImg) {
+                    // Guaranteed immediate display
+                    resBeforeAfterCard.style.display = 'block';
+                    if (resBeforeAfterBoxes) renderBeforeAfterBoxes(resBeforeAfterBoxes, regions || [targetReg]);
+                    if (resBeforeAfterSwatches) renderStage3Swatches(resBeforeAfterSwatches, regions, match);
+
+                    const rawSrc = data.raw_image_url || snippetUrl || base64Image;
+                    const normSrc = actualScanImage;
+                    const clientFallback = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || rawSrc || normSrc;
+
+                    // Immediately generate local canvas so the user NEVER sees missing content
+                    if (clientFallback) {
+                        generateBeforeAfterCanvas(clientFallback, normSrc || clientFallback, match.code, targetReg, (stitchedDataUrl) => {
                             if (stitchedDataUrl) {
                                 showResBeforeAfter(stitchedDataUrl);
                             }
                         });
                     }
+
+                    // Preload server normalized before/after image if available and upgrade smoothly
+                    if (baUrl) {
+                        const preloader = new Image();
+                        preloader.onload = () => {
+                            if (preloader.naturalWidth > 0) {
+                                showResBeforeAfter(baUrl);
+                            }
+                        };
+                        preloader.src = baUrl;
+                    }
                 }
+
+                // Interactive Dropdown Menu for Switching Detected Soil Results
+                function toggleResLayerDropdown(ev) {
+                    if (ev) ev.stopPropagation();
+                    const menu = document.getElementById('resLayerDropdownMenu');
+                    const chevron = document.getElementById('resDominantChevron');
+                    if (!menu) return;
+                    const isOpen = menu.style.display === 'block';
+                    menu.style.display = isOpen ? 'none' : 'block';
+                    if (chevron) {
+                        chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+                    }
+                }
+
+                const resSwatchBlockEl = document.getElementById('resSwatchBlock');
+                if (isMultiLayer && resSwatchBlockEl) {
+                    resSwatchBlockEl.onclick = toggleResLayerDropdown;
+                    resSwatchBlockEl.style.cursor = 'pointer';
+                } else if (resSwatchBlockEl) {
+                    resSwatchBlockEl.onclick = null;
+                }
+
+                // Select and display any detected soil layer in the main card
+                window.selectActiveResultLayer = function(layerIdx) {
+                    if (!regions || !regions[layerIdx]) return;
+                    const r = regions[layerIdx];
+                    const rPct = r.percent !== undefined ? r.percent : Math.round((r.proportion || 0.2) * 100);
+                    const rCode = r.munsell || r.munsell_code || match.code;
+                    const rHex = r.hex || getMunsellColorHex(rCode, '') || match.hex || '#594433';
+                    const rLabel = r.label || r.color_name || match.color_name;
+                    const rOrganic = r.organic_matter || match.organic;
+                    const rDrainage = r.soil_name || r.soil_type || match.soil_type;
+                    const rConf = window.getNearMatchScore(r, match.confidence);
+                    const rNote = (r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') ? r.scan_note : (data.scan_note || 'No scan note available for this record.');
+                    const rDesc = r.description || `${rCode} - ${rLabel}`;
+
+                    // Update hero banner
+                    const swatchBlock = document.getElementById('resSwatchBlock');
+                    const codeDisplay = document.getElementById('resCodeDisplay');
+                    const hexPill = document.getElementById('resHexPill');
+                    const pctDisplay = document.getElementById('resSoilPercentageDisplay');
+                    if (swatchBlock) swatchBlock.style.backgroundColor = rHex;
+                    if (codeDisplay) codeDisplay.textContent = rCode;
+                    if (hexPill) hexPill.textContent = rHex.toUpperCase();
+                    if (pctDisplay) {
+                        pctDisplay.style.display = 'block';
+                        pctDisplay.textContent = `Soil Percentage (${rPct}%)`;
+                    }
+
+                    // Update snippet avatar with ROI box for this chosen region
+                    const snippetImg = document.getElementById('resSoilCircleSnippet');
+                    if (snippetImg) {
+                        populateZoomAvatar(snippetImg, r, window.currentClientSoilPhoto || actualScanImage);
+                    }
+
+                    // Update detail metrics
+                    if (resName) resName.textContent = rLabel;
+                    if (resFullCode) resFullCode.textContent = rCode;
+                    if (resOrganic) resOrganic.textContent = rOrganic;
+                    if (resDrainage) resDrainage.textContent = rDrainage;
+                    if (resConfidence) resConfidence.textContent = rConf;
+                    if (resCardScanNote) resCardScanNote.textContent = rNote;
+                    if (resDesc) resDesc.textContent = rDesc;
+
+                    // Update Pin Location button to pin THIS specific selected soil
+                    const btnPin = document.getElementById('btnPinLocationScan');
+                    if (btnPin) {
+                        btnPin.onclick = () => openPinLocationModal(r, false);
+                    }
+
+                    // Update selection highlight in dropdown
+                    const dropdownItems = document.querySelectorAll('.res-layer-dropdown-item');
+                    dropdownItems.forEach((it, idx) => {
+                        if (idx === layerIdx) it.classList.add('is-selected');
+                        else it.classList.remove('is-selected');
+                    });
+
+                    // Close dropdown menu
+                    const menu = document.getElementById('resLayerDropdownMenu');
+                    const chevron = document.getElementById('resDominantChevron');
+                    if (menu) menu.style.display = 'none';
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                };
+
+                // Populate Dropdown Menu items
+                const resLayerDropdownList = document.getElementById('resLayerDropdownList');
+                const resLayerDropdownCount = document.getElementById('resLayerDropdownCount');
+                if (resLayerDropdownList && isMultiLayer) {
+                    resLayerDropdownList.innerHTML = '';
+                    if (resLayerDropdownCount) resLayerDropdownCount.textContent = `${regions.length} DETECTED`;
+                    regions.forEach((r, idx) => {
+                        const rPct = r.percent !== undefined ? r.percent : Math.round((r.proportion || 0.2) * 100);
+                        const rCode = r.munsell || r.munsell_code || match.code;
+                        const rHex = r.hex || getMunsellColorHex(rCode, '') || match.hex || '#594433';
+                        const rLabel = r.label || r.color_name || match.color_name;
+                        const isDom = idx === 0;
+
+                        const item = document.createElement('div');
+                        item.className = 'res-layer-dropdown-item' + (idx === 0 ? ' is-selected' : '');
+                        item.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 9px; min-width: 0;">
+                                <span class="res-dropdown-swatch-dot" style="background: ${rHex};"></span>
+                                <div style="min-width: 0; line-height: 1.25;">
+                                    <div class="res-dropdown-item-code">${rCode}</div>
+                                    <div class="res-dropdown-item-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rLabel}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                                <span class="res-dropdown-item-pct">${rPct}%</span>
+                                ${isDom ? '<span style="font-size: 8.5px; font-weight: 800; background: rgba(34, 197, 94, 0.2); color: #22c55e; padding: 2px 6px; border-radius: 9999px;">DOMINANT</span>' : `<span style="font-size: 8.5px; font-weight: 700; color: #8EB69B;">#${idx+1}</span>`}
+                            </div>
+                        `;
+                        item.addEventListener('click', (ev) => {
+                            ev.stopPropagation();
+                            window.selectActiveResultLayer(idx);
+                        });
+                        resLayerDropdownList.appendChild(item);
+                    });
+                }
+
 
                 // Multi-Layer Accordion Rows (Secondary & Tertiary Layers)
                 if (isMultiLayer && resMultiLayerSection && resMultiLayerItems) {
@@ -7718,6 +8007,29 @@
             const btn = e.target.closest('.btn-view-scan');
             if (btn) {
                 window.openScanModalFromBtn(btn, e);
+                return;
+            }
+
+            // Close live result dropdown menu if clicked outside
+            const resDropdown = document.getElementById('resLayerDropdownMenu');
+            const resSwatch = document.getElementById('resSwatchBlock');
+            if (resDropdown && resDropdown.style.display === 'block') {
+                if (!resDropdown.contains(e.target) && (!resSwatch || !resSwatch.contains(e.target))) {
+                    resDropdown.style.display = 'none';
+                    const chev = document.getElementById('resDominantChevron');
+                    if (chev) chev.style.transform = 'rotate(0deg)';
+                }
+            }
+
+            // Close modal dropdown menu if clicked outside
+            const modalDropdown = document.getElementById('modalLayerDropdownMenu');
+            const modalSwatch = document.getElementById('modalSwatchBlock');
+            if (modalDropdown && modalDropdown.style.display === 'block') {
+                if (!modalDropdown.contains(e.target) && (!modalSwatch || !modalSwatch.contains(e.target))) {
+                    modalDropdown.style.display = 'none';
+                    const mChev = document.getElementById('modalDominantChevron');
+                    if (mChev) mChev.style.transform = 'rotate(0deg)';
+                }
             }
         });
 
@@ -7809,6 +8121,119 @@
                     cleanSourceImg = '/' + cleanSourceImg;
                 }
                 const targetRegion = dom || (regions && regions[0]) || { hex: hex, bounding_box: null };
+
+                // Dropdown menu for switching detected soil results in Modal
+                function toggleModalLayerDropdown(ev) {
+                    if (ev) ev.stopPropagation();
+                    const menu = document.getElementById('modalLayerDropdownMenu');
+                    const chevron = document.getElementById('modalDominantChevron');
+                    if (!menu) return;
+                    const isOpen = menu.style.display === 'block';
+                    menu.style.display = isOpen ? 'none' : 'block';
+                    if (chevron) {
+                        chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+                    }
+                }
+
+                if (isMulti && modalSwatchBlock) {
+                    modalSwatchBlock.onclick = toggleModalLayerDropdown;
+                    modalSwatchBlock.style.cursor = 'pointer';
+                } else if (modalSwatchBlock) {
+                    modalSwatchBlock.onclick = null;
+                    modalSwatchBlock.style.cursor = 'default';
+                }
+
+                // Select and display any detected soil layer in the modal card
+                window.selectActiveModalLayer = function(layerIdx) {
+                    if (!regions || !regions[layerIdx]) return;
+                    const r = regions[layerIdx];
+                    const rPct = r.percent !== undefined ? r.percent : Math.round((r.proportion || 0.2) * 100);
+                    const rCode = r.munsell || r.munsell_code || data.code;
+                    const rHex = r.hex || getMunsellColorHex(rCode, '') || data.hex || '#8F694E';
+                    const rLabel = r.label || r.color_name || data.name;
+                    const rOrganic = r.organic_matter || data.organic;
+                    const rDrainage = r.soil_name || r.soil_type || data.drainage;
+                    const rConf = window.getNearMatchScore ? window.getNearMatchScore(r, data.confidence || '97.4%') : (data.confidence || '97.4%');
+                    const rNote = (r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') ? r.scan_note : (data.scan_note || 'No scan note available for this record.');
+                    const rDesc = r.description || `${rCode} - ${rLabel}`;
+
+                    // Update banner
+                    if (heroBadge) {
+                        heroBadge.style.setProperty('background', rHex, 'important');
+                        heroBadge.style.setProperty('background-color', rHex, 'important');
+                    }
+                    if (modalCodeDisplay) modalCodeDisplay.textContent = rCode;
+                    if (modalHexPill) modalHexPill.textContent = rHex.toUpperCase();
+                    if (modalSoilPercentageDisplay) {
+                        modalSoilPercentageDisplay.style.display = 'block';
+                        modalSoilPercentageDisplay.textContent = `Soil Percentage (${rPct}%)`;
+                    }
+
+                    // Update snippet avatar
+                    if (modalSoilCircleSnippet && cleanSourceImg) {
+                        populateZoomAvatar(modalSoilCircleSnippet, r, cleanSourceImg);
+                    }
+
+                    // Update detail metrics
+                    if (modalCardColorName) modalCardColorName.textContent = rLabel;
+                    if (modalCardFullCode) modalCardFullCode.textContent = rCode;
+                    if (modalCardOrganic) modalCardOrganic.textContent = rOrganic;
+                    if (modalCardDrainage) modalCardDrainage.textContent = rDrainage;
+                    if (modalCardConfidence) modalCardConfidence.textContent = rConf;
+                    if (modalCardScanNote) modalCardScanNote.textContent = rNote;
+                    if (modalCardDesc) modalCardDesc.textContent = rDesc;
+
+                    // Update selection in dropdown
+                    const dropdownItems = document.querySelectorAll('#modalLayerDropdownList .res-layer-dropdown-item');
+                    dropdownItems.forEach((it, idx) => {
+                        if (idx === layerIdx) it.classList.add('is-selected');
+                        else it.classList.remove('is-selected');
+                    });
+
+                    // Close dropdown menu
+                    const menu = document.getElementById('modalLayerDropdownMenu');
+                    const chevron = document.getElementById('modalDominantChevron');
+                    if (menu) menu.style.display = 'none';
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                };
+
+                // Populate Dropdown Menu items for modal
+                const modalLayerDropdownList = document.getElementById('modalLayerDropdownList');
+                const modalLayerDropdownCount = document.getElementById('modalLayerDropdownCount');
+                if (modalLayerDropdownList) {
+                    modalLayerDropdownList.innerHTML = '';
+                    if (isMulti) {
+                        if (modalLayerDropdownCount) modalLayerDropdownCount.textContent = `${regions.length} DETECTED`;
+                        regions.forEach((r, idx) => {
+                            const rPct = r.percent !== undefined ? r.percent : Math.round((r.proportion || 0.2) * 100);
+                            const rCode = r.munsell || r.munsell_code || data.code;
+                            const rHex = r.hex || getMunsellColorHex(rCode, '') || data.hex || '#8F694E';
+                            const rLabel = r.label || r.color_name || data.name;
+                            const isDom = idx === 0;
+
+                            const item = document.createElement('div');
+                            item.className = 'res-layer-dropdown-item' + (idx === 0 ? ' is-selected' : '');
+                            item.innerHTML = `
+                                <div style="display: flex; align-items: center; gap: 9px; min-width: 0;">
+                                    <span class="res-dropdown-swatch-dot" style="background: ${rHex};"></span>
+                                    <div style="min-width: 0; line-height: 1.25;">
+                                        <div class="res-dropdown-item-code">${rCode}</div>
+                                        <div class="res-dropdown-item-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rLabel}</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                                    <span class="res-dropdown-item-pct">${rPct}%</span>
+                                    ${isDom ? '<span style="font-size: 8.5px; font-weight: 800; background: rgba(34, 197, 94, 0.2); color: #22c55e; padding: 2px 6px; border-radius: 9999px;">DOMINANT</span>' : `<span style="font-size: 8.5px; font-weight: 700; color: #8EB69B;">#${idx+1}</span>`}
+                                </div>
+                            `;
+                            item.addEventListener('click', (ev) => {
+                                ev.stopPropagation();
+                                window.selectActiveModalLayer(idx);
+                            });
+                            modalLayerDropdownList.appendChild(item);
+                        });
+                    }
+                }
 
                 // Reset the snippet img first to prevent stale src from flashing
                 if (modalSoilCircleSnippet) {
@@ -8180,6 +8605,10 @@
                 modal.style.display = 'none';
                 document.body.style.overflow = '';
             }
+            const menu = document.getElementById('modalLayerDropdownMenu');
+            if (menu) menu.style.display = 'none';
+            const chevron = document.getElementById('modalDominantChevron');
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
             if (modalSoilDetailMapInstance) {
                 try { modalSoilDetailMapInstance.remove(); } catch(e) {}
                 modalSoilDetailMapInstance = null;
@@ -8207,8 +8636,12 @@
 
             let imgBefore = new Image();
             let imgAfter = new Image();
-            imgBefore.crossOrigin = 'anonymous';
-            imgAfter.crossOrigin = 'anonymous';
+            if (effectiveRaw && !effectiveRaw.startsWith('data:') && !effectiveRaw.startsWith('blob:')) {
+                imgBefore.crossOrigin = 'anonymous';
+            }
+            if (effectiveNorm && !effectiveNorm.startsWith('data:') && !effectiveNorm.startsWith('blob:')) {
+                imgAfter.crossOrigin = 'anonymous';
+            }
             let beforeLoaded = false;
             let afterLoaded = false;
             let beforeError = false;
@@ -10060,7 +10493,7 @@
                     {{-- Inline Avatar (matches admin soil-swatch-avatar) --}}
                     <div id="modalSoilSnippetAvatarContainer" 
                          style="position: relative; width: 60px; height: 60px; min-width: 60px; border-radius: 12px; overflow: hidden; flex-shrink: 0; box-shadow: none !important; background: transparent; pointer-events: none; border: none; outline: none;">
-                        <img id="modalSoilCircleSnippet" src="" alt="Soil Sample" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;" />
+                        <img id="modalSoilCircleSnippet" src="" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;" />
                         <div id="modalSoilSnippetFallback" style="position: absolute; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); color: rgba(255,255,255,0.85);">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -10069,9 +10502,9 @@
                     </div>
 
                     {{-- Center Code & Percentage --}}
-                    <div id="modalSwatchBlock" style="flex: 1; min-width: 0;">
+                    <div id="modalSwatchBlock" style="flex: 1; min-width: 0; cursor: pointer;" title="Click to view all detected soil results">
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span id="modalDominantChevron" style="display: none; font-size: 12px; color: #ffffff; opacity: 0.9;">▼</span>
+                            <span id="modalDominantChevron" style="display: none; font-size: 12px; color: #ffffff; opacity: 0.9; transition: transform 0.2s ease;">▼</span>
                             <span id="modalCodeDisplay" style="font-size: 24px; font-weight: 900; color: #ffffff; text-shadow: none; letter-spacing: -0.01em; line-height: 1.15;">
                                 7.5YR 5/3
                             </span>
@@ -10085,6 +10518,15 @@
                     <span id="modalHexPill" style="font-size: 11px; font-weight: 800; color: #ffffff; background: rgba(0,0,0,0.58); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 5px 12px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; border: 1px solid rgba(255,255,255,0.25); user-select: none; line-height: 1; flex-shrink: 0; white-space: nowrap;">
                         #8F694E
                     </span>
+
+                    <!-- Interactive Dropdown Menu for all detected soil layers in Record Modal -->
+                    <div id="modalLayerDropdownMenu" class="res-layer-dropdown-menu" style="display: none;">
+                        <div class="res-layer-dropdown-header">
+                            <span>Detected Soil Layers</span>
+                            <span id="modalLayerDropdownCount" class="res-layer-dropdown-count">0 DETECTED</span>
+                        </div>
+                        <div id="modalLayerDropdownList" class="res-layer-dropdown-list"></div>
+                    </div>
                 </div>
 
                 <!-- Row 1: Code Details (Color Name, Full Code, Scan Count) -->
