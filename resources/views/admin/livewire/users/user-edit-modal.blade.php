@@ -308,12 +308,14 @@
                                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3.5px rgba(68,175,53,0.2)';"
                                 onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';"
                             >
-                                <option value="member">member</option>
-                                <option value="user">user</option>
-                                <option value="student">student</option>
                                 @if($isSuperAdminActor)
-                                    <option value="admin">admin</option>
+                                    <option value="superadmin">Super Admin</option>
+                                    <option value="admin">Admin</option>
+                                @elseif(in_array(strtolower($role), ['admin', 'superadmin']))
+                                    <option value="{{ $role }}">{{ in_array(strtolower($role), ['superadmin', 'super admin']) ? 'Super Admin' : 'Admin' }}</option>
                                 @endif
+                                <option value="user">User</option>
+                                <option value="student">Student</option>
                             </select>
                             <svg width="14" height="14" fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>

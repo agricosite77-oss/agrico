@@ -132,7 +132,7 @@
                         @php
                             $uName = $u->name ?: 'User';
                             $uEmail = $u->email ?: '';
-                            $uRole = ucfirst($u->role ?? 'Member');
+                            $uRole = in_array(strtolower($u->role ?? ''), ['superadmin', 'super admin']) ? 'Super Admin' : ucfirst($u->role ?? 'User');
                             $uInitial = strtoupper(substr($uName, 0, 1));
                             $suggestVal = $uName ?: $uEmail;
                         @endphp
@@ -181,12 +181,12 @@
                 onblur="this.style.borderColor='#e2e8f0';"
             >
                 <option value="">All Roles</option>
-                <option value="member">member</option>
-                <option value="student">student</option>
                 @if($this->isSuperAdminActor())
-                    <option value="admin">admin</option>
-                    <option value="superadmin">superadmin</option>
+                    <option value="superadmin">Super Admin</option>
+                    <option value="admin">Admin</option>
                 @endif
+                <option value="user">User</option>
+                <option value="student">Student</option>
             </select>
 
             <select
@@ -540,7 +540,7 @@
                                 </span>
                             @else
                                 <span style="background:#f0fdf4; color:#22c55e; border:1px solid #dcfce7; font-size:12px; font-weight:700; padding:3px 12px; border-radius:9999px; display:inline-block;">
-                                    Member
+                                    User
                                 </span>
                             @endif
                         </td>
@@ -1279,12 +1279,14 @@
                                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 4px rgba(34, 197, 94, 0.18)'; this.style.transform='translateY(-1px)';"
                                 onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none'; this.style.transform='translateY(0)';"
                             >
-                                <option value="member">member</option>
-                                <option value="user">user</option>
-                                <option value="student">student</option>
                                 @if($isSuperAdminActor)
-                                    <option value="admin">admin</option>
+                                    <option value="superadmin">Super Admin</option>
+                                    <option value="admin">Admin</option>
+                                @elseif(in_array(strtolower($editRole), ['admin', 'superadmin']))
+                                    <option value="{{ $editRole }}">{{ in_array(strtolower($editRole), ['superadmin', 'super admin']) ? 'Super Admin' : 'Admin' }}</option>
                                 @endif
+                                <option value="user">User</option>
+                                <option value="student">Student</option>
                             </select>
                             @if($isMainSuperAdminAccount)
                                 <span style="font-size:11px; font-weight:600; color:#64748b; margin-top:4px; display:block;">🔒 Main Super Admin role locked</span>
@@ -1839,7 +1841,7 @@
                             {{ $viewTargetUser->name }}
                         </h4>
                         <div style="font-size:12.5px; font-weight:600; color:#64748b; margin-top:2px;">
-                            {{ ucfirst($viewTargetUser->role ?: 'Member') }}
+                            {{ in_array(strtolower($viewTargetUser->role ?? ''), ['superadmin', 'super admin']) ? 'Super Admin' : ucfirst($viewTargetUser->role ?: 'User') }}
                         </div>
                         <div style="display:inline-flex; align-items:center; gap:5px; margin-top:4px;">
                             <span style="width:7px; height:7px; border-radius:50%; background:{{ (ucfirst($viewTargetUser->status) === 'Suspended' || strtolower($viewTargetUser->status) === 'inactive') ? '#ef4444' : '#22c55e' }}; display:inline-block;"></span>

@@ -1,14 +1,14 @@
 @props([
     'user' => null,
     'name' => 'User',
-    'subtitle' => 'Member',
+    'subtitle' => 'User',
     'status' => 'active',
     'photo' => null,
 ])
 
 @php
     $userName = $user->name ?? $name ?? 'User';
-    $userSubtitle = $user ? ucfirst($user->role ?: 'Member') : $subtitle;
+    $userSubtitle = $user ? (in_array(strtolower($user->role ?? ''), ['superadmin', 'super admin']) ? 'Super Admin' : ucfirst($user->role ?: 'User')) : $subtitle;
     $userStatus = $user ? $user->status : $status;
     $userInitial = strtoupper(substr(trim($userName), 0, 1)) ?: 'U';
     $photoPath = $user->profile_photo_path ?? $photo ?? null;

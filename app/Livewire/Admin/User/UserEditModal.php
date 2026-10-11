@@ -22,7 +22,7 @@ class UserEditModal extends Component
     public $email = '';
     public $password = '';
     public $password_confirmation = '';
-    public $role = 'member';
+    public $role = 'user';
     public $student_id = '';
     public $section = '';
     public $status = 'Active';
@@ -46,12 +46,16 @@ class UserEditModal extends Component
             $this->email = $user->email;
             $this->password = '';
             $this->password_confirmation = '';
-            $this->role = $user->role ?: 'member';
+            $userRole = strtolower(trim($user->role ?: 'user'));
+            if ($userRole === 'member') {
+                $userRole = 'user';
+            }
+            $this->role = $userRole;
             $this->student_id = $user->student_id ?: '';
             $this->section = $user->section ?: '';
             $this->status = (ucfirst($user->status) === 'Suspended' || strtolower($user->status) === 'inactive') ? 'Suspended' : 'Active';
             
-            $this->userRoleName = ucfirst($user->role ?: 'User');
+            $this->userRoleName = in_array($this->role, ['superadmin', 'super admin']) ? 'Super Admin' : ucfirst($this->role);
             $this->adminPassword = '';
             $this->adminPasswordError = '';
             $this->isVerified = false;
@@ -154,9 +158,9 @@ class UserEditModal extends Component
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($this->userId),
+                Rule::unique('users', 'email')->ignore($this->userId, 'user_id'),
             ],
-            'role' => 'required|string',
+            'role' => ['required', 'string', Rule::in(['superadmin', 'admin', 'user', 'student'])],
             'status' => 'required|string',
             'photo' => 'nullable|image|max:2048',
         ];

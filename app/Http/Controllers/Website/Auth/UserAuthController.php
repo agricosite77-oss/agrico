@@ -189,11 +189,16 @@ class UserAuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        $requestedRole = strtolower(trim((string)$request->input('role', 'user')));
+        $role = $requestedRole === 'student' ? 'student' : 'user';
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user',
+            'role' => $role,
+            'student_id' => $role === 'student' ? $request->student_id : null,
+            'section' => $role === 'student' ? $request->section : null,
             'status' => 'Pending',
         ]);
 

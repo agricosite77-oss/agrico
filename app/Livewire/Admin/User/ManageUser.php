@@ -42,7 +42,7 @@ class ManageUser extends Component
     public $editEmail = '';
     public $editPassword = '';
     public $editPasswordConfirmation = '';
-    public $editRole = 'member';
+    public $editRole = 'user';
     public $editStudentId = '';
     public $editSection = '';
     public $editStatus = 'Active';
@@ -132,12 +132,16 @@ class ManageUser extends Component
             $this->editEmail = $user->email;
             $this->editPassword = '';
             $this->editPasswordConfirmation = '';
-            $this->editRole = $user->role ?: 'member';
+            $userRole = strtolower(trim($user->role ?: 'user'));
+            if ($userRole === 'member') {
+                $userRole = 'user';
+            }
+            $this->editRole = $userRole;
             $this->editStudentId = $user->student_id ?: '';
             $this->editSection = $user->section ?: '';
             $this->editStatus = (ucfirst($user->status) === 'Suspended' || strtolower($user->status) === 'inactive') ? 'Suspended' : 'Active';
             $this->editPhoto = null;
-            $this->userRoleName = ucfirst($user->role ?: 'User');
+            $this->userRoleName = in_array($this->editRole, ['superadmin', 'super admin']) ? 'Super Admin' : ucfirst($this->editRole);
             $this->adminPassword = '';
             $this->adminPasswordError = '';
             $this->verifiedAdminId = null;
@@ -290,9 +294,9 @@ class ManageUser extends Component
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($this->editUserId),
+                Rule::unique('users', 'email')->ignore($this->editUserId, 'user_id'),
             ],
-            'editRole' => 'required|string',
+            'editRole' => ['required', 'string', Rule::in(['superadmin', 'admin', 'user', 'student'])],
             'editStatus' => 'required|string',
             'editPhoto' => 'nullable|image|max:2048',
         ];

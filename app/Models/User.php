@@ -63,7 +63,11 @@ class User extends Authenticatable
     {
         static::creating(function (User $user) {
             if (empty($user->user_id) && empty($user->id)) {
-                $role = strtolower(trim($user->role ?? 'member'));
+                $role = strtolower(trim($user->role ?? 'user'));
+                if ($role === 'member') {
+                    $role = 'user';
+                    $user->role = 'user';
+                }
                 if (in_array($role, ['admin', 'superadmin', 'super admin'])) {
                     $adminIds = User::where('user_id', 'LIKE', 'ADM-%')->pluck('user_id');
                     $maxNum = 0;
@@ -187,7 +191,7 @@ class User extends Authenticatable
 
     public function getFormattedIdAttribute(): string
     {
-        $role = strtolower(trim($this->role ?? 'member'));
+        $role = strtolower(trim($this->role ?? 'user'));
 
         // If the user is a student and has a student_id, use the student ID
         if ($role === 'student' && !empty($this->student_id)) {
@@ -347,23 +351,36 @@ class User extends Authenticatable
     }
 
     /**
-     * Synchronize user role, user_id format, and Admin table record when role is updated.
+     * Synchronize user role and Admin table record when role is updated.
      */
     public function syncRoleAndAdminId(string $newRole): void
     {
-        $isNewRoleAdmin = in_array(strtolower(trim($newRole)), ['admin', 'superadmin']);
-        $isCurrentAdminId = preg_match('/^ADM-?\d+/i', (string)$this->user_id);
+        $normalizedRole = strtolower(trim($newRole));
+        if ($normalizedRole === 'member') {
+            $normalizedRole = 'user';
+        }
 
-        $oldUserId = $this->user_id;
+        $this->role = $normalizedRole;
+        $this->save();
+
+        $isNewRoleAdmin = in_array($normalizedRole, ['admin', 'superadmin', 'super admin', 'administrator']);
 
         if ($isNewRoleAdmin) {
-            $targetAdminId = $this->user_id;
+            // Sync or Create in admins table
+            $matchingAdmin = \App\Models\Admin::where('email', $this->email)
+                ->orWhere('admin_id', $this->user_id)
+                ->first();
 
-            if (!$isCurrentAdminId) {
-                // Find next available ADM-xxx ID across admins and users tables
-                $adminIds = \App\Models\Admin::pluck('admin_id')
-                    ->concat(User::where('user_id', 'LIKE', 'ADM-%')->pluck('user_id'));
-                
+            if ($matchingAdmin) {
+                $matchingAdmin->update([
+                    'full_name' => $this->name,
+                    'email' => $this->email,
+                    'password' => $this->password,
+                    'profile_photo_path' => $this->profile_photo_path,
+                ]);
+            } else {
+                // Generate next available ADM-xxx ID for admins table
+                $adminIds = \App\Models\Admin::pluck('admin_id');
                 $maxNum = 0;
                 foreach ($adminIds as $idStr) {
                     if (preg_match('/ADM-?(\d+)/i', (string)$idStr, $matches)) {
@@ -373,46 +390,10 @@ class User extends Authenticatable
                         }
                     }
                 }
-                $targetAdminId = 'ADM-' . str_pad($maxNum + 1, 3, '0', STR_PAD_LEFT);
-            }
+                $newAdminId = 'ADM-' . str_pad($maxNum + 1, 3, '0', STR_PAD_LEFT);
 
-            if ($oldUserId !== $targetAdminId) {
-                $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
-                if ($isMysql) {
-                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-                }
-                \Illuminate\Support\Facades\DB::table('users')->where('user_id', $oldUserId)->update(['user_id' => $targetAdminId]);
-                \Illuminate\Support\Facades\DB::table('soil_scans')->where('user_id', $oldUserId)->update(['user_id' => $targetAdminId]);
-                \Illuminate\Support\Facades\DB::table('downloads')->where('user_id', $oldUserId)->update(['user_id' => $targetAdminId]);
-                \Illuminate\Support\Facades\DB::table('faq_interactions')->where('user_id', $oldUserId)->update(['user_id' => $targetAdminId]);
-                \Illuminate\Support\Facades\DB::table('sessions')->where('user_id', $oldUserId)->update(['user_id' => $targetAdminId]);
-                if ($isMysql) {
-                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-                }
-                $this->user_id = $targetAdminId;
-                $this->syncOriginalAttribute('user_id');
-            }
-
-            $this->role = $newRole;
-            \Illuminate\Support\Facades\DB::table('users')->where('email', $this->email)->update(['role' => $newRole]);
-
-            // Sync or Create in admins table
-            $matchingAdmin = \App\Models\Admin::where('email', $this->email)
-                ->orWhere('admin_id', $oldUserId)
-                ->orWhere('admin_id', $targetAdminId)
-                ->first();
-
-            if ($matchingAdmin) {
-                $matchingAdmin->update([
-                    'admin_id' => $targetAdminId,
-                    'full_name' => $this->name,
-                    'email' => $this->email,
-                    'password' => $this->password,
-                    'profile_photo_path' => $this->profile_photo_path,
-                ]);
-            } else {
                 \App\Models\Admin::create([
-                    'admin_id' => $targetAdminId,
+                    'admin_id' => $newAdminId,
                     'full_name' => $this->name,
                     'email' => $this->email,
                     'password' => $this->password,
@@ -420,35 +401,13 @@ class User extends Authenticatable
                 ]);
             }
         } else {
-            // Role set to non-admin (e.g. member, user)
-            if ($isCurrentAdminId) {
-                $count = User::where('user_id', 'NOT LIKE', 'ADM-%')->count() + 1;
-                $year = date('Y');
-                $yearPrefix = substr($year, 0, 1) . substr($year, -2);
-                $newUserId = $yearPrefix . '-' . str_pad((string)$count, 4, '0', STR_PAD_LEFT);
-
-                $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
-                if ($isMysql) {
-                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-                }
-                \Illuminate\Support\Facades\DB::table('users')->where('user_id', $oldUserId)->update(['user_id' => $newUserId]);
-                \Illuminate\Support\Facades\DB::table('soil_scans')->where('user_id', $oldUserId)->update(['user_id' => $newUserId]);
-                \Illuminate\Support\Facades\DB::table('downloads')->where('user_id', $oldUserId)->update(['user_id' => $newUserId]);
-                \Illuminate\Support\Facades\DB::table('faq_interactions')->where('user_id', $oldUserId)->update(['user_id' => $newUserId]);
-                \Illuminate\Support\Facades\DB::table('sessions')->where('user_id', $oldUserId)->update(['user_id' => $newUserId]);
-                if ($isMysql) {
-                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-                }
-                $this->user_id = $newUserId;
-                $this->syncOriginalAttribute('user_id');
+            // Role set to non-admin (e.g. user, student)
+            // Remove admin record if present, unless it's the protected super admin
+            if (strtolower(trim($this->email)) !== 'admin@agrico.com' && strtolower(trim($this->email)) !== 'agricosite77@gmail.com') {
+                \App\Models\Admin::where('email', $this->email)
+                    ->orWhere('admin_id', $this->user_id)
+                    ->delete();
             }
-
-            $this->role = $newRole;
-
-            // Remove admin record if present
-            \App\Models\Admin::where('email', $this->email)
-                ->orWhere('admin_id', $oldUserId)
-                ->delete();
         }
     }
 

@@ -1154,16 +1154,16 @@
         <form id="registerForm" method="POST" action="{{ route('register.store') }}" novalidate data-turbo="false" pjax-disable style="margin: 0;">
             @csrf
 
-            <!-- Account Type Selector (Member or Student) -->
-            <input type="hidden" name="role" id="roleInput" value="{{ old('role', 'member') }}">
+            <!-- Account Type Selector (User or Student) -->
+            <input type="hidden" name="role" id="roleInput" value="{{ old('role', 'user') }}">
             <div class="role-selector-wrap">
                 <label class="role-selector-label">Register As</label>
                 <div class="role-selector-box">
-                    <button type="button" id="roleBtnMember" class="role-btn" onclick="setRegisterRole('member')" style="background: {{ old('role', 'member') === 'member' ? '#ffffff' : 'transparent' }}; color: {{ old('role', 'member') === 'member' ? '#15803d' : '#64748b' }}; box-shadow: {{ old('role', 'member') === 'member' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none' }};">
+                    <button type="button" id="roleBtnUser" class="role-btn" onclick="setRegisterRole('user')" style="background: {{ old('role', 'user') === 'user' ? '#ffffff' : 'transparent' }}; color: {{ old('role', 'user') === 'user' ? '#15803d' : '#64748b' }}; box-shadow: {{ old('role', 'user') === 'user' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none' }};">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
                         </svg>
-                        <span>Member</span>
+                        <span>User</span>
                     </button>
                     <button type="button" id="roleBtnStudent" class="role-btn" onclick="setRegisterRole('student')" style="background: {{ old('role') === 'student' ? '#ffffff' : 'transparent' }}; color: {{ old('role') === 'student' ? '#15803d' : '#64748b' }}; box-shadow: {{ old('role') === 'student' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none' }};">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -1996,14 +1996,14 @@
 
         function setRegisterRole(role) {
             const roleInput = document.getElementById('roleInput');
-            const memberBtn = document.getElementById('roleBtnMember');
+            const userBtn = document.getElementById('roleBtnUser');
             const studentBtn = document.getElementById('roleBtnStudent');
             const studentIdGroup = document.getElementById('studentIdGroup');
             const studentIdInput = document.getElementById('student_id');
             const studentSectionGroup = document.getElementById('studentSectionGroup');
             const sectionInput = document.getElementById('section');
 
-            if (!roleInput || !memberBtn || !studentBtn) return;
+            if (!roleInput || !userBtn || !studentBtn) return;
 
             roleInput.value = role;
 
@@ -2012,9 +2012,9 @@
                 studentBtn.style.color = '#15803d';
                 studentBtn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
 
-                memberBtn.style.background = 'transparent';
-                memberBtn.style.color = '#64748b';
-                memberBtn.style.boxShadow = 'none';
+                userBtn.style.background = 'transparent';
+                userBtn.style.color = '#64748b';
+                userBtn.style.boxShadow = 'none';
 
                 if (studentIdGroup) studentIdGroup.style.display = 'block';
                 if (studentSectionGroup) studentSectionGroup.style.display = 'block';
@@ -2035,9 +2035,9 @@
                     }
                 }
             } else {
-                memberBtn.style.background = '#ffffff';
-                memberBtn.style.color = '#15803d';
-                memberBtn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
+                userBtn.style.background = '#ffffff';
+                userBtn.style.color = '#15803d';
+                userBtn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
 
                 studentBtn.style.background = 'transparent';
                 studentBtn.style.color = '#64748b';
