@@ -686,7 +686,7 @@ class SoilMLAnalysisService
         $analysis['normalized_image_url']   = $normalizedUrl;
         $analysis['before_after_image_url'] = $beforeAfterUrl;
         $analysis['raw_image_url']          = $rawUrl;
-        $analysis['stage2_mode']            = $analysis['stage2_mode'] ?? $pythonResult['stage2_mode'] ?? config('services.soil_ml.stage2_mode', 'classical');
+        $analysis['stage2_mode']            = $analysis['stage2_mode'] ?? $pythonResult['stage2_mode'] ?? config('soil.stage2_mode', 'classical');
         $analysis['stage2_engine']          = $analysis['stage2_engine'] ?? $analysis['stage2_mode'];
         $analysis['success']                = true;
         $analysis['rejected']               = false;
