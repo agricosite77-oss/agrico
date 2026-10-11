@@ -56,15 +56,10 @@ except ImportError:
 try:
     import torch
     import torch.nn as nn
-    import lightning.pytorch as pl
     from einops import rearrange  # noqa -- needed by model.py
-    from lpips import LPIPS
-    from torchmetrics.image import StructuralSimilarityIndexMeasure  # noqa
 except ImportError as e:
     raise ImportError(
-        f"Missing torch dependency: {e}. "
-        "Run: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121 "
-        "     lightning einops lpips torchmetrics"
+        f"Missing torch dependency: {e}."
     )
 
 try:
@@ -73,24 +68,10 @@ except ImportError:
     raise ImportError("Cannot import PromptNorm. Is python/promptnorm_repo/ cloned?")
 
 # ---------------------------------------------------------------------------
-# PromptNorm Lightning wrapper (matches test.py exactly)
-# ---------------------------------------------------------------------------
-class PromptNormModel(pl.LightningModule):
-    def __init__(self):
-        super().__init__()
-        self.net = PromptNorm(decoder=True)
-        self.lpips_loss = LPIPS(net="vgg").requires_grad_(False)
-        self.loss_fn = nn.L1Loss()
-
-    def forward(self, x, depth):
-        return self.net(x, depth)
-
-
-# ---------------------------------------------------------------------------
 # Global model state (loaded once at startup)
 # ---------------------------------------------------------------------------
 _device: torch.device = None
-_promptnorm: PromptNormModel = None
+_promptnorm = None
 _depth_model = None
 
 
@@ -103,14 +84,16 @@ def _select_device() -> torch.device:
         return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def _load_promptnorm(ckpt_path: str, device: torch.device) -> PromptNormModel:
-    model = PromptNormModel()
+def _load_promptnorm(ckpt_path: str, device: torch.device):
+    net = PromptNorm(decoder=True)
     state = torch.load(ckpt_path, map_location=device, weights_only=False)
     sd = state.get("state_dict", state)
-    model.load_state_dict(sd, strict=True)
-    model.to(device)
-    model.eval()
-    return model
+    # Strip the "net." prefix that Lightning's wrapper adds to checkpoint keys
+    sd = {k.replace("net.", "", 1): v for k, v in sd.items() if k.startswith("net.")}
+    net.load_state_dict(sd, strict=True)
+    net.to(device)
+    net.eval()
+    return net
 
 
 def _load_depth_model(ckpt_path: str, device: torch.device):
