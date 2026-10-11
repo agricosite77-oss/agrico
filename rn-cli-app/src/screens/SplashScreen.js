@@ -209,21 +209,11 @@ export default function SplashScreen({ onFinish }) {
           },
         ]}
       >
-        <Svg
-          width={SCREEN_WIDTH}
-          height={WAVE_HEIGHT}
-          viewBox={`0 0 ${SCREEN_WIDTH} ${WAVE_HEIGHT}`}
+        <Image
+          source={require('../assets/wave_gradient.png')}
           style={styles.waveImage}
-        >
-          <Defs>
-            <LinearGradient id="splashWaveGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-              <Stop offset="0%" stopColor="#9be8b3" />
-              <Stop offset="55%" stopColor="#c3f4cf" />
-              <Stop offset="100%" stopColor="#dcfcb0" />
-            </LinearGradient>
-          </Defs>
-          <Path fill="url(#splashWaveGrad)" d={wavePath} />
-        </Svg>
+          resizeMode="stretch"
+        />
       </Animated.View>
 
       {/* 4. Centered AgriCo Brand Identity Lockup (elevated above wave) */}

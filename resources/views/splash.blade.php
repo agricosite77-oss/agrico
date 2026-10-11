@@ -6,6 +6,7 @@
 <title>AgriCo</title>
 <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+<link rel="preload" href="{{ asset('images/wave_gradient.png') }}" as="image">
 <style>
   /* --k scales the whole sequence: 1 = 11s (storyboard), .5 = 5.5s */
   :root{--k:1;--d:calc(11s * var(--k));--ease:cubic-bezier(.45,0,.2,1);--ease-out:cubic-bezier(.22,1,.36,1)}
@@ -24,8 +25,9 @@
   @keyframes end{0%,95.5%{opacity:1}100%{opacity:0}}
 
   /* Wave: rises (1.5-4.0s), holds, then leaves upward (8.0-9.5s) */
-  .wave{position:absolute;left:0;top:-25vh;width:100%;height:150vh;transform:translateY(130vh);animation:wave var(--d) both}
-  .wave svg{display:block;width:100%;height:100%}
+  .wave{position:absolute;left:0;top:-25vh;width:100%;height:150vh;transform:translateY(130vh);animation:wave var(--d) both;pointer-events:none}
+  .wave svg.wave-desktop{display:block;width:100%;height:100%}
+  .wave img.wave-mobile{display:none;width:100%;height:100%;object-fit:fill;pointer-events:none;-webkit-user-drag:none;user-select:none}
   @keyframes wave{
     0%,13.6%{transform:translateY(130vh);animation-timing-function:var(--ease)}
     36.4%,72.7%{transform:translateY(0);animation-timing-function:var(--ease)}
@@ -44,7 +46,18 @@
   @keyframes wordin{0%,36.4%{transform:translateY(10px);filter:blur(4px)}46%,100%{transform:translateY(0);filter:blur(0)}}
 
   @media (prefers-reduced-motion:reduce){.splash{display:none}}
-  @media (max-width:520px){.logo{width:64px;height:64px}.word{font-size:38px}@keyframes word{0%,36.4%{max-width:0;opacity:0}46%,100%{max-width:220px;opacity:1}}}
+  @media (max-width:768px){
+    .wave svg.wave-desktop{display:none !important}
+    .wave img.wave-mobile{display:block !important}
+    .logo{width:68px;height:68px}
+    .word{font-size:42px}
+    @keyframes word{0%,36.4%{max-width:0;opacity:0}46%,100%{max-width:240px;opacity:1}}
+  }
+  @media (max-width:520px){
+    .logo{width:64px;height:64px}
+    .word{font-size:38px}
+    @keyframes word{0%,36.4%{max-width:0;opacity:0}46%,100%{max-width:220px;opacity:1}}
+  }
 </style>
 </head>
 <body>
@@ -53,7 +66,8 @@
 <div class="splash" id="splash" role="status" aria-label="Loading AgriCo">
   <div class="bg"><div class="arc"></div></div>
   <div class="wave" aria-hidden="true">
-    <svg viewBox="0 0 1440 1300" preserveAspectRatio="none">
+    {{-- Desktop Wave: Wide responsive SVG curve --}}
+    <svg class="wave-desktop" viewBox="0 0 1440 1300" preserveAspectRatio="none">
       <defs>
         <linearGradient id="g" x1="0" y1="1" x2="1" y2="0">
           <stop offset="0" stop-color="#9be8b3"/><stop offset=".55" stop-color="#c3f4cf"/><stop offset="1" stop-color="#dcfcb0"/>
@@ -61,6 +75,9 @@
       </defs>
       <path fill="url(#g)" d="M0 60C300 60 450 210 720 210C990 210 1140 60 1440 60L1440 1100C1140 1100 990 1250 720 1250C450 1250 300 1100 0 1100Z"/>
     </svg>
+
+    {{-- Mobile Wave: Exact 1:1 match of mobile application wave_gradient.png --}}
+    <img class="wave-mobile" src="{{ asset('images/wave_gradient.png') }}" alt="" draggable="false">
   </div>
   <div class="brand">
     <img class="logo" id="logo" src="{{ asset('images/agrico-logo.png') }}" alt="AgriCo Logo">
