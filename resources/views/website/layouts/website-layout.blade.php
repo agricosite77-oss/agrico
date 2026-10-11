@@ -1636,6 +1636,30 @@
         </div>
     </div>
 </div>
+
+{{-- Global System Maintenance & Updating Modal --}}
+<div id="globalSystemMaintenanceModal" class="global-pending-modal-overlay" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(5,31,32,0.85); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
+    <div class="global-pending-modal-card" style="border-color:rgba(234, 88, 12, 0.45); box-shadow:0 30px 80px rgba(0,0,0,0.65), 0 0 40px rgba(234, 88, 12, 0.15);">
+        {{-- Close "X" Exit Button --}}
+        <button type="button" class="modal-close-circle-btn" onclick="closeSystemMaintenanceModal()" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" aria-label="Close modal">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+        {{-- Glowing Orange / Gear Wrench Icon --}}
+        <div class="global-pending-icon-box" style="background:linear-gradient(135deg, rgba(234, 88, 12, 0.2), rgba(22, 56, 50, 0.85)); border-color:rgba(234, 88, 12, 0.5);">
+            <svg width="34" height="34" fill="none" stroke="#ea580c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+        </div>
+        <h3 id="globalMaintenanceModalTitle" class="global-pending-title">System Updating & Maintenance</h3>
+        <p id="globalMaintenanceModalNotice" class="global-pending-notice">AgriCo is currently updating and performing system maintenance. Application downloads are temporarily paused to ensure you receive the most stable version. Please check back shortly!</p>
+        <div style="display:flex; gap:12px; justify-content:center;">
+            <button type="button" class="global-pending-btn-secondary" style="flex:initial; min-width:140px; padding:12px 28px;" onclick="closeSystemMaintenanceModal()">Understood</button>
+        </div>
+    </div>
+</div>
 <style>
     /* Account Pending Approval Modal (Amber & Dark Forest) */
     .global-pending-modal-card {
@@ -1720,7 +1744,8 @@
     }
 
     /* Light Mode Overrides */
-    html.light-mode #globalAccountPendingModal {
+    html.light-mode #globalAccountPendingModal,
+    html.light-mode #globalSystemMaintenanceModal {
         background: rgba(15, 23, 42, 0.45) !important;
     }
     html.light-mode .global-pending-modal-card {
@@ -1805,6 +1830,23 @@
         if (modal) modal.style.display = 'none';
     }
 
+    function showSystemMaintenanceModal(title = null, msg = null) {
+        const modal = document.getElementById('globalSystemMaintenanceModal');
+        const titleEl = document.getElementById('globalMaintenanceModalTitle');
+        const noticeEl = document.getElementById('globalMaintenanceModalNotice');
+        if (titleEl && title) titleEl.innerText = title;
+        if (noticeEl && msg) noticeEl.innerText = msg;
+        if (modal) {
+            modal.style.display = 'flex';
+        } else {
+            alert(msg || 'The system is currently undergoing maintenance and updates. Application downloads are temporarily paused.');
+        }
+    }
+    function closeSystemMaintenanceModal() {
+        const modal = document.getElementById('globalSystemMaintenanceModal');
+        if (modal) modal.style.display = 'none';
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('globalLoginRequiredModal');
         if (modal) {
@@ -1818,10 +1860,17 @@
                 if (e.target === this) closeAccountPendingModal();
             });
         }
+        const maintenanceModal = document.getElementById('globalSystemMaintenanceModal');
+        if (maintenanceModal) {
+            maintenanceModal.addEventListener('click', function(e) {
+                if (e.target === this) closeSystemMaintenanceModal();
+            });
+        }
         window.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeGlobalLoginModal();
                 closeAccountPendingModal();
+                closeSystemMaintenanceModal();
             }
         });
     });

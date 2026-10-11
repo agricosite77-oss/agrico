@@ -127,6 +127,20 @@ class UploadApplication extends Component
         }
     }
 
+    public function toggleMaintenance()
+    {
+        $this->checkSuperAdmin();
+        $isCurrentlyMaintenance = Application::isMaintenanceMode();
+        $newState = !$isCurrentlyMaintenance;
+        Application::setMaintenanceMode($newState);
+
+        if ($newState) {
+            session()->flash('message', 'System Maintenance & Update Mode is now ENABLED. Public website application downloads are temporarily paused.');
+        } else {
+            session()->flash('message', 'System Maintenance Mode is now DISABLED. Application downloads are active and operational.');
+        }
+    }
+
     public function render()
     {
         $currentActive = Application::where('status', 'ACTIVE')->first();

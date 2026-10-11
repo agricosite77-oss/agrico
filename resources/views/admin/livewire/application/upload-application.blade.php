@@ -32,6 +32,29 @@
         </div>
     @endif
 
+    {{-- MAINTENANCE MODE ACTIVE ALERT BANNER --}}
+    @if(\App\Models\Application::isMaintenanceMode())
+        <div style="background:#fff7ed; border:1px solid #fed7aa; color:#c2410c; padding:14px 18px; border-radius:16px; font-size:13.5px; font-weight:600; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; width:100%; box-sizing:border-box;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <svg width="20" height="20" fill="none" stroke="#ea580c" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span><strong>System Maintenance / Updating Mode is Active:</strong> Website application downloads are paused and users will receive a maintenance notice.</span>
+            </div>
+            <button
+                type="button"
+                wire:click="toggleMaintenance"
+                style="padding:6px 14px; background:#ea580c; color:#ffffff; border:none; border-radius:9999px; font-size:12px; font-weight:700; cursor:pointer; flex-shrink:0; transition:opacity 0.2s ease;"
+                onmouseover="this.style.opacity='0.9';"
+                onmouseout="this.style.opacity='1';"
+            >
+                Disable Maintenance Mode
+            </button>
+        </div>
+    @endif
+
     {{-- 2. MAIN FULL-WIDTH RESPONSIVE FLEX LAYOUT --}}
     <div style="display:flex; flex-wrap:wrap; align-items:flex-start; gap:24px; width:100%;">
 
@@ -263,6 +286,22 @@
 
                         {{-- RIGHT ACTIONS --}}
                         <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+                            {{-- MAINTENANCE TOGGLE BUTTON (BEFORE DOWNLOAD BUTTON) --}}
+                            @if($app->status === 'ACTIVE')
+                                @php
+                                    $isMaintenanceActive = \App\Models\Application::isMaintenanceMode();
+                                @endphp
+                                <button
+                                    type="button"
+                                    wire:click="toggleMaintenance"
+                                    style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:9999px; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border:1px solid; {{ $isMaintenanceActive ? 'background:#fff7ed; color:#ea580c; border-color:#fed7aa; box-shadow:0 1px 3px rgba(234,88,12,0.15);' : 'background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;' }}"
+                                    title="{{ $isMaintenanceActive ? 'System currently in Maintenance / Updating mode. Click to Disable.' : 'System Active. Click to Enable Maintenance / Updating mode.' }}"
+                                >
+                                    <span style="width:7px; height:7px; border-radius:50%; background:{{ $isMaintenanceActive ? '#ea580c' : '#22c55e' }}; display:inline-block; {{ $isMaintenanceActive ? 'box-shadow:0 0 0 3px rgba(234,88,12,0.25);' : '' }}"></span>
+                                    <span>{{ $isMaintenanceActive ? 'Maintenance: Enabled' : 'Maintenance: Disabled' }}</span>
+                                </button>
+                            @endif
+
                             {{-- DOWNLOAD ICON --}}
                             <button
                                 type="button"

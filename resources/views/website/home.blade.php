@@ -684,7 +684,8 @@
                     Scan Soil
                 </a>
                 <a href="{{ route('website.download') }}"
-                   @if($isHPending) onclick="event.preventDefault(); showAccountPendingModal('Account Pending Approval', 'Your account is awaiting admin approval. Mobile app download will be enabled once approved.');"
+                   @if(\App\Models\Application::isMaintenanceMode()) onclick="event.preventDefault(); showSystemMaintenanceModal();"
+                   @elseif($isHPending) onclick="event.preventDefault(); showAccountPendingModal('Account Pending Approval', 'Your account is awaiting admin approval. Mobile app download will be enabled once approved.');"
                    @elseif(!$isHAuth) onclick="event.preventDefault(); showGlobalLoginModal('download');" @endif
                    class="hero-btn-outline" style="padding: 13px 30px; border-radius: 999px;">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -849,5 +850,35 @@
             </a>
         </div>
     </section>
+
+    @if(session('maintenance_download_blocked'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof showSystemMaintenanceModal === 'function') {
+                    showSystemMaintenanceModal();
+                }
+            });
+        </script>
+    @endif
+
+    @if(session('login_required_download'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof showGlobalLoginModal === 'function') {
+                    showGlobalLoginModal('download');
+                }
+            });
+        </script>
+    @endif
+
+    @if(session('account_pending_download'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof showAccountPendingModal === 'function') {
+                    showAccountPendingModal('Account Pending Approval', 'Your account is awaiting admin approval. Mobile app download will be enabled once approved.');
+                }
+            });
+        </script>
+    @endif
 
 </x-website-layout>

@@ -681,10 +681,23 @@ class WebsiteController extends Controller
     }
 
     /**
-     * Download the latest active mobile application APK (auth & approval required).
+     * Download the latest active mobile application APK (auth & approval required, with maintenance guard).
      */
     public function downloadApp()
     {
+        // 1. Guard against System Maintenance / Updating Mode
+        if (\App\Models\Application::isMaintenanceMode()) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => 'SYSTEM_MAINTENANCE',
+                    'message' => 'AgriCo is currently undergoing system updates and scheduled maintenance. Mobile application downloads are temporarily paused.',
+                ], 503);
+            }
+
+            return redirect()->route('website.home')->with('maintenance_download_blocked', true);
+        }
+
         $authUser = Auth::guard('web')->user() ?? Auth::user() ?? Auth::guard('admin')->user();
         if (!$authUser && session()->has('user_id')) {
             $authUser = User::where('user_id', session('user_id'))->first();
