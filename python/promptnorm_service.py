@@ -13,6 +13,8 @@ GET  /health          -- Returns {"status": "ok", "device": "cuda|cpu"}
 POST /normalize       -- Accepts multipart image upload, returns JPEG bytes
 """
 
+print("[BOOT] promptnorm_service: module loading started", flush=True)
+
 import io
 import os
 import sys
@@ -20,9 +22,6 @@ import time
 import logging
 import gc
 from pathlib import Path
-
-import numpy as np
-from PIL import Image
 
 # ---------------------------------------------------------------------------
 # Path setup -- allow importing from cloned repos
@@ -73,33 +72,75 @@ def log_mem(stage: str):
     print(msg, flush=True)
     log.info(msg)
 
+
+log_mem("BOOT: standard library loaded")
+
 # ---------------------------------------------------------------------------
-# Lazy imports so the module loads even if FastAPI is not yet installed
+# Lazy imports with granular [BOOT] instrumentation
 # ---------------------------------------------------------------------------
 try:
+    log_mem("BOOT: before importing numpy and PIL")
+    import numpy as np
+    from PIL import Image
+    log_mem("BOOT: after importing numpy and PIL")
+except MemoryError as me:
+    print(f"[FATAL] MemoryError importing numpy/PIL: {me}", flush=True)
+    raise
+except Exception as e:
+    print(f"[FATAL] Error importing numpy/PIL: {e}", flush=True)
+    raise
+
+try:
+    log_mem("BOOT: before importing FastAPI")
     from fastapi import FastAPI, File, UploadFile, HTTPException
     from fastapi.responses import Response
+    log_mem("BOOT: after importing FastAPI")
+except MemoryError as me:
+    print(f"[FATAL] MemoryError importing FastAPI: {me}", flush=True)
+    raise
 except ImportError:
     raise ImportError("FastAPI not installed. Run: pip install fastapi uvicorn")
+except Exception as e:
+    print(f"[FATAL] Error importing FastAPI: {e}", flush=True)
+    raise
 
 try:
+    print("[BOOT] importing torch...", flush=True)
+    log_mem("BOOT: before importing torch")
     import torch
     import torch.nn as nn
+    print("[BOOT] torch imported successfully", flush=True)
+    log_mem("BOOT: after importing torch")
     from einops import rearrange  # noqa -- needed by model.py
+    log_mem("BOOT: after importing einops")
+except MemoryError as me:
+    print(f"[FATAL] MemoryError importing torch: {me}", flush=True)
+    raise
 except ImportError as e:
-    raise ImportError(
-        f"Missing torch dependency: {e}."
-    )
+    print(f"[FATAL] Missing torch dependency: {e}", flush=True)
+    raise ImportError(f"Missing torch dependency: {e}.")
+except Exception as e:
+    print(f"[FATAL] Unexpected error importing torch: {e}", flush=True)
+    raise
 
 try:
+    log_mem("BOOT: before importing PromptNorm from model")
     from model import PromptNorm
-except ImportError:
-    raise ImportError("Cannot import PromptNorm. Is python/promptnorm_repo/ cloned?")
+    log_mem("BOOT: after importing PromptNorm from model")
+except MemoryError as me:
+    print(f"[FATAL] MemoryError importing PromptNorm: {me}", flush=True)
+    raise
+except ImportError as e:
+    print(f"[FATAL] Cannot import PromptNorm: {e}", flush=True)
+    raise ImportError(f"Cannot import PromptNorm. Is python/promptnorm_repo/ cloned? {e}")
+except Exception as e:
+    print(f"[FATAL] Unexpected error importing PromptNorm: {e}", flush=True)
+    raise
 
 # ---------------------------------------------------------------------------
 # Global model state (loaded once at startup)
 # ---------------------------------------------------------------------------
-_device: torch.device = None
+_device = None
 _promptnorm = None
 _depth_model = None
 
@@ -254,7 +295,9 @@ def _run_inference(pil_img: Image.Image, device: torch.device) -> Image.Image:
 # ---------------------------------------------------------------------------
 # FastAPI application
 # ---------------------------------------------------------------------------
+log_mem("BOOT: creating FastAPI app")
 app = FastAPI(title="PromptNorm Sidecar", version="1.0")
+log_mem("BOOT: FastAPI app instance ready, waiting for ASGI server startup")
 
 
 @app.on_event("startup")
