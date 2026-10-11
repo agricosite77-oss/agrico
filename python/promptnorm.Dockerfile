@@ -14,9 +14,9 @@ RUN mkdir -p pretrained_ckpt && \
     curl -L https://huggingface.co/depth-anything/Depth-Anything-V2-Base/resolve/main/depth_anything_v2_vitb.pth \
          -o pretrained_ckpt/depth_anything_v2_vitb.pth
 
-RUN pip install --no-cache-dir \
-    torch torchvision --index-url https://download.pytorch.org/whl/cpu \
-    lightning einops lpips torchmetrics fastapi uvicorn pillow numpy
+RUN pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+RUN pip install --no-cache-dir lightning einops lpips torchmetrics fastapi uvicorn pillow numpy
 
 EXPOSE 8500
 CMD ["uvicorn", "promptnorm_service:app", "--host", "0.0.0.0", "--port", "8500"]
