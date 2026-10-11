@@ -153,16 +153,15 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
                     <div>
                         <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px;">
-                            Student ID <span style="color: #ef4444;">*</span>
+                            Student ID <span style="font-size: 10px; font-weight: 500; color: #64748b;">(Auto-assigned if blank)</span>
                         </label>
                         <input
                             type="text"
                             wire:model="student_id"
-                            placeholder="e.g. 2024-00101"
+                            placeholder="e.g. 2026-00001"
                             style="width: 100%; padding: 9px 14px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 9999px; font-size: 12.5px; font-weight: 500; color: #1e293b; outline: none; transition: all 0.2s cubic-bezier(0.4,0,0.2,1); box-sizing: border-box;"
                             onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3.5px rgba(68,175,53,0.2)';"
                             onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';"
-                            required
                         />
                         @error('student_id')
                             <span style="font-size: 11px; font-weight: 600; color: #ef4444; margin-top: 2px; display: block;">{{ $message }}</span>
@@ -288,31 +287,33 @@
 
                 </div>
 
-                {{-- SIDE-BY-SIDE ROLE & STATUS (CONDITIONAL ROLE FOR SUPER ADMIN) --}}
+                {{-- SIDE-BY-SIDE ROLE & STATUS GRID --}}
                 @php
                     $isSuperAdminActor = $this->isSuperAdminActor();
                     $isMainSuperAdminAccount = (strtolower(trim($email ?? '')) === 'admin@agrico.com');
-                    $isRoleDisabled = (!$isSuperAdminActor || $isMainSuperAdminAccount);
+                    $isRoleDisabled = $isMainSuperAdminAccount;
                 @endphp
-                <div style="display: grid; grid-template-columns: {{ $isSuperAdminActor ? '1fr 1fr' : '1fr' }}; gap: 10px; margin-bottom: 18px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;">
                     
                     {{-- ROLE --}}
-                    @if($isSuperAdminActor)
                     <div>
                         <label style="display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 4px;">
                             Role
                         </label>
                         <div style="position: relative;">
                             <select
-                                wire:model="role"
+                                wire:model.live="role"
                                 @if($isRoleDisabled) disabled @endif
                                 style="width: 100%; padding: 9px 32px 9px 14px; background: {{ $isRoleDisabled ? '#f8fafc' : '#ffffff' }}; border: 1.5px solid #cbd5e1; border-radius: 9999px; font-size: 12px; font-weight: 600; color: #334155; appearance: none; outline: none; box-sizing: border-box; cursor: {{ $isRoleDisabled ? 'not-allowed' : 'pointer' }};"
                                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3.5px rgba(68,175,53,0.2)';"
                                 onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';"
                             >
                                 <option value="member">member</option>
+                                <option value="user">user</option>
                                 <option value="student">student</option>
-                                <option value="admin">admin</option>
+                                @if($isSuperAdminActor)
+                                    <option value="admin">admin</option>
+                                @endif
                             </select>
                             <svg width="14" height="14" fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
@@ -322,7 +323,6 @@
                             <span style="font-size:10px; font-weight:600; color:#64748b; margin-top:2px; display:block;">🔒 Main Super Admin role locked</span>
                         @endif
                     </div>
-                    @endif
 
                     {{-- STATUS --}}
                     <div>

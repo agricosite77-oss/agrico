@@ -795,7 +795,7 @@ parameters:
 		-
 			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 4
+			count: 5
 			path: app/Http/Controllers/Website/WebsiteController.php
 
 		-
@@ -825,7 +825,7 @@ parameters:
 		-
 			message: '#^Using nullsafe property access "\?\-\>user_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 7
+			count: 6
 			path: app/Http/Controllers/Website/WebsiteController.php
 
 		-
@@ -1057,7 +1057,7 @@ parameters:
 			path: app/Livewire/Admin/AdminProfileModal.php
 
 		-
-			message: '#^Cannot call method format\(\) on Carbon\\CarbonImmutable\|string\.$#'
+			message: '#^Cannot call method format\(\) on Illuminate\\Support\\Carbon\|string\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: app/Livewire/Admin/AdminProfileModal.php
@@ -4821,7 +4821,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$email\.$#'
 			identifier: property.notFound
-			count: 10
+			count: 7
 			path: app/Livewire/Admin/User/ManageUser.php
 
 		-
@@ -4833,25 +4833,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$last_admin_id\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Livewire/Admin/User/ManageUser.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$name\.$#'
 			identifier: property.notFound
-			count: 7
-			path: app/Livewire/Admin/User/ManageUser.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$password\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Admin/User/ManageUser.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$profile_photo_path\.$#'
-			identifier: property.notFound
-			count: 1
+			count: 6
 			path: app/Livewire/Admin/User/ManageUser.php
 
 		-
@@ -4863,7 +4851,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$role\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 4
 			path: app/Livewire/Admin/User/ManageUser.php
 
 		-
@@ -4875,19 +4863,19 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$section\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Livewire/Admin/User/ManageUser.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$status\.$#'
 			identifier: property.notFound
-			count: 11
+			count: 10
 			path: app/Livewire/Admin/User/ManageUser.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$student_id\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Livewire/Admin/User/ManageUser.php
 
 		-
@@ -4915,12 +4903,6 @@ parameters:
 			path: app/Livewire/Admin/User/ManageUser.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$updated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Admin/User/ManageUser.php
-
-		-
 			message: '#^Call to an undefined method App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:notifyAdminOfSuspension\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -4929,13 +4911,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:save\(\)\.$#'
 			identifier: method.notFound
-			count: 9
-			path: app/Livewire/Admin/User/ManageUser.php
-
-		-
-			message: '#^Call to an undefined method App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:syncRoleAndAdminId\(\)\.$#'
-			identifier: method.notFound
-			count: 1
+			count: 8
 			path: app/Livewire/Admin/User/ManageUser.php
 
 		-
@@ -5553,7 +5529,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$email\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 1
 			path: app/Livewire/Admin/User/UserEditModal.php
 
 		-
@@ -5564,18 +5540,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Livewire/Admin/User/UserEditModal.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$password\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Livewire/Admin/User/UserEditModal.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$profile_photo_path\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Livewire/Admin/User/UserEditModal.php
@@ -5589,36 +5553,24 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$role\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Livewire/Admin/User/UserEditModal.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$section\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Livewire/Admin/User/UserEditModal.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$status\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 2
 			path: app/Livewire/Admin/User/UserEditModal.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:\$student_id\.$#'
 			identifier: property.notFound
-			count: 2
-			path: app/Livewire/Admin/User/UserEditModal.php
-
-		-
-			message: '#^Call to an undefined method App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:save\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Livewire/Admin/User/UserEditModal.php
-
-		-
-			message: '#^Call to an undefined method App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\>\:\:syncRoleAndAdminId\(\)\.$#'
-			identifier: method.notFound
 			count: 1
 			path: app/Livewire/Admin/User/UserEditModal.php
 
@@ -6621,7 +6573,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$string of function str_pad expects string, int\<1, max\> given\.$#'
 			identifier: argument.type
-			count: 4
+			count: 3
 			path: app/Models/User.php
 
 		-

@@ -1144,16 +1144,15 @@
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div>
                             <label style="font-size:12.5px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">
-                                Student ID <span style="color:#ef4444;">*</span>
+                                Student ID <span style="font-size:11px; font-weight:500; color:#64748b;">(Auto-assigned if blank)</span>
                             </label>
                             <input
                                 wire:model="editStudentId"
                                 type="text"
-                                placeholder="e.g. 2024-00101"
+                                placeholder="e.g. 2026-00001"
                                 style="width:100%; height:42px; box-sizing:border-box; border:1px solid #cbd5e1; border-radius:12px; padding:0 12px; font-size:13.5px; color:#0f172a; outline:none; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);"
                                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 4px rgba(34, 197, 94, 0.18)'; this.style.transform='translateY(-1px)';"
                                 onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none'; this.style.transform='translateY(0)';"
-                                required
                             >
                             @error('editStudentId') <span style="color:#ef4444; font-size:11.5px; font-weight:600; margin-top:4px; display:block;">{{ $message }}</span> @enderror
                         </div>
@@ -1268,29 +1267,30 @@
                     @php
                         $isSuperAdminActor = $this->isSuperAdminActor();
                         $isMainSuperAdminAccount = (strtolower(trim($editEmail ?? '')) === 'admin@agrico.com');
-                        $isRoleDisabled = (!$isSuperAdminActor || $isMainSuperAdminAccount);
+                        $isRoleDisabled = $isMainSuperAdminAccount;
                     @endphp
-                    <div style="display:grid; grid-template-columns: {{ $isSuperAdminActor ? '1fr 1fr 1fr' : '1fr 1fr' }}; gap:12px;">
-                        @if($isSuperAdminActor)
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;">
                         <div>
                             <label style="font-size:12.5px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">Role</label>
                             <select
-                                wire:model="editRole"
+                                wire:model.live="editRole"
                                 @if($isRoleDisabled) disabled @endif
                                 style="width:100%; height:42px; box-sizing:border-box; border:1px solid #cbd5e1; border-radius:12px; padding:0 12px; font-size:13.5px; color:#0f172a; background:{{ $isRoleDisabled ? '#f8fafc' : '#fff' }}; outline:none; cursor:{{ $isRoleDisabled ? 'not-allowed' : 'pointer' }}; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);"
                                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 4px rgba(34, 197, 94, 0.18)'; this.style.transform='translateY(-1px)';"
                                 onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none'; this.style.transform='translateY(0)';"
                             >
                                 <option value="member">member</option>
+                                <option value="user">user</option>
                                 <option value="student">student</option>
-                                <option value="admin">admin</option>
+                                @if($isSuperAdminActor)
+                                    <option value="admin">admin</option>
+                                @endif
                             </select>
                             @if($isMainSuperAdminAccount)
                                 <span style="font-size:11px; font-weight:600; color:#64748b; margin-top:4px; display:block;">🔒 Main Super Admin role locked</span>
                             @endif
                             @error('editRole') <span style="color:#ef4444; font-size:11.5px; font-weight:600; margin-top:4px; display:block;">{{ $message }}</span> @enderror
                         </div>
-                        @endif
 
                         <div>
                             <label style="font-size:12.5px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">Status</label>

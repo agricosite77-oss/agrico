@@ -760,7 +760,7 @@ class StudentRecord extends Component
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($this->editUserId, 'user_id'),
+                Rule::unique('users', 'email')->ignore($this->editUserId),
             ],
             'editStatus' => 'required|string',
             'editPhoto' => 'nullable|image|max:2048',

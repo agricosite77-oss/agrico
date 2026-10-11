@@ -103,7 +103,7 @@ class UserPasswordModal extends Component
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($this->userId, 'user_id'),
+                Rule::unique('users', 'email')->ignore($this->userId),
             ],
         ];
 

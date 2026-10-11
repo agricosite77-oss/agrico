@@ -51,9 +51,9 @@ class ManageUserController extends Controller
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($user->user_id, 'user_id'),
+                Rule::unique('users', 'email')->ignore($user->id),
             ],
-            'role' => ['sometimes', 'required', 'string', Rule::in(['member', 'student', 'admin'])],
+            'role' => ['sometimes', 'required', 'string', Rule::in(['member', 'user', 'student', 'admin'])],
             'status' => 'sometimes|required|string',
             'password' => 'nullable|string|min:6',
         ]);

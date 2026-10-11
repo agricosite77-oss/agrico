@@ -8,6 +8,29 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property string $user_id
+ * @property string $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string $role
+ * @property string|null $student_id
+ * @property string|null $section
+ * @property string|null $student_record_status
+ * @property string $status
+ * @property string|null $last_admin_id
+ * @property string|null $profile_photo_path
+ * @property string|null $profile_photo_url
+ * @property string|null $suspend_reason
+ * @property \Illuminate\Support\Carbon|null $suspended_until
+ * @property string|null $suspended_by_admin_id
+ * @property \Illuminate\Support\Carbon|null $scheduled_deletion_at
+ * @property bool $is_online
+ * @property string|null $theme
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, Notifiable, HasFactory;
@@ -354,13 +377,18 @@ class User extends Authenticatable
             }
 
             if ($oldUserId !== $targetAdminId) {
-                \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
+                if ($isMysql) {
+                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                }
                 \Illuminate\Support\Facades\DB::table('users')->where('user_id', $oldUserId)->update(['user_id' => $targetAdminId]);
                 \Illuminate\Support\Facades\DB::table('soil_scans')->where('user_id', $oldUserId)->update(['user_id' => $targetAdminId]);
                 \Illuminate\Support\Facades\DB::table('downloads')->where('user_id', $oldUserId)->update(['user_id' => $targetAdminId]);
                 \Illuminate\Support\Facades\DB::table('faq_interactions')->where('user_id', $oldUserId)->update(['user_id' => $targetAdminId]);
                 \Illuminate\Support\Facades\DB::table('sessions')->where('user_id', $oldUserId)->update(['user_id' => $targetAdminId]);
-                \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                if ($isMysql) {
+                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                }
                 $this->user_id = $targetAdminId;
                 $this->syncOriginalAttribute('user_id');
             }
@@ -397,16 +425,22 @@ class User extends Authenticatable
                 $count = User::where('user_id', 'NOT LIKE', 'ADM-%')->count() + 1;
                 $year = date('Y');
                 $yearPrefix = substr($year, 0, 1) . substr($year, -2);
-                $newUserId = $yearPrefix . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+                $newUserId = $yearPrefix . '-' . str_pad((string)$count, 4, '0', STR_PAD_LEFT);
 
-                \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
+                if ($isMysql) {
+                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                }
                 \Illuminate\Support\Facades\DB::table('users')->where('user_id', $oldUserId)->update(['user_id' => $newUserId]);
                 \Illuminate\Support\Facades\DB::table('soil_scans')->where('user_id', $oldUserId)->update(['user_id' => $newUserId]);
                 \Illuminate\Support\Facades\DB::table('downloads')->where('user_id', $oldUserId)->update(['user_id' => $newUserId]);
                 \Illuminate\Support\Facades\DB::table('faq_interactions')->where('user_id', $oldUserId)->update(['user_id' => $newUserId]);
                 \Illuminate\Support\Facades\DB::table('sessions')->where('user_id', $oldUserId)->update(['user_id' => $newUserId]);
-                \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                if ($isMysql) {
+                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                }
                 $this->user_id = $newUserId;
+                $this->syncOriginalAttribute('user_id');
             }
 
             $this->role = $newRole;

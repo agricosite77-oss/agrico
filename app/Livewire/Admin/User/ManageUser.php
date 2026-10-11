@@ -241,7 +241,8 @@ class ManageUser extends Component
         $authAdmin = Auth::guard('admin')->user();
         if ($authAdmin) {
             $email = strtolower(trim($authAdmin->email ?? $authAdmin->Email ?? ''));
-            if ($email === 'admin@agrico.com' || $email === 'agricosite77@gmail.com') {
+            $adminId = strtoupper(trim($authAdmin->admin_id ?? $authAdmin->Admin_ID ?? ''));
+            if ($email === 'admin@agrico.com' || $email === 'agricosite77@gmail.com' || $adminId === 'ADM-001' || $adminId === '1') {
                 return true;
             }
         }
@@ -250,19 +251,30 @@ class ManageUser extends Component
         if ($webUser) {
             $email = strtolower(trim($webUser->email ?? ''));
             $role = strtolower(trim($webUser->role ?? ''));
-            if ($email === 'admin@agrico.com' || $email === 'agricosite77@gmail.com' || $role === 'superadmin') {
+            if ($email === 'admin@agrico.com' || $email === 'agricosite77@gmail.com' || in_array($role, ['superadmin', 'super admin'])) {
                 return true;
             }
         }
 
         if (!empty($authAdmin?->email ?? '')) {
             $userRec = User::whereRaw('LOWER(email) = ?', [strtolower(trim($authAdmin->email))])->first();
-            if ($userRec && (strtolower(trim($userRec->role)) === 'superadmin' || strtolower(trim($userRec->email)) === 'admin@agrico.com' || strtolower(trim($userRec->email)) === 'agricosite77@gmail.com')) {
+            if ($userRec && (in_array(strtolower(trim($userRec->role)), ['superadmin', 'super admin']) || strtolower(trim($userRec->email)) === 'admin@agrico.com' || strtolower(trim($userRec->email)) === 'agricosite77@gmail.com')) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public function updatedEditRole(mixed $value): void
+    {
+        if (is_string($value) && strtolower($value) === 'student' && empty($this->editStudentId)) {
+            $user = $this->editUserId ? User::find($this->editUserId) : null;
+            if ($user instanceof User) {
+                $userIdentifier = (string)($user->user_id ?: $user->id);
+                $this->editStudentId = $user->student_id ?: (preg_match('/^\d{4}-\d+$/', $userIdentifier) ? $userIdentifier : date('Y') . '-' . str_pad($userIdentifier, 5, '0', STR_PAD_LEFT));
+            }
+        }
     }
 
     public function saveUser()
@@ -278,7 +290,7 @@ class ManageUser extends Component
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($this->editUserId, 'user_id'),
+                Rule::unique('users', 'email')->ignore($this->editUserId),
             ],
             'editRole' => 'required|string',
             'editStatus' => 'required|string',
@@ -286,7 +298,7 @@ class ManageUser extends Component
         ];
 
         if (strtolower($this->editRole) === 'student') {
-            $rules['editStudentId'] = 'required|string|max:50';
+            $rules['editStudentId'] = 'nullable|string|max:50';
             $rules['editSection'] = 'nullable|string|max:100';
         }
 
@@ -302,16 +314,19 @@ class ManageUser extends Component
 
         if ($this->editUserId) {
             $user = User::find($this->editUserId);
-            if ($user) {
+            if ($user instanceof User) {
                 $currentLowerRole = strtolower(trim($user->role));
                 $newLowerRole = strtolower(trim($this->editRole));
 
-                if ($currentLowerRole !== $newLowerRole && !$this->isSuperAdminActor()) {
-                    $this->addError('editRole', 'Only the Super Admin can change user roles.');
+                $adminRoles = ['admin', 'superadmin', 'super admin', 'administrator'];
+                $isChangingAdminStatus = in_array($currentLowerRole, $adminRoles) || in_array($newLowerRole, $adminRoles);
+
+                if ($isChangingAdminStatus && !$this->isSuperAdminActor()) {
+                    $this->addError('editRole', 'Only the Super Admin can promote to or demote from Admin.');
                     return;
                 }
 
-                if (strtolower(trim($user->email)) === 'admin@agrico.com' && $newLowerRole !== 'superadmin') {
+                if (strtolower(trim($user->email)) === 'admin@agrico.com' && !in_array($newLowerRole, ['superadmin', 'admin'])) {
                     $this->addError('editRole', 'The main Super Admin role cannot be changed.');
                     return;
                 }
@@ -321,8 +336,23 @@ class ManageUser extends Component
                 $user->status = $this->editStatus;
 
                 if (strtolower($this->editRole) === 'student') {
-                    $user->student_id = trim($this->editStudentId) ?: null;
-                    $user->section = trim($this->editSection) ?: null;
+                    $studentId = trim($this->editStudentId ?: '');
+                    if ($studentId === '') {
+                        if (!empty($user->student_id)) {
+                            $studentId = $user->student_id;
+                        } elseif (!empty($user->user_id) && preg_match('/^\d{4}-\d+$/', (string)$user->user_id)) {
+                            $studentId = (string)$user->user_id;
+                        } else {
+                            $userIdentifier = (string)($user->user_id ?: $user->id);
+                            $studentId = date('Y') . '-' . str_pad($userIdentifier, 5, '0', STR_PAD_LEFT);
+                        }
+                    }
+                    $user->student_id = $studentId;
+                    $user->section = trim($this->editSection ?: '') ?: null;
+                    $user->student_record_status = 'Active';
+                } else {
+                    $user->student_id = null;
+                    $user->section = null;
                 }
 
                 if ($this->editPhoto) {
@@ -338,7 +368,6 @@ class ManageUser extends Component
                     $adminIdToSave = $this->getLoggedInAdminId();
                 }
                 $user->last_admin_id = $adminIdToSave;
-                $user->updated_at = now();
 
                 $user->syncRoleAndAdminId($this->editRole);
 

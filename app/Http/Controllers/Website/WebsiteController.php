@@ -769,11 +769,11 @@ class WebsiteController extends Controller
             $userRec = \App\Models\User::where('email', $user->email)->orWhere('user_id', $user->admin_id)->first();
         }
 
-        $ignoreUserId = $userRec?->user_id ?? ($user instanceof \App\Models\User ? $user->user_id : null);
+        $ignoreId = $userRec?->id ?? ($user instanceof \App\Models\User ? $user->id : null);
 
         $emailRules = ['sometimes', 'required', 'email', 'max:255'];
-        if ($ignoreUserId) {
-            $emailRules[] = \Illuminate\Validation\Rule::unique('users', 'email')->ignore($ignoreUserId, 'user_id');
+        if ($ignoreId) {
+            $emailRules[] = \Illuminate\Validation\Rule::unique('users', 'email')->ignore($ignoreId);
         }
 
         $request->validate([
