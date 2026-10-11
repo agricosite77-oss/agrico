@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             Munsell5YRSeeder::class,
             Munsell2_5YRSeeder::class,
             Munsell2_5YSeeder::class,
+            FullMunsellDescriptionsSeeder::class,
         ]);
     }
 }

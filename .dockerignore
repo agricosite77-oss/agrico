@@ -11,6 +11,7 @@ scratch
 tests
 storage/logs/*.log
 *.md
+!Full_Munsell_Code.md
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml

@@ -1,0 +1,226 @@
+# Full Munsell Code Reference
+
+## 10R (Red) Series
+
+- **10R 2.5/1 (Dark red black):** This very dark, low-value color indicates very high soil organic carbon (>8%), typical of highly organic, moist, or forest-influenced surface soils where organic matter strongly masks mineral color.
+- **10R 2.5/2 (Dark red):** The dark red hue with very high organic content suggests a humic, iron-rich surface layer formed from red-derived parent material under organic accumulation.
+- **10R 3/1 (Reddish black):** A nearly black red color reflecting very high organic matter concentration, characteristic of organic-rich red soils in wet or shaded environments.
+- **10R 3/2 (Dark reddish brown):** Dark reddish-brown coloring points to high organic carbon (6–8%), representing a humic red surface horizon where organic and iron oxides combine.
+- **10R 3/3 (Reddish brown):** Moderate to high organic content (4–6%) creates reddish-brown hues common in iron-rich red soils with substantial organic influence.
+- **10R 3/4 (Reddish brown):** This reddish-brown tone indicates moderate organic levels (3–4%), typical of ferric mineral red soils with modest organic input.
+- **10R 3/6 (Red):** Brighter red with low to moderate organic content (2–3%) signals an oxidized red mineral horizon where iron oxides are clearly expressed.
+- **10R 4/1 (Red gray):** Grayish-red coloring with high organic content (6–8%) suggests a moist, humic-influenced red soil where reduction or organic coating grays the matrix.
+- **10R 4/2 (Dark red):** Dark red with moderate to high organic content reflects a red mineral surface coated or mixed with appreciable organic matter.
+- **10R 4/3 (Red brown):** Red-brown tones with moderate organic levels indicate a transitional red-yellow soil influenced by both iron and organic materials.
+- **10R 4/4 (Red brown):** Red-brown coloring with moderate organic content represents a ferric loam where iron oxides and organic particles are balanced.
+- **10R 4/6 (Red):** Distinct red with low to moderate organic content resembles the highly weathered mineral horizon of Oxisols or Ultisols dominated by iron oxides.
+- **10R 4/8 (Bright red):** Intense bright red with very low organic carbon (<1%) indicates a highly leached, iron-enriched mineral subsoil with negligible organic matter.
+- **10R 5/1 (Pinkish gray):** Pale grayish-red with moderate to high organic content suggests a weathered red subsoil with organic influence in lighter material.
+- **10R 5/2 (Pale red):** Faded pale red with moderate organic levels represents weakly developed red soils where weathering has softened the hue.
+- **10R 5/3 (Reddish yellow):** Reddish-yellow coloring with low to moderate organic content marks the transition zone between red and yellow soil profiles.
+- **10R 5/4 (Reddish yellow):** Reddish-yellow tones indicate low to moderate organic levels in red-yellow intergrade soils common in tropical weathering regimes.
+- **10R 5/6 (Red):** Clear red with low organic content (1–2%) reflects a strongly oxidized mineral horizon dominated by iron oxides.
+- **10R 5/8 (Bright red):** Vivid red with very low organic content denotes a highly leached, dry mineral environment with intense iron expression.
+- **10R 6/1 (Grayish pink):** Pale grayish-red with moderate organic levels indicates partially leached, weathered red material in lighter horizons.
+- **10R 6/2 (Pale red):** Lightened pale red with low to moderate organic content signals a weakly humic red subsoil horizon.
+- **10R 6/3 (Light reddish brown):** Pale reddish-brown with low organic content characterizes mineral subsoil with little organic accumulation.
+- **10R 6/4 (Light reddish brown):** Pale reddish-brown tones with low organic levels represent a B-horizon in red soils where organic influence is minimal.
+- **10R 6/6 (Yellowish red):** Yellowish-red with very low organic carbon indicates a well-drained, thoroughly leached mineral horizon.
+- **10R 6/8 (Red):** Bright red with very low organic content reflects exposed, dry, iron-rich mineral surfaces with no organic accumulation.
+- **10R 7/1 (Pinkish white):** Near-white with pink hints and moderate organic levels suggests highly weathered, light-colored material with residual organic influence.
+- **10R 7/2 (Pale pink):** Faint pinkish tones with low to moderate organic content indicate weakly developed, light-textured red horizons.
+- **10R 7/3 (Pink):** Pale pink with low organic content marks a mineral subsoil in advanced stages of weathering.
+- **10R 7/4 (Light pinkish brown):** Pale pinkish-brown with low organic levels represents a leached, light-colored subsoil horizon.
+- **10R 7/6 (Yellowish red):** Pale yellowish-red with very low organic content denotes a strongly leached, dry mineral horizon.
+- **10R 7/8 (Red):** Faded red with very low organic content reflects a highly oxidized, dry mineral environment in advanced weathering stages.
+- **10R 8/1 (White):** Nearly white with moderate organic levels suggests highly leached material possibly rich in siliceous minerals.
+- **10R 8/2 (Pale pink):** Whitish with pink hints and low to moderate organic content represents a bleached, eluvial horizon.
+- **10R 8/3 (Very pale brown):** Whitish-brown with low organic content indicates an eluvial or heavily leached surface layer.
+- **10R 8/4 (Light yellowish brown):** Pale yellowish-brown with low organic levels reflects a dry, leached surface or near-surface mineral layer.
+
+## 2.5YR (Reddish-Brown) Series
+
+- **2.5YR 2.5/1 (Blackish red):** Nearly black with red undertones and very high organic carbon (>8%) represents a humic, dark-red surface horizon rich in organic matter.
+- **2.5YR 2.5/2 (Dark reddish brown):** Deep reddish-brown with very high organic content indicates an organic-enriched red surface soil.
+- **2.5YR 2.5/3 (Dark reddish brown):** Dark reddish-brown with high organic content (6–8%) reflects a well-developed humic red topsoil.
+- **2.5YR 2.5/4 (Reddish brown):** Reddish-brown with moderate to high organic content forms a mineral-rich red topsoil horizon.
+- **2.5YR 3/1 (Dark reddish gray):** Dark grayish-red with very high organic content suggests a moist, red surface layer where organic matter grays the matrix.
+- **2.5YR 3/2 (Dark reddish brown):** Dark reddish-brown with high organic content represents a humic red topsoil with strong organic-mineral bonding.
+- **2.5YR 3/3 (Reddish brown):** Reddish-brown with moderate to high organic content forms a red-brown loam with balanced organic and mineral fractions.
+- **2.5YR 3/4 (Reddish brown):** Reddish-brown with moderate organic levels indicates a ferric red mineral horizon with modest organic influence.
+- **2.5YR 3/6 (Yellowish red):** Yellowish-red with low to moderate organic content marks the transition between red and yellow soil profiles.
+- **2.5YR 4/1 (Reddish gray):** Grayish-red with high organic content suggests a moist red horizon where organic matter and reduction produce grayish tones.
+- **2.5YR 4/2 (Dark reddish brown):** Dark reddish-brown with moderate to high organic content represents a humic-enriched red subsoil.
+- **2.5YR 4/3 (Reddish brown):** Reddish-brown with moderate organic levels forms a red-brown mineral subsoil horizon.
+- **2.5YR 4/4 (Reddish brown):** Reddish-brown with moderate organic content characterizes a ferric loam with balanced iron and organic components.
+- **2.5YR 4/6 (Yellowish red):** Yellowish-red with low to moderate organic content reflects an oxidized red mineral subsoil.
+- **2.5YR 4/8 (Red):** Distinct red with low organic content signals a thoroughly oxidized mineral horizon.
+- **2.5YR 5/1 (Pinkish gray):** Pale grayish-red with moderate to high organic content suggests a weathered red layer with organic influence in lighter material.
+- **2.5YR 5/2 (Pale reddish brown):** Faded reddish-brown with moderate organic levels represents a weakly humic red mineral horizon.
+- **2.5YR 5/3 (Reddish yellow):** Reddish-yellow with low to moderate organic content indicates a red-yellow transitional mineral soil.
+- **2.5YR 5/4 (Reddish yellow):** Reddish-yellow tones with low to moderate organic levels resemble Ultisol-like intergrade soils in tropical weathering zones.
+- **2.5YR 5/6 (Yellowish red):** Yellowish-red with low organic content reflects a leached red mineral horizon.
+- **2.5YR 5/8 (Red):** Bright red with very low organic content denotes a highly leached, dry mineral environment.
+- **2.5YR 6/1 (Pale reddish gray):** Pale grayish-red with moderate organic levels indicates weathered, light-colored red material.
+- **2.5YR 6/2 (Pale reddish brown):** Faded reddish-brown with low to moderate organic content represents a leached red subsoil.
+- **2.5YR 6/3 (Light reddish brown):** Pale reddish-brown with low organic content marks a B-horizon with minimal organic accumulation.
+- **2.5YR 6/4 (Light reddish brown):** Pale reddish-brown with low organic levels forms a red-yellow transitional subsoil horizon.
+- **2.5YR 6/6 (Yellowish red):** Yellowish-red with very low organic content indicates a well-drained, thoroughly leached mineral horizon.
+- **2.5YR 6/8 (Red):** Bright red with very low organic content reflects an exposed, dry red mineral surface.
+- **2.5YR 7/1 (Pinkish white):** Near-white with red hints and moderate organic levels suggests highly weathered, eluvial red material.
+- **2.5YR 7/2 (Pale pink):** Whitish with pink hints and low to moderate organic content represents a bleached red horizon.
+- **2.5YR 7/3 (Very pale brown):** Whitish-brown with low organic content indicates a dry, leached subsoil layer.
+- **2.5YR 7/4 (Very pale brown):** Pale brown with low organic levels signals a weakly developed, light-textured mineral horizon.
+- **2.5YR 7/6 (Light yellowish red):** Pale yellowish-red with very low organic content denotes a strongly leached mineral horizon.
+- **2.5YR 7/8 (Yellowish red):** Pale yellowish-red with very low organic content reflects a dry, oxidized mineral environment.
+- **2.5YR 8/1 (White):** Near-white with moderate organic levels suggests highly leached material possibly rich in quartz or siliceous minerals.
+- **2.5YR 8/2 (Pale pink):** Whitish-pink with low to moderate organic content represents a bleached, eluvial horizon.
+- **2.5YR 8/3 (Very pale brown):** Whitish-brown with low organic content indicates a dry, light-colored surface layer.
+- **2.5YR 8/4 (Pale yellowish brown):** Pale yellowish-brown with low organic levels reflects a leached, low-organic surface layer.
+
+## 5YR (Reddish-Brown to Brown) Series
+
+- **5YR 2.5/1 (Black):** True black with very high organic carbon (>8%) represents a highly organic surface horizon typical of forest or wetland mineral soils.
+- **5YR 2.5/2 (Dark brown):** Very dark brown with very high organic content indicates a humic-enriched topsoil.
+- **5YR 3/1 (Very dark gray):** Near-black gray with very high organic content suggests a moist, organic-rich surface layer.
+- **5YR 3/2 (Very dark brown):** Deep brown with very high organic content reflects a humic forest soil surface horizon.
+- **5YR 3/3 (Dark brown):** Dark brown with high organic content (6–8%) forms a well-developed brown topsoil.
+- **5YR 3/4 (Dark brown):** Dark brown with moderate to high organic content represents a fertile brown loam surface soil.
+- **5YR 4/1 (Dark gray):** Dark gray with high organic content suggests a moist, organically darkened mineral layer.
+- **5YR 4/2 (Dark brown):** Dark brown with high organic content indicates a humic brown topsoil with strong organic-mineral association.
+- **5YR 4/3 (Brown):** Medium brown with moderate to high organic content forms a productive brown loam surface horizon.
+- **5YR 4/4 (Brown):** Medium brown with moderate organic levels represents a typical brown mineral soil horizon.
+- **5YR 4/6 (Dark yellowish brown):** Brownish-yellow with low to moderate organic content indicates a brown mineral subsoil horizon.
+- **5YR 5/1 (Gray):** Medium gray with moderate to high organic content suggests a moist, silty brown horizon with organic influence.
+- **5YR 5/2 (Brown):** Medium brown with moderate organic levels represents a weathered brown mineral horizon.
+- **5YR 5/3 (Brown):** Standard brown with moderate organic content reflects a typical brown mineral soil profile.
+- **5YR 5/4 (Yellowish brown):** Brownish-yellow with low to moderate organic content marks the brown-to-yellow soil transition.
+- **5YR 5/6 (Yellowish brown):** Yellowish-brown with low organic content indicates an oxidized brown mineral subsoil.
+- **5YR 5/8 (Strong brown):** Distinct brown with very low organic content reflects a well-drained, leached mineral horizon.
+- **5YR 6/1 (Light gray):** Pale gray with moderate organic levels suggests weathered, partially leached brown material.
+- **5YR 6/2 (Pale brown):** Faded brown with low to moderate organic content represents a leached brown mineral horizon.
+- **5YR 6/3 (Pale brown):** Pale brown with low to moderate organic content indicates a weakly developed brown subsoil.
+- **5YR 6/4 (Light yellowish brown):** Pale yellowish-brown with low organic content marks a dry B-horizon with little organic input.
+- **5YR 6/6 (Light yellowish brown):** Pale yellowish-brown with low organic content reflects an oxidized, leached subsoil.
+- **5YR 6/8 (Reddish yellow):** Yellow with red hints and very low organic content denotes a strongly leached mineral horizon.
+- **5YR 7/1 (Very pale gray):** Whitish-gray with moderate organic levels suggests highly weathered, light-colored material.
+- **5YR 7/2 (Very pale brown):** Whitish-brown with low to moderate organic content represents a bleached, eluvial horizon.
+- **5YR 7/3 (Very pale brown):** Pale whitish-brown with low organic content indicates a dry, light-textured subsoil.
+- **5YR 7/4 (Very pale brown):** Pale brown with low organic levels reflects a leached, low-organic mineral layer.
+- **5YR 7/6 (Pale yellow):** Faint yellow with very low organic content denotes a strongly leached, dry mineral environment.
+- **5YR 7/8 (Pale yellow):** Pale yellow with very low organic content reflects a dry, exposed mineral surface.
+- **5YR 8/1 (White):** Near-white with moderate organic levels suggests highly leached, possibly siliceous material.
+- **5YR 8/2 (White):** Whitish with low to moderate organic content represents a bleached, eluvial horizon.
+- **5YR 8/3 (Pale yellow):** Whitish-yellow with low organic content indicates a dry, light-colored surface layer.
+- **5YR 8/4 (Pale yellow):** Pale yellow with low organic levels reflects a leached, dry surface mineral layer.
+
+## 7.5YR (Brown to Yellowish-Brown) Series
+
+- **7.5YR 2.5/1 (Black):** True black with very high organic carbon (>8%) represents a highly organic brown topsoil horizon.
+- **7.5YR 2.5/2 (Very dark brown):** Deep brown with very high organic content indicates a humic dark surface layer.
+- **7.5YR 2.5/3 (Very dark brown):** Dark brown with very high organic content reflects a dark brown forest topsoil.
+- **7.5YR 3/1 (Very dark grayish brown):** Near-black brown with very high organic content suggests a moist, organic-rich surface horizon.
+- **7.5YR 3/2 (Very dark brown):** Deep brown with very high organic content represents a humic-enriched topsoil.
+- **7.5YR 3/3 (Dark brown):** Dark brown with high organic content (6–8%) forms a well-developed brown topsoil.
+- **7.5YR 3/4 (Dark brown):** Dark brown with moderate to high organic content indicates a fertile brown loam surface soil.
+- **7.5YR 4/1 (Dark grayish brown):** Dark gray-brown with high organic content suggests a moist, organically influenced brown layer.
+- **7.5YR 4/2 (Dark brown):** Dark brown with high organic content reflects a humic brown topsoil with strong organic-mineral bonding.
+- **7.5YR 4/3 (Brown):** Medium brown with moderate to high organic content forms a productive brown loam horizon.
+- **7.5YR 4/4 (Brown):** Standard brown with moderate organic levels represents a typical brown mineral soil.
+- **7.5YR 4/6 (Dark yellowish brown):** Brownish-yellow with low to moderate organic content indicates a yellowish-brown mineral subsoil.
+- **7.5YR 5/1 (Grayish brown):** Gray-brown with moderate to high organic content suggests a weathered, moist brown mineral layer.
+- **7.5YR 5/2 (Brown):** Medium brown with moderate organic levels represents a weathered brown mineral horizon.
+- **7.5YR 5/3 (Brown):** Standard brown with moderate organic content reflects a typical brown-yellow soil profile.
+- **7.5YR 5/4 (Yellowish brown):** Brownish-yellow with low to moderate organic content marks the brown-to-yellow soil transition.
+- **7.5YR 5/6 (Strong brown):** Distinct brown with low organic content indicates an oxidized brown mineral subsoil.
+- **7.5YR 5/8 (Yellowish red):** Yellow-brown with red hints and very low organic content reflects a leached, well-drained mineral horizon.
+- **7.5YR 6/1 (Pale brown):** Light brown with moderate organic levels suggests weathered, light-textured brown material.
+- **7.5YR 6/2 (Pale brown):** Faded brown with low to moderate organic content represents a leached brown mineral horizon.
+- **7.5YR 6/3 (Pale brown):** Pale brown with low to moderate organic content indicates a weakly developed brown subsoil.
+- **7.5YR 6/4 (Light yellowish brown):** Pale yellowish-brown with low organic content marks a dry B-horizon with little organic accumulation.
+- **7.5YR 6/6 (Light yellowish brown):** Pale yellowish-brown with low organic content reflects an oxidized, leached subsoil.
+- **7.5YR 6/8 (Reddish yellow):** Yellow with red hints and very low organic content denotes a strongly leached mineral horizon.
+- **7.5YR 7/1 (Very pale brown):** Whitish-brown with moderate organic levels suggests highly weathered, light-colored brown material.
+- **7.5YR 7/2 (Very pale brown):** Whitish-brown with low to moderate organic content represents a bleached, eluvial horizon.
+- **7.5YR 7/3 (Very pale brown):** Pale whitish-brown with low organic content indicates a dry, light-textured subsoil.
+- **7.5YR 7/4 (Very pale brown):** Pale brown with low organic levels reflects a leached, low-organic mineral layer.
+- **7.5YR 7/6 (Pale yellow):** Faint yellow with very low organic content denotes a strongly leached, dry mineral environment.
+- **7.5YR 7/8 (Pale yellow):** Pale yellow with very low organic content reflects a dry, exposed mineral surface.
+- **7.5YR 8/1 (White):** Near-white with moderate organic levels suggests highly leached, possibly siliceous material.
+- **7.5YR 8/2 (Very pale brown):** Whitish-brown with low to moderate organic content represents a bleached, eluvial horizon.
+- **7.5YR 8/3 (Pale yellow):** Whitish-yellow with low organic content indicates a dry, light-colored surface layer.
+- **7.5YR 8/4 (Pale yellow):** Pale yellow with low organic levels reflects a leached, dry surface layer.
+- **7.5YR 8/6 (Bright yellow):** Distinct yellow with very low organic content denotes a strongly leached, oxidized mineral horizon.
+
+## 10YR (Yellowish-Brown) Series
+
+- **10YR 2/1 (Black):** True black with very high organic carbon (>8%) represents a peaty or highly organic mineral surface horizon.
+- **10YR 2/2 (Very dark brown):** Deep brown with very high organic content indicates a humic dark topsoil.
+- **10YR 3/1 (Very dark gray):** Near-black gray with very high organic content suggests a moist, organic-rich surface layer.
+- **10YR 3/2 (Very dark brown):** Deep brown with very high organic content reflects a humic-enriched topsoil.
+- **10YR 3/3 (Dark brown):** Dark brown with high organic content (6–8%) forms a well-developed brown topsoil.
+- **10YR 3/4 (Dark yellowish brown):** Brownish-yellow with moderate to high organic content indicates a yellowish-brown loam surface soil.
+- **10YR 3/6 (Dark yellowish brown):** Brownish-yellow with low to moderate organic content represents a yellowish-brown mineral subsoil.
+- **10YR 4/1 (Dark gray):** Dark gray with high organic content suggests a moist, organically darkened mineral layer.
+- **10YR 4/2 (Dark brown):** Dark brown with high organic content reflects a humic yellowish-brown topsoil.
+- **10YR 4/3 (Brown):** Medium brown with moderate to high organic content forms a yellowish-brown mineral surface horizon.
+- **10YR 4/4 (Dark yellowish brown):** Brownish-yellow with moderate organic levels represents a typical yellowish-brown mineral soil.
+- **10YR 4/6 (Yellowish brown):** Yellowish-brown with low to moderate organic content indicates an oxidized yellowish-brown mineral horizon.
+- **10YR 5/1 (Gray):** Medium gray with moderate to high organic content suggests a moist, silty yellowish-brown layer.
+- **10YR 5/2 (Grayish brown):** Gray-brown with moderate organic levels represents a weathered yellowish-brown mineral horizon.
+- **10YR 5/3 (Brown):** Medium brown with moderate organic content reflects a typical yellowish-brown soil profile.
+- **10YR 5/4 (Yellowish brown):** Yellowish-brown with low to moderate organic content marks the transition toward yellow mineral horizons.
+- **10YR 5/6 (Yellowish brown):** Yellowish-brown with low organic content indicates an oxidized yellowish-brown subsoil.
+- **10YR 5/8 (Deep yellowish brown):** Rich yellow-brown with very low organic content reflects a well-drained, thoroughly leached mineral horizon.
+- **10YR 6/1 (Light gray):** Pale gray with moderate organic levels suggests weathered, partially leached yellowish-brown material.
+- **10YR 6/2 (Pale brown):** Faded brown with low to moderate organic content represents a leached yellowish-brown mineral horizon.
+- **10YR 6/3 (Pale brown):** Pale brown with low to moderate organic content indicates a weakly developed yellowish-brown subsoil.
+- **10YR 6/4 (Light yellowish brown):** Pale yellowish-brown with low organic content marks a dry B-horizon with minimal organic accumulation.
+- **10YR 6/6 (Light yellowish brown):** Pale yellowish-brown with low organic content reflects an oxidized, leached subsoil.
+- **10YR 6/8 (Reddish yellow):** Yellow with red hints and very low organic content denotes a strongly leached mineral horizon.
+- **10YR 7/1 (Very pale gray):** Whitish-gray with moderate organic levels suggests highly weathered, light-colored material.
+- **10YR 7/2 (Very pale brown):** Whitish-brown with low to moderate organic content represents a bleached, eluvial horizon.
+- **10YR 7/3 (Very pale brown):** Pale whitish-brown with low organic content indicates a dry, light-textured subsoil.
+- **10YR 7/4 (Very pale brown):** Pale brown with low organic levels reflects a leached, low-organic mineral layer.
+- **10YR 7/6 (Pale yellow):** Faint yellow with very low organic content denotes a strongly leached, dry mineral environment.
+- **10YR 7/8 (Pale yellow):** Pale yellow with very low organic content reflects a dry, exposed mineral surface.
+- **10YR 8/1 (White):** Near-white with moderate organic levels suggests highly leached, possibly siliceous material.
+- **10YR 8/2 (Very pale brown):** Whitish-brown with low to moderate organic content represents a bleached, eluvial horizon.
+- **10YR 8/3 (Pale yellow):** Whitish-yellow with low organic content indicates a dry, light-colored surface layer.
+- **10YR 8/4 (Pale yellow):** Pale yellow with low organic levels reflects a leached, dry surface layer.
+- **10YR 8/6 (Pale yellow):** Distinct pale yellow with very low organic content denotes a strongly leached, oxidized mineral horizon.
+- **10YR 8/8 (Bright yellow):** Intense yellow with very low organic content reflects an exposed, highly oxidized mineral surface.
+
+## 2.5Y (Olive-Yellow) Series
+
+- **2.5Y 2.5/1 (Black):** True black with very high organic carbon (>8%) represents a highly organic surface horizon typical of wet or grassland mineral soils.
+- **2.5Y 3/1 (Very dark gray):** Near-black gray with very high organic content suggests a moist, organic-rich surface layer.
+- **2.5Y 3/2 (Very dark grayish brown):** Dark gray-brown with very high organic content reflects a humic-enriched surface layer in olive-influenced soils.
+- **2.5Y 3/3 (Dark olive brown):** Dark olive-brown with high organic content (6–8%) forms a humic olive-colored topsoil.
+- **2.5Y 4/1 (Dark gray):** Dark gray with high organic content suggests a moist, organically darkened olive mineral layer.
+- **2.5Y 4/2 (Dark grayish brown):** Dark gray-brown with high organic content reflects a humic grayish-brown topsoil with olive influence.
+- **2.5Y 4/3 (Olive brown):** Olive-brown with moderate to high organic content forms an olive-colored mineral surface horizon.
+- **2.5Y 4/4 (Olive brown):** Standard olive-brown with moderate organic levels represents a typical olive mineral soil.
+- **2.5Y 5/1 (Gray):** Medium gray with moderate to high organic content suggests a moist, silty olive mineral layer.
+- **2.5Y 5/2 (Grayish brown):** Gray-brown with moderate organic levels represents a weathered grayish-brown mineral horizon.
+- **2.5Y 5/3 (Light olive brown):** Pale olive-brown with low to moderate organic content indicates an olive mineral subsoil horizon.
+- **2.5Y 5/4 (Pale olive):** Faint olive with low to moderate organic content reflects a weakly oxidized olive mineral horizon.
+- **2.5Y 5/6 (Light yellowish brown):** Pale yellowish-brown with low organic content indicates an oxidized olive-to-yellow transitional subsoil.
+- **2.5Y 6/1 (Light gray):** Pale gray with moderate organic levels suggests weathered, partially leached olive material.
+- **2.5Y 6/2 (Pale brown):** Faded brown with low to moderate organic content represents a leached grayish-brown mineral horizon.
+- **2.5Y 6/3 (Pale yellowish brown):** Pale yellowish-brown with low organic content marks a dry B-horizon with minimal organic accumulation.
+- **2.5Y 6/4 (Light yellowish brown):** Pale yellowish-brown with low organic content reflects an oxidized, leached transitional subsoil.
+- **2.5Y 6/6 (Light yellowish brown):** Pale yellowish-brown with low organic content indicates a leached, dry mineral horizon.
+- **2.5Y 6/8 (Yellow):** Distinct yellow with very low organic content denotes a strongly leached, dry mineral horizon.
+- **2.5Y 7/1 (Very pale gray):** Whitish-gray with moderate organic levels suggests highly weathered, light-colored olive material.
+- **2.5Y 7/2 (Very pale brown):** Whitish-brown with low to moderate organic content represents a bleached, eluvial horizon.
+- **2.5Y 7/3 (Very pale yellow):** Whitish-yellow with low organic content indicates a dry, light-textured subsoil.
+- **2.5Y 7/4 (Pale yellow):** Pale yellow with low organic levels reflects a leached, low-organic mineral layer.
+- **2.5Y 7/6 (Pale yellow):** Faint yellow with very low organic content denotes a strongly leached, dry mineral environment.
+- **2.5Y 7/8 (Bright yellow):** Distinct yellow with very low organic content reflects a dry, exposed mineral surface.
+- **2.5Y 8/1 (White):** Near-white with moderate organic levels suggests highly leached material possibly rich in carbonate or siliceous minerals.
+- **2.5Y 8/2 (White):** Whitish with low to moderate organic content represents a bleached, eluvial horizon.
+- **2.5Y 8/3 (Pale yellow):** Whitish-yellow with low organic content indicates a dry, light-colored surface layer.
+- **2.5Y 8/4 (Pale yellow):** Pale yellow with low organic levels reflects a leached, dry surface layer.
+- **2.5Y 8/6 (Yellow):** Distinct yellow with very low organic content denotes a strongly leached, oxidized mineral horizon.
+- **2.5Y 8/8 (Bright yellow):** Intense yellow with very low organic content reflects an exposed, highly oxidized mineral surface.
