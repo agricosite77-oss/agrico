@@ -183,14 +183,23 @@ class UserAuthController extends Controller
      */
     public function register(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+            'terms_agreed' => ['accepted'],
+        ];
 
         $requestedRole = strtolower(trim((string)$request->input('role', 'user')));
         $role = $requestedRole === 'student' ? 'student' : 'user';
+
+        if ($role === 'student') {
+            $rules['student_id'] = ['required', 'string', 'max:50'];
+        }
+
+        $request->validate($rules, [
+            'terms_agreed.accepted' => 'You must agree to the Terms of Service and Privacy Policy to create an account.',
+        ]);
 
         $user = User::create([
             'name' => $request->name,

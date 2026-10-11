@@ -2847,21 +2847,6 @@
                         }
                         return false;
                     }
-
-                    const termsCheckbox = document.getElementById('terms_agreed');
-                    const termsBox = document.getElementById('termsCheckboxBox');
-                    if (termsCheckbox && !termsCheckbox.checked) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (termsBox) termsBox.classList.add('is-invalid');
-                        const termsClientError = document.getElementById('termsClientError');
-                        if (termsClientError) {
-                            termsClientError.style.display = 'block';
-                            termsClientError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }
-                        termsCheckbox.focus();
-                        return false;
-                    }
                 });
             }
         });
