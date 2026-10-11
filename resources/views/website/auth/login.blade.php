@@ -549,20 +549,9 @@
             if (pass && pass.hasAttribute('readonly')) pass.removeAttribute('readonly');
         }
 
-        // Safety net: only clear if an actual new value was autofilled
         function autofillSafetyCheck() {
-            const passInput = document.getElementById('password');
-            if (passInput && passInput.value.length > 0 && passInput.classList.contains('is-invalid')) {
-                if (passInput.dataset.initialErrorVal === undefined || passInput.value !== passInput.dataset.initialErrorVal) {
-                    clearFieldErrors(passInput);
-                }
-            }
-            const emailInput = document.getElementById('email');
-            if (emailInput && emailInput.value.length > 0 && emailInput.classList.contains('is-invalid')) {
-                if (emailInput.dataset.initialErrorVal === undefined || emailInput.value !== emailInput.dataset.initialErrorVal) {
-                    clearFieldErrors(emailInput);
-                }
-            }
+            // Autofill only updates floating input visual state, never clears server errors
+            checkFloatingInputs();
         }
 
         // Extra robust option: detect native browser autofill via the
@@ -616,23 +605,6 @@
                 });
             }
 
-            // Listen on multiple events, not just 'input' — password managers often
-            // use 'change' instead of (or in addition to) 'input'.
-            if (passwordInput) {
-                passwordInput.addEventListener('input', function () {
-                    clearFieldErrors(this);
-                });
-                passwordInput.addEventListener('change', function () {
-                    clearFieldErrors(this);
-                });
-                passwordInput.addEventListener('focus', autofillSafetyCheck);
-                passwordInput.addEventListener('animationstart', (e) => {
-                    if (e.animationName === 'onAutoFillStart') {
-                        autofillSafetyCheck();
-                    }
-                });
-            }
-
             function checkFloatingInputs() {
                 document.querySelectorAll('.floating-input').forEach(function(input) {
                     if (input.value && input.value.trim() !== '') {
@@ -646,21 +618,11 @@
             document.querySelectorAll('.floating-input').forEach(function(input) {
                 input.addEventListener('animationstart', function(e) {
                     if (e.animationName === 'onAutoFillStart') {
-                        autofillSafetyCheck();
                         checkFloatingInputs();
                     }
                 });
-                input.addEventListener('input', function() {
-                    clearFieldErrors(this);
-                    checkFloatingInputs();
-                });
-                input.addEventListener('change', function() {
-                    clearFieldErrors(this);
-                    autofillSafetyCheck();
-                    checkFloatingInputs();
-                });
-                input.addEventListener('focus', function() {
-                    autofillSafetyCheck();
+                input.addEventListener('input', function(e) {
+                    clearFieldErrors(this, e);
                     checkFloatingInputs();
                 });
                 input.addEventListener('blur', checkFloatingInputs);

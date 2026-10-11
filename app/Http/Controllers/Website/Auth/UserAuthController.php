@@ -47,10 +47,12 @@ class UserAuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $throttleKey = Str::transliterate(Str::lower($credentials['email']) . '|' . $request->ip());
+        $emailKey = Str::transliterate(Str::lower($credentials['email']) . '|' . $request->ip());
+        $ipKey = 'login_ip|' . $request->ip();
 
-        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-            $seconds = RateLimiter::availableIn($throttleKey);
+        if (RateLimiter::tooManyAttempts($emailKey, 5) || RateLimiter::tooManyAttempts($ipKey, 5)) {
+            $activeKey = RateLimiter::tooManyAttempts($emailKey, 5) ? $emailKey : $ipKey;
+            $seconds = RateLimiter::availableIn($activeKey);
             $minutes = max(1, (int) ceil($seconds / 60));
             $minString = $minutes === 1 ? '1 minute' : "{$minutes} minutes";
 
@@ -70,7 +72,8 @@ class UserAuthController extends Controller
                           && (Hash::check('Admin@Test2026!', $user->password) || Hash::check('password', $user->password) || Hash::check('password123', $user->password)));
 
             if ($passCheck) {
-                RateLimiter::clear($throttleKey);
+                RateLimiter::clear($emailKey);
+                RateLimiter::clear($ipKey);
 
                 if (strtolower($user->status ?? '') === 'suspended') {
                     $hasPendingReactivation = \App\Models\UserRequest::where('user_email', $user->email)
@@ -131,7 +134,8 @@ class UserAuthController extends Controller
                                && (Hash::check('Admin@Test2026!', $admin->password ?? '') || Hash::check('password', $admin->password ?? '') || Hash::check('password123', $admin->password ?? '')));
 
             if ($adminPassCheck) {
-                RateLimiter::clear($throttleKey);
+                RateLimiter::clear($emailKey);
+                RateLimiter::clear($ipKey);
 
                 $request->session()->invalidate();
                 $request->session()->regenerate();
@@ -163,9 +167,10 @@ class UserAuthController extends Controller
             }
         }
 
-        RateLimiter::hit($throttleKey, 900);
+        RateLimiter::hit($emailKey, 900);
+        RateLimiter::hit($ipKey, 900);
 
-        if (RateLimiter::attempts($throttleKey) >= 5) {
+        if (RateLimiter::attempts($emailKey) >= 5 || RateLimiter::attempts($ipKey) >= 5) {
             return back()->withInput($request->only('email'))->withErrors([
                 'email' => 'Too many failed login attempts. Please wait 15 minutes to log in again with your credentials.',
             ]);
