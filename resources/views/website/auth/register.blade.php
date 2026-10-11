@@ -781,19 +781,19 @@
         }
         .auth-submit-btn:disabled,
         .auth-submit-btn[disabled] {
-            opacity: 1 !important;
+            opacity: 0.55 !important;
             cursor: not-allowed !important;
-            background: #cbd5e1 !important;
-            color: #64748b !important;
-            border: 1px solid #cbd5e1 !important;
+            background: #22c55e !important;
+            color: #ffffff !important;
+            border: none !important;
             box-shadow: none !important;
             transform: none !important;
             pointer-events: none !important;
         }
         .auth-submit-btn:disabled:hover,
         .auth-submit-btn[disabled]:hover {
-            background: #cbd5e1 !important;
-            color: #64748b !important;
+            background: #22c55e !important;
+            color: #ffffff !important;
             box-shadow: none !important;
             transform: none !important;
         }
@@ -1479,7 +1479,7 @@
 
             <!-- Submit Button (#22c55e GREEN PILL BUTTON, Disabled by default until terms are agreed) -->
             <div id="submitBtnWrapper" style="width: 100%; cursor: {{ old('terms_agreed') ? 'default' : 'not-allowed' }}; margin-top: 8px;">
-                <button type="submit" id="submitBtn" class="auth-submit-btn" style="margin-top: 0 !important;" {{ old('terms_agreed') ? '' : 'disabled' }}>
+                <button type="submit" id="submitBtn" class="auth-submit-btn" style="width: 100%; height: 44px; background: #22c55e !important; color: #ffffff !important; border: none; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: {{ old('terms_agreed') ? 'pointer' : 'not-allowed' }} !important; display: flex; align-items: center; justify-content: center; box-shadow: {{ old('terms_agreed') ? '0 4px 14px rgba(34, 197, 94, 0.35)' : 'none' }} !important; opacity: {{ old('terms_agreed') ? '1' : '0.55' }} !important; transition: all 0.2s ease; margin-top: 0 !important;" {{ old('terms_agreed') ? '' : 'disabled' }}>
                     Create Account
                 </button>
             </div>
@@ -1992,10 +1992,18 @@
             const serverError = document.getElementById('termsServerError');
             const termsBox = document.getElementById('termsCheckboxBox');
 
-            if (checkboxEl && checkboxEl.checked) {
+            const isChecked = checkboxEl && checkboxEl.checked;
+
+            if (isChecked) {
                 if (submitBtn) {
                     submitBtn.disabled = false;
                     submitBtn.removeAttribute('disabled');
+                    submitBtn.style.setProperty('background', '#22c55e', 'important');
+                    submitBtn.style.setProperty('color', '#ffffff', 'important');
+                    submitBtn.style.setProperty('opacity', '1', 'important');
+                    submitBtn.style.setProperty('cursor', 'pointer', 'important');
+                    submitBtn.style.setProperty('box-shadow', '0 4px 14px rgba(34, 197, 94, 0.35)', 'important');
+                    submitBtn.style.setProperty('pointer-events', 'auto', 'important');
                 }
                 if (submitBtnWrapper) {
                     submitBtnWrapper.style.cursor = 'default';
@@ -2007,6 +2015,12 @@
                 if (submitBtn) {
                     submitBtn.disabled = true;
                     submitBtn.setAttribute('disabled', 'disabled');
+                    submitBtn.style.setProperty('background', '#22c55e', 'important');
+                    submitBtn.style.setProperty('color', '#ffffff', 'important');
+                    submitBtn.style.setProperty('opacity', '0.55', 'important');
+                    submitBtn.style.setProperty('cursor', 'not-allowed', 'important');
+                    submitBtn.style.setProperty('box-shadow', 'none', 'important');
+                    submitBtn.style.setProperty('pointer-events', 'none', 'important');
                 }
                 if (submitBtnWrapper) {
                     submitBtnWrapper.style.cursor = 'not-allowed';
@@ -2686,6 +2700,14 @@
                     if (!terms || !terms.checked) {
                         e.preventDefault();
                         e.stopPropagation();
+                        const termsBox = document.getElementById('termsCheckboxBox');
+                        if (termsBox) termsBox.classList.add('is-invalid');
+                        const termsClientError = document.getElementById('termsClientError');
+                        if (termsClientError) {
+                            termsClientError.style.display = 'block';
+                            termsClientError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        if (terms) terms.focus();
                         return false;
                     }
                 });
