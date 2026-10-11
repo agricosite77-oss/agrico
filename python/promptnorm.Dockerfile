@@ -16,7 +16,7 @@ RUN mkdir -p pretrained_ckpt && \
 
 RUN pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
-RUN pip install --no-cache-dir lightning einops lpips torchmetrics fastapi uvicorn pillow numpy
+RUN pip install --no-cache-dir lightning einops lpips torchmetrics fastapi uvicorn pillow numpy python-multipart opencv-python-headless
 
 EXPOSE 8500
 CMD ["uvicorn", "promptnorm_service:app", "--host", "0.0.0.0", "--port", "8500"]
