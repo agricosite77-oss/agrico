@@ -774,21 +774,26 @@
             transition: all 0.2s ease !important;
             margin-top: 8px !important;
         }
-        .auth-submit-btn:hover {
+        .auth-submit-btn:hover:not(:disabled) {
             background: #16a34a !important;
+            box-shadow: 0 6px 18px rgba(34, 197, 94, 0.45) !important;
+            transform: translateY(-1px) !important;
         }
         .auth-submit-btn:disabled,
         .auth-submit-btn[disabled] {
-            opacity: 0.55 !important;
+            opacity: 1 !important;
             cursor: not-allowed !important;
-            background: #94a3b8 !important;
+            background: #cbd5e1 !important;
+            color: #64748b !important;
+            border: 1px solid #cbd5e1 !important;
             box-shadow: none !important;
             transform: none !important;
-            pointer-events: auto !important;
+            pointer-events: none !important;
         }
         .auth-submit-btn:disabled:hover,
         .auth-submit-btn[disabled]:hover {
-            background: #94a3b8 !important;
+            background: #cbd5e1 !important;
+            color: #64748b !important;
             box-shadow: none !important;
             transform: none !important;
         }
@@ -1473,9 +1478,11 @@
             @enderror
 
             <!-- Submit Button (#22c55e GREEN PILL BUTTON, Disabled by default until terms are agreed) -->
-            <button type="submit" id="submitBtn" class="auth-submit-btn" {{ old('terms_agreed') ? '' : 'disabled' }}>
-                Create Account
-            </button>
+            <div id="submitBtnWrapper" style="width: 100%; cursor: {{ old('terms_agreed') ? 'default' : 'not-allowed' }}; margin-top: 8px;">
+                <button type="submit" id="submitBtn" class="auth-submit-btn" style="margin-top: 0 !important;" {{ old('terms_agreed') ? '' : 'disabled' }}>
+                    Create Account
+                </button>
+            </div>
         </form>
 
         <!-- Bottom links -->
@@ -1980,17 +1987,30 @@
 
         function handleTermsChange(checkboxEl) {
             const submitBtn = document.getElementById('submitBtn');
+            const submitBtnWrapper = document.getElementById('submitBtnWrapper');
             const clientError = document.getElementById('termsClientError');
             const serverError = document.getElementById('termsServerError');
             const termsBox = document.getElementById('termsCheckboxBox');
 
             if (checkboxEl && checkboxEl.checked) {
-                if (submitBtn) submitBtn.disabled = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.removeAttribute('disabled');
+                }
+                if (submitBtnWrapper) {
+                    submitBtnWrapper.style.cursor = 'default';
+                }
                 if (clientError) clientError.style.display = 'none';
                 if (serverError) serverError.style.display = 'none';
                 if (termsBox) termsBox.classList.remove('is-invalid');
             } else {
-                if (submitBtn) submitBtn.disabled = true;
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.setAttribute('disabled', 'disabled');
+                }
+                if (submitBtnWrapper) {
+                    submitBtnWrapper.style.cursor = 'not-allowed';
+                }
             }
         }
 
@@ -2652,9 +2672,23 @@
             }
 
             const termsCheckbox = document.getElementById('terms_agreed');
-            const submitBtn = document.getElementById('submitBtn');
-            if (termsCheckbox && submitBtn) {
-                submitBtn.disabled = !termsCheckbox.checked;
+            if (termsCheckbox) {
+                handleTermsChange(termsCheckbox);
+                termsCheckbox.addEventListener('change', function() {
+                    handleTermsChange(this);
+                });
+            }
+
+            const submitBtnWrapper = document.getElementById('submitBtnWrapper');
+            if (submitBtnWrapper) {
+                submitBtnWrapper.addEventListener('click', function(e) {
+                    const terms = document.getElementById('terms_agreed');
+                    if (!terms || !terms.checked) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                });
             }
 
             const passInputOnLoad = document.getElementById('password');
@@ -2665,6 +2699,21 @@
             const registerForm = document.getElementById('registerForm');
             if (registerForm) {
                 registerForm.addEventListener('submit', function(e) {
+                    const termsCheckbox = document.getElementById('terms_agreed');
+                    const termsBox = document.getElementById('termsCheckboxBox');
+                    if (termsCheckbox && !termsCheckbox.checked) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (termsBox) termsBox.classList.add('is-invalid');
+                        const termsClientError = document.getElementById('termsClientError');
+                        if (termsClientError) {
+                            termsClientError.style.display = 'block';
+                            termsClientError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        termsCheckbox.focus();
+                        return false;
+                    }
+
                     const nameInput = document.getElementById('name');
                     if (nameInput) {
                         const isNameValid = validateFullNameField(nameInput, false, true);
