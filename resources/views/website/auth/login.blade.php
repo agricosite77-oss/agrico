@@ -277,10 +277,16 @@
         <form method="POST" action="{{ route('login.store') }}" novalidate data-turbo="false" pjax-disable autocomplete="off" style="margin: 0;">
             @csrf
 
+            @php
+                $hasCredError = $errors->has('email') && str_contains($errors->first('email'), 'credentials do not match');
+                $emailHasError = $errors->has('email') || $hasCredError;
+                $passwordHasError = $errors->has('password') || $hasCredError;
+            @endphp
+
             <!-- Email -->
             <div class="auth-input-group" style="position: relative; z-index: 2; margin-bottom: 16px;">
                 <div style="position: relative;">
-                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="{{ $errors->has('email') ? '#ef4444' : '#64748b' }}" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; pointer-events: none; z-index: 3;">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="{{ $emailHasError ? '#ef4444' : '#64748b' }}" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; pointer-events: none; z-index: 3;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                     </svg>
                     <input
@@ -294,20 +300,22 @@
                         onfocus="unlockCredentials()"
                         onpointerdown="unlockCredentials()"
                         placeholder=" "
-                        class="floating-input {{ $errors->has('email') ? 'is-invalid' : '' }}"
-                        style="width: 100%; height: 44px; padding: 10px 40px 10px 44px; background: #ffffff; border: 1.5px solid {{ $errors->has('email') ? '#ef4444' : '#cbd5e1' }}; border-radius: 12px; font-size: 0.88rem; color: #0f172a; outline: none; box-sizing: border-box; transition: border-color 0.2s ease, box-shadow 0.2s ease;"
+                        class="floating-input {{ $emailHasError ? 'is-invalid' : '' }}"
+                        style="width: 100%; height: 44px; padding: 10px 40px 10px 44px; background: #ffffff; border: 1.5px solid {{ $emailHasError ? '#ef4444' : '#cbd5e1' }}; border-radius: 12px; font-size: 0.88rem; color: #0f172a; outline: none; box-sizing: border-box; transition: border-color 0.2s ease, box-shadow 0.2s ease;"
                         oninput="clearFieldErrors(this)"
                     />
                     <label for="email" class="floating-label">Email Address</label>
 
                     <!-- Red circular icon with "!" (matches reference screenshot) -->
-                    <div class="field-error-icon" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); display: {{ $errors->has('email') ? 'flex' : 'none' }}; align-items: center; justify-content: center; pointer-events: none; z-index: 3;">
+                    <div class="field-error-icon" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); display: {{ $emailHasError ? 'flex' : 'none' }}; align-items: center; justify-content: center; pointer-events: none; z-index: 3;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ef4444" style="width: 18px; height: 18px;">
                             <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
                         </svg>
                     </div>
                 </div>
-                <div class="server-error field-error-msg" style="color: #ef4444; font-size: 0.78rem; margin-top: 5px; font-weight: 600; text-align: left; padding-left: 4px; display: {{ $errors->has('email') ? 'block' : 'none' }};">{{ $errors->first('email') }}</div>
+                @if ($errors->has('email') && !$hasCredError)
+                    <div class="server-error field-error-msg" style="color: #ef4444; font-size: 0.78rem; margin-top: 5px; font-weight: 600; text-align: left; padding-left: 4px; display: block;">{{ $errors->first('email') }}</div>
+                @endif
 
                 <!-- Inline Typo Suggestion Box (Mailcheck) -->
                 <div id="mailcheckSuggestionBox" style="display: none; margin-top: 6px; font-size: 0.75rem; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 8px; padding: 6px 10px; align-items: center; justify-content: space-between; gap: 6px; line-height: 1.35;">
@@ -321,7 +329,7 @@
             <!-- Password -->
             <div class="auth-input-group" style="position: relative; z-index: 2; margin-bottom: 16px;">
                 <div style="position: relative;">
-                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="{{ $errors->has('password') ? '#ef4444' : '#64748b' }}" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; pointer-events: none; z-index: 3;">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="{{ $passwordHasError ? '#ef4444' : '#64748b' }}" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; pointer-events: none; z-index: 3;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                     </svg>
                     <input
@@ -335,14 +343,14 @@
                         onfocus="unlockCredentials()"
                         onpointerdown="unlockCredentials()"
                         placeholder=" "
-                        class="floating-input {{ $errors->has('password') ? 'is-invalid' : '' }}"
-                        style="width: 100%; height: 44px; padding: 10px {{ $errors->has('password') ? '66px' : '44px' }} 10px 44px; background: #ffffff; border: 1.5px solid {{ $errors->has('password') ? '#ef4444' : '#cbd5e1' }}; border-radius: 12px; font-size: 0.88rem; color: #0f172a; outline: none; box-sizing: border-box; transition: border-color 0.2s ease, box-shadow 0.2s ease;"
+                        class="floating-input {{ $passwordHasError ? 'is-invalid' : '' }}"
+                        style="width: 100%; height: 44px; padding: 10px {{ $passwordHasError ? '66px' : '44px' }} 10px 44px; background: #ffffff; border: 1.5px solid {{ $passwordHasError ? '#ef4444' : '#cbd5e1' }}; border-radius: 12px; font-size: 0.88rem; color: #0f172a; outline: none; box-sizing: border-box; transition: border-color 0.2s ease, box-shadow 0.2s ease;"
                         oninput="clearFieldErrors(this)"
                     />
                     <label for="password" class="floating-label">Password</label>
 
                     <!-- Red circular icon with "!" (placed before the eye toggle button) -->
-                    <div class="field-error-icon" style="position: absolute; right: 38px; top: 50%; transform: translateY(-50%); display: {{ $errors->has('password') ? 'flex' : 'none' }}; align-items: center; justify-content: center; pointer-events: none; z-index: 3;">
+                    <div class="field-error-icon" style="position: absolute; right: 38px; top: 50%; transform: translateY(-50%); display: {{ $passwordHasError ? 'flex' : 'none' }}; align-items: center; justify-content: center; pointer-events: none; z-index: 3;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ef4444" style="width: 18px; height: 18px;">
                             <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
                         </svg>
@@ -354,7 +362,11 @@
                         </svg>
                     </button>
                 </div>
-                <div class="server-error field-error-msg" style="color: #ef4444; font-size: 0.78rem; margin-top: 5px; font-weight: 600; text-align: left; padding-left: 4px; display: {{ $errors->has('password') ? 'block' : 'none' }};">{{ $errors->first('password') }}</div>
+                @if ($hasCredError)
+                    <div id="credentialsErrorMessage" class="server-error field-error-msg" style="color: #ef4444; font-size: 0.78rem; margin-top: 5px; font-weight: 600; text-align: left; padding-left: 4px; display: block;">These credentials do not match our user records.</div>
+                @elseif ($errors->has('password'))
+                    <div class="server-error field-error-msg" style="color: #ef4444; font-size: 0.78rem; margin-top: 5px; font-weight: 600; text-align: left; padding-left: 4px; display: block;">{{ $errors->first('password') }}</div>
+                @endif
             </div>
 
             <!-- Forgot password -->
@@ -448,6 +460,30 @@
             // Do not clear the error if the user hasn't changed/typed new text
             if (input.dataset.initialErrorVal !== undefined && input.value === input.dataset.initialErrorVal) {
                 return;
+            }
+
+            const credMsg = document.getElementById('credentialsErrorMessage');
+            if (credMsg && credMsg.style.display !== 'none') {
+                credMsg.style.display = 'none';
+                const emailInput = document.getElementById('email');
+                const passwordInput = document.getElementById('password');
+                [emailInput, passwordInput].forEach(inp => {
+                    if (inp) {
+                        inp.classList.remove('is-invalid');
+                        delete inp.dataset.initialErrorVal;
+                        inp.style.borderColor = '#cbd5e1';
+                        if (inp.id === 'password') {
+                            inp.style.paddingRight = '44px';
+                        }
+                        const grp = inp.closest('.auth-input-group');
+                        if (grp) {
+                            const errIcon = grp.querySelector('.field-error-icon');
+                            if (errIcon) errIcon.style.display = 'none';
+                            const icon = grp.querySelector('.input-icon');
+                            if (icon) icon.setAttribute('stroke', '#64748b');
+                        }
+                    }
+                });
             }
 
             if (input.classList.contains('is-invalid')) {
