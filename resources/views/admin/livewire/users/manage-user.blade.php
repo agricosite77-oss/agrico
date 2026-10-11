@@ -1204,80 +1204,180 @@
                         @error('editEmail') <span style="color:#ef4444; font-size:12px; font-weight:600; margin-top:4px; display:block;">{{ $message }}</span> @enderror
                     </div>
 
-                    {{-- NEW PASSWORD (OPTIONAL) & CONFIRM --}}
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                        {{-- NEW PASSWORD --}}
-                        <div x-data="{ showNewPass: false }">
-                            <label style="font-size:12.5px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">New Password (Optional)</label>
-                            @php $hasNewPassError = $errors->has('editPassword'); @endphp
-                            <div style="position:relative; width:100%;">
-                                <input
-                                    wire:model="editPassword"
-                                    type="text"
-                                    autocomplete="off"
-                                    data-lpignore="true"
-                                    data-form-type="other"
-                                    name="user_new_credential_sec"
-                                    placeholder="Leave blank to keep"
-                                    :class="showNewPass ? 'unmasked-password-input' : 'masked-password-input'"
-                                    style="width:100%; height:42px; box-sizing:border-box; border:1.5px solid {{ $hasNewPassError ? '#ef4444' : '#cbd5e1' }}; border-radius:12px; padding:0 38px 0 14px; font-size:13px; color:#0f172a; background:#ffffff; outline:none; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); {{ $hasNewPassError ? 'box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); animation: shakeError 0.4s ease-in-out;' : '' }}"
-                                    onfocus="this.style.borderColor='{{ $hasNewPassError ? '#ef4444' : '#22c55e' }}'; this.style.boxShadow='{{ $hasNewPassError ? '0 0 0 4px rgba(239, 68, 68, 0.25)' : '0 0 0 4px rgba(34, 197, 94, 0.18)' }}'; this.style.transform='translateY(-1px)';"
-                                    onblur="this.style.borderColor='{{ $hasNewPassError ? '#ef4444' : '#cbd5e1' }}'; this.style.boxShadow='{{ $hasNewPassError ? '0 0 0 4px rgba(239, 68, 68, 0.2)' : 'none' }}'; this.style.transform='translateY(0)';"
-                                >
-                                <button
-                                    type="button"
-                                    @click="showNewPass = !showNewPass"
-                                    style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#94a3b8; padding:4px; display:flex; align-items:center; justify-content:center;"
-                                    :title="showNewPass ? 'Hide Password' : 'Show Password'"
-                                >
-                                    <svg x-show="!showNewPass" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-                                        <line x1="1" y1="1" x2="23" y2="23"/>
-                                    </svg>
-                                    <svg x-show="showNewPass" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                </button>
+                    {{-- NEW PASSWORD (OPTIONAL) & CONFIRM WITH PASSWORD SECURITY --}}
+                    <div x-data="{
+                        newPass: '',
+                        showNewPass: false,
+                        showConfirmPass: false,
+                        get reqLength() { return this.newPass.length >= 8; },
+                        get reqNumber() { return /[0-9]/.test(this.newPass); },
+                        get reqUpper() { return /[A-Z]/.test(this.newPass); },
+                        get reqLower() { return /[a-z]/.test(this.newPass); },
+                        get reqSpecial() { return /[^A-Za-z0-9]/.test(this.newPass); },
+                        get score() {
+                            if (!this.newPass) return 0;
+                            return (this.reqLength ? 1 : 0) +
+                                   (this.reqNumber ? 1 : 0) +
+                                   (this.reqUpper ? 1 : 0) +
+                                   (this.reqLower ? 1 : 0) +
+                                   (this.reqSpecial ? 1 : 0);
+                        },
+                        get barColor() {
+                            const colors = { 1: '#ef4444', 2: '#f97316', 3: '#eab308', 4: '#84cc16', 5: '#22c55e' };
+                            return colors[this.score] || '#e2e8f0';
+                        }
+                    }">
+                        {{-- PASSWORD SECURITY HEADER WITH 5 PROGRESS BARS --}}
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span style="font-size:12px; font-weight:700; color:#475569; display:flex; align-items:center; gap:6px;">
+                                Password Security
+                            </span>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div id="adminSecurityBars" style="display:flex; align-items:center; gap:4px;" title="Password Security Level">
+                                    <span class="admin-sec-progress-bar" id="admin-sec-bar-1" :style="{ backgroundColor: (score >= 1) ? barColor : '#e2e8f0' }"></span>
+                                    <span class="admin-sec-progress-bar" id="admin-sec-bar-2" :style="{ backgroundColor: (score >= 2) ? barColor : '#e2e8f0' }"></span>
+                                    <span class="admin-sec-progress-bar" id="admin-sec-bar-3" :style="{ backgroundColor: (score >= 3) ? barColor : '#e2e8f0' }"></span>
+                                    <span class="admin-sec-progress-bar" id="admin-sec-bar-4" :style="{ backgroundColor: (score >= 4) ? barColor : '#e2e8f0' }"></span>
+                                    <span class="admin-sec-progress-bar" id="admin-sec-bar-5" :style="{ backgroundColor: (score >= 5) ? barColor : '#e2e8f0' }"></span>
+                                </div>
                             </div>
-                            @error('editPassword') <span style="color:#ef4444; font-size:11.5px; font-weight:600; margin-top:4px; display:block;">{{ $message }}</span> @enderror
                         </div>
 
-                        {{-- CONFIRM PASSWORD --}}
-                        <div x-data="{ showConfirmPass: false }">
-                            <label style="font-size:12.5px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">Confirm Password</label>
-                            @php $hasConfirmPassError = $errors->has('editPasswordConfirmation'); @endphp
-                            <div style="position:relative; width:100%;">
-                                <input
-                                    wire:model="editPasswordConfirmation"
-                                    type="text"
-                                    autocomplete="off"
-                                    data-lpignore="true"
-                                    data-form-type="other"
-                                    name="user_confirm_credential_sec"
-                                    placeholder="Confirm password"
-                                    :class="showConfirmPass ? 'unmasked-password-input' : 'masked-password-input'"
-                                    style="width:100%; height:42px; box-sizing:border-box; border:1.5px solid {{ $hasConfirmPassError ? '#ef4444' : '#cbd5e1' }}; border-radius:12px; padding:0 38px 0 14px; font-size:13px; color:#0f172a; background:#ffffff; outline:none; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); {{ $hasConfirmPassError ? 'box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); animation: shakeError 0.4s ease-in-out;' : '' }}"
-                                    onfocus="this.style.borderColor='{{ $hasConfirmPassError ? '#ef4444' : '#22c55e' }}'; this.style.boxShadow='{{ $hasConfirmPassError ? '0 0 0 4px rgba(239, 68, 68, 0.25)' : '0 0 0 4px rgba(34, 197, 94, 0.18)' }}'; this.style.transform='translateY(-1px)';"
-                                    onblur="this.style.borderColor='{{ $hasConfirmPassError ? '#ef4444' : '#cbd5e1' }}'; this.style.boxShadow='{{ $hasConfirmPassError ? '0 0 0 4px rgba(239, 68, 68, 0.2)' : 'none' }}'; this.style.transform='translateY(0)';"
-                                >
-                                <button
-                                    type="button"
-                                    @click="showConfirmPass = !showConfirmPass"
-                                    style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#94a3b8; padding:4px; display:flex; align-items:center; justify-content:center;"
-                                    :title="showConfirmPass ? 'Hide Password' : 'Show Password'"
-                                >
-                                    <svg x-show="!showConfirmPass" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-                                        <line x1="1" y1="1" x2="23" y2="23"/>
+                        {{-- 2-COLUMN INPUTS (NEW PASSWORD & CONFIRM) --}}
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            {{-- NEW PASSWORD --}}
+                            <div>
+                                <label style="font-size:12.5px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">New Password (Optional)</label>
+                                @php $hasNewPassError = $errors->has('editPassword'); @endphp
+                                <div style="position:relative; width:100%;">
+                                    <!-- Lock Icon Left -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="{{ $hasNewPassError ? '#ef4444' : '#64748b' }}" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:17px; height:17px; pointer-events:none; z-index:2;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                     </svg>
-                                    <svg x-show="showConfirmPass" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                </button>
+
+                                    <input
+                                        wire:model="editPassword"
+                                        @input="newPass = $event.target.value"
+                                        type="text"
+                                        autocomplete="off"
+                                        data-lpignore="true"
+                                        data-form-type="other"
+                                        name="user_new_credential_sec"
+                                        placeholder="Leave blank to keep"
+                                        :class="showNewPass ? 'unmasked-password-input' : 'masked-password-input'"
+                                        style="width:100%; height:42px; box-sizing:border-box; border:1.5px solid {{ $hasNewPassError ? '#ef4444' : '#cbd5e1' }}; border-radius:12px; padding:0 38px 0 36px; font-size:13px; color:#0f172a; background:#ffffff; outline:none; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); {{ $hasNewPassError ? 'box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); animation: shakeError 0.4s ease-in-out;' : '' }}"
+                                        onfocus="this.style.borderColor='{{ $hasNewPassError ? '#ef4444' : '#22c55e' }}'; this.style.boxShadow='{{ $hasNewPassError ? '0 0 0 4px rgba(239, 68, 68, 0.25)' : '0 0 0 4px rgba(34, 197, 94, 0.18)' }}'; this.style.transform='translateY(-1px)';"
+                                        onblur="this.style.borderColor='{{ $hasNewPassError ? '#ef4444' : '#cbd5e1' }}'; this.style.boxShadow='{{ $hasNewPassError ? '0 0 0 4px rgba(239, 68, 68, 0.2)' : 'none' }}'; this.style.transform='translateY(0)';"
+                                    >
+                                    <button
+                                        type="button"
+                                        @click="showNewPass = !showNewPass"
+                                        style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#94a3b8; padding:4px; display:flex; align-items:center; justify-content:center; z-index:3;"
+                                        :title="showNewPass ? 'Hide Password' : 'Show Password'"
+                                    >
+                                        <svg x-show="!showNewPass" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                                            <line x1="1" y1="1" x2="23" y2="23"/>
+                                        </svg>
+                                        <svg x-show="showNewPass" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                @error('editPassword') <span style="color:#ef4444; font-size:11.5px; font-weight:600; margin-top:4px; display:block;">{{ $message }}</span> @enderror
                             </div>
-                            @error('editPasswordConfirmation') <span style="color:#ef4444; font-size:11.5px; font-weight:600; margin-top:4px; display:block;">{{ $message }}</span> @enderror
+
+                            {{-- CONFIRM PASSWORD --}}
+                            <div>
+                                <label style="font-size:12.5px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">Confirm Password</label>
+                                @php $hasConfirmPassError = $errors->has('editPasswordConfirmation'); @endphp
+                                <div style="position:relative; width:100%;">
+                                    <!-- Lock Icon Left -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="{{ $hasConfirmPassError ? '#ef4444' : '#64748b' }}" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:17px; height:17px; pointer-events:none; z-index:2;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                    </svg>
+
+                                    <input
+                                        wire:model="editPasswordConfirmation"
+                                        type="text"
+                                        autocomplete="off"
+                                        data-lpignore="true"
+                                        data-form-type="other"
+                                        name="user_confirm_credential_sec"
+                                        placeholder="Confirm password"
+                                        :class="showConfirmPass ? 'unmasked-password-input' : 'masked-password-input'"
+                                        style="width:100%; height:42px; box-sizing:border-box; border:1.5px solid {{ $hasConfirmPassError ? '#ef4444' : '#cbd5e1' }}; border-radius:12px; padding:0 38px 0 36px; font-size:13px; color:#0f172a; background:#ffffff; outline:none; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); {{ $hasConfirmPassError ? 'box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); animation: shakeError 0.4s ease-in-out;' : '' }}"
+                                        onfocus="this.style.borderColor='{{ $hasConfirmPassError ? '#ef4444' : '#22c55e' }}'; this.style.boxShadow='{{ $hasConfirmPassError ? '0 0 0 4px rgba(239, 68, 68, 0.25)' : '0 0 0 4px rgba(34, 197, 94, 0.18)' }}'; this.style.transform='translateY(-1px)';"
+                                        onblur="this.style.borderColor='{{ $hasConfirmPassError ? '#ef4444' : '#cbd5e1' }}'; this.style.boxShadow='{{ $hasConfirmPassError ? '0 0 0 4px rgba(239, 68, 68, 0.2)' : 'none' }}'; this.style.transform='translateY(0)';"
+                                    >
+                                    <button
+                                        type="button"
+                                        @click="showConfirmPass = !showConfirmPass"
+                                        style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#94a3b8; padding:4px; display:flex; align-items:center; justify-content:center; z-index:3;"
+                                        :title="showConfirmPass ? 'Hide Password' : 'Show Password'"
+                                    >
+                                        <svg x-show="!showConfirmPass" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                                            <line x1="1" y1="1" x2="23" y2="23"/>
+                                        </svg>
+                                        <svg x-show="showConfirmPass" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                @error('editPasswordConfirmation') <span style="color:#ef4444; font-size:11.5px; font-weight:600; margin-top:4px; display:block;">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                        {{-- REQUIREMENT PILLS MATCHING IMAGE 1 --}}
+                        <div class="admin-req-pill-container" id="adminReqPillContainer">
+                            <!-- Row 1: 8+ characters, Number, Uppercase letter -->
+                            <div class="admin-req-pill-row">
+                                <div class="admin-req-pill" :class="{ 'is-met': reqLength }">
+                                    <span class="admin-req-pill-icon">
+                                        <svg x-show="!reqLength" class="icon-x" width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="3.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                        <svg x-show="reqLength" class="icon-check" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" style="display: none;"><path d="M5 13l4 4L19 7"/></svg>
+                                    </span>
+                                    <span>8+ characters</span>
+                                </div>
+
+                                <div class="admin-req-pill" :class="{ 'is-met': reqNumber }">
+                                    <span class="admin-req-pill-icon">
+                                        <svg x-show="!reqNumber" class="icon-x" width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="3.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                        <svg x-show="reqNumber" class="icon-check" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" style="display: none;"><path d="M5 13l4 4L19 7"/></svg>
+                                    </span>
+                                    <span>Number</span>
+                                </div>
+
+                                <div class="admin-req-pill" :class="{ 'is-met': reqUpper }">
+                                    <span class="admin-req-pill-icon">
+                                        <svg x-show="!reqUpper" class="icon-x" width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="3.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                        <svg x-show="reqUpper" class="icon-check" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" style="display: none;"><path d="M5 13l4 4L19 7"/></svg>
+                                    </span>
+                                    <span>Uppercase letter</span>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Lowercase letter, Special character -->
+                            <div class="admin-req-pill-row">
+                                <div class="admin-req-pill" :class="{ 'is-met': reqLower }">
+                                    <span class="admin-req-pill-icon">
+                                        <svg x-show="!reqLower" class="icon-x" width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="3.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                        <svg x-show="reqLower" class="icon-check" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" style="display: none;"><path d="M5 13l4 4L19 7"/></svg>
+                                    </span>
+                                    <span>Lowercase letter</span>
+                                </div>
+
+                                <div class="admin-req-pill" :class="{ 'is-met': reqSpecial }">
+                                    <span class="admin-req-pill-icon">
+                                        <svg x-show="!reqSpecial" class="icon-x" width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="3.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                        <svg x-show="reqSpecial" class="icon-check" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" style="display: none;"><path d="M5 13l4 4L19 7"/></svg>
+                                    </span>
+                                    <span>Special character</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -2014,6 +2114,60 @@
     @endif
 
     <style>
+        /* Password Security Progress Bars & Requirement Pills */
+        .admin-sec-progress-bar {
+            height: 4px;
+            width: 22px;
+            border-radius: 9999px;
+            background: #e2e8f0;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .admin-req-pill-container {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            margin-top: 6px !important;
+            margin-bottom: 2px !important;
+        }
+        .admin-req-pill-row {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 6px !important;
+        }
+        .admin-req-pill {
+            font-size: 0.70rem !important;
+            padding: 3px 8px !important;
+            border-radius: 6px !important;
+            gap: 5px !important;
+            display: inline-flex;
+            align-items: center;
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .admin-req-pill.is-met {
+            background: #dcfce7 !important;
+            color: #15803d !important;
+            border-color: #86efac !important;
+        }
+        .admin-req-pill-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .admin-req-pill.is-met .admin-req-pill-icon {
+            background: #22c55e !important;
+        }
+
         .user-table-container {
             width: 100% !important;
             overflow-x: auto !important;

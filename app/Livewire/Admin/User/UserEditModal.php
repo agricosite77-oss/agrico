@@ -171,7 +171,30 @@ class UserEditModal extends Component
         }
 
         if (!empty($this->password)) {
-            $rules['password'] = 'required|string|min:6|confirmed';
+            if (strlen($this->password) < 8) {
+                $this->addError('password', 'Password must be at least 8 characters long.');
+                return;
+            }
+            if (!preg_match('/[0-9]/', $this->password)) {
+                $this->addError('password', 'Password must contain at least one number.');
+                return;
+            }
+            if (!preg_match('/[A-Z]/', $this->password)) {
+                $this->addError('password', 'Password must contain at least one uppercase letter.');
+                return;
+            }
+            if (!preg_match('/[a-z]/', $this->password)) {
+                $this->addError('password', 'Password must contain at least one lowercase letter.');
+                return;
+            }
+            if (!preg_match('/[^A-Za-z0-9]/', $this->password)) {
+                $this->addError('password', 'Password must contain at least one special character.');
+                return;
+            }
+            if ($this->password !== $this->password_confirmation) {
+                $this->addError('password_confirmation', 'The password confirmation does not match.');
+                return;
+            }
         }
 
         $this->validate($rules);

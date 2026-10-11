@@ -307,7 +307,26 @@ class ManageUser extends Component
         }
 
         if (!empty($this->editPassword)) {
-            $rules['editPassword'] = 'required|string|min:6';
+            if (strlen($this->editPassword) < 8) {
+                $this->addError('editPassword', 'Password must be at least 8 characters long.');
+                return;
+            }
+            if (!preg_match('/[0-9]/', $this->editPassword)) {
+                $this->addError('editPassword', 'Password must contain at least one number.');
+                return;
+            }
+            if (!preg_match('/[A-Z]/', $this->editPassword)) {
+                $this->addError('editPassword', 'Password must contain at least one uppercase letter.');
+                return;
+            }
+            if (!preg_match('/[a-z]/', $this->editPassword)) {
+                $this->addError('editPassword', 'Password must contain at least one lowercase letter.');
+                return;
+            }
+            if (!preg_match('/[^A-Za-z0-9]/', $this->editPassword)) {
+                $this->addError('editPassword', 'Password must contain at least one special character.');
+                return;
+            }
             if ($this->editPassword !== $this->editPasswordConfirmation) {
                 $this->addError('editPasswordConfirmation', 'The password confirmation does not match.');
                 return;
