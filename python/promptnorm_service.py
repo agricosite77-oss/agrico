@@ -18,6 +18,7 @@ import os
 import sys
 import time
 import logging
+import gc
 from pathlib import Path
 
 import numpy as np
@@ -43,6 +44,34 @@ DEVICE_PREF = os.environ.get("PROMPTNORM_DEVICE", "auto")
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 log = logging.getLogger("promptnorm_service")
+
+
+def get_memory_info() -> str:
+    """Read VmRSS and VmHWM from /proc/self/status on Linux, or fall back to resource."""
+    rss_parts = []
+    try:
+        with open("/proc/self/status", "r") as f:
+            for line in f:
+                if line.startswith("VmRSS:") or line.startswith("VmHWM:"):
+                    rss_parts.append(line.strip())
+        if rss_parts:
+            return " | ".join(rss_parts)
+    except Exception:
+        pass
+
+    try:
+        import resource
+        rss_kb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        return f"MaxRSS: {rss_kb / 1024.0:.1f} MB"
+    except Exception:
+        return "Memory info unavailable"
+
+
+def log_mem(stage: str):
+    info = get_memory_info()
+    msg = f"[MEM] {stage} -> {info}"
+    print(msg, flush=True)
+    log.info(msg)
 
 # ---------------------------------------------------------------------------
 # Lazy imports so the module loads even if FastAPI is not yet installed
@@ -85,14 +114,24 @@ def _select_device() -> torch.device:
 
 
 def _load_promptnorm(ckpt_path: str, device: torch.device):
+    log_mem("PromptNorm: before net instantiate")
     net = PromptNorm(decoder=True)
+    log_mem("PromptNorm: after net instantiate, before torch.load")
     state = torch.load(ckpt_path, map_location=device, weights_only=False)
+    log_mem("PromptNorm: after torch.load")
     sd = state.get("state_dict", state)
     # Strip the "net." prefix that Lightning's wrapper adds to checkpoint keys
     sd = {k.replace("net.", "", 1): v for k, v in sd.items() if k.startswith("net.")}
+    del state
+    gc.collect()
+    log_mem("PromptNorm: after state cleanup, before load_state_dict")
     net.load_state_dict(sd, strict=True)
+    del sd
+    gc.collect()
+    log_mem("PromptNorm: after load_state_dict & sd cleanup")
     net.to(device)
     net.eval()
+    log_mem("PromptNorm: ready")
     return net
 
 
@@ -101,11 +140,19 @@ def _load_depth_model(ckpt_path: str, device: torch.device):
         from depth_anything_v2.dpt import DepthAnythingV2
     except ImportError:
         raise ImportError("Cannot import DepthAnythingV2. Is python/depth_anything_v2_repo/ cloned?")
+    log_mem("DepthAnythingV2: before model instantiate")
     model_cfg = {"encoder": "vitb", "features": 128, "out_channels": [96, 192, 384, 768]}
     model = DepthAnythingV2(**model_cfg)
-    model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True), strict=True)
+    log_mem("DepthAnythingV2: after model instantiate, before torch.load")
+    ckpt = torch.load(ckpt_path, map_location=device, weights_only=True)
+    log_mem("DepthAnythingV2: after torch.load, before load_state_dict")
+    model.load_state_dict(ckpt, strict=True)
+    del ckpt
+    gc.collect()
+    log_mem("DepthAnythingV2: after load_state_dict & cleanup")
     model.to(device)
     model.eval()
+    log_mem("DepthAnythingV2: ready")
     return model
 
 
@@ -214,6 +261,8 @@ app = FastAPI(title="PromptNorm Sidecar", version="1.0")
 async def startup_event():
     global _device, _promptnorm, _depth_model
 
+    log_mem("Container startup: baseline before loading any model")
+
     if not os.path.exists(PROMPTNORM_CKPT):
         log.error(f"PromptNorm checkpoint not found: {PROMPTNORM_CKPT}")
         raise RuntimeError(f"Missing checkpoint: {PROMPTNORM_CKPT}")
@@ -229,12 +278,15 @@ async def startup_event():
     t0 = time.time()
     _promptnorm = _load_promptnorm(PROMPTNORM_CKPT, _device)
     log.info(f"PromptNorm loaded in {time.time()-t0:.1f}s")
+    log_mem("Container startup: after PromptNorm loaded")
 
     t0 = time.time()
     _depth_model = _load_depth_model(DEPTH_CKPT, _device)
     log.info(f"Depth Anything V2 loaded in {time.time()-t0:.1f}s")
+    log_mem("Container startup: after Depth Anything V2 loaded")
 
     log.info("Sidecar ready.")
+    log_mem("Container startup: all models resident, service ready")
 
 
 @app.get("/health")
@@ -263,8 +315,10 @@ async def normalize(file: UploadFile = File(...)):
 
     try:
         t0 = time.time()
+        log_mem(f"Normalize: before inference on {pil_img.size}")
         result = _run_inference(pil_img, _device)
         elapsed = time.time() - t0
+        log_mem("Normalize: after inference pass")
         log.info(f"Normalized {file.filename or 'image'} in {elapsed:.2f}s")
     except torch.cuda.OutOfMemoryError:
         log.warning("CUDA OOM -- retrying on CPU")
