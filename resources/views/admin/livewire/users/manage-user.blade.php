@@ -20,6 +20,24 @@
             -webkit-text-security: none !important;
         }
         .modal-animated-backdrop {
+            position: fixed !important;
+            inset: 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            min-width: 100% !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            min-height: 100% !important;
+            margin: 0 !important;
+            z-index: 99999 !important;
+            box-sizing: border-box !important;
+            background: rgba(0, 0, 0, 0.45) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+            overscroll-behavior: contain !important;
             animation: modalBackdropFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .modal-animated-card {
@@ -948,7 +966,7 @@
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
         class="fixed inset-0 z-50 flex items-center justify-center modal-animated-backdrop"
-        style="background: rgba(0,0,0,0.45); backdrop-filter: blur(8px);"
+        style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999;"
         wire:key="edit-modal-wrapper-{{ $isVerified ? 'verified' : 'unverified' }}"
     >
         @if(!$isVerified)
@@ -1354,7 +1372,7 @@
     @endphp
     <div
         class="fixed inset-0 z-50 flex items-center justify-center modal-animated-backdrop"
-        style="background: rgba(0,0,0,0.45); backdrop-filter: blur(8px);"
+        style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999;"
     >
         <div class="modal-animated-card" style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); width:100%; max-width:480px; margin:0 16px; overflow:hidden;">
             <div style="padding:28px 28px 12px 28px; display:flex; align-items:flex-start; justify-content:space-between;">
@@ -1471,7 +1489,7 @@
     @if($showDeleteModal && $deleteTargetUser)
     <div
         class="fixed inset-0 z-50 flex items-center justify-center modal-animated-backdrop"
-        style="background: rgba(0,0,0,0.45); backdrop-filter: blur(8px);"
+        style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999;"
     >
         <div class="modal-animated-card" style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); width:100%; max-width:460px; margin:0 16px; overflow:hidden;">
             <div style="padding:28px 28px 12px 28px; display:flex; align-items:flex-start; justify-content:space-between;">
@@ -1533,7 +1551,7 @@
     @if($showCancelDeletionModal && $cancelTargetUser)
     <div
         class="fixed inset-0 z-50 flex items-center justify-center modal-animated-backdrop"
-        style="background: rgba(0,0,0,0.45); backdrop-filter: blur(8px);"
+        style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999;"
     >
         <div class="modal-animated-card" style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); width:100%; max-width:460px; margin:0 16px; overflow:hidden;">
             <div style="padding:28px 28px 12px 28px; display:flex; align-items:flex-start; justify-content:space-between;">
@@ -1596,7 +1614,7 @@
     @if($showViewSuspendModal && $viewSuspendTargetUser)
     <div
         class="fixed inset-0 z-50 flex items-center justify-center modal-animated-backdrop"
-        style="background: rgba(0,0,0,0.45); backdrop-filter: blur(8px);"
+        style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999;"
     >
         <div class="modal-animated-card" style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); width:100%; max-width:480px; margin:0 16px; overflow:hidden;">
             <div style="padding:28px 28px 12px 28px; display:flex; align-items:flex-start; justify-content:space-between;">

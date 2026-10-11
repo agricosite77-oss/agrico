@@ -20,6 +20,24 @@
             -webkit-text-security: none !important;
         }
         .modal-animated-backdrop {
+            position: fixed !important;
+            inset: 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            min-width: 100% !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            min-height: 100% !important;
+            margin: 0 !important;
+            z-index: 99999 !important;
+            box-sizing: border-box !important;
+            background: rgba(0, 0, 0, 0.45) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+            overscroll-behavior: contain !important;
             animation: modalBackdropFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .modal-animated-card {
@@ -1778,7 +1796,7 @@
     <div
         x-data
         class="fixed inset-0 z-50 flex items-center justify-center modal-animated-backdrop"
-        style="background: rgba(0,0,0,0.45); backdrop-filter: blur(8px);"
+        style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999;"
         wire:key="student-edit-modal-wrapper-{{ $isVerified ? 'verified' : 'unverified' }}"
     >
         @if(!$isVerified)

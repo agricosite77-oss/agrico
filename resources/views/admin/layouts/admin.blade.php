@@ -370,10 +370,77 @@
             }
         }
 
-        /* Prevent Alpine flash before init */
-        [x-cloak] {
-            display: none !important;
+        /* System-wide Admin Modal Lock & Smooth Scrollbar Styling */
+        html {
+            overflow-x: hidden;
         }
+
+        html:has(.modal-animated-backdrop),
+        body:has(.modal-animated-backdrop),
+        html:has(.user-view-backdrop),
+        body:has(.user-view-backdrop),
+        html:has(.record-popup-backdrop),
+        body:has(.record-popup-backdrop),
+        html:has(.soil-form-backdrop),
+        body:has(.soil-form-backdrop),
+        html:has(.soil-detail-backdrop),
+        body:has(.soil-detail-backdrop),
+        html:has(.munsell-edit-backdrop),
+        body:has(.munsell-edit-backdrop),
+        html:has(.munsell-form-backdrop),
+        body:has(.munsell-form-backdrop),
+        html:has(.munsell-detail-backdrop),
+        body:has(.munsell-detail-backdrop),
+        html:has(.mapping-detail-backdrop),
+        body:has(.mapping-detail-backdrop),
+        html:has(.faq-form-backdrop),
+        body:has(.faq-form-backdrop),
+        html:has(.faq-detail-backdrop),
+        body:has(.faq-detail-backdrop),
+        html:has(.profile-modal-overlay),
+        body:has(.profile-modal-overlay),
+        html:has([class*="-backdrop"]),
+        body:has([class*="-backdrop"]),
+        html.no-scroll, body.no-scroll {
+            overflow: hidden !important;
+            overflow-x: hidden !important;
+            overflow-y: hidden !important;
+            touch-action: none !important;
+        }
+
+        /* Standardized Screen-Fitting Blur Backdrop for ALL Popups & Modals */
+        .modal-animated-backdrop,
+        .user-view-backdrop,
+        .record-popup-backdrop,
+        .soil-detail-backdrop,
+        .soil-form-backdrop,
+        .munsell-edit-backdrop,
+        .munsell-form-backdrop,
+        .munsell-detail-backdrop,
+        .mapping-detail-backdrop,
+        .faq-form-backdrop,
+        .faq-detail-backdrop,
+        .profile-modal-overlay,
+        div[class*="-backdrop"] {
+            position: fixed !important;
+            inset: 0 !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            min-width: 100% !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            min-height: 100% !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            z-index: 99999 !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+            overscroll-behavior: contain !important;
+        }
+
 
         /* â”€â”€ UNIVERSAL TEXT-OVERFLOW & CONTAINER CONTAINMENT (ADMIN) â”€â”€ */
         *, *::before, *::after {

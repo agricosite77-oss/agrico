@@ -5,7 +5,7 @@
     x-init="document.body.classList.add('overflow-hidden')"
     x-on:unmount="document.body.classList.remove('overflow-hidden')"
     class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
-    style="background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 32px 16px;"
+    style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 99999; padding: 32px 16px;"
     wire:click.self="closeModal"
 >
     @if(!$isVerified)
