@@ -26,8 +26,6 @@ yarn-error.log
 Scan_Soil_Image/
 python/Scan_Soil_Image/
 python/external_datasets/
-python/depth_anything_v2_repo/
-python/promptnorm_repo/
 python/pretrained_ckpt/
 storage/logs/*.log
 __pycache__/
