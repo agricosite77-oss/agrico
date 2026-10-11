@@ -321,11 +321,11 @@
                 @endif
 
                 <!-- Inline Typo Suggestion Box (Mailcheck) -->
-                <div id="mailcheckSuggestionBox" style="display: none; margin-top: 6px; font-size: 0.75rem; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 8px; padding: 6px 10px; align-items: center; justify-content: space-between; gap: 6px; line-height: 1.35;">
-                    <span>
-                        Did you mean <button type="button" id="mailcheckSuggestionLink" onclick="acceptMailcheckSuggestion()" style="background: none; border: none; padding: 0; color: #1d4ed8; font-weight: 700; text-decoration: underline; cursor: pointer; font-size: inherit; font-family: inherit;"></button>?
+                <div id="mailcheckSuggestionBox" style="display: none; margin-top: 6px; font-size: 0.75rem; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 8px; padding: 6px 10px; align-items: center; justify-content: space-between; gap: 6px; line-height: 1.35; cursor: pointer;" onclick="acceptMailcheckSuggestion(event)">
+                    <span style="cursor: pointer;">
+                        Did you mean <button type="button" id="mailcheckSuggestionLink" onclick="acceptMailcheckSuggestion(event)" style="background: none; border: none; padding: 0; color: #1d4ed8; font-weight: 700; text-decoration: underline; cursor: pointer; font-size: inherit; font-family: inherit;"></button>?
                     </span>
-                    <button type="button" onclick="dismissMailcheckSuggestion()" style="background: none; border: none; padding: 0; color: #64748b; font-size: 0.72rem; font-weight: 600; cursor: pointer; text-decoration: underline; margin-left: 6px; flex-shrink: 0;" title="Keep original typed email">Dismiss</button>
+                    <button type="button" onclick="dismissMailcheckSuggestion(event)" style="background: none; border: none; padding: 0; color: #64748b; font-size: 0.72rem; font-weight: 600; cursor: pointer; text-decoration: underline; margin-left: 6px; flex-shrink: 0;" title="Keep original typed email">Dismiss</button>
                 </div>
             </div>
 
@@ -408,13 +408,22 @@
 
     <script>
         let mailcheckDebounceTimer = null;
+        let mailcheckAcceptedOrDismissed = false;
+        let mailcheckLastAcceptedEmail = '';
+
         function checkMailcheckSuggestion(val) {
             const suggestionBox = document.getElementById('mailcheckSuggestionBox');
             const suggestionLink = document.getElementById('mailcheckSuggestionLink');
             if (!suggestionBox || !suggestionLink) return;
 
+            // If user already accepted this suggestion or dismissed it, stay hidden
+            if (mailcheckAcceptedOrDismissed || (mailcheckLastAcceptedEmail && val.toLowerCase() === mailcheckLastAcceptedEmail.toLowerCase())) {
+                suggestionBox.style.setProperty('display', 'none', 'important');
+                return;
+            }
+
             if (!val || !val.includes('@') || typeof Mailcheck === 'undefined') {
-                suggestionBox.style.display = 'none';
+                suggestionBox.style.setProperty('display', 'none', 'important');
                 return;
             }
 
@@ -427,34 +436,65 @@
                     'up.edu.ph', 'gov.ph', 'da.gov.ph', 'dost.gov.ph'
                 ],
                 suggested: function(suggestion) {
+                    if (mailcheckAcceptedOrDismissed) {
+                        suggestionBox.style.setProperty('display', 'none', 'important');
+                        return;
+                    }
                     suggestionLink.innerText = suggestion.full;
                     suggestionBox.style.display = 'flex';
                     suggestionBox.dataset.suggestedEmail = suggestion.full;
                 },
                 empty: function() {
-                    suggestionBox.style.display = 'none';
+                    suggestionBox.style.setProperty('display', 'none', 'important');
                     delete suggestionBox.dataset.suggestedEmail;
                 }
             });
         }
 
-        function acceptMailcheckSuggestion() {
+        function acceptMailcheckSuggestion(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            clearTimeout(mailcheckDebounceTimer);
+            mailcheckAcceptedOrDismissed = true;
+
             const emailInput = document.getElementById('email');
             const suggestionBox = document.getElementById('mailcheckSuggestionBox');
-            if (emailInput && suggestionBox && suggestionBox.dataset.suggestedEmail) {
-                emailInput.value = suggestionBox.dataset.suggestedEmail;
+            const suggestionLink = document.getElementById('mailcheckSuggestionLink');
+
+            const suggestedEmail = (suggestionBox?.dataset?.suggestedEmail || suggestionLink?.innerText || '').trim();
+
+            if (emailInput && suggestedEmail) {
+                emailInput.value = suggestedEmail;
+                mailcheckLastAcceptedEmail = suggestedEmail;
                 clearFieldErrors(emailInput);
-                checkFloatingInputs();
-                suggestionBox.style.display = 'none';
+                emailInput.classList.add('is-filled');
+            }
+
+            if (suggestionBox) {
+                suggestionBox.style.setProperty('display', 'none', 'important');
                 delete suggestionBox.dataset.suggestedEmail;
-                emailInput.focus();
+            }
+
+            // Move focus to password input so user can seamlessly type credentials without re-triggering email blur
+            const passwordInput = document.getElementById('password');
+            if (passwordInput) {
+                passwordInput.focus();
             }
         }
 
-        function dismissMailcheckSuggestion() {
+        function dismissMailcheckSuggestion(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            clearTimeout(mailcheckDebounceTimer);
+            mailcheckAcceptedOrDismissed = true;
             const suggestionBox = document.getElementById('mailcheckSuggestionBox');
             if (suggestionBox) {
-                suggestionBox.style.display = 'none';
+                suggestionBox.style.setProperty('display', 'none', 'important');
+                delete suggestionBox.dataset.suggestedEmail;
             }
         }
 
@@ -595,6 +635,10 @@
 
             if (emailInput) {
                 emailInput.addEventListener('input', function() {
+                    if (mailcheckLastAcceptedEmail && emailInput.value.trim().toLowerCase() !== mailcheckLastAcceptedEmail.toLowerCase()) {
+                        mailcheckAcceptedOrDismissed = false;
+                        mailcheckLastAcceptedEmail = '';
+                    }
                     clearTimeout(mailcheckDebounceTimer);
                     mailcheckDebounceTimer = setTimeout(() => {
                         checkMailcheckSuggestion(emailInput.value.trim());

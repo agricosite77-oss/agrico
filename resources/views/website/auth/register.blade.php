@@ -2462,18 +2462,21 @@
 
         function acceptMailcheckSuggestion() {
             const inputEl = document.getElementById('email');
-            if (!inputEl || !mailcheckState.currentSuggestion) return;
-
-            const acceptedEmail = mailcheckState.currentSuggestion.full;
-            inputEl.value = acceptedEmail;
-            mailcheckState.status = 'accepted';
-            mailcheckState.lastCheckedValue = acceptedEmail;
-            mailcheckState.currentSuggestion = null;
-
             const suggestionBox = document.getElementById('mailcheckSuggestionBox');
-            if (suggestionBox) suggestionBox.style.display = 'none';
+            const linkEl = document.getElementById('mailcheckSuggestionLink');
 
-            inputEl.classList.add('is-filled');
+            const acceptedEmail = mailcheckState?.currentSuggestion?.full || linkEl?.innerText?.trim();
+            if (inputEl && acceptedEmail) {
+                inputEl.value = acceptedEmail;
+                mailcheckState.status = 'accepted';
+                mailcheckState.lastCheckedValue = acceptedEmail;
+                mailcheckState.currentSuggestion = null;
+                inputEl.classList.add('is-filled');
+            }
+
+            if (suggestionBox) {
+                suggestionBox.style.setProperty('display', 'none', 'important');
+            }
 
             const parent = inputEl.closest('.auth-input-group');
             const iconBox = parent ? parent.querySelector('.email-status-icon') : null;
