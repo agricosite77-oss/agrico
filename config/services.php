@@ -53,6 +53,7 @@ return [
         'python_binary'  => env('PYTHON_BINARY'),
         'scan_root'      => env('SCAN_SOIL_ROOT', storage_path('app/Scan_Soil_Image')),
         'munsell_csv'    => env('MUNSELL_REFERENCE_CSV', base_path('python/munsell_reference_full.csv')),
+        'stage2_mode'    => env('STAGE2_MODE', 'classical'),
     ],
 
     'turnstile' => [

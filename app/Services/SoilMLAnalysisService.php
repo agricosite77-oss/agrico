@@ -645,15 +645,21 @@ class SoilMLAnalysisService
         if ($disk === 's3') {
             try {
                 if (file_exists($fullBaJpg)) {
-                    $uploadedBa = Storage::disk('s3')->put($baJpgName, file_get_contents($fullBaJpg), 'public');
-                    if ($uploadedBa) {
-                        $beforeAfterUrl = Storage::disk('s3')->url($baJpgName);
+                    $baData = file_get_contents($fullBaJpg);
+                    if ($baData !== false) {
+                        $uploadedBa = Storage::disk('s3')->put($baJpgName, $baData, 'public');
+                        if ($uploadedBa) {
+                            $beforeAfterUrl = Storage::disk('s3')->url($baJpgName);
+                        }
                     }
                 }
                 if (file_exists($fullRawJpg)) {
-                    $uploadedRaw = Storage::disk('s3')->put($rawJpgName, file_get_contents($fullRawJpg), 'public');
-                    if ($uploadedRaw) {
-                        $rawUrl = Storage::disk('s3')->url($rawJpgName);
+                    $rawData = file_get_contents($fullRawJpg);
+                    if ($rawData !== false) {
+                        $uploadedRaw = Storage::disk('s3')->put($rawJpgName, $rawData, 'public');
+                        if ($uploadedRaw) {
+                            $rawUrl = Storage::disk('s3')->url($rawJpgName);
+                        }
                     }
                 }
             } catch (\Throwable $e) {
@@ -680,7 +686,7 @@ class SoilMLAnalysisService
         $analysis['normalized_image_url']   = $normalizedUrl;
         $analysis['before_after_image_url'] = $beforeAfterUrl;
         $analysis['raw_image_url']          = $rawUrl;
-        $analysis['stage2_mode']            = $analysis['stage2_mode'] ?? $pythonResult['stage2_mode'] ?? env('STAGE2_MODE', 'classical');
+        $analysis['stage2_mode']            = $analysis['stage2_mode'] ?? $pythonResult['stage2_mode'] ?? config('services.soil_ml.stage2_mode', 'classical');
         $analysis['stage2_engine']          = $analysis['stage2_engine'] ?? $analysis['stage2_mode'];
         $analysis['success']                = true;
         $analysis['rejected']               = false;
