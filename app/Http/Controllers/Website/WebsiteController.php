@@ -260,12 +260,15 @@ class WebsiteController extends Controller
             ->where(function ($q) {
                 $q->where('status', 'Active')->orWhereNull('status');
             })->count();
-        $totalSoils    = LocationMapping::whereNotNull('latitude')->whereNotNull('longitude')->count();
-        if ($totalSoils === 0) {
-            $totalSoils = Soil::where(function ($q) {
-                $q->where('status', 'Active')->orWhereNull('status');
-            })->count();
-        }
+        // Pinned Soil Locations: count actual user-submitted / approved pinned locations or pin location requests
+        $pinnedLocationsCount = LocationMapping::whereNotNull('latitude')->whereNotNull('longitude')->count();
+        $pinRequestsCount     = UserRequest::where(function ($q) {
+            $q->where('type', 'Soil Coordinates')
+              ->orWhere('type', 'Pin Soil Location')
+              ->orWhere('type', 'LIKE', '%Pin%')
+              ->orWhere('type', 'LIKE', '%Coordinates%');
+        })->count();
+        $totalSoils = max($pinnedLocationsCount, $pinRequestsCount);
 
         // Recent soil scans for the dashboard carousel (latest 6, all users)
         $recentScans = SoilScan::with(['soil.munsellColor', 'location'])
