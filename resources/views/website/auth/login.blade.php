@@ -278,9 +278,12 @@
             @csrf
 
             @php
-                $hasCredError = $errors->has('email') && str_contains($errors->first('email'), 'credentials do not match');
-                $emailHasError = $errors->has('email') || $hasCredError;
-                $passwordHasError = $errors->has('password') || $hasCredError;
+                $emailErr = (string) $errors->first('email');
+                $hasCredError = $errors->has('email') && str_contains($emailErr, 'credentials do not match');
+                $hasThrottleError = $errors->has('email') && (str_contains(strtolower($emailErr), 'too many') || str_contains(strtolower($emailErr), 'wait'));
+                $isAuthPairError = $hasCredError || $hasThrottleError;
+                $emailHasError = $errors->has('email') || $isAuthPairError;
+                $passwordHasError = $errors->has('password') || $isAuthPairError;
             @endphp
 
             <!-- Email -->
@@ -313,7 +316,7 @@
                         </svg>
                     </div>
                 </div>
-                @if ($errors->has('email') && !$hasCredError)
+                @if ($errors->has('email') && !$isAuthPairError)
                     <div class="server-error field-error-msg" style="color: #ef4444; font-size: 0.78rem; margin-top: 5px; font-weight: 600; text-align: left; padding-left: 4px; display: block;">{{ $errors->first('email') }}</div>
                 @endif
 
@@ -364,6 +367,8 @@
                 </div>
                 @if ($hasCredError)
                     <div id="credentialsErrorMessage" class="server-error field-error-msg" style="color: #ef4444; font-size: 0.78rem; margin-top: 5px; font-weight: 600; text-align: left; padding-left: 4px; display: block;">These credentials do not match our user records.</div>
+                @elseif ($hasThrottleError)
+                    <div id="credentialsErrorMessage" class="server-error field-error-msg" style="color: #ef4444; font-size: 0.78rem; margin-top: 5px; font-weight: 600; text-align: left; padding-left: 4px; display: block;">{{ $errors->first('email') }}</div>
                 @elseif ($errors->has('password'))
                     <div class="server-error field-error-msg" style="color: #ef4444; font-size: 0.78rem; margin-top: 5px; font-weight: 600; text-align: left; padding-left: 4px; display: block;">{{ $errors->first('password') }}</div>
                 @endif

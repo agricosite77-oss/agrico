@@ -8,6 +8,8 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class UserAuthController extends Controller
 {
@@ -45,6 +47,18 @@ class UserAuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
+        $throttleKey = Str::transliterate(Str::lower($credentials['email']) . '|' . $request->ip());
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            $minutes = max(1, (int) ceil($seconds / 60));
+            $minString = $minutes === 1 ? '1 minute' : "{$minutes} minutes";
+
+            return back()->withInput($request->only('email'))->withErrors([
+                'email' => "Too many failed login attempts. Please wait {$minString} to log in again with your credentials.",
+            ]);
+        }
+
         $remember = $request->boolean('remember', true);
 
         // 1. Check User model table
@@ -56,6 +70,8 @@ class UserAuthController extends Controller
                           && (Hash::check('Admin@Test2026!', $user->password) || Hash::check('password', $user->password) || Hash::check('password123', $user->password)));
 
             if ($passCheck) {
+                RateLimiter::clear($throttleKey);
+
                 if (strtolower($user->status ?? '') === 'suspended') {
                     $hasPendingReactivation = \App\Models\UserRequest::where('user_email', $user->email)
                         ->where('type', 'Account Reactivation Request')
@@ -115,6 +131,8 @@ class UserAuthController extends Controller
                                && (Hash::check('Admin@Test2026!', $admin->password ?? '') || Hash::check('password', $admin->password ?? '') || Hash::check('password123', $admin->password ?? '')));
 
             if ($adminPassCheck) {
+                RateLimiter::clear($throttleKey);
+
                 $request->session()->invalidate();
                 $request->session()->regenerate();
 
@@ -143,6 +161,14 @@ class UserAuthController extends Controller
                 $request->session()->save();
                 return redirect()->route('dashboard');
             }
+        }
+
+        RateLimiter::hit($throttleKey, 900);
+
+        if (RateLimiter::attempts($throttleKey) >= 5) {
+            return back()->withInput($request->only('email'))->withErrors([
+                'email' => 'Too many failed login attempts. Please wait 15 minutes to log in again with your credentials.',
+            ]);
         }
 
         return back()->withInput($request->only('email'))->withErrors([
