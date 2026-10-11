@@ -264,9 +264,10 @@
                         {{-- RIGHT ACTIONS --}}
                         <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
                             {{-- DOWNLOAD ICON --}}
-                            <a
-                                href="#"
-                                style="color:#94a3b8; display:flex; align-items:center; justify-content:center; text-decoration:none; transition:color 0.2s ease;"
+                            <button
+                                type="button"
+                                wire:click="downloadFile({{ $app->application_id }})"
+                                style="color:#94a3b8; background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; text-decoration:none; transition:color 0.2s ease;"
                                 onmouseover="this.style.color='#0f172a';"
                                 onmouseout="this.style.color='#94a3b8';"
                                 title="Download File"
@@ -274,7 +275,7 @@
                                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
                                 </svg>
-                            </a>
+                            </button>
 
                             {{-- DELETE ICON --}}
                             @if($app->status !== 'ACTIVE')
