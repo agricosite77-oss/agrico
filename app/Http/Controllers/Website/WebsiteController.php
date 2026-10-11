@@ -449,132 +449,153 @@ class WebsiteController extends Controller
      */
     public function pinLocation(Request $request)
     {
-        $validated = $request->validate([
-            'latitude'      => ['required', 'numeric', 'between:-90,90'],
-            'longitude'     => ['required', 'numeric', 'between:-180,180'],
-            'barangay'      => ['required', 'string', 'max:255'],
-            'soil_id'       => ['nullable', 'integer'],
-            'soil_scan_id'  => ['nullable', 'integer'],
-            'scan_note'     => ['nullable', 'string', 'max:1000'],
-            'coverage_area' => ['nullable', 'string', 'max:100'],
-            'pin_all'       => ['nullable', 'boolean'],
-            'pin_mode'      => ['nullable', 'string', 'max:50'],
-            'regions'       => ['nullable', 'array'],
-        ]);
-
-        $authUser = Auth::guard('web')->user() ?? Auth::user() ?? Auth::guard('admin')->user();
-        if (!$authUser && session()->has('user_id')) {
-            $authUser = User::where('user_id', session('user_id'))->first();
-        }
-        if (!$authUser && session()->has('admin_id')) {
-            $authUser = User::where('user_id', session('admin_id'))->first();
-        }
-        $userId = $authUser?->user_id ?? $authUser?->id ?? User::first()?->user_id ?? 'ADM-001';
-        $isAdmin = $authUser && in_array($authUser->role, ['admin', 'superadmin']);
-
-        // Determine or associate Soil record
-        $soilId = $validated['soil_id'] ?? null;
-        if (!$soilId && !empty($validated['soil_scan_id'])) {
-            $scan = SoilScan::find($validated['soil_scan_id']);
-            $soilId = $scan?->soil_id;
-        }
-        if (!$soilId) {
-            $soil = Soil::first();
-            $soilId = $soil?->soil_id ?? 1;
-        }
-
-        // Determine or create SoilScan record
-        $soilScanId = $validated['soil_scan_id'] ?? null;
-        if (!$soilScanId) {
-            $newScan = SoilScan::create([
-                'user_id'    => $userId,
-                'soil_id'    => $soilId,
-                'platform'   => 'web',
-                'scan_note'  => $validated['scan_note'] ?? 'Website soil location sample pin',
-                'scan_date'  => now(),
+        try {
+            $validated = $request->validate([
+                'latitude'      => ['required', 'numeric', 'between:-90,90'],
+                'longitude'     => ['required', 'numeric', 'between:-180,180'],
+                'barangay'      => ['required', 'string', 'max:255'],
+                'soil_id'       => ['nullable'],
+                'soil_scan_id'  => ['nullable'],
+                'scan_note'     => ['nullable', 'string', 'max:1000'],
+                'coverage_area' => ['nullable', 'string', 'max:100'],
+                'pin_all'       => ['nullable', 'boolean'],
+                'pin_mode'      => ['nullable', 'string', 'max:50'],
+                'regions'       => ['nullable', 'array'],
             ]);
-            $soilScanId = $newScan->soil_scan_id;
-        } elseif (!empty($validated['scan_note'])) {
-            SoilScan::where('soil_scan_id', $soilScanId)->update([
-                'scan_note' => $validated['scan_note'],
-            ]);
-        }
 
-        $directPublish = $isAdmin && $request->boolean('direct_publish');
-        $isPinAll = $request->boolean('pin_all') || ($request->input('pin_mode') === 'all');
-        $regions = $request->input('regions');
-        $createdLocations = [];
+            $authUser = Auth::guard('web')->user() ?? Auth::user() ?? Auth::guard('admin')->user();
+            if (!$authUser && session()->has('user_id')) {
+                $authUser = User::where('user_id', session('user_id'))->first();
+            }
+            if (!$authUser && session()->has('admin_id')) {
+                $authUser = User::where('user_id', session('admin_id'))->first();
+            }
+            $userId = $authUser?->user_id ?? $authUser?->id ?? null;
+            $validUser = ($userId ? User::where('user_id', $userId)->first() : null) ?? User::first();
+            $finalUserId = $validUser?->user_id ?? 'ADM-001';
+            $isAdmin = $authUser && in_array($authUser->role, ['admin', 'superadmin']);
 
-        if ($isPinAll && is_array($regions) && count($regions) > 1) {
-            foreach ($regions as $idx => $r) {
-                $subSoilId = $r['soil_id'] ?? $r['id'] ?? null;
-                if (!$subSoilId && !empty($r['munsell'])) {
-                    $mColor = \App\Models\MunsellColor::where('full_code', $r['munsell'])->first();
-                    $subSoilId = $subSoilId ?? Soil::where('munsell_color_id', $mColor?->munsell_color_id)->first()?->soil_id;
+            // Determine or associate Soil record
+            $soilId = $validated['soil_id'] ?? null;
+            if ((!$soilId || !Soil::where('soil_id', $soilId)->exists()) && !empty($validated['soil_scan_id'])) {
+                $scan = SoilScan::find($validated['soil_scan_id']);
+                $soilId = $scan?->soil_id;
+            }
+            if (!$soilId || !Soil::where('soil_id', $soilId)->exists()) {
+                $soil = Soil::first();
+                $soilId = $soil?->soil_id ?? 1;
+            }
+
+            // Determine or create SoilScan record
+            $soilScanId = $validated['soil_scan_id'] ?? null;
+            if (!$soilScanId || !SoilScan::where('soil_scan_id', $soilScanId)->exists()) {
+                $newScan = SoilScan::create([
+                    'user_id'    => $finalUserId,
+                    'soil_id'    => $soilId,
+                    'platform'   => 'web',
+                    'scan_note'  => $validated['scan_note'] ?? 'Website soil location sample pin',
+                    'scan_date'  => now(),
+                ]);
+                $soilScanId = $newScan->soil_scan_id;
+            } elseif (!empty($validated['scan_note'])) {
+                SoilScan::where('soil_scan_id', $soilScanId)->update([
+                    'scan_note' => $validated['scan_note'],
+                ]);
+            }
+
+            $directPublish = $isAdmin && $request->boolean('direct_publish');
+            $isPinAll = $request->boolean('pin_all') || ($request->input('pin_mode') === 'all');
+            $regions = $request->input('regions');
+            $createdLocations = [];
+
+            if ($isPinAll && is_array($regions) && count($regions) > 1) {
+                foreach ($regions as $idx => $r) {
+                    $subSoilId = $r['soil_id'] ?? $r['id'] ?? null;
+                    if (!$subSoilId && !empty($r['munsell'])) {
+                        $subSoilId = Soil::where('full_code', $r['munsell'])->first()?->soil_id;
+                        if (!$subSoilId) {
+                            $mColor = \App\Models\MunsellColor::where('full_code', $r['munsell'])->first();
+                            if ($mColor) {
+                                $subSoilId = Soil::where('color_id', $mColor->munsell_color_id)->first()?->soil_id;
+                            }
+                        }
+                    }
+                    if (!$subSoilId || !Soil::where('soil_id', $subSoilId)->exists()) {
+                        $subSoilId = $soilId;
+                    }
+
+                    // Slight offset (~10-15m) so pins do not completely overlap
+                    $offsetLat = ($idx % 2 === 0 ? 1 : -1) * (intdiv($idx + 1, 2) * 0.00015);
+                    $offsetLng = (($idx % 4 < 2) ? 1 : -1) * (intdiv($idx + 1, 2) * 0.00015);
+
+                    $loc = LocationMapping::create([
+                        'soil_scan_id' => $soilScanId,
+                        'soil_id'      => $subSoilId,
+                        'latitude'     => $validated['latitude'] + $offsetLat,
+                        'longitude'    => $validated['longitude'] + $offsetLng,
+                        'barangay'     => $validated['barangay'],
+                        'timestamp'    => now(),
+                        'status'       => $directPublish ? 'Active' : 'Pending',
+                    ]);
+                    $createdLocations[] = $loc;
                 }
-                $subSoilId = $subSoilId ?? $soilId;
-
-                // Slight offset (~10-15m) so pins do not completely overlap
-                $offsetLat = ($idx % 2 === 0 ? 1 : -1) * (intdiv($idx + 1, 2) * 0.00015);
-                $offsetLng = (($idx % 4 < 2) ? 1 : -1) * (intdiv($idx + 1, 2) * 0.00015);
-
-                $loc = LocationMapping::create([
+                $location = $createdLocations[0];
+            } else {
+                // Single pin
+                $location = LocationMapping::create([
                     'soil_scan_id' => $soilScanId,
-                    'soil_id'      => $subSoilId,
-                    'latitude'     => $validated['latitude'] + $offsetLat,
-                    'longitude'    => $validated['longitude'] + $offsetLng,
+                    'soil_id'      => $soilId,
+                    'latitude'     => $validated['latitude'],
+                    'longitude'    => $validated['longitude'],
                     'barangay'     => $validated['barangay'],
                     'timestamp'    => now(),
                     'status'       => $directPublish ? 'Active' : 'Pending',
                 ]);
-                $createdLocations[] = $loc;
+                $createdLocations[] = $location;
             }
-            $location = $createdLocations[0];
-        } else {
-            // Single pin
-            $location = LocationMapping::create([
-                'soil_scan_id' => $soilScanId,
-                'soil_id'      => $soilId,
-                'latitude'     => $validated['latitude'],
-                'longitude'    => $validated['longitude'],
-                'barangay'     => $validated['barangay'],
-                'timestamp'    => now(),
-                'status'       => $directPublish ? 'Active' : 'Pending',
+
+            // Create a UserRequest ticket for Admin Approval in Manage Request (unless direct published)
+            if (!$directPublish) {
+                try {
+                    $user = $authUser ?? User::where('user_id', $finalUserId)->first();
+                    $userName = $user?->name ?? $user?->full_name ?? ($isAdmin ? 'AgriCo Admin' : 'Website User');
+                    $userEmail = $user?->email ?? ($isAdmin ? 'agricosite77@gmail.com' : 'user@agrico.gov.ph');
+                    $coverageText = !empty($validated['coverage_area']) ? " [Covered Area: {$validated['coverage_area']}]" : '';
+                    $notesText = "Soil Sample Location Pin #{$location->location_mapping_id} - Barangay: {$validated['barangay']}{$coverageText}. Coords: ({$validated['latitude']}, {$validated['longitude']}). Notes: " . ($validated['scan_note'] ?? 'No extra notes');
+                    $requestCode = 'REQ-PIN-' . strtoupper(bin2hex(random_bytes(3)));
+
+                    UserRequest::create([
+                        'request_code' => $requestCode,
+                        'user_name'    => $userName,
+                        'user_email'   => $userEmail,
+                        'type'         => 'Soil Coordinates',
+                        'description'  => $notesText,
+                        'status'       => 'Pending',
+                        'submitted_at' => now(),
+                    ]);
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+
+            return response()->json([
+                'success'  => true,
+                'message'  => $directPublish
+                    ? "Coordinates pinned and published directly to Soil Map!"
+                    : "Your soil coordinates in Brgy. {$validated['barangay']} have been submitted to Admin for approval!",
+                'location' => $location,
             ]);
-            $createdLocations[] = $location;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('[WebsiteController@pinLocation] ' . $e->getMessage(), [
+                'exception' => $e,
+                'request'   => $request->all(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to submit pin location: ' . $e->getMessage(),
+            ], 500);
         }
-
-        // Create a UserRequest ticket for Admin Approval in Manage Request (unless direct published)
-        if (!$directPublish) {
-            try {
-                $user = $authUser ?? User::where('user_id', $userId)->first();
-                $userName = $user?->name ?? $user?->full_name ?? ($isAdmin ? 'AgriCo Admin' : 'Website User');
-                $userEmail = $user?->email ?? ($isAdmin ? 'agricosite77@gmail.com' : 'user@agrico.gov.ph');
-                $coverageText = !empty($validated['coverage_area']) ? " [Covered Area: {$validated['coverage_area']}]" : '';
-                $notesText = "Soil Sample Location Pin #{$location->location_mapping_id} - Barangay: {$validated['barangay']}{$coverageText}. Coords: ({$validated['latitude']}, {$validated['longitude']}). Notes: " . ($validated['scan_note'] ?? 'No extra notes');
-                $requestCode = 'REQ-PIN-' . strtoupper(bin2hex(random_bytes(3)));
-
-                UserRequest::create([
-                    'request_code' => $requestCode,
-                    'user_name'    => $userName,
-                    'user_email'   => $userEmail,
-                    'type'         => 'Soil Coordinates',
-                    'description'  => $notesText,
-                    'status'       => 'Pending',
-                    'submitted_at' => now(),
-                ]);
-            } catch (\Throwable $e) {
-                report($e);
-            }
-        }
-
-        return response()->json([
-            'success'  => true,
-            'message'  => $directPublish
-                ? "Coordinates pinned and published directly to Soil Map!"
-                : "Your soil coordinates in Brgy. {$validated['barangay']} have been submitted to Admin for approval!",
-            'location' => $location,
-        ]);
     }
 
     /**
