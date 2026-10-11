@@ -4,9 +4,9 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
 
-COPY python/promptnorm_repo/ ./promptnorm_repo/
-COPY python/depth_anything_v2_repo/ ./depth_anything_v2_repo/
-COPY python/promptnorm_service.py .
+COPY promptnorm_repo/ ./promptnorm_repo/
+COPY depth_anything_v2_repo/ ./depth_anything_v2_repo/
+COPY promptnorm_service.py .
 
 RUN mkdir -p pretrained_ckpt && \
     curl -L https://github.com/davidserra9/promptnorm/releases/download/v1.0/promptnorm.ckpt \
