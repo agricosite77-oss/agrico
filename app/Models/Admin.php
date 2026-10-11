@@ -156,9 +156,8 @@ class Admin extends Authenticatable
     public function isSuperAdmin(): bool
     {
         $email = strtolower(trim((string) ($this->email ?? $this->Email ?? '')));
-        $id = strtoupper((string) ($this->admin_id ?? $this->id ?? ''));
 
-        if (in_array($email, ['agricosite77@gmail.com', 'admin@agrico.com']) || $id === 'ADM-001') {
+        if (in_array($email, ['agricosite77@gmail.com', 'admin@agrico.com'])) {
             return true;
         }
 

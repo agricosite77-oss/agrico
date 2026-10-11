@@ -69,17 +69,9 @@ class User extends Authenticatable
                     $user->role = 'user';
                 }
                 if (in_array($role, ['admin', 'superadmin', 'super admin'])) {
-                    $adminIds = User::where('user_id', 'LIKE', 'ADM-%')->pluck('user_id');
-                    $maxNum = 0;
-                    foreach ($adminIds as $idStr) {
-                        if (preg_match('/ADM-?(\d+)/i', (string)$idStr, $matches)) {
-                            $num = (int)$matches[1];
-                            if ($num > $maxNum) {
-                                $maxNum = $num;
-                            }
-                        }
-                    }
-                    $user->user_id = 'ADM-' . str_pad($maxNum + 1, 3, '0', STR_PAD_LEFT);
+                    $isSuper = in_array($role, ['superadmin', 'super admin'])
+                        || in_array(strtolower(trim($user->email ?? '')), ['admin@agrico.com', 'agricosite77@gmail.com']);
+                    $user->user_id = $isSuper ? 'ADM-001' : static::getNextAdminId();
                 } else {
                     $userIds = User::where('user_id', 'LIKE', 'USR-%')->pluck('user_id');
                     $maxNum = 0;
@@ -189,6 +181,24 @@ class User extends Authenticatable
         return $this->attributes['user_id'] ?? $this->attributes['User_ID'] ?? $this->attributes['id'] ?? null;
     }
 
+    public static function getNextAdminId(): string
+    {
+        $adminIds = \App\Models\Admin::pluck('admin_id')
+            ->concat(static::where('user_id', 'LIKE', 'ADM-%')->pluck('user_id'));
+
+        $maxNum = 1; // ADM-001 is reserved for Super Admin
+        foreach ($adminIds as $idStr) {
+            if (preg_match('/ADM-?(\d+)/i', (string) $idStr, $matches)) {
+                $num = (int) $matches[1];
+                if ($num > $maxNum) {
+                    $maxNum = $num;
+                }
+            }
+        }
+
+        return 'ADM-' . str_pad((string) ($maxNum + 1), 3, '0', STR_PAD_LEFT);
+    }
+
     public function getFormattedIdAttribute(): string
     {
         $role = strtolower(trim($this->role ?? 'user'));
@@ -200,13 +210,32 @@ class User extends Authenticatable
 
         $rawId = (string) ($this->attributes['user_id'] ?? $this->attributes['User_ID'] ?? $this->attributes['id'] ?? '');
 
+        if ($this->isSuperAdmin()) {
+            return 'ADM-001';
+        }
+
         if (in_array($role, ['admin', 'superadmin', 'super admin', 'administrator'])) {
-            if (preg_match('/(\d+)$/', $rawId, $matches)) {
-                $num = (int) $matches[1];
-            } else {
-                $num = (int) preg_replace('/\D/', '', $rawId) ?: 1;
+            // 1. Check if an official linked record in admins table exists with a non-001 ID
+            $adminRecord = \App\Models\Admin::where('email', $this->email)->first();
+            if ($adminRecord && !empty($adminRecord->admin_id) && $adminRecord->admin_id !== 'ADM-001') {
+                return \App\Models\Admin::formatId($adminRecord->admin_id);
             }
-            return 'ADM-' . str_pad($num, 3, '0', STR_PAD_LEFT);
+
+            // 2. Check if user_id starts with ADM- and is NOT ADM-001
+            if (preg_match('/^ADM-?(\d+)$/i', $rawId, $matches) && (int)$matches[1] > 1) {
+                return 'ADM-' . str_pad((int)$matches[1], 3, '0', STR_PAD_LEFT);
+            }
+
+            // 3. If there is a colliding ADM-001 on a non-superadmin, auto-repair to next available ID
+            if ($adminRecord && $adminRecord->admin_id === 'ADM-001') {
+                $newId = static::getNextAdminId();
+                \Illuminate\Support\Facades\DB::table('admins')
+                    ->where('email', $this->email)
+                    ->update(['admin_id' => $newId]);
+                return $newId;
+            }
+
+            return static::getNextAdminId();
         }
 
         if (str_starts_with($rawId, 'ADM-')) {
@@ -241,11 +270,12 @@ class User extends Authenticatable
     {
         $email = strtolower(trim((string) ($this->email ?? '')));
         $role = strtolower(trim((string) ($this->role ?? '')));
-        $id = strtoupper((string) ($this->user_id ?? $this->id ?? ''));
 
-        return in_array($role, ['superadmin', 'super admin'])
-            || in_array($email, ['agricosite77@gmail.com', 'admin@agrico.com'])
-            || $id === 'ADM-001';
+        if (in_array($role, ['superadmin', 'super admin'])) {
+            return true;
+        }
+
+        return in_array($email, ['agricosite77@gmail.com', 'admin@agrico.com']);
     }
 
     public function getIsPendingDeletionAttribute(): bool
@@ -371,26 +401,23 @@ class User extends Authenticatable
                 ->orWhere('admin_id', $this->user_id)
                 ->first();
 
+            $isSuperAdmin = $this->isSuperAdmin();
+
             if ($matchingAdmin) {
+                // If this is a regular admin but incorrectly has ADM-001, reassign next unique ID
+                if (!$isSuperAdmin && ($matchingAdmin->admin_id === 'ADM-001' || empty($matchingAdmin->admin_id))) {
+                    $matchingAdmin->admin_id = static::getNextAdminId();
+                }
+
                 $matchingAdmin->update([
+                    'admin_id' => $matchingAdmin->admin_id,
                     'full_name' => $this->name,
                     'email' => $this->email,
                     'password' => $this->password,
                     'profile_photo_path' => $this->profile_photo_path,
                 ]);
             } else {
-                // Generate next available ADM-xxx ID for admins table
-                $adminIds = \App\Models\Admin::pluck('admin_id');
-                $maxNum = 0;
-                foreach ($adminIds as $idStr) {
-                    if (preg_match('/ADM-?(\d+)/i', (string)$idStr, $matches)) {
-                        $num = (int)$matches[1];
-                        if ($num > $maxNum) {
-                            $maxNum = $num;
-                        }
-                    }
-                }
-                $newAdminId = 'ADM-' . str_pad($maxNum + 1, 3, '0', STR_PAD_LEFT);
+                $newAdminId = $isSuperAdmin ? 'ADM-001' : static::getNextAdminId();
 
                 \App\Models\Admin::create([
                     'admin_id' => $newAdminId,
