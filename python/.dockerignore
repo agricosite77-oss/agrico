@@ -1,0 +1,15 @@
+# Build-context ignore for the PromptNorm sidecar (Railway Root Directory = python).
+# Intentionally does NOT exclude: promptnorm_repo/, depth_anything_v2_repo/, promptnorm_service.py.
+# Checkpoints are downloaded at build time by promptnorm.Dockerfile, so local copies are skipped.
+
+pretrained_ckpt/
+Scan_Soil_Image/
+external_datasets/
+__pycache__/
+**/__pycache__/
+*.pyc
+.git
+.env
+.env.*
+*.md
+!promptnorm_repo/README.md
