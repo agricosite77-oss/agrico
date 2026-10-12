@@ -564,11 +564,20 @@ export default function ScanSoilScreen({ navigation }) {
     }
   };
 
+  const handleRetake = () => {
+    setUserCustomImage(null);
+    setScanResult(null);
+    setRejectMsg(null);
+    setHasScanned(false);
+    resultCardAnim.setValue(0);
+  };
+
   const handleManualScan = async () => {
     if (isScanning) return;
     const photo = await capturePhoto();
     if (photo && photo.base64) {
-      setUserCustomImage(photo.uri);
+      const uriToUse = photo.uri || `data:image/jpeg;base64,${photo.base64}`;
+      setUserCustomImage(uriToUse);
       runScan(photo);
     } else if (__DEV__) {
       runScan({ uri: null, base64: null, isDemo: true });
@@ -587,8 +596,9 @@ export default function ScanSoilScreen({ navigation }) {
       });
       const a = res.assets?.[0];
       if (a?.base64) {
-        setUserCustomImage(a.uri);
-        runScan({ uri: a.uri, base64: a.base64 });
+        const uriToUse = a.uri || `data:image/jpeg;base64,${a.base64}`;
+        setUserCustomImage(uriToUse);
+        runScan({ uri: uriToUse, base64: a.base64 });
       }
     } catch (err) {
       Alert.alert('Gallery', 'Unable to open gallery');
@@ -606,7 +616,12 @@ export default function ScanSoilScreen({ navigation }) {
     } else if (tab === 'Munsell') {
       navigation.navigate('Home', { screen: 'Munsell' });
     } else if (tab === 'ScanSoil') {
-      handleManualScan();
+      if (userCustomImage) {
+        // If a photo is currently frozen, tapping scan button unfreezes to live camera
+        handleRetake();
+      } else {
+        handleManualScan();
+      }
     }
   };
 
@@ -633,7 +648,7 @@ export default function ScanSoilScreen({ navigation }) {
             ref={cameraRef}
             style={StyleSheet.absoluteFill}
             device={cameraDevice}
-            isActive={!showDetailModal && !showPinModal}
+            isActive={!userCustomImage && !showDetailModal && !showPinModal}
             photo={true}
             torch={isTorchOn ? 'on' : 'off'}
           />
@@ -734,12 +749,18 @@ export default function ScanSoilScreen({ navigation }) {
         )}
       </ResizableFrame>
 
-      {/* 3. Top Header: "Scanning" & Close (X) Button */}
+      {/* 3. Top Header: "Scanning" / "Photo Review" & Close (X) Button */}
       <View style={styles.topHeader}>
         <View style={{ width: 44 }} />
         <View style={styles.titleContainer}>
-          <Text style={styles.headerTitle}>Scanning</Text>
-          {isTorchOn && <Text style={styles.torchActiveSub}>Torch Active</Text>}
+          <Text style={styles.headerTitle}>
+            {userCustomImage ? 'Photo Review' : 'Scanning'}
+          </Text>
+          {userCustomImage ? (
+            <Text style={[styles.torchActiveSub, { color: '#86efac' }]}>Camera Paused</Text>
+          ) : isTorchOn ? (
+            <Text style={styles.torchActiveSub}>Torch Active</Text>
+          ) : null}
         </View>
         <TouchableOpacity
           style={styles.headerCloseBtn}
@@ -790,6 +811,8 @@ export default function ScanSoilScreen({ navigation }) {
           <Text style={styles.hintText}>
             {isScanning
               ? `Processing Stage ${scanStage || 1} of 6… (${progressPct}%)`
+              : userCustomImage
+              ? 'Photo frozen • Tap Retake to resume live camera'
               : 'Drag handles to resize • Drag inside to move'}
           </Text>
         </View>
@@ -805,23 +828,34 @@ export default function ScanSoilScreen({ navigation }) {
             <GalleryIcon size={22} color="#ffffff" />
           </TouchableOpacity>
 
-          {/* Flashlight / Torch Button */}
-          <TouchableOpacity
-            style={[
-              styles.actionCircleBtn,
-              isTorchOn && styles.actionCircleBtnTorchOn,
-            ]}
-            onPress={handleToggleFlashlight}
-            activeOpacity={0.8}
-            accessibilityLabel="Toggle Flashlight"
-          >
-            <FlashlightIcon
-              size={22}
-              color={isTorchOn ? '#facc15' : '#ffffff'}
-              isOn={isTorchOn}
-            />
-            {isTorchOn && <View style={styles.actionTorchDot} />}
-          </TouchableOpacity>
+          {/* Flashlight or Retake Button */}
+          {userCustomImage ? (
+            <TouchableOpacity
+              style={[styles.actionCircleBtn, styles.actionCircleBtnRetake]}
+              onPress={handleRetake}
+              activeOpacity={0.8}
+              accessibilityLabel="Retake Photo"
+            >
+              <Text style={styles.actionCircleRetakeIcon}>🔄</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={[
+                styles.actionCircleBtn,
+                isTorchOn && styles.actionCircleBtnTorchOn,
+              ]}
+              onPress={handleToggleFlashlight}
+              activeOpacity={0.8}
+              accessibilityLabel="Toggle Flashlight"
+            >
+              <FlashlightIcon
+                size={22}
+                color={isTorchOn ? '#facc15' : '#ffffff'}
+                isOn={isTorchOn}
+              />
+              {isTorchOn && <View style={styles.actionTorchDot} />}
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -935,15 +969,25 @@ export default function ScanSoilScreen({ navigation }) {
               </View>
             </View>
 
-            {/* Action Button: View Details */}
-            <TouchableOpacity
-              style={styles.recentViewPill}
-              onPress={() => setShowDetailModal(true)}
-              activeOpacity={0.8}
-              accessibilityLabel="View Details"
-            >
-              <Text style={styles.recentViewPillText}>View</Text>
-            </TouchableOpacity>
+            {/* Action Buttons: View Details & Retake */}
+            <View style={styles.recentActionsCol}>
+              <TouchableOpacity
+                style={styles.recentViewPill}
+                onPress={() => setShowDetailModal(true)}
+                activeOpacity={0.8}
+                accessibilityLabel="View Details"
+              >
+                <Text style={styles.recentViewPillText}>View</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.recentRetakePill}
+                onPress={handleRetake}
+                activeOpacity={0.8}
+                accessibilityLabel="Retake / Scan Again"
+              >
+                <Text style={styles.recentRetakePillText}>🔄 Retake</Text>
+              </TouchableOpacity>
+            </View>
           </TouchableOpacity>
         </Animated.View>
       ) : rejectMsg ? (
@@ -953,11 +997,22 @@ export default function ScanSoilScreen({ navigation }) {
             <View style={styles.analyzingTextBox}>
               <Text style={styles.analyzingCardTitle}>No soil detected</Text>
               <Text style={styles.analyzingCardDesc}>{rejectMsg}</Text>
-              <TouchableOpacity onPress={() => setRejectMsg(null)}>
-                <Text style={[styles.analyzingCardDesc, { color: '#16a34a', fontWeight: '700', marginTop: 4 }]}>
-                  Dismiss
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.rejectionActionsRow}>
+                <TouchableOpacity
+                  style={styles.rejectionRetakeBtn}
+                  onPress={handleRetake}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.rejectionRetakeBtnText}>🔄 Retake / Live Camera</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.rejectionDismissBtn}
+                  onPress={() => setRejectMsg(null)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.rejectionDismissBtnText}>Dismiss</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
@@ -1569,6 +1624,67 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     color: '#166534',
+  },
+  recentActionsCol: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  recentRetakePill: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    backgroundColor: '#f1f5f9',
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recentRetakePillText: {
+    fontSize: 10.5,
+    fontWeight: '700',
+    color: '#334155',
+  },
+  rejectionActionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+    gap: 10,
+  },
+  rejectionRetakeBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 8,
+    backgroundColor: '#16a34a',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rejectionRetakeBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#ffffff',
+  },
+  rejectionDismissBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rejectionDismissBtnText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#94a3b8',
+  },
+  actionCircleBtnRetake: {
+    backgroundColor: '#15803d',
+    borderColor: '#22c55e',
+  },
+  actionCircleRetakeIcon: {
+    fontSize: 18,
+    color: '#ffffff',
   },
 
   soilModalBackdrop: {

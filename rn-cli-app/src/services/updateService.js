@@ -33,6 +33,11 @@ export const checkForAppUpdate = async () => {
       const serverVersion = res.data.latest_version;
       const isNewer = compareVersions(serverVersion, CURRENT_APP_VERSION) > 0;
 
+      let directApk = res.data.direct_apk_url || '';
+      if (directApk.includes('github.com/agricosite77-oss/agrico/')) {
+        directApk = directApk.replace('github.com/agricosite77-oss/agrico/', 'github.com/agricosite77-oss/agrico-releases/');
+      }
+
       return {
         hasUpdate: isNewer,
         currentVersion: CURRENT_APP_VERSION,
@@ -40,7 +45,7 @@ export const checkForAppUpdate = async () => {
         releaseNotes: res.data.release_notes || 'New improvements and bug fixes.',
         fileSize: res.data.file_size || '62 MB',
         downloadUrl: res.data.download_url,
-        directApkUrl: res.data.direct_apk_url,
+        directApkUrl: directApk,
         isMaintenance: Boolean(res.data.is_maintenance),
       };
     }
@@ -55,9 +60,14 @@ export const checkForAppUpdate = async () => {
  * Download the APK and trigger the Android package installer.
  */
 export const downloadAndInstallApk = async (apkUrl, onProgress) => {
+  let cleanUrl = apkUrl;
+  if (cleanUrl && cleanUrl.includes('github.com/agricosite77-oss/agrico/')) {
+    cleanUrl = cleanUrl.replace('github.com/agricosite77-oss/agrico/', 'github.com/agricosite77-oss/agrico-releases/');
+  }
+
   if (Platform.OS !== 'android') {
-    if (apkUrl) {
-      Linking.openURL(apkUrl);
+    if (cleanUrl) {
+      Linking.openURL(cleanUrl);
     }
     return;
   }
