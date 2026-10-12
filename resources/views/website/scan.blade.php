@@ -5589,6 +5589,24 @@
                 }
 
                 zoomImg.onerror = () => {
+                    const curSrc = zoomImg.src || '';
+                    if (curSrc && (curSrc.includes('supabase.co') || curSrc.includes('region_'))) {
+                        const mUuid = curSrc.match(/(?:scan|region)_([a-f0-9\-]{10,})/i);
+                        if (mUuid) {
+                            const fallbackNormalized = '/storage/scans/scan_' + mUuid[1] + '_normalized.jpg';
+                            if (zoomImg.src !== fallbackNormalized && !zoomImg.src.endsWith(fallbackNormalized)) {
+                                zoomImg.src = fallbackNormalized;
+                                return;
+                            }
+                        }
+                    }
+                    if (region && region.region_thumbnail) {
+                        const thumbData = region.region_thumbnail.startsWith('data:') ? region.region_thumbnail : 'data:image/png;base64,' + region.region_thumbnail;
+                        if (zoomImg.src !== thumbData) {
+                            zoomImg.src = thumbData;
+                            return;
+                        }
+                    }
                     const clientFallback = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || window.currentCleanScanImage;
                     if (clientFallback && zoomImg.src !== clientFallback) {
                         zoomImg.src = clientFallback;
@@ -8145,8 +8163,18 @@
                 // Do NOT bleed previous session's scan image into historical record views
                 const domRegionThumb = (regions && regions[0] && regions[0].region_thumbnail) ? regions[0].region_thumbnail : null;
                 let cleanSourceImg = data.normalized_image_url || data.stage2_normalized_url || data.image || data.scan_image || domRegionThumb || null;
-                if (typeof cleanSourceImg === 'string' && cleanSourceImg.startsWith('storage/')) {
-                    cleanSourceImg = '/' + cleanSourceImg;
+                if (cleanSourceImg && typeof cleanSourceImg === 'string') {
+                    if (cleanSourceImg.includes('supabase.co') || cleanSourceImg.includes('agrico-scans')) {
+                        const mUuid = cleanSourceImg.match(/(?:scan|region)_([a-f0-9\-]{10,})/i);
+                        if (mUuid) {
+                            cleanSourceImg = '/storage/scans/scan_' + mUuid[1] + '_normalized.jpg';
+                        } else if (domRegionThumb) {
+                            cleanSourceImg = domRegionThumb.startsWith('data:') ? domRegionThumb : ('data:image/png;base64,' + domRegionThumb);
+                        }
+                    }
+                    if (cleanSourceImg.startsWith('storage/')) {
+                        cleanSourceImg = '/' + cleanSourceImg;
+                    }
                 }
                 const targetRegion = dom || (regions && regions[0]) || { hex: hex, bounding_box: null };
 
