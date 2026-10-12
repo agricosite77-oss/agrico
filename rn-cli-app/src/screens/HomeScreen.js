@@ -1476,6 +1476,16 @@ export default function HomeScreen({ navigation, route }) {
 
   useEffect(() => {
     runUpdateCheck();
+
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isConnected && state.isInternetReachable !== false) {
+        runUpdateCheck();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, [runUpdateCheck]);
 
   // Restore any updated cached datasets from previous online sessions

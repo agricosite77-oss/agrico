@@ -34,6 +34,8 @@ export default function UpdateModal({
         setDownloadProgress(percent);
         setDownloadBytes({ written, total });
       });
+      setIsDownloading(false);
+      if (onClose) onClose();
     } catch (err) {
       console.warn('[UpdateModal] Download failed:', err?.message);
       setErrorMessage('Direct download could not complete. You can download via browser below.');
@@ -51,6 +53,9 @@ export default function UpdateModal({
 
   const writtenMb = (downloadBytes.written / 1048576).toFixed(1);
   const totalMb = (downloadBytes.total / 1048576).toFixed(1);
+  const formattedNotes = (
+    updateInfo.releaseNotes || 'Bug fixes, performance improvements, and offline optimizations.'
+  ).replace(/\\n/g, '\n');
 
   return (
     <Modal
@@ -91,9 +96,7 @@ export default function UpdateModal({
               ) : null}
             </View>
             <ScrollView style={styles.notesScroll} showsVerticalScrollIndicator={false}>
-              <Text style={styles.notesBody}>
-                {updateInfo.releaseNotes || 'Bug fixes, performance improvements, and offline optimizations.'}
-              </Text>
+              <Text style={styles.notesBody}>{formattedNotes}</Text>
             </ScrollView>
           </View>
 
