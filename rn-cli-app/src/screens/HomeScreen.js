@@ -1484,8 +1484,14 @@ export default function HomeScreen({ navigation, route }) {
       }
     });
 
+    // Check periodically every 30 seconds while the app is in use
+    const updateInterval = setInterval(() => {
+      runUpdateCheck();
+    }, 30000);
+
     return () => {
       unsubscribe();
+      clearInterval(updateInterval);
     };
   }, [runUpdateCheck]);
 
@@ -2723,6 +2729,10 @@ export default function HomeScreen({ navigation, route }) {
             logout={logout}
             scanHistory={scanHistory}
             onUpdateUser={checkAuth}
+            onTriggerUpdate={(updateData) => {
+              setAppUpdateInfo(updateData);
+              setShowUpdateModal(true);
+            }}
           />
         </View>
       )}

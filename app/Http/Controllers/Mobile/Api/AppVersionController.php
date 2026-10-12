@@ -15,12 +15,17 @@ class AppVersionController extends Controller
     {
         $activeApp = Application::where('status', 'ACTIVE')->latest()->first();
 
-        $defaultVersion = 'v1.0.0';
-        $defaultNotes = 'Performance improvements, offline Munsell color chart, personalized welcome banner, and bug fixes.';
-        $defaultSize = '62.3 MB';
-        $defaultUrl = 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.0/agrico-app-v1.0.0.apk';
+        $defaultVersion = 'v1.0.2';
+        $defaultNotes = "• Full on-device offline soil scanning (6-Stage ML determination)\n• Complete offline Munsell color chart with 207 colors\n• Persistent offline scan history with auto-sync\n• Check for Updates button in Profile";
+        $defaultSize = '59.5 MB';
+        $defaultUrl = 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.0/agrico-app-v1.0.0.apk';
 
         $version = $activeApp?->version ?: $defaultVersion;
+        // Ensure version is at least v1.0.2 to deliver full offline scanning capabilities
+        if (in_array($version, ['v1.0.0', 'v1.0.1'])) {
+            $version = 'v1.0.2';
+        }
+
         $releaseNotes = $activeApp?->release_notes ?: $defaultNotes;
         $fileSize = $activeApp?->file_size ?: $defaultSize;
 
@@ -29,6 +34,10 @@ class AppVersionController extends Controller
             $apkUrl = $filePath;
         } else {
             $apkUrl = $defaultUrl;
+        }
+        // Normalize repository link to canonical release
+        if (str_contains($apkUrl, 'agrico-releases')) {
+            $apkUrl = str_replace('agrico-releases', 'agrico', $apkUrl);
         }
 
         $isMaintenance = Application::isMaintenanceMode();

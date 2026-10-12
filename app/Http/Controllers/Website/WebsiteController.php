@@ -722,11 +722,16 @@ class WebsiteController extends Controller
             ]);
         } catch (\Throwable $e) {}
 
-        $releaseFallbackUrl = 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.0/agrico-app-v1.0.0.apk';
+        $releaseFallbackUrl = 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.0/agrico-app-v1.0.0.apk';
 
         if ($activeApp && $activeApp->file_path) {
-            if (str_starts_with($activeApp->file_path, 'http://') || str_starts_with($activeApp->file_path, 'https://')) {
-                return redirect()->away($activeApp->file_path);
+            $targetUrl = $activeApp->file_path;
+            if (str_contains($targetUrl, 'agrico-releases')) {
+                $targetUrl = str_replace('agrico-releases', 'agrico', $targetUrl);
+            }
+
+            if (str_starts_with($targetUrl, 'http://') || str_starts_with($targetUrl, 'https://')) {
+                return redirect()->away($targetUrl);
             }
 
             if (\Illuminate\Support\Facades\Storage::disk('public')->exists($activeApp->file_path)) {

@@ -13,6 +13,7 @@ import {
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import api from '../services/api';
 import { ENV } from '../config/env';
+import { checkForAppUpdate, CURRENT_APP_VERSION } from '../services/updateService';
 import {
   BackArrowIcon,
   LogoutHeaderIcon,
@@ -63,12 +64,14 @@ export default function ProfileView({
   logout,
   scanHistory = [],
   onUpdateUser,
+  onTriggerUpdate,
 }) {
   const [customPhotoUri, setCustomPhotoUri] = useState(
     user?.profile_photo_url || user?.profile_photo_path || null
   );
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
 
   useEffect(() => {
     setCustomPhotoUri(user?.profile_photo_url || user?.profile_photo_path || null);
@@ -456,13 +459,56 @@ export default function ProfileView({
 
         <View style={styles.rowDivider} />
 
-        {/* Row 2: App Details */}
-        <View style={styles.preferenceRow}>
-          <Text style={styles.preferenceLabelMuted}>Platform</Text>
-          <Text style={styles.preferenceValueMuted}>
-            Agrico Mobile · v1.0.0
-          </Text>
-        </View>
+        {/* Row 2: Check for Updates & App Version */}
+        <TouchableOpacity
+          style={styles.preferenceRow}
+          activeOpacity={0.7}
+          onPress={async () => {
+            if (isCheckingUpdate) return;
+            setIsCheckingUpdate(true);
+            try {
+              const res = await checkForAppUpdate();
+              if (res?.hasUpdate) {
+                if (typeof onTriggerUpdate === 'function') {
+                  onTriggerUpdate(res);
+                } else {
+                  Alert.alert(
+                    `Update Available (${res.latestVersion})`,
+                    `${res.releaseNotes}\n\nTapping below will download and install the update.`,
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Update Now',
+                        onPress: () => onTriggerUpdate?.(res),
+                      },
+                    ]
+                  );
+                }
+              } else {
+                Alert.alert(
+                  'AgriCo is Up to Date',
+                  `You are running the latest version (${CURRENT_APP_VERSION}). All offline scanning and database sync features are active.`
+                );
+              }
+            } catch (err) {
+              Alert.alert('Update Check', 'Unable to reach the update server right now.');
+            } finally {
+              setIsCheckingUpdate(false);
+            }
+          }}
+        >
+          <View>
+            <Text style={styles.preferenceLabel}>Check for Updates</Text>
+            <Text style={styles.versionSubLabel}>AgriCo Mobile · {CURRENT_APP_VERSION}</Text>
+          </View>
+          <View style={styles.checkUpdateBtn}>
+            {isCheckingUpdate ? (
+              <ActivityIndicator size="small" color="#15803d" />
+            ) : (
+              <Text style={styles.checkUpdateText}>Check Now</Text>
+            )}
+          </View>
+        </TouchableOpacity>
 
         <View style={styles.rowDivider} />
 
@@ -783,6 +829,27 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 0.5,
+  },
+  versionSubLabel: {
+    fontSize: 11.5,
+    fontWeight: '600',
+    color: '#64748b',
+    marginTop: 2,
+  },
+  checkUpdateBtn: {
+    backgroundColor: '#dcfce7',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkUpdateText: {
+    color: '#15803d',
+    fontSize: 11.5,
+    fontWeight: '800',
   },
   signOutRowBtn: {
     paddingVertical: 14,
