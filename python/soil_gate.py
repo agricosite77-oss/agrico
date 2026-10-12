@@ -190,6 +190,10 @@ def predict_is_soil(image_path_or_obj, crop_roi: bool = False, roi_fraction: flo
     """
     model = get_gate_model()
     features = extract_gate_features(image_path_or_obj, crop_roi=crop_roi, roi_fraction=roi_fraction)
+    if not isinstance(image_path_or_obj, str) and not crop_roi:
+        # Remember (image object -> gate features) so compare_to_reference can reuse it
+        _GATE_MEMO.append((image_path_or_obj, features))
+        del _GATE_MEMO[:-4]
 
     if model is not None:
         X = features.reshape(1, -1)
@@ -214,3 +218,89 @@ def predict_is_soil(image_path_or_obj, crop_roi: bool = False, roi_fraction: flo
     )
     conf = 0.75 if is_soil else 0.80
     return bool(is_soil), conf
+
+
+# ── Stage 1 live dataset comparison (cache-backed) ─────────────────────────
+REF_CACHE_NAME = "stage1_reference_cache.npz"
+REF_FEATURE_VERSION = 2          # v2 = 7 Lab/texture dims + 17 gate dims, z-scored
+REF_THUMB = (64, 64)
+REF_MIN_PER_CLASS = 5
+REF_DIMS = 24
+_REF_CACHE = None  # None = not tried yet, False = unavailable, tuple = loaded
+_GATE_MEMO: list = []  # recent (image object, 17-dim gate features) from predict_is_soil
+
+
+def extract_reference_features(img) -> np.ndarray:
+    """7-dim [L,a,b mean, L,a,b std, gray std] on a 64x64 RAW thumbnail.
+    Used by BOTH the cache builder and the live query (single source of truth)."""
+    from lighting_normalizer import _rgb_to_lab
+    small = img.convert("RGB").resize(REF_THUMB, Image.Resampling.BILINEAR)
+    arr = np.asarray(small, dtype=np.float32)
+    lab = _rgb_to_lab(arr)
+    gray = np.asarray(small.convert("L"), dtype=np.float32)
+    return np.array([
+        lab[..., 0].mean(), lab[..., 1].mean(), lab[..., 2].mean(),
+        lab[..., 0].std(), lab[..., 1].std(), lab[..., 2].std(),
+        gray.std(),
+    ], dtype=np.float32)
+
+
+def extract_combined_features(img) -> np.ndarray:
+    """24-dim = 7 Lab/texture + 17 gate features. Used by the cache builder AND the
+    live query. Reuses already-computed gate features when `img` is the same object
+    that predict_is_soil just saw (avoids a third feature pass per scan)."""
+    gate = None
+    for obj, feats in reversed(_GATE_MEMO):
+        if obj is img:
+            gate = feats
+            break
+    if gate is None:
+        gate = extract_gate_features(img)
+    return np.concatenate([extract_reference_features(img), gate]).astype(np.float32)
+
+
+def reference_cache_path():
+    root = os.environ.get("SCAN_SOIL_ROOT")
+    return os.path.join(root, REF_CACHE_NAME) if root else None
+
+
+def _load_reference_cache():
+    global _REF_CACHE
+    if _REF_CACHE is not None:
+        return _REF_CACHE or None
+    path = reference_cache_path()
+    try:
+        if not path:
+            raise ValueError("SCAN_SOIL_ROOT not set")
+        with np.load(path, allow_pickle=False) as z:
+            if int(z["version"]) != REF_FEATURE_VERSION:
+                raise ValueError("cache version mismatch - rebuild needed")
+            mu, sd = z["mu"], z["sd"]
+            _REF_CACHE = ((z["real"] - mu) / sd, (z["fake"] - mu) / sd, mu, sd)
+    except Exception as e:
+        import sys
+        sys.stderr.write(f"[Stage1] reference cache unavailable ({e}); skipping live comparison\n")
+        _REF_CACHE = False
+    return _REF_CACHE or None
+
+
+def compare_to_reference(img, k: int = 5):
+    """Returns dict(real_sim, fake_sim, margin, n_real, n_fake) or None.
+    Per-class mean of top-k similarities (not a vote), so the fake:real
+    imbalance cannot bias the result. margin > 0 => looks more like Real_Soil."""
+    cache = _load_reference_cache()
+    if cache is None:
+        return None
+    real, fake, mu, sd = cache
+    if len(real) < REF_MIN_PER_CLASS or len(fake) < REF_MIN_PER_CLASS:
+        return None
+    q = (extract_combined_features(img) - mu) / sd
+
+    def topk_sim(refs):
+        d = np.sqrt(((refs - q) ** 2).sum(axis=1))
+        kk = min(k, len(d))
+        return float((1.0 / (1.0 + np.partition(d, kk - 1)[:kk])).mean())
+
+    sr, sf = topk_sim(real), topk_sim(fake)
+    return {"real_sim": round(sr, 4), "fake_sim": round(sf, 4),
+            "margin": round(sr - sf, 4), "n_real": len(real), "n_fake": len(fake)}

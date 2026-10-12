@@ -20,7 +20,10 @@ import {
 } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { WebView } from 'react-native-webview';
+import RNFS from 'react-native-fs';
 
+import OFFLINE_MUNSELL_COLORS from '../data/munsellColors.json';
+import OFFLINE_SOIL_CARDS from '../data/offlineSoils.json';
 import { AuthContext } from '../context/AuthContext';
 import BottomNavBar from '../components/BottomNavBar';
 import api from '../services/api';
@@ -1338,8 +1341,10 @@ const resolveSoilImage = (item) => {
   return SOIL_IMAGES.s1;
 };
 
-// Baseline / Fallback Data (Clean empty state, driven purely by real API data)
-const INITIAL_SOIL_CARDS = [];
+// Baseline / Fallback Data (Offline-ready with pre-bundled database records)
+const INITIAL_SOIL_CARDS = Array.isArray(OFFLINE_SOIL_CARDS) && OFFLINE_SOIL_CARDS.length > 0
+  ? OFFLINE_SOIL_CARDS
+  : [];
 
 
 // Date Grouping Engine for Scan History (Today, Yesterday, Specific Date)
@@ -1404,6 +1409,14 @@ const groupScansByDate = (scansList) => {
 export default function HomeScreen({ navigation, route }) {
   const { user, logout, checkAuth } = useContext(AuthContext);
 
+  // Extract first name from authenticated account
+  const userFirstName = useMemo(() => {
+    const fullName = user?.name || user?.full_name || '';
+    const clean = fullName.trim();
+    if (!clean) return 'Farmer';
+    return clean.split(/\s+/)[0];
+  }, [user]);
+
   const [activeTab, setActiveTab] = useState(route?.params?.initialTab || route?.params?.screen || 'Home');
 
   useEffect(() => {
@@ -1415,7 +1428,9 @@ export default function HomeScreen({ navigation, route }) {
   const [selectedHue, setSelectedHue] = useState('Recommend');
   const [searchQuery, setSearchQuery] = useState('');
   const [soilCards, setSoilCards] = useState(INITIAL_SOIL_CARDS);
-  const [recommendedSoils, setRecommendedSoils] = useState(INITIAL_SOIL_CARDS.slice(0, 2));
+  const [recommendedSoils, setRecommendedSoils] = useState(
+    INITIAL_SOIL_CARDS.length > 0 ? INITIAL_SOIL_CARDS.slice(0, 2) : []
+  );
   const [scanHistory, setScanHistory] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [detailSoil, setDetailSoil] = useState(null);
@@ -1424,15 +1439,54 @@ export default function HomeScreen({ navigation, route }) {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
 
-  // Full Munsell Directory States (207 Colors synced with Website & Admin)
-  const [munsellList, setMunsellList] = useState([]);
-  const [munsellTotalCount, setMunsellTotalCount] = useState(207);
+  // Full Munsell Directory States (207 Colors synced with Website & Admin, offline-ready)
+  const [munsellList, setMunsellList] = useState(
+    Array.isArray(OFFLINE_MUNSELL_COLORS) && OFFLINE_MUNSELL_COLORS.length > 0
+      ? OFFLINE_MUNSELL_COLORS
+      : []
+  );
+  const [munsellTotalCount, setMunsellTotalCount] = useState(
+    Array.isArray(OFFLINE_MUNSELL_COLORS) && OFFLINE_MUNSELL_COLORS.length > 0
+      ? OFFLINE_MUNSELL_COLORS.length
+      : 207
+  );
   const [munsellSearch, setMunsellSearch] = useState('');
   const [munsellSelectedHue, setMunsellSelectedHue] = useState('All');
   const [isLoadingMunsell, setIsLoadingMunsell] = useState(false);
   const [munsellPage, setMunsellPage] = useState(1);
   const [munsellRowsPerPage, setMunsellRowsPerPage] = useState(10);
   const [showRowsPerPageModal, setShowRowsPerPageModal] = useState(false);
+
+  // Restore any updated cached datasets from previous online sessions
+  useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      try {
+        const munsellCachePath = `${RNFS.DocumentDirectoryPath}/munsell_cache.json`;
+        if (await RNFS.exists(munsellCachePath)) {
+          const raw = await RNFS.readFile(munsellCachePath, 'utf8');
+          const parsed = JSON.parse(raw);
+          if (isMounted && Array.isArray(parsed) && parsed.length > 0) {
+            setMunsellList(parsed);
+            setMunsellTotalCount(parsed.length);
+          }
+        }
+      } catch (_) {}
+
+      try {
+        const soilsCachePath = `${RNFS.DocumentDirectoryPath}/soils_cache.json`;
+        if (await RNFS.exists(soilsCachePath)) {
+          const raw = await RNFS.readFile(soilsCachePath, 'utf8');
+          const parsed = JSON.parse(raw);
+          if (isMounted && Array.isArray(parsed) && parsed.length > 0) {
+            setSoilCards(parsed);
+            setRecommendedSoils(parsed.slice(0, 2));
+          }
+        }
+      } catch (_) {}
+    })();
+    return () => { isMounted = false; };
+  }, []);
 
   // Map Screen States: NetInfo connection tracking, live admin locations & WebView ref
   const [mapSearchText, setMapSearchText] = useState('');
@@ -1634,6 +1688,10 @@ export default function HomeScreen({ navigation, route }) {
         if (hue === 'Recommend' || hue === 'All') {
           setRecommendedSoils(res.data.data.slice(0, 2));
         }
+        try {
+          const soilsCachePath = `${RNFS.DocumentDirectoryPath}/soils_cache.json`;
+          await RNFS.writeFile(soilsCachePath, JSON.stringify(res.data.data), 'utf8');
+        } catch (_) {}
       }
     } catch (error) {
       console.log('API MOST SCANNED ERROR:', error?.message, error?.response?.status);
@@ -1697,6 +1755,10 @@ export default function HomeScreen({ navigation, route }) {
         if (res.data?.total_all) {
           setMunsellTotalCount(res.data.total_all);
         }
+        try {
+          const munsellCachePath = `${RNFS.DocumentDirectoryPath}/munsell_cache.json`;
+          await RNFS.writeFile(munsellCachePath, JSON.stringify(res.data.data), 'utf8');
+        } catch (_) {}
       }
     } catch (err) {
       console.log('Error loading Munsell colors:', err?.message);
@@ -1862,8 +1924,8 @@ export default function HomeScreen({ navigation, route }) {
           {/* Header Bar matching Image 1 layout */}
           <View style={styles.headerRow}>
             <View>
-              <Text style={styles.headerGreeting}>Choose your</Text>
-              <Text style={styles.headerTitle}>favorite</Text>
+              <Text style={styles.headerGreeting}>Welcome</Text>
+              <Text style={styles.headerTitle}>{userFirstName}</Text>
             </View>
 
             <TouchableOpacity

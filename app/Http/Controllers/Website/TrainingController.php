@@ -69,6 +69,13 @@ class TrainingController extends Controller
             ], 422);
         }
 
+        // Refresh the Stage 1 reference cache in the background (incremental, non-blocking).
+        try {
+            $runner->runDetached(base_path('python/build_stage1_reference_cache.py'), [], 'stage1_cache');
+        } catch (\Throwable $e) {
+            Log::warning('Stage 1 cache refresh dispatch failed: ' . $e->getMessage());
+        }
+
         return response()->json($result, 201);
     }
 

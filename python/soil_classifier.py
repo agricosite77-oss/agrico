@@ -152,6 +152,24 @@ def classify_soil(
     stage1_elapsed = time.perf_counter() - t_stage1
     sys.stderr.write(f"[TIMING] Stage 1 (Soil Gate): {stage1_elapsed:.3f}s (is_soil={is_soil}, conf={gate_conf:.3f}, full={is_soil_full}:{conf_full:.3f}, roi={is_soil_roi}:{conf_roi:.3f})\n")
 
+    # Stage 1 live dataset comparison (precomputed cache; never reads raw dataset images).
+    # STAGE1_LIVE_MODE: off | shadow (log only, default) | veto (may reject)
+    _live_mode = os.environ.get("STAGE1_LIVE_MODE", "shadow").lower()
+    live = None
+    if _live_mode != "off":
+        t_live = time.perf_counter()
+        try:
+            from soil_gate import compare_to_reference
+            live = compare_to_reference(original_img)
+        except Exception as exc:
+            sys.stderr.write(f"[Stage1] live comparison error (ignored): {exc}\n")
+        sys.stderr.write(f"[TIMING] Stage 1 live-compare: {time.perf_counter() - t_live:.4f}s mode={_live_mode} live={live}\n")
+        _veto_margin = float(os.environ.get("STAGE1_VETO_MARGIN", "0.10"))
+        _veto_max_gate = float(os.environ.get("STAGE1_VETO_MAX_GATE_CONF", "0.85"))
+        if (_live_mode == "veto" and is_soil and live
+                and live["margin"] <= -_veto_margin and gate_conf < _veto_max_gate):
+            is_soil, gate_conf = False, round(live["fake_sim"], 3)
+
     if not is_soil:
         if _prog: _prog(1, "Soil Gate", "rejected", {"reason": "non_soil_detected"})
         return ClassificationResult(
