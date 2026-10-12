@@ -14,6 +14,7 @@ use App\Http\Controllers\Mobile\Api\RealSoilController;
 use App\Http\Controllers\Mobile\Api\SoilController;
 use App\Http\Controllers\Mobile\Api\SoilScanController;
 use App\Http\Controllers\Mobile\Api\UserRequestController;
+use App\Http\Controllers\Mobile\Api\AppVersionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +50,7 @@ Route::get('/locations', [LocationController::class, 'index']);
 Route::post('/locations/pin', [LocationController::class, 'storePin']);
 Route::get('/soil-scans', [SoilScanController::class, 'index']);
 Route::post('/soil-scan', [SoilScanController::class, 'store']);
+Route::get('/app-version', [AppVersionController::class, 'checkVersion']);
 
 /*
 |--------------------------------------------------------------------------

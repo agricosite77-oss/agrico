@@ -24,6 +24,8 @@ import RNFS from 'react-native-fs';
 
 import OFFLINE_MUNSELL_COLORS from '../data/munsellColors.json';
 import OFFLINE_SOIL_CARDS from '../data/offlineSoils.json';
+import UpdateModal from '../components/UpdateModal';
+import { checkForAppUpdate } from '../services/updateService';
 import { AuthContext } from '../context/AuthContext';
 import BottomNavBar from '../components/BottomNavBar';
 import api from '../services/api';
@@ -1457,6 +1459,25 @@ export default function HomeScreen({ navigation, route }) {
   const [munsellRowsPerPage, setMunsellRowsPerPage] = useState(10);
   const [showRowsPerPageModal, setShowRowsPerPageModal] = useState(false);
 
+  // Auto-Update States
+  const [appUpdateInfo, setAppUpdateInfo] = useState(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+  // Automatically check for new mobile application version when online
+  const runUpdateCheck = useCallback(async () => {
+    try {
+      const updateData = await checkForAppUpdate();
+      if (updateData?.hasUpdate) {
+        setAppUpdateInfo(updateData);
+        setShowUpdateModal(true);
+      }
+    } catch (_) {}
+  }, []);
+
+  useEffect(() => {
+    runUpdateCheck();
+  }, [runUpdateCheck]);
+
   // Restore any updated cached datasets from previous online sessions
   useEffect(() => {
     let isMounted = true;
@@ -2841,6 +2862,13 @@ export default function HomeScreen({ navigation, route }) {
           </View>
         </View>
       </Modal>
+
+      {/* In-App Auto-Update Modal (Triggered when online and new version exists) */}
+      <UpdateModal
+        visible={showUpdateModal}
+        updateInfo={appUpdateInfo}
+        onClose={() => setShowUpdateModal(false)}
+      />
 
       {/* Floating Rounded Bottom Navigation Bar (Image 2 Style) */}
       {!(activeTab === 'Map' && isMapModalOpen) && (
