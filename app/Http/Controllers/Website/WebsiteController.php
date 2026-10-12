@@ -722,12 +722,15 @@ class WebsiteController extends Controller
             ]);
         } catch (\Throwable $e) {}
 
-        $releaseFallbackUrl = 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.0/agrico-app-v1.0.0.apk';
+        $releaseFallbackUrl = 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.2/agrico-app-v1.0.2.apk';
 
         if ($activeApp && $activeApp->file_path) {
             $targetUrl = $activeApp->file_path;
             if (str_contains($targetUrl, 'agrico-releases')) {
                 $targetUrl = str_replace('agrico-releases', 'agrico', $targetUrl);
+            }
+            if (str_contains($targetUrl, 'v1.0.0')) {
+                $targetUrl = str_replace('v1.0.0', 'v1.0.2', $targetUrl);
             }
 
             if (str_starts_with($targetUrl, 'http://') || str_starts_with($targetUrl, 'https://')) {
