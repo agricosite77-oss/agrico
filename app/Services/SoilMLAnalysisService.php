@@ -379,8 +379,13 @@ class SoilMLAnalysisService
             if (empty($thumbBase64)) {
                 return $publicScanRelativePath;
             }
-            if (str_starts_with($thumbBase64, 'storage/') || str_starts_with($thumbBase64, 'http')) {
+            if (str_starts_with($thumbBase64, 'storage/')) {
                 return $thumbBase64;
+            }
+            if (str_starts_with($thumbBase64, 'http')) {
+                if (!str_contains($thumbBase64, 'supabase.co') && !str_contains($thumbBase64, 'agrico-scans')) {
+                    return $thumbBase64;
+                }
             }
             try {
                 $cleaned = preg_replace('/^data:image\/\w+;base64,/', '', $thumbBase64);
@@ -388,20 +393,23 @@ class SoilMLAnalysisService
                 if ($rawBin !== false && strlen($rawBin) > 10) {
                     $ext = str_starts_with($cleaned, 'iVBOR') ? 'png' : 'jpg';
                     $rFileName = "scans/region_{$scanId}_{$idx}.{$ext}";
-                    if ($disk === 's3') {
-                        try {
-                            Storage::disk('s3')->put($rFileName, $rawBin, 'public');
-                            return Storage::disk('s3')->url($rFileName);
-                        } catch (\Throwable $e) {
-                            Log::warning('[SoilMLAnalysisService] S3 region upload failed: ' . $e->getMessage());
-                        }
-                    }
+
+                    // Always save locally to ensure fast, reliable local asset serving
                     $destPath = storage_path('app/public/' . $rFileName);
                     $destDir = dirname($destPath);
                     if (!is_dir($destDir)) {
                         @mkdir($destDir, 0755, true);
                     }
                     @file_put_contents($destPath, $rawBin);
+
+                    if ($disk === 's3') {
+                        try {
+                            Storage::disk('s3')->put($rFileName, $rawBin, 'public');
+                        } catch (\Throwable $e) {
+                            Log::warning('[SoilMLAnalysisService] S3 region upload failed: ' . $e->getMessage());
+                        }
+                    }
+
                     return 'storage/' . $rFileName;
                 }
             } catch (\Throwable $e) {

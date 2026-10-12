@@ -27,6 +27,10 @@ class SoilScan extends Model
         'scan_date'    => 'datetime',
     ];
 
+    protected $appends = [
+        'scan_image_url',
+    ];
+
     protected static function booted(): void
     {
         // Enforce limit periodically
@@ -151,24 +155,50 @@ class SoilScan extends Model
     public function getScanImageUrlAttribute(): ?string
     {
         $raw = $this->scan_image;
-        if (empty($raw)) {
-            return null;
-        }
-        if (str_starts_with($raw, 'data:')) {
-            return $raw;
-        }
-        if (str_starts_with($raw, 'http://') || str_starts_with($raw, 'https://')) {
-            if (preg_match('#^https?://(?:localhost|127\.0\.0\.1|10\.0\.2\.2)(?::\d+)?/(.*)$#i', $raw, $matches)) {
-                $clean = ltrim($matches[1], '/');
-                return asset($clean);
+        $isBrokenSupabase = !empty($raw) && (str_contains($raw, 'supabase.co') || str_contains($raw, 'agrico-scans'));
+
+        if (!$isBrokenSupabase && !empty($raw)) {
+            if (str_starts_with($raw, 'data:')) {
+                return $raw;
             }
-            return $raw;
+            if (str_starts_with($raw, 'http://') || str_starts_with($raw, 'https://')) {
+                if (preg_match('#^https?://(?:localhost|127\.0\.0\.1|10\.0\.2\.2)(?::\d+)?/(.*)$#i', $raw, $matches)) {
+                    $clean = ltrim($matches[1], '/');
+                    return asset($clean);
+                }
+                return $raw;
+            }
+            $clean = ltrim($raw, '/');
+            if (!str_starts_with($clean, 'storage/')) {
+                $clean = 'storage/' . $clean;
+            }
+            return asset($clean);
         }
-        $clean = ltrim($raw, '/');
-        if (!str_starts_with($clean, 'storage/')) {
-            $clean = 'storage/' . $clean;
+
+        // Handle broken Supabase URLs or missing images:
+        // 1. Resolve session normalized scan image (sibling dominant scan)
+        $lookupText = ($raw ?? '') . ' ' . ($this->scan_note ?? '');
+        if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $lookupText, $m)) {
+            $uuid = $m[1];
+            $sibling = self::where('scan_image', 'LIKE', "%{$uuid}%")
+                ->where('scan_image', 'NOT LIKE', '%supabase.co%')
+                ->where('scan_image', 'NOT LIKE', '%agrico-scans%')
+                ->where('scan_image', 'NOT LIKE', '%region_%')
+                ->first();
+            if ($sibling && $sibling->scan_image) {
+                return $sibling->scan_image_url;
+            }
+            return asset("storage/scans/scan_{$uuid}_normalized.jpg");
         }
-        return asset($clean);
+
+        // 2. Fallback to embedded region_thumbnail in regions_data
+        $regs = $this->regions_data ?? [];
+        if (!empty($regs[0]['region_thumbnail'])) {
+            $thumb = $regs[0]['region_thumbnail'];
+            return str_starts_with($thumb, 'data:') ? $thumb : ('data:image/png;base64,' . $thumb);
+        }
+
+        return null;
     }
 
     public function getBeforeAfterImageUrlAttribute(): ?string
@@ -177,9 +207,6 @@ class SoilScan extends Model
         if (!empty($rawImg) && preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
             $scanUuid = $m[1];
             $rel = "storage/scans/scan_{$scanUuid}_before_after.jpg";
-            if (file_exists(public_path($rel)) || file_exists(storage_path("app/public/scans/scan_{$scanUuid}_before_after.jpg"))) {
-                return asset($rel);
-            }
             return asset($rel);
         }
         return null;

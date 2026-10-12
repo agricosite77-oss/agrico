@@ -18,10 +18,18 @@
         $confidenceVal = str_contains($cm[1], '%') ? $cm[1] : $cm[1] . '%';
     }
 
-    $formatImageUrl = function($path) {
+    $formatImageUrl = function($path) use ($scan) {
         if (!$path) return '';
         if (str_starts_with($path, 'data:')) {
             return $path;
+        }
+        if (str_contains($path, 'supabase.co') || str_contains($path, 'agrico-scans')) {
+            if ($scan?->scan_image_url) {
+                return $scan->scan_image_url;
+            }
+            if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $path, $m)) {
+                return asset("storage/scans/scan_{$m[1]}_normalized.jpg");
+            }
         }
         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
             if (preg_match('#^https?://(?:localhost|127\.0\.0\.1|10\.0\.2\.2)(?::\d+)?/(.*)$#i', $path, $matches)) {
@@ -43,6 +51,9 @@
     $dominant = !empty($regions) ? $regions[0] : null;
 
     $scanImg = $scan?->scan_image_url ?? ($scan?->scan_image ? $formatImageUrl($scan->scan_image) : '');
+    if (!$scanImg && !empty($dominant['region_thumbnail'])) {
+        $scanImg = str_starts_with($dominant['region_thumbnail'], 'data:') ? $dominant['region_thumbnail'] : ('data:image/png;base64,' . $dominant['region_thumbnail']);
+    }
     if (!$scanImg && !empty($dominant['image'])) {
         $scanImg = $formatImageUrl($dominant['image']);
     }
@@ -283,7 +294,7 @@
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
-        display: block !important;
+        display: block;
         border-radius: 0 !important;
     }
     .soil-swatch-center {
@@ -698,9 +709,10 @@
                         <img
                             src="{{ $scanImg }}"
                             alt=""
-                            onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='none'; var fb = this.parentElement.querySelector('.soil-avatar-fallback'); if(fb) fb.style.display='flex';"
+                            onload="var b = this.parentElement.querySelector('.soil-bounding-box'); if(b) b.style.display='block';"
+                            onerror="this.style.setProperty('display', 'none', 'important'); var b = this.parentElement.querySelector('.soil-bounding-box'); if(b) b.style.display='none'; var fb = this.parentElement.querySelector('.soil-avatar-fallback'); if(fb) fb.style.display='flex';"
                         />
-                        <div style="position: absolute; left: {{ $domBox['left'] }}%; top: {{ $domBox['top'] }}%; width: {{ $domBox['width'] }}%; height: {{ $domBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                        <div class="soil-bounding-box" style="display: none; position: absolute; left: {{ $domBox['left'] }}%; top: {{ $domBox['top'] }}%; width: {{ $domBox['width'] }}%; height: {{ $domBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                         <div class="soil-avatar-fallback" style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: rgba(0,0,0,0.25);">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -846,8 +858,8 @@
                                     <div class="soil-swatch-banner" style="background: {{ $subHex }}; margin-bottom: 10px; min-height: 64px; padding: 12px 16px;">
                                         @if($scanImg)
                                              <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; position: relative;">
-                                                <img src="{{ $scanImg }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
-                                                <div style="position: absolute; left: {{ $subBox['left'] }}%; top: {{ $subBox['top'] }}%; width: {{ $subBox['width'] }}%; height: {{ $subBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                                                <img src="{{ $scanImg }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;" onload="if(this.nextElementSibling) this.nextElementSibling.style.display='block';" onerror="this.style.setProperty('display', 'none', 'important'); if(this.nextElementSibling) this.nextElementSibling.style.display='none';" />
+                                                <div style="display: none; position: absolute; left: {{ $subBox['left'] }}%; top: {{ $subBox['top'] }}%; width: {{ $subBox['width'] }}%; height: {{ $subBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                                             </div>
                                         @endif
                                         <div class="soil-swatch-center">
