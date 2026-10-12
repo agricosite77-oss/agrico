@@ -3,6 +3,7 @@ import * as Keychain from 'react-native-keychain';
 import RNFS from 'react-native-fs';
 import { startScan, pollScan } from './scanAsync';
 import { markScanSynced } from './localScanStore';
+import { ENV } from '../config/env';
 
 const OFFLINE_KEYCHAIN_SERVICE = 'agrico_offline_scans_queue';
 const QUEUE_DIR = `${RNFS.DocumentDirectoryPath}/scan_queue`;
@@ -218,7 +219,13 @@ export function mapServerScan(scan, data = {}) {
   const scanId = scan?.soil_scan_id || data?.scan_id;
   const createdDate = scan?.created_at ? new Date(scan.created_at).toLocaleDateString() : new Date().toLocaleDateString();
   const scanCount = String(data?.scan_seq || 1);
-  const imageUrl = data?.scan_image_url || data?.image || (scan?.scan_image ? `http://10.0.2.2:8080/${scan.scan_image}` : null);
+  const rawImg = data?.scan_image_url || data?.image || scan?.scan_image_url || scan?.scan_image;
+  const baseUrl = (ENV?.API_URL || 'http://10.0.2.2:8080/api').replace(/\/api\/?$/, '');
+  const imageUrl = rawImg
+    ? (String(rawImg).startsWith('http') || String(rawImg).startsWith('data:')
+        ? rawImg
+        : `${baseUrl}${String(rawImg).startsWith('/') ? '' : '/'}${rawImg}`)
+    : null;
 
   return {
     id: scanId,

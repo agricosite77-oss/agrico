@@ -40,7 +40,7 @@ import {
 } from '../components/AppIcons';
 import ProfileView from '../components/ProfileView';
 
-const { width } = Dimensions.get('window');
+const { width, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // 6 Official Munsell Soil Hues in AgriCo (+ Recommend)
 const HUE_CATEGORIES = ['Recommend', '10YR', '7.5YR', '5YR', '2.5YR', '10R', '2.5Y'];
@@ -2737,115 +2737,171 @@ export default function HomeScreen({ navigation, route }) {
         </View>
       )}
 
-      {/* Soil Color Detail Modal */}
-      <Modal
-        visible={detailSoil !== null}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setDetailSoil(null)}
-      >
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalCard}>
-            {/* Header */}
-            <View style={styles.modalHeaderRow}>
-              <View>
-                <Text style={styles.modalSubtitle}>MUNSELL SOIL COLOR</Text>
-                <Text style={styles.modalTitle}>{detailSoil?.colorName}</Text>
+      {/* Soil Color Detail Modal (Determined Soil Record - Mirrors Website Exactly) */}
+      {detailSoil ? (
+        <Modal
+          visible={detailSoil !== null}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setDetailSoil(null)}
+        >
+          <View style={styles.modalBackdrop}>
+            <Pressable
+              style={StyleSheet.absoluteFill}
+              onPress={() => setDetailSoil(null)}
+            />
+            <View style={styles.soilModalCard} pointerEvents="auto">
+              {/* Header */}
+              <View style={styles.soilModalHeaderRow}>
+                <View>
+                  <Text style={styles.soilModalSubHeader}>DETERMINED SOIL RECORD</Text>
+                  <Text style={styles.soilModalTitle}>Soil Record Details</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.soilModalCloseBtn}
+                  onPress={() => setDetailSoil(null)}
+                  activeOpacity={0.7}
+                  accessibilityLabel="Close details"
+                >
+                  <Text style={styles.soilModalCloseIcon}>✕</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                style={styles.modalCloseBtn}
-                onPress={() => setDetailSoil(null)}
+
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.soilModalScrollContent}
+                keyboardShouldPersistTaps="always"
               >
-                <Text style={styles.modalCloseBtnText}>✕</Text>
-              </TouchableOpacity>
+                {/* Dual-Preview Soil Banner (Matches website #modalSoilDualPreviewBadge) */}
+                <View
+                  style={[
+                    styles.soilBannerDualPreview,
+                    { backgroundColor: detailSoil.hexCode || detailSoil.hex || '#594433' },
+                  ]}
+                >
+                  {/* Left Avatar Snippet showing scanned soil photo or fallback */}
+                  <View style={styles.soilBannerAvatarContainer}>
+                    {detailSoil.scanImage ? (
+                      <Image
+                        source={{ uri: detailSoil.scanImage }}
+                        style={styles.soilBannerAvatarImg}
+                        resizeMode="cover"
+                      />
+                    ) : detailSoil.thumbnail ? (
+                      <Image
+                        source={
+                          typeof detailSoil.thumbnail === 'number'
+                            ? detailSoil.thumbnail
+                            : { uri: detailSoil.thumbnail }
+                        }
+                        style={styles.soilBannerAvatarImg}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={styles.soilBannerAvatarFallback}>
+                        <Text style={{ fontSize: 22 }}>🌱</Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {/* Center Code Display & Subtitle */}
+                  <View style={styles.soilBannerCodeBlock}>
+                    <Text style={styles.soilBannerMunsellCode}>
+                      {detailSoil.munsellCode || detailSoil.fullCode || '10YR 4/3'}
+                    </Text>
+                    <Text style={styles.soilBannerSubLabel} numberOfLines={1}>
+                      {detailSoil.colorName || detailSoil.name || 'Dominant Soil Layer'}
+                    </Text>
+                  </View>
+
+                  {/* Right Hex Pill */}
+                  <View style={styles.soilBannerHexPill}>
+                    <Text style={styles.soilBannerHexText}>
+                      {(detailSoil.hexCode || detailSoil.hex || '#594433').toUpperCase()}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Row 1: Code Details (Color Name, Full Code, Scan Count) */}
+                <View style={styles.soilMetricsRow}>
+                  <View style={styles.soilModalGridCard}>
+                    <Text style={styles.soilModalLabel}>COLOR NAME</Text>
+                    <Text style={styles.soilModalValue} numberOfLines={1}>
+                      {detailSoil.colorName || detailSoil.name || 'Determined Soil'}
+                    </Text>
+                  </View>
+
+                  <View style={styles.soilModalGridCard}>
+                    <Text style={styles.soilModalLabel}>FULL CODE</Text>
+                    <Text style={styles.soilModalValue} numberOfLines={1}>
+                      {detailSoil.fullCode || detailSoil.munsellCode || '10YR 4/3'}
+                    </Text>
+                  </View>
+
+                  <View style={styles.soilModalGridCard}>
+                    <Text style={styles.soilModalLabel}>SCAN COUNT</Text>
+                    <Text style={styles.soilModalValue}>
+                      {detailSoil.scanCount || '1'}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Row 2: Soil Properties (Soil Organic, Soil Type, Near-Match) */}
+                <View style={styles.soilMetricsRow}>
+                  <View style={styles.soilModalGridCard}>
+                    <Text style={styles.soilModalLabel}>SOIL ORGANIC</Text>
+                    <Text style={styles.soilModalValue} numberOfLines={2}>
+                      {detailSoil.soil_organic_index || detailSoil.organicIndex || 'Moderate'}
+                    </Text>
+                  </View>
+
+                  <View style={styles.soilModalGridCard}>
+                    <Text style={styles.soilModalLabel}>SOIL TYPE</Text>
+                    <Text style={styles.soilModalValue} numberOfLines={2}>
+                      {detailSoil.soil_type || detailSoil.soilType || 'Determined Soil'}
+                    </Text>
+                  </View>
+
+                  <View style={[styles.soilModalGridCard, styles.soilNearMatchCard]}>
+                    <Text style={styles.soilModalLabel}>NEAR-MATCH</Text>
+                    <Text style={styles.soilNearMatchValue}>
+                      {detailSoil.nearMatchRating || detailSoil.confidence || '97.4%'}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Scan Date Card */}
+                <View style={styles.soilModalFullCard}>
+                  <Text style={styles.soilModalLabel}>SCAN DATE</Text>
+                  <Text style={styles.soilModalValue}>
+                    {detailSoil.scanDate || detailSoil.createdDate || detailSoil.scanTime || 'Today'}
+                  </Text>
+                </View>
+
+                {/* Description Card */}
+                <View style={styles.soilModalFullCard}>
+                  <Text style={styles.soilModalLabel}>DESCRIPTION</Text>
+                  <Text style={styles.soilModalDescText}>
+                    {detailSoil.description ||
+                      `${detailSoil.munsellCode || ''} - ${detailSoil.colorName || ''}`}
+                  </Text>
+                </View>
+
+                {/* Action Button: Close */}
+                <View style={styles.soilModalFooterRow}>
+                  <TouchableOpacity
+                    style={styles.modalDoneBtn}
+                    onPress={() => setDetailSoil(null)}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.modalDoneBtnText}>Done</Text>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
             </View>
-
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.modalScrollContent}
-            >
-              {/* Munsell Color Swatch Hero in Modal (Pure Color Only, Not Real Soil) */}
-              <View
-                style={[
-                  styles.modalImageHeroContainer,
-                  { backgroundColor: detailSoil?.hexCode || detailSoil?.hex || '#794c22' },
-                ]}
-              >
-                <View style={styles.modalHexPill}>
-                  <View
-                    style={[
-                      styles.miniColorDot,
-                      { backgroundColor: detailSoil?.hexCode || detailSoil?.hex || '#794c22' },
-                    ]}
-                  />
-                  <Text style={styles.modalHexPillText}>
-                    {detailSoil?.hexCode
-                      ? detailSoil.hexCode.toUpperCase()
-                      : detailSoil?.hex
-                      ? detailSoil.hex.toUpperCase()
-                      : '#794C22'}
-                  </Text>
-                </View>
-              </View>
-
-              {/* Munsell Code Breakdown Grid */}
-              <View style={styles.munsellSpecGrid}>
-                <View style={styles.specBox}>
-                  <Text style={styles.specLabel}>HUE</Text>
-                  <Text style={styles.specValue}>{detailSoil?.hue}</Text>
-                </View>
-                <View style={styles.specBox}>
-                  <Text style={styles.specLabel}>VALUE</Text>
-                  <Text style={styles.specValue}>{detailSoil?.value}</Text>
-                </View>
-                <View style={styles.specBox}>
-                  <Text style={styles.specLabel}>CHROMA</Text>
-                  <Text style={styles.specValue}>{detailSoil?.chroma}</Text>
-                </View>
-                <View style={styles.specBox}>
-                  <Text style={styles.specLabel}>FULL CODE</Text>
-                  <Text style={[styles.specValue, { color: '#22c55e' }]}>
-                    {detailSoil?.munsellCode}
-                  </Text>
-                </View>
-              </View>
-
-              {/* Soil Organic Index (SOC) & Soil Type / Group (2 Columns, matching website) */}
-              <View style={styles.modalTwoColGrid}>
-                <View style={styles.modalColBox}>
-                  <Text style={styles.modalColLabel}>SOIL ORGANIC INDEX (SOC)</Text>
-                  <Text style={styles.modalColValue}>
-                    {detailSoil?.soil_organic_index || '—'}
-                  </Text>
-                </View>
-                <View style={styles.modalColBox}>
-                  <Text style={styles.modalColLabel}>SOIL TYPE / GROUP</Text>
-                  <Text style={styles.modalColValue}>
-                    {detailSoil?.soil_type || '—'}
-                  </Text>
-                </View>
-              </View>
-
-              {/* Official Description Card (Matching Website) */}
-              <View style={styles.modalDescCard}>
-                <Text style={styles.modalDescLabel}>DESCRIPTION</Text>
-                <Text style={styles.modalDescText}>
-                  {detailSoil?.description || `${detailSoil?.munsellCode} - ${detailSoil?.colorName}`}
-                </Text>
-              </View>
-
-              {/* Action Buttons */}
-              <TouchableOpacity
-                style={styles.modalDoneBtn}
-                onPress={() => setDetailSoil(null)}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.modalDoneBtnText}>Done</Text>
-              </TouchableOpacity>
-            </ScrollView>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      ) : null}
 
       {/* Rows Per Page Selection Modal */}
       <Modal
@@ -4058,205 +4114,210 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#dc2626',
   },
-  // Modal Styling
+  // Modal Styling (Determined Soil Record - Mirrors Website Exactly)
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(5, 31, 32, 0.65)',
+    backgroundColor: 'rgba(5, 31, 32, 0.82)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 16,
   },
-  modalCard: {
-    width: '100%',
-    maxWidth: 390,
-    maxHeight: '88%',
-    backgroundColor: '#ffffff',
-    borderRadius: 24,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
-    elevation: 10,
+  soilModalCard: {
+    backgroundColor: '#0B2B26',
     borderWidth: 1,
-    borderColor: 'rgba(218, 241, 222, 0.95)',
+    borderColor: 'rgba(142, 182, 155, 0.25)',
+    borderRadius: 24,
+    width: '100%',
+    maxHeight: SCREEN_HEIGHT * 0.88,
+    paddingHorizontal: 18,
+    paddingTop: 18,
+    paddingBottom: 18,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.35,
+    shadowRadius: 28,
+    elevation: 20,
+    zIndex: 10,
   },
-  modalScrollContent: {
-    paddingBottom: 4,
-  },
-  modalCarouselContainer: {
-    marginBottom: 14,
-  },
-  modalCarouselHeader: {
+  soilModalHeaderRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
-  },
-  modalSectionLabel: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#64748b',
-    letterSpacing: 0.6,
-  },
-  modalCarouselCodeBadge: {
-    fontSize: 10.5,
-    fontWeight: '800',
-    color: '#166534',
-    backgroundColor: '#dcfce7',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  modalCarousel: {
-    marginVertical: 0,
-  },
-  modalHeaderRow: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 14,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(142, 182, 155, 0.2)',
   },
-  modalSubtitle: {
-    fontSize: 10,
+  soilModalSubHeader: {
+    fontSize: 10.5,
     fontWeight: '800',
     color: '#22c55e',
     letterSpacing: 0.8,
+    textTransform: 'uppercase',
     marginBottom: 2,
   },
-  modalTitle: {
+  soilModalTitle: {
     fontSize: 18,
-    fontWeight: '900',
-    color: '#0f172a',
+    fontWeight: '800',
+    color: '#DAF1DE',
+    letterSpacing: -0.2,
   },
-  modalCloseBtn: {
+  soilModalCloseBtn: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: '#f1f5f9',
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(142, 182, 155, 0.25)',
   },
-  modalCloseBtnText: {
+  soilModalCloseIcon: {
     fontSize: 14,
-    color: '#64748b',
+    color: '#DAF1DE',
     fontWeight: '700',
   },
-  modalImageHeroContainer: {
-    width: '100%',
-    height: 150,
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 16,
-    backgroundColor: '#e2e8f0',
-    position: 'relative',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.08)',
+  soilModalScrollContent: {
+    paddingTop: 14,
+    paddingBottom: 8,
   },
-  modalHeroImage: {
+  // Dual-preview Soil Banner (matches website #modalSoilDualPreviewBadge)
+  soilBannerDualPreview: {
+    width: '100%',
+    borderRadius: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.22,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  soilBannerAvatarContainer: {
+    width: 58,
+    height: 58,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  soilBannerAvatarImg: {
     width: '100%',
     height: '100%',
   },
-  modalHexPill: {
-    position: 'absolute',
-    bottom: 10,
-    left: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-    flexDirection: 'row',
+  soilBannerAvatarFallback: {
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  modalHexPillText: {
-    fontSize: 12,
+  soilBannerCodeBlock: {
+    flex: 1,
+    minWidth: 0,
+  },
+  soilBannerMunsellCode: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#ffffff',
+    letterSpacing: -0.2,
+    lineHeight: 26,
+  },
+  soilBannerSubLabel: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: 'rgba(255, 255, 255, 0.92)',
+    marginTop: 3,
+  },
+  soilBannerHexPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.58)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+  },
+  soilBannerHexText: {
+    fontSize: 10.5,
     fontWeight: '800',
     color: '#ffffff',
     letterSpacing: 0.5,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
-  munsellSpecGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-    gap: 8,
-  },
-  specBox: {
-    flex: 1,
-    backgroundColor: '#f8fafc',
-    borderRadius: 10,
-    padding: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  specLabel: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#64748b',
-    marginBottom: 2,
-  },
-  specValue: {
-    fontSize: 13,
-    fontWeight: '900',
-    color: '#0f172a',
-  },
-  modalTwoColGrid: {
+  // 3-Grid Metric Cards (matches website .soil-modal-grid-card)
+  soilMetricsRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  modalColBox: {
+  soilModalGridCard: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 12,
+    backgroundColor: '#163832',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: 'rgba(142, 182, 155, 0.25)',
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 9,
+    justifyContent: 'center',
   },
-  modalColLabel: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#94a3b8',
-    letterSpacing: 0.4,
-    marginBottom: 4,
+  soilNearMatchCard: {
+    borderColor: 'rgba(16, 185, 129, 0.4)',
+    backgroundColor: 'rgba(22, 56, 50, 0.95)',
+  },
+  soilModalLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#8EB69B',
     textTransform: 'uppercase',
+    letterSpacing: 0.4,
+    marginBottom: 3,
   },
-  modalColValue: {
-    fontSize: 13,
+  soilModalValue: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: '#DAF1DE',
+    lineHeight: 16,
+  },
+  soilNearMatchValue: {
+    fontSize: 13.5,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#10b981',
+  },
+  // Full-width cards (matches website .soil-modal-desc-card)
+  soilModalFullCard: {
+    backgroundColor: '#163832',
+    borderWidth: 1,
+    borderColor: 'rgba(142, 182, 155, 0.25)',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    marginBottom: 8,
+  },
+  soilModalDescText: {
+    fontSize: 12.5,
+    color: '#DAF1DE',
     lineHeight: 18,
+    fontWeight: '600',
   },
-  modalDescCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    marginBottom: 18,
-  },
-  modalDescLabel: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#94a3b8',
-    letterSpacing: 0.4,
-    marginBottom: 4,
-    textTransform: 'uppercase',
-  },
-  modalDescText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#334155',
-    lineHeight: 19,
+  soilModalFooterRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(142, 182, 155, 0.2)',
   },
   modalDoneBtn: {
     width: '100%',
     height: 44,
-    borderRadius: 12,
-    backgroundColor: '#22c55e',
+    borderRadius: 14,
+    backgroundColor: '#10b981',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#22c55e',
+    shadowColor: '#10b981',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

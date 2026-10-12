@@ -4864,10 +4864,10 @@
                                 $uAvatar = strtoupper(substr($uName, 0, 1));
 
                                 $rawImg = $scan->scan_image;
-                                $scanImg = '';
+                                $scanImg = $scan->scan_image_url ?: '';
                                 $baImg = '';
                                 $rawPhotoImg = '';
-                                if (!empty($rawImg)) {
+                                if (empty($scanImg) && !empty($rawImg)) {
                                     if (str_starts_with($rawImg, 'http') || str_starts_with($rawImg, 'data:')) {
                                         $scanImg = $rawImg;
                                     } elseif (str_starts_with($rawImg, 'storage/')) {

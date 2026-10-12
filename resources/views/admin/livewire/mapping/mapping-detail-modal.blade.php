@@ -18,12 +18,42 @@
         $confidenceVal = str_contains($cm[1], '%') ? $cm[1] : $cm[1] . '%';
     }
 
-    $scanImg = $scan?->scan_image ? (str_starts_with($scan->scan_image, 'http') || str_starts_with($scan->scan_image, 'data:') ? $scan->scan_image : asset($scan->scan_image)) : '';
+    $formatImageUrl = function($path) {
+        if (!$path) return '';
+        if (str_starts_with($path, 'data:')) {
+            return $path;
+        }
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            if (preg_match('#^https?://(?:localhost|127\.0\.0\.1|10\.0\.2\.2)(?::\d+)?/(.*)$#i', $path, $matches)) {
+                $clean = ltrim($matches[1], '/');
+                return asset($clean);
+            }
+            return $path;
+        }
+        $clean = ltrim($path, '/');
+        if (!str_starts_with($clean, 'storage/')) {
+            $clean = 'storage/' . $clean;
+        }
+        return asset($clean);
+    };
+
+    // Regions data check
+    $regions = !empty($mapping->regions) ? $mapping->regions : ($scan?->regions ?? []);
+    $isMulti = count($regions) > 1;
+    $dominant = !empty($regions) ? $regions[0] : null;
+
+    $scanImg = $scan?->scan_image_url ?? ($scan?->scan_image ? $formatImageUrl($scan->scan_image) : '');
+    if (!$scanImg && !empty($dominant['image'])) {
+        $scanImg = $formatImageUrl($dominant['image']);
+    }
+    if (!$scanImg && !empty($dominant['image_url'])) {
+        $scanImg = $formatImageUrl($dominant['image_url']);
+    }
     if (!$scanImg && $mColor?->image) {
-        $scanImg = asset('storage/' . $mColor->image);
+        $scanImg = $formatImageUrl($mColor->image);
     }
     if (!$scanImg && $soil?->image) {
-        $scanImg = asset('storage/' . $soil->image);
+        $scanImg = $formatImageUrl($soil->image);
     }
     $scanUser = $scan?->user?->name ?? 'Admin Analyst';
     $scanPlatform = $scan?->platform ?? 'website';
@@ -33,17 +63,9 @@
         $rawImg = $scan->scan_image;
         if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
             $scanUuid = $m[1];
-            $rel = "storage/scans/scan_{$scanUuid}_before_after.jpg";
-            if (file_exists(public_path($rel)) || file_exists(storage_path("app/public/scans/scan_{$scanUuid}_before_after.jpg"))) {
-                $baImg = asset($rel);
-            }
+            $baImg = asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
         }
     }
-
-    // Regions data check
-    $regions = !empty($mapping->regions) ? $mapping->regions : ($scan?->regions ?? []);
-    $isMulti = count($regions) > 1;
-    $dominant = !empty($regions) ? $regions[0] : null;
 
     $normalizeBox = function($r) {
         if (!$r) {
@@ -140,72 +162,74 @@
 {{-- STYLES FOR SOIL RECORD DETAILS MODAL (MATCHING REFERENCE EXACTLY) --}}
 <style>
     .soil-detail-modal-container {
-        background: linear-gradient(145deg, #0B2B26 0%, #163832 100%);
-        border: 1px solid rgba(142, 182, 155, 0.25);
-        border-radius: 28px;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-        width: 100%;
-        max-width: 680px;
-        margin: auto;
-        display: flex;
-        flex-direction: column;
-        height: 75vh;
-        max-height: 75vh;
-        overflow: hidden;
-        position: relative;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 28px !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        width: 100% !important;
+        max-width: 680px !important;
+        margin: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        height: 75vh !important;
+        max-height: 75vh !important;
+        overflow: hidden !important;
+        position: relative !important;
     }
 
     .soil-detail-modal-header {
-        padding: 20px 26px 16px;
-        border-bottom: 1px solid rgba(142, 182, 155, 0.25);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: #0B2B26;
-        flex-shrink: 0;
+        padding: 20px 26px 16px !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        background: #ffffff !important;
+        flex-shrink: 0 !important;
     }
     .soil-detail-modal-header h3 {
-        margin: 0;
-        font-size: 17.5px;
-        font-weight: 800;
-        color: #DAF1DE;
-        letter-spacing: -0.01em;
+        margin: 0 !important;
+        font-size: 17.5px !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        letter-spacing: -0.01em !important;
     }
 
     .soil-detail-modal-body {
-        padding: 18px 24px 20px;
-        overflow-y: auto;
-        flex: 1 1 auto;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(142, 182, 155, 0.35) rgba(11, 43, 38, 0.8);
-        scrollbar-gutter: stable;
-        -webkit-overflow-scrolling: touch;
+        padding: 18px 24px 20px !important;
+        overflow-y: auto !important;
+        flex: 1 1 auto !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: #cbd5e1 #f8fafc !important;
+        scrollbar-gutter: stable !important;
+        -webkit-overflow-scrolling: touch !important;
+        background: #ffffff !important;
     }
     .soil-detail-modal-body::-webkit-scrollbar {
-        width: 6px;
+        width: 6px !important;
         display: block !important;
     }
     .soil-detail-modal-body::-webkit-scrollbar-track {
-        background: rgba(11, 43, 38, 0.8);
-        border-radius: 9999px;
-        margin: 4px 0;
+        background: #f8fafc !important;
+        border-radius: 9999px !important;
+        margin: 4px 0 !important;
     }
     .soil-detail-modal-body::-webkit-scrollbar-thumb {
-        background: rgba(142, 182, 155, 0.35);
-        border-radius: 9999px;
+        background: #cbd5e1 !important;
+        border-radius: 9999px !important;
     }
     .soil-detail-modal-body::-webkit-scrollbar-thumb:hover {
-        background: rgba(142, 182, 155, 0.6);
+        background: #94a3b8 !important;
     }
 
+    /* Modal Close Circle Button */
     .modal-close-circle-btn {
-        background: rgba(5, 31, 32, 0.7) !important;
-        border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
-        color: #8EB69B !important;
+        background: #f1f5f9 !important;
+        border: 1.5px solid #e2e8f0 !important;
+        color: #64748b !important;
         width: 32px !important;
         height: 32px !important;
         border-radius: 50% !important;
@@ -218,379 +242,332 @@
         flex-shrink: 0 !important;
     }
     .modal-close-circle-btn:hover {
-        background: rgba(35, 83, 71, 0.8) !important;
-        color: #DAF1DE !important;
-        border-color: #DAF1DE !important;
+        background: #e2e8f0 !important;
+        color: #0f172a !important;
+        border-color: #cbd5e1 !important;
     }
 
     /* Swatch Banner */
     .soil-swatch-banner {
-        position: relative;
-        margin-top: 2px;
-        margin-bottom: 12px;
-        width: 100%;
-        border-radius: 18px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        padding: 14px 20px;
-        box-sizing: border-box;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-        min-height: 78px;
+        position: relative !important;
+        margin-top: 2px !important;
+        margin-bottom: 12px !important;
+        width: 100% !important;
+        border-radius: 18px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 14px !important;
+        padding: 14px 20px !important;
+        box-sizing: border-box !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+        min-height: 78px !important;
     }
     .soil-swatch-avatar {
-        width: 56px;
-        height: 56px;
-        min-width: 56px;
-        aspect-ratio: 1 / 1;
-        border-radius: 12px;
-        border: none;
-        outline: none;
-        box-shadow: none;
-        background: transparent;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        position: relative;
+        width: 56px !important;
+        height: 56px !important;
+        min-width: 56px !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 10px !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: rgba(0, 0, 0, 0.2) !important;
+        overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        position: relative !important;
     }
     .soil-swatch-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        border-radius: 0;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+        border-radius: 0 !important;
     }
     .soil-swatch-center {
-        flex: 1;
-        min-width: 0;
+        flex: 1 !important;
+        min-width: 0 !important;
     }
     .soil-swatch-code {
-        font-size: 24px;
-        font-weight: 900;
-        color: #ffffff;
-        text-shadow: none;
-        letter-spacing: -0.01em;
-        line-height: 1.15;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        font-size: 24px !important;
+        font-weight: 900 !important;
+        color: #ffffff !important;
+        text-shadow: none !important;
+        letter-spacing: -0.01em !important;
+        line-height: 1.15 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
     .soil-swatch-sub {
-        font-size: 11.5px;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.95);
-        margin-top: 3px;
-        letter-spacing: 0.02em;
+        font-size: 11.5px !important;
+        font-weight: 700 !important;
+        color: rgba(255, 255, 255, 0.95) !important;
+        margin-top: 3px !important;
+        letter-spacing: 0.02em !important;
     }
     .soil-swatch-hex-pill {
-        font-size: 11px;
-        font-weight: 800;
-        color: #ffffff;
-        background: rgba(0, 0, 0, 0.58);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        padding: 5px 12px;
-        border-radius: 20px;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        user-select: none;
-        line-height: 1;
-        flex-shrink: 0;
-        white-space: nowrap;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        color: #ffffff !important;
+        background: rgba(0, 0, 0, 0.58) !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
+        padding: 5px 12px !important;
+        border-radius: 20px !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        user-select: none !important;
+        line-height: 1 !important;
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
     }
 
     /* Responsive Grid for Metric Cards */
     .soil-modal-grid-3 {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-bottom: 10px;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 10px !important;
+        margin-bottom: 10px !important;
     }
     .soil-modal-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 10px;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        margin-bottom: 10px !important;
     }
     .soil-metric-card {
-        background: #163832;
-        border: 1px solid rgba(142, 182, 155, 0.25);
-        border-radius: 16px;
-        padding: 12px 16px;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
-        box-sizing: border-box;
+        background: #ffffff !important;
+        border: 1.5px solid #f1f5f9 !important;
+        border-radius: 16px !important;
+        padding: 12px 16px !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+        box-sizing: border-box !important;
     }
     .soil-metric-card-label {
-        font-size: 11px;
-        font-weight: 700;
-        color: #8EB69B;
-        margin-bottom: 4px;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #475569 !important;
+        margin-bottom: 4px !important;
+        letter-spacing: 0.03em !important;
+        text-transform: uppercase !important;
     }
     .soil-metric-card-val {
-        font-size: 13.5px;
-        font-weight: 700;
-        color: #DAF1DE;
-        word-break: break-word;
+        font-size: 13.5px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        word-break: break-word !important;
     }
-
-    .covered-area-highlight {
+    .soil-metric-card-text {
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        color: #334155 !important;
+        line-height: 1.5 !important;
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
+        white-space: pre-line !important;
+    }
+    .layer-accordion-header-title {
+        color: #0f172a !important;
+    }
+    .layer-accordion-arrow {
+        color: #475569 !important;
+    }
+    .soil-platform-badge {
+        font-size: 12px !important;
+        font-weight: 700 !important;
         background: none !important;
         border: none !important;
         padding: 0 !important;
-        box-shadow: none !important;
         border-radius: 0 !important;
+        box-shadow: none !important;
+        color: #475569 !important;
         display: inline !important;
-        color: #DAF1DE;
-        font-size: 13.5px;
-        font-weight: 700;
     }
 
     .layer-accordion-item {
-        border: 1px solid rgba(142, 182, 155, 0.25) !important;
+        border: 1.5px solid #e2e8f0 !important;
         border-radius: 14px !important;
         overflow: hidden !important;
-        background: #163832 !important;
+        background: #f8fafc !important;
     }
     .layer-accordion-header {
-        background: #0B2B26 !important;
-        color: #DAF1DE !important;
+        background: #f8fafc !important;
+        color: #0f172a !important;
     }
     .layer-accordion-body {
-        background: #163832 !important;
-        border-top: 1px solid rgba(142, 182, 155, 0.25) !important;
+        background: #ffffff !important;
+        border-top: 1px solid #e2e8f0 !important;
+    }
+
+    .modal-loc-badge-brgy {
+        font-size: 10px !important;
+        font-weight: 800 !important;
+        color: #16a34a !important;
+        background: #dcfce7 !important;
+        border: 1px solid #bbf7d0 !important;
+        padding: 2px 8px !important;
+        border-radius: 6px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.02em !important;
+    }
+    .modal-loc-badge-coverage {
+        font-size: 10px !important;
+        font-weight: 800 !important;
+        color: #065f46 !important;
+        background: #d1fae5 !important;
+        border: 1px solid #a7f3d0 !important;
+        padding: 2px 8px !important;
+        border-radius: 6px !important;
+        letter-spacing: 0.02em !important;
+    }
+    .modal-loc-badge-coords {
+        font-size: 10px !important;
+        font-weight: 800 !important;
+        color: #0284c7 !important;
+        background: #e0f2fe !important;
+        border: 1px solid #bae6fd !important;
+        padding: 2px 8px !important;
+        border-radius: 6px !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    }
+    .modal-soil-map-wrapper {
+        position: relative !important;
+        width: 100% !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+        background: #f8fafc !important;
+    }
+    .modal-soil-map-watermark {
+        position: absolute !important;
+        bottom: 8px !important;
+        right: 8px !important;
+        z-index: 1000 !important;
+        background: rgba(255, 255, 255, 0.92) !important;
+        backdrop-filter: blur(4px) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+        padding: 3px 8px !important;
+        border-radius: 6px !important;
+        font-size: 10px !important;
+        color: #475569 !important;
+        font-weight: 700 !important;
+        border: 1px solid #e2e8f0 !important;
+        pointer-events: none !important;
+    }
+
+    /* Leaflet Controls & Popups (Light Mode Default) */
+    .admin-soil-detail-map .leaflet-bar {
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+    .admin-soil-detail-map .leaflet-bar a {
+        background-color: #ffffff !important;
+        color: #334155 !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+    .admin-soil-detail-map .leaflet-bar a:hover {
+        background-color: #f1f5f9 !important;
+        color: #16a34a !important;
+    }
+    .admin-soil-detail-map .leaflet-popup-content-wrapper {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+        border-radius: 14px !important;
+    }
+    .admin-soil-detail-map .leaflet-popup-tip {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: none !important;
+    }
+    .admin-soil-detail-map .leaflet-popup-close-button {
+        color: #64748b !important;
+        font-size: 16px !important;
+        padding: 6px 8px 0 0 !important;
+    }
+    .admin-soil-detail-map .leaflet-popup-close-button:hover {
+        color: #0f172a !important;
     }
 
     .soil-detail-modal-footer {
-        padding: 16px 24px 20px;
-        background: #0B2B26;
-        border-top: 1px solid rgba(142, 182, 155, 0.25);
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        width: 100%;
-        box-sizing: border-box;
+        padding: 14px 24px 16px !important;
+        background: #ffffff !important;
+        border-top: 1px solid #f1f5f9 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .modal-cancel-btn {
-        background: rgba(142, 182, 155, 0.12) !important;
-        border: 1px solid rgba(142, 182, 155, 0.3) !important;
-        color: #DAF1DE !important;
+        background: #f8fafc !important;
+        border: 1.5px solid #cbd5e1 !important;
+        color: #334155 !important;
     }
     .modal-cancel-btn:hover {
-        background: rgba(142, 182, 155, 0.22) !important;
+        background: #e2e8f0 !important;
     }
 
     .soil-normalization-meta-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 14px;
-        padding-top: 10px;
-        border-top: 1px solid rgba(142, 182, 155, 0.25);
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-top: 14px !important;
+        padding-top: 10px !important;
+        border-top: 1px solid #e2e8f0 !important;
+        font-size: 11px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.04em !important;
     }
     .soil-normalization-meta-title {
-        color: #4ade80;
-        font-weight: 800;
-        letter-spacing: 0.05em;
+        color: #0f172a !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.05em !important;
     }
     .soil-normalization-meta-info {
-        color: #CBD5E1;
-        font-weight: 600;
-    }
-
-    .soil-swatch-capsule-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        padding: 5px 13px;
-        background: #0B2B26;
-        border: 1px solid rgba(74, 222, 128, 0.25);
-        border-radius: 9999px;
-        box-shadow: none;
-        font-size: 11.5px;
-        cursor: default;
-        user-select: none;
-    }
-    .soil-swatch-capsule-pill:hover {
-        border-color: rgba(74, 222, 128, 0.35);
-    }
-    .soil-swatch-capsule-pill .capsule-pill-hex {
-        color: #FFFFFF;
-    }
-    .soil-swatch-capsule-pill .capsule-pill-code {
-        color: #8EB69B;
-    }
-    .soil-swatch-capsule-pill .capsule-pill-pct {
-        color: #00DC82;
-    }
-
-    .soil-metric-card-text {
-        color: #DAF1DE;
-    }
-    .layer-accordion-header-title {
-        color: #DAF1DE;
-    }
-    .layer-accordion-arrow {
-        color: #8EB69B;
-    }
-    .soil-platform-badge {
-        font-size: 12px;
-        font-weight: 700;
-        background: none !important;
-        border: none !important;
-        padding: 0 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        color: #8EB69B;
-        display: inline !important;
-    }
-
-    /* Light Mode Overrides */
-    html.light-mode .soil-detail-modal-container {
-        background: #ffffff;
-        border: 1px solid #f1f5f9;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
-    }
-    html.light-mode .soil-detail-modal-header {
-        background: #ffffff;
-        border-bottom: 1px solid #f1f5f9;
-    }
-    html.light-mode .soil-detail-modal-header h3 {
-        color: #0f172a;
-    }
-    html.light-mode .modal-close-circle-btn {
-        background: #f1f5f9 !important;
-        border: 1px solid #e2e8f0 !important;
-        color: #64748b !important;
-    }
-    html.light-mode .soil-detail-modal-body {
-        scrollbar-color: #cbd5e1 #f1f5f9;
-    }
-    html.light-mode .soil-metric-card {
-        background: #ffffff;
-        border: 1.5px solid #f1f5f9;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-    }
-    html.light-mode .soil-metric-card-label {
-        color: #475569 !important;
-        font-weight: 800 !important;
-    }
-    html.light-mode .soil-metric-card-val,
-    html.light-mode .soil-metric-card-text,
-    html.light-mode .layer-accordion-header-title,
-    html.light-mode .layer-accordion-header-title span,
-    html.light-mode .soil-metric-card [style*="#DAF1DE"],
-    html.light-mode .soil-metric-card [style*="color: #DAF1DE"],
-    html.light-mode .soil-metric-card [style*="color:#DAF1DE"],
-    html.light-mode .layer-accordion-item [style*="#DAF1DE"],
-    html.light-mode .layer-accordion-item [style*="color: #DAF1DE"],
-    html.light-mode .layer-accordion-item [style*="color:#DAF1DE"] {
-        color: #0f172a !important;
-    }
-    html.light-mode .layer-accordion-arrow,
-    html.light-mode .layer-accordion-header span[x-text] {
-        color: #475569 !important;
-    }
-    html.light-mode .soil-platform-badge {
-        background: none !important;
-        border: none !important;
-        padding: 0 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        color: #000000 !important;
-    }
-    html.light-mode .soil-swatch-capsule-pill {
-        background: #f8fafc !important;
-        border: 1.5px solid #cbd5e1 !important;
-        box-shadow: none !important;
-        cursor: default;
-        user-select: none;
-    }
-    html.light-mode .soil-swatch-capsule-pill:hover {
-        background: #f8fafc !important;
-        border-color: #cbd5e1 !important;
-        box-shadow: none !important;
-        transform: none !important;
-    }
-    html.light-mode .soil-swatch-capsule-pill .capsule-pill-hex,
-    html.light-mode .soil-swatch-capsule-pill span[style*="monospace"] {
-        color: #0f172a !important;
-    }
-    html.light-mode .soil-swatch-capsule-pill .capsule-pill-code,
-    html.light-mode .soil-swatch-capsule-pill span[style*="#8EB69B"] {
-        color: #475569 !important;
-    }
-    html.light-mode .soil-swatch-capsule-pill .capsule-pill-pct,
-    html.light-mode .soil-swatch-capsule-pill span[style*="#00DC82"] {
-        color: #15803d !important;
-    }
-    html.light-mode .soil-swatch-capsule-pill .capsule-pill-swatch,
-    html.light-mode .soil-swatch-capsule-pill span[style*="border-radius: 3.5px"] {
-        border: 1px solid rgba(0, 0, 0, 0.2) !important;
-        box-shadow: none !important;
-    }
-    html.light-mode .soil-normalization-meta-row {
-        border-top: 1px solid #e2e8f0 !important;
-    }
-    html.light-mode .soil-normalization-meta-title {
-        color: #0f172a !important;
-        font-weight: 800 !important;
-    }
-    html.light-mode .soil-normalization-meta-info {
         color: #475569 !important;
         font-weight: 600 !important;
     }
-    html.light-mode .layer-accordion-item {
-        border: 1.5px solid #e2e8f0 !important;
-        background: #ffffff !important;
-    }
-    html.light-mode .layer-accordion-header {
-        background: #f8fafc !important;
-        color: #1e293b !important;
-    }
-    html.light-mode .layer-accordion-body {
-        background: #ffffff !important;
-        border-top: 1px solid #f1f5f9 !important;
-    }
-    html.light-mode .soil-detail-modal-footer {
-        background: #ffffff;
-        border-top: 1px solid #f1f5f9;
-    }
-    html.light-mode .modal-cancel-btn {
+
+    .soil-swatch-capsule-pill {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 7px !important;
+        padding: 5px 13px !important;
         background: #f8fafc !important;
         border: 1.5px solid #cbd5e1 !important;
-        color: #1e293b !important;
-        font-weight: 800 !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        border-radius: 9999px !important;
+        box-shadow: none !important;
+        font-size: 11.5px !important;
+        cursor: default !important;
+        user-select: none !important;
     }
-    html.light-mode .modal-cancel-btn:hover {
-        background: #e2e8f0 !important;
-        border-color: #94a3b8 !important;
+    .soil-swatch-capsule-pill:hover {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+    }
+    .soil-swatch-capsule-pill .capsule-pill-hex {
         color: #0f172a !important;
     }
-    html.light-mode .covered-area-highlight {
-        background: none !important;
-        border: none !important;
-        padding: 0 !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        color: #000000 !important;
-        font-size: 13.5px;
-        font-weight: 700;
+    .soil-swatch-capsule-pill .capsule-pill-code {
+        color: #475569 !important;
+    }
+    .soil-swatch-capsule-pill .capsule-pill-pct {
+        color: #15803d !important;
     }
 
-    /* Mobile Overrides (<= 540px) */
+    /* Mobile Overrides (<= 540px, matching Student Records popup) */
     @media (max-width: 540px) {
         .soil-detail-backdrop {
             padding: 16px 14px !important;
@@ -600,7 +577,7 @@
             max-height: 75vh !important;
             border-radius: 24px !important;
             margin: auto !important;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2) !important;
         }
         .soil-detail-modal-header {
             padding: 16px 20px 14px !important;
@@ -640,6 +617,9 @@
             gap: 8px !important;
             margin-bottom: 8px !important;
         }
+        .soil-modal-grid-3 > div:nth-child(3) {
+            grid-column: auto !important;
+        }
         .soil-modal-grid-2 {
             grid-template-columns: 1fr 1fr !important;
             gap: 8px !important;
@@ -671,7 +651,7 @@
     x-init="document.body.classList.add('overflow-hidden')"
     x-on:unmount="document.body.classList.remove('overflow-hidden')"
     class="soil-detail-backdrop fixed inset-0 z-50 flex items-center justify-center"
-    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100001; background: rgba(5, 31, 32, 0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box;"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100001; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box;"
     wire:click.self="closeModal"
 >
 
@@ -715,10 +695,19 @@
                 {{-- Square Avatar with ROI Green Crop Box --}}
                 <div class="soil-swatch-avatar">
                     @if($scanImg)
-                        <img src="{{ $scanImg }}" alt="Soil Sample" />
+                        <img
+                            src="{{ $scanImg }}"
+                            alt=""
+                            onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='none'; var fb = this.parentElement.querySelector('.soil-avatar-fallback'); if(fb) fb.style.display='flex';"
+                        />
                         <div style="position: absolute; left: {{ $domBox['left'] }}%; top: {{ $domBox['top'] }}%; width: {{ $domBox['width'] }}%; height: {{ $domBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                        <div class="soil-avatar-fallback" style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: rgba(0,0,0,0.25);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
                     @else
-                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2);">
+                        <div class="soil-avatar-fallback" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.25);">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                             </svg>
@@ -857,7 +846,7 @@
                                     <div class="soil-swatch-banner" style="background: {{ $subHex }}; margin-bottom: 10px; min-height: 64px; padding: 12px 16px;">
                                         @if($scanImg)
                                              <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; position: relative;">
-                                                <img src="{{ $scanImg }}" alt="Soil Sample" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                                                <img src="{{ $scanImg }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
                                                 <div style="position: absolute; left: {{ $subBox['left'] }}%; top: {{ $subBox['top'] }}%; width: {{ $subBox['width'] }}%; height: {{ $subBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                                             </div>
                                         @endif

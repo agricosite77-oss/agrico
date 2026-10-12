@@ -27,14 +27,7 @@ class SoilScanResource extends JsonResource
             $dateGroup = $scanDate->format('F j, Y');
         }
 
-        $imgUrl = null;
-        if ($this->scan_image) {
-            if (str_starts_with($this->scan_image, 'http')) {
-                $imgUrl = $this->scan_image;
-            } else {
-                $imgUrl = request()->root() . '/' . ltrim($this->scan_image, '/');
-            }
-        }
+        $imgUrl = $this->scan_image_url;
 
         return [
             'soil_scan_id'   => $this->soil_scan_id,

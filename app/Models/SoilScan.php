@@ -148,6 +148,29 @@ class SoilScan extends Model
         return [];
     }
 
+    public function getScanImageUrlAttribute(): ?string
+    {
+        $raw = $this->scan_image;
+        if (empty($raw)) {
+            return null;
+        }
+        if (str_starts_with($raw, 'data:')) {
+            return $raw;
+        }
+        if (str_starts_with($raw, 'http://') || str_starts_with($raw, 'https://')) {
+            if (preg_match('#^https?://(?:localhost|127\.0\.0\.1|10\.0\.2\.2)(?::\d+)?/(.*)$#i', $raw, $matches)) {
+                $clean = ltrim($matches[1], '/');
+                return asset($clean);
+            }
+            return $raw;
+        }
+        $clean = ltrim($raw, '/');
+        if (!str_starts_with($clean, 'storage/')) {
+            $clean = 'storage/' . $clean;
+        }
+        return asset($clean);
+    }
+
     public function getBeforeAfterImageUrlAttribute(): ?string
     {
         $rawImg = $this->scan_image;
@@ -157,6 +180,7 @@ class SoilScan extends Model
             if (file_exists(public_path($rel)) || file_exists(storage_path("app/public/scans/scan_{$scanUuid}_before_after.jpg"))) {
                 return asset($rel);
             }
+            return asset($rel);
         }
         return null;
     }

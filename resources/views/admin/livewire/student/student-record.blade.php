@@ -1597,10 +1597,10 @@
                         </div>
 
                         {{-- RIGHT: ID + THUMBNAIL --}}
-                        @if($scan->scan_image)
+                        @if($scan->scan_image_url)
                             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
                                 <div style="width:32px; height:32px; border-radius:8px; overflow:hidden; border:1px solid #e2e8f0; flex-shrink:0;">
-                                    <img src="{{ asset('storage/' . $scan->scan_image) }}" alt="Scan thumbnail" style="width:100%; height:100%; object-fit:cover;">
+                                    <img src="{{ $scan->scan_image_url }}" alt="Scan thumbnail" style="width:100%; height:100%; object-fit:cover;">
                                 </div>
                             </div>
                         @endif
