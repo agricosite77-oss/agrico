@@ -15,15 +15,15 @@ class AppVersionController extends Controller
     {
         $activeApp = Application::where('status', 'ACTIVE')->latest()->first();
 
-        $defaultVersion = 'v1.0.2';
+        $defaultVersion = 'v1.0.3';
         $defaultNotes = "• Full on-device offline soil scanning (6-Stage ML determination)\n• Complete offline Munsell color chart with 207 colors\n• Persistent offline scan history with auto-sync\n• Check for Updates button in Profile";
         $defaultSize = '59.5 MB';
         $defaultUrl = 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.2/agrico-app-v1.0.2.apk';
 
         $version = $activeApp?->version ?: $defaultVersion;
-        // Ensure version is at least v1.0.2 to deliver full offline scanning capabilities
-        if (in_array($version, ['v1.0.0', 'v1.0.1'])) {
-            $version = 'v1.0.2';
+        // Ensure version is at least v1.0.3 so online clients get the update prompt
+        if (in_array($version, ['v1.0.0', 'v1.0.1', 'v1.0.2'])) {
+            $version = 'v1.0.3';
         }
 
         $releaseNotes = $activeApp?->release_notes ?: $defaultNotes;
