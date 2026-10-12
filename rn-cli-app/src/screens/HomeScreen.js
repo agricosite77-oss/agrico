@@ -24,6 +24,7 @@ import RNFS from 'react-native-fs';
 
 import OFFLINE_MUNSELL_COLORS from '../data/munsellColors.json';
 import OFFLINE_SOIL_CARDS from '../data/offlineSoils.json';
+import { getLocalScans, mergeServerScans } from '../services/localScanStore';
 import UpdateModal from '../components/UpdateModal';
 import { checkForAppUpdate } from '../services/updateService';
 import { AuthContext } from '../context/AuthContext';
@@ -1731,9 +1732,21 @@ export default function HomeScreen({ navigation, route }) {
     }
   }, [selectedHue, searchQuery]);
 
-  // Fetch full synchronized scan history for the current account from database
+  // Fetch full synchronized scan history for the current account from database & local offline store
   const loadScanHistory = useCallback(async () => {
+    // 1. Instantly display local store scans (offline-ready, zero lag)
     try {
+      const localScans = await getLocalScans();
+      if (Array.isArray(localScans) && localScans.length > 0) {
+        setScanHistory(localScans);
+      }
+    } catch (_) {}
+
+    // 2. If online, fetch from backend and synchronize into local store
+    try {
+      const net = await NetInfo.fetch();
+      if (!net.isConnected) return;
+
       const activeUserId = user?.user_id || user?.id;
       const res = await api.get('/soil-scans', {
         params: {
@@ -1768,11 +1781,18 @@ export default function HomeScreen({ navigation, route }) {
           scanTime: s.scan_time || '',
           dateGroup: s.date_group || 'Earlier',
           platform: s.platform || 'website',
+          syncState: 'synced',
+          isOffline: false,
+          soil_organic_index: s.soil?.soil_organic_index,
+          soil_type: s.soil?.effective_soil_type || s.soil?.soil_type,
+          nearMatchRating: s.confidence ? `${s.confidence}%` : '95%',
         }));
-        setScanHistory(mapped);
+
+        const merged = await mergeServerScans(mapped);
+        setScanHistory(merged);
       }
     } catch (e) {
-      console.log('Error loading scan history:', e?.message);
+      console.log('Error loading scan history from server:', e?.message);
     }
   }, [user?.user_id, user?.id]);
 
@@ -2180,6 +2200,15 @@ export default function HomeScreen({ navigation, route }) {
 
                               <View style={styles.recentCodeRow}>
                                 <Text style={styles.recentCode}>{item.munsellCode}</Text>
+                                {item.syncState === 'queued' || item.isOffline ? (
+                                  <View style={styles.queuedBadge}>
+                                    <Text style={styles.queuedBadgeText}>⚡ Queued</Text>
+                                  </View>
+                                ) : (
+                                  <View style={styles.syncedAdminBadge}>
+                                    <Text style={styles.syncedAdminBadgeText}>☁️ Saved</Text>
+                                  </View>
+                                )}
                               </View>
                             </View>
 
@@ -3305,6 +3334,34 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
     fontWeight: '800',
     color: '#22c55e',
+  },
+  queuedBadge: {
+    backgroundColor: '#fefce8',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#fef08a',
+    marginLeft: 6,
+  },
+  queuedBadgeText: {
+    color: '#ca8a04',
+    fontSize: 9.5,
+    fontWeight: '700',
+  },
+  syncedAdminBadge: {
+    backgroundColor: '#f0fdf4',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+    marginLeft: 6,
+  },
+  syncedAdminBadgeText: {
+    color: '#16a34a',
+    fontSize: 9.5,
+    fontWeight: '700',
   },
   platformText: {
     fontSize: 11,

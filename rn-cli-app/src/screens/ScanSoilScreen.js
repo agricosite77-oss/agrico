@@ -29,6 +29,7 @@ import {
   mapServerScan,
 } from '../services/scanSyncService';
 import { analyzeSoilOffline } from '../services/offlineSoilAnalysis';
+import { saveLocalScan } from '../services/localScanStore';
 import { FlashlightIcon, GalleryIcon } from '../components/AppIcons';
 import BottomNavBar from '../components/BottomNavBar';
 import PinSoilLocationModal from '../components/PinSoilLocationModal';
@@ -454,6 +455,34 @@ export default function ScanSoilScreen({ navigation }) {
         setSyncStatus({ queued: true, isOffline: true });
         Animated.spring(resultCardAnim, { toValue: 1, friction: 6, tension: 70, useNativeDriver: true }).start();
         triggerAutoSaveToast('✓ Identified offline (Queued to sync)');
+
+        // Persist offline scan directly into local store for Scan History
+        const now = new Date();
+        saveLocalScan({
+          id: 'offline_' + scanId,
+          scanId,
+          soil_scan_id: scanId,
+          munsellCode: offlineSpecimen.munsellCode,
+          hue: offlineSpecimen.hueCode,
+          colorName: offlineSpecimen.name,
+          hexCode: offlineSpecimen.hexColor,
+          description: offlineSpecimen.description,
+          scansCount: 1,
+          scanImage: photo.uri,
+          rawDate: now.toISOString(),
+          scanTime: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          dateGroup: 'Today',
+          platform: 'mobile',
+          isOffline: true,
+          syncState: 'queued',
+          soil_organic_index: offlineSpecimen.organicIndex,
+          soil_type: offlineSpecimen.soilType,
+          nearMatchRating: offlineSpecimen.nearMatchRating,
+          confidence: offlineSpecimen.confidence,
+          latitude: gps?.latitude ?? null,
+          longitude: gps?.longitude ?? null,
+          locationName: gps?.locationName ?? null,
+        }).catch(() => {});
       }, 2350);
     };
 
@@ -486,11 +515,40 @@ export default function ScanSoilScreen({ navigation }) {
       await finishProgressEngine();
       setIsScanning(false);
       await clearQueuedScan(scanId);
-      setScanResult(mapServerScan(result.scan, result.data));
+      const mapped = mapServerScan(result.scan, result.data);
+      setScanResult(mapped);
       setHasScanned(true);
       setSyncStatus({ synced: true, scanId: result.scan.soil_scan_id });
       Animated.spring(resultCardAnim, { toValue: 1, friction: 6, tension: 70, useNativeDriver: true }).start();
       triggerAutoSaveToast(`✓ Saved to Scan History (#${result.scan.soil_scan_id})`);
+
+      // Persist synced scan directly into local store
+      const now = new Date();
+      saveLocalScan({
+        id: 'scan_' + result.scan.soil_scan_id,
+        scanId,
+        soil_scan_id: result.scan.soil_scan_id,
+        munsellCode: mapped.munsellCode,
+        hue: mapped.hueCode,
+        colorName: mapped.name,
+        hexCode: mapped.hexColor,
+        description: mapped.description,
+        scansCount: mapped.scanCount,
+        scanImage: mapped.imageUrl || photo.uri,
+        rawDate: result.scan.created_at || now.toISOString(),
+        scanTime: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        dateGroup: 'Today',
+        platform: 'mobile',
+        isOffline: false,
+        syncState: 'synced',
+        soil_organic_index: mapped.organicIndex,
+        soil_type: mapped.soilType,
+        nearMatchRating: mapped.nearMatchRating,
+        confidence: mapped.confidence,
+        latitude: gps?.latitude ?? null,
+        longitude: gps?.longitude ?? null,
+        locationName: gps?.locationName ?? null,
+      }).catch(() => {});
     } else if (result.status === 'rejected') {
       stopProgressEngine();
       setIsScanning(false);

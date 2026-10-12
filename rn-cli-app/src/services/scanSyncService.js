@@ -2,6 +2,7 @@ import NetInfo from '@react-native-community/netinfo';
 import * as Keychain from 'react-native-keychain';
 import RNFS from 'react-native-fs';
 import { startScan, pollScan } from './scanAsync';
+import { markScanSynced } from './localScanStore';
 
 const OFFLINE_KEYCHAIN_SERVICE = 'agrico_offline_scans_queue';
 const QUEUE_DIR = `${RNFS.DocumentDirectoryPath}/scan_queue`;
@@ -156,6 +157,9 @@ export async function flushOfflineQueue() {
         if (r.status === 'done') {
           flushed++;
           drop();
+          const serverScanId = r.scan?.soil_scan_id;
+          const serverImageUrl = r.scan?.scan_image_url || r.scan?.scan_image;
+          await markScanSynced(item.scanId, { serverScanId, serverImageUrl });
           continue;
         }
         if (r.status === 'rejected') {
