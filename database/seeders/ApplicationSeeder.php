@@ -17,11 +17,11 @@ class ApplicationSeeder extends Seeder
                 'application_name' => 'AgriCo Mobile App',
                 'version' => 'v1.0.0',
                 'filename' => 'agrico-app-v1.0.0.apk',
-                'file_size' => '48.5 MB',
+                'file_size' => '59.5 MB',
                 'release_notes' => 'Official AgriCo mobile app release with soil scanning and GPS location mapping.',
                 'status' => 'ACTIVE',
                 'uploaded_by' => 'Super Administrator',
-                'file_path' => 'applications/agrico-app-v1.0.0.apk',
+                'file_path' => 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.0/agrico-app-v1.0.0.apk',
             ]);
         }
     }

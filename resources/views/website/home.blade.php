@@ -684,9 +684,7 @@
                     Scan Soil
                 </a>
                 <a href="{{ route('website.download') }}"
-                   @if(\App\Models\Application::isMaintenanceMode()) onclick="event.preventDefault(); showSystemMaintenanceModal();"
-                   @elseif($isHPending) onclick="event.preventDefault(); showAccountPendingModal('Account Pending Approval', 'Your account is awaiting admin approval. Mobile app download will be enabled once approved.');"
-                   @elseif(!$isHAuth) onclick="event.preventDefault(); showGlobalLoginModal('download');" @endif
+                   @if(\App\Models\Application::isMaintenanceMode()) onclick="event.preventDefault(); showSystemMaintenanceModal();" @endif
                    class="hero-btn-outline" style="padding: 13px 30px; border-radius: 999px;">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"
                          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">

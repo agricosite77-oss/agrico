@@ -709,44 +709,32 @@ class WebsiteController extends Controller
             $authUser = User::where('user_id', session('admin_id'))->first();
         }
 
-        if (!$authUser) {
-            if (request()->wantsJson() || request()->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'error'   => 'AUTH_REQUIRED',
-                    'message' => 'Please log in to download the AgriCo Mobile Application.',
-                ], 401);
-            }
-            return redirect()->route('login')->withErrors([
-                'email' => 'Please log in to download the AgriCo Mobile Application.',
-            ]);
-        }
-
-        if (method_exists($authUser, 'isApproved') && !$authUser->isApproved()) {
-            if (request()->wantsJson() || request()->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'error'   => 'ACCOUNT_PENDING_APPROVAL',
-                    'message' => 'Account Pending Approval: Your account is awaiting admin approval. Mobile app download will be enabled once approved.',
-                ], 403);
-            }
-            return redirect()->route('website.home')->withErrors([
-                'error' => 'Account Pending Approval: Your account is awaiting admin approval. Mobile app download will be enabled once approved.',
-            ]);
-        }
-
         $activeApp = \App\Models\Application::where('status', 'ACTIVE')->first();
 
-        if ($activeApp && $activeApp->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($activeApp->file_path)) {
-            return \Illuminate\Support\Facades\Storage::disk('public')->download($activeApp->file_path, $activeApp->filename ?: 'agrico-mobile-app.apk');
+        // Track download record if possible
+        try {
+            $userId = $authUser ? ($authUser->user_id ?? $authUser->id ?? null) : null;
+            \App\Models\Download::create([
+                'user_id'        => $userId,
+                'application_id' => $activeApp ? $activeApp->application_id : 1,
+                'download_type'  => 'APK',
+                'download_date'  => now(),
+            ]);
+        } catch (\Throwable $e) {}
+
+        $releaseFallbackUrl = 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.0/agrico-app-v1.0.0.apk';
+
+        if ($activeApp && $activeApp->file_path) {
+            if (str_starts_with($activeApp->file_path, 'http://') || str_starts_with($activeApp->file_path, 'https://')) {
+                return redirect()->away($activeApp->file_path);
+            }
+
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($activeApp->file_path)) {
+                return \Illuminate\Support\Facades\Storage::disk('public')->download($activeApp->file_path, $activeApp->filename ?: 'agrico-app-v1.0.0.apk');
+            }
         }
 
-        $samplePath = 'applications/agrico-mobile-v1.0.0.apk';
-        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($samplePath)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->put($samplePath, 'AgriCo Mobile Application Package');
-        }
-
-        return \Illuminate\Support\Facades\Storage::disk('public')->download($samplePath, 'agrico-mobile-v1.0.0.apk');
+        return redirect()->away($releaseFallbackUrl);
     }
 
 
