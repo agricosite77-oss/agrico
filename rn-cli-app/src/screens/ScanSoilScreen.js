@@ -28,6 +28,7 @@ import {
   flushOfflineQueue,
   mapServerScan,
 } from '../services/scanSyncService';
+import { analyzeSoilOffline } from '../services/offlineSoilAnalysis';
 import { FlashlightIcon, GalleryIcon } from '../components/AppIcons';
 import BottomNavBar from '../components/BottomNavBar';
 import PinSoilLocationModal from '../components/PinSoilLocationModal';
@@ -421,20 +422,46 @@ export default function ScanSoilScreen({ navigation }) {
 
     const gps = getCurrentGps();
     const scanId = newScanId();
-    const queueIt = async (toast) => {
+
+    const runOfflineAnalysisFlow = async () => {
+      // Advance through ML determination stages with smooth animation timing
+      setTimeout(() => advanceStage(1), 320);
+      setTimeout(() => advanceStage(2), 700);
+      setTimeout(() => advanceStage(3), 1100);
+      setTimeout(() => advanceStage(4), 1500);
+      setTimeout(() => advanceStage(5), 1900);
+
+      // Queue for background server synchronization once connectivity is restored
       try {
         await queueAsyncScan({ scanId, imageUri: photo.uri, ...gps });
       } catch (e) {
         console.warn('[ScanSoilScreen] queue failed:', e?.message);
       }
-      stopProgressEngine();
-      setIsScanning(false);
-      setSyncStatus({ queued: true });
-      triggerAutoSaveToast(toast);
+
+      // Perform local spectral extraction & Munsell classification
+      const offlineSpecimen = await analyzeSoilOffline({
+        imageUri: photo.uri,
+        imageBase64: photo.base64,
+      });
+
+      // Complete pipeline & show results
+      setTimeout(async () => {
+        advanceStage(6);
+        await finishProgressEngine();
+        setIsScanning(false);
+        setScanResult(offlineSpecimen);
+        setHasScanned(true);
+        setSyncStatus({ queued: true, isOffline: true });
+        Animated.spring(resultCardAnim, { toValue: 1, friction: 6, tension: 70, useNativeDriver: true }).start();
+        triggerAutoSaveToast('✓ Identified offline (Queued to sync)');
+      }, 2350);
     };
 
     const net = await NetInfo.fetch();
-    if (!net.isConnected) return queueIt('⚡ Saved offline. Will analyze when you reconnect');
+    if (!net.isConnected) {
+      await runOfflineAnalysisFlow();
+      return;
+    }
 
     abortRef.current = new AbortController();
     try {
@@ -444,8 +471,9 @@ export default function ScanSoilScreen({ navigation }) {
         ...gps,
       });
     } catch (e) {
-      // Upload not confirmed: safe to queue and retry later with the SAME scanId
-      return queueIt('⚡ Upload failed. Queued to retry');
+      // Server upload unreachable: seamlessly fall back to on-device offline analysis
+      await runOfflineAnalysisFlow();
+      return;
     }
     await trackInflightScan(scanId); // lets a killed app resume polling on next flush
 
@@ -473,10 +501,8 @@ export default function ScanSoilScreen({ navigation }) {
       setIsScanning(false);
       navigation.navigate('Login');
     } else {
-      // 'lost' / 'failed': the scan may still finish server-side; do not show an error
-      stopProgressEngine();
-      setIsScanning(false);
-      triggerAutoSaveToast('Still processing. Check Scan History shortly');
+      // Dropped or interrupted mid-flight: fall back to offline analysis immediately
+      await runOfflineAnalysisFlow();
     }
   };
 
