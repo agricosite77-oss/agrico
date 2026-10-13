@@ -49,7 +49,7 @@ class UploadApplication extends Component
                     'release_notes'    => "Official AgriCo mobile app release with on-device 6-Stage ML soil scanning and offline Munsell color chart.",
                     'status'           => 'ACTIVE',
                     'uploaded_by'      => auth()->user()?->name ?? 'AgriCo Administrator',
-                    'file_path'        => 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.4/agrico-app-v1.0.4.apk',
+                    'file_path'        => 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.4/agrico-app-v1.0.4.apk',
                 ]);
             }
         }
@@ -73,7 +73,7 @@ class UploadApplication extends Component
             return \Illuminate\Support\Facades\Storage::disk('public')->download($samplePath, ($app?->filename) ?: 'agrico-app-v1.0.4.apk');
         }
 
-        return redirect()->away('https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.4/agrico-app-v1.0.4.apk');
+        return redirect()->away('https://github.com/agricosite77-oss/agrico/releases/download/v1.0.4/agrico-app-v1.0.4.apk');
     }
 
     public function uploadVersion()
@@ -84,7 +84,7 @@ class UploadApplication extends Component
         $versionFormatted = str_starts_with(strtolower(trim($this->versionNumber)), 'v') ? trim($this->versionNumber) : 'v' . trim($this->versionNumber);
         $originalName = 'agrico-app-' . $versionFormatted . '.apk';
         $fileSize = '59.5 MB';
-        $path = !empty($this->githubUrl) ? trim($this->githubUrl) : ('https://github.com/agricosite77-oss/agrico-releases/releases/download/' . $versionFormatted . '/' . $originalName);
+        $path = !empty($this->githubUrl) ? trim($this->githubUrl) : ('https://github.com/agricosite77-oss/agrico/releases/download/' . $versionFormatted . '/' . $originalName);
 
         if ($this->appFile) {
             $originalName = $this->appFile->getClientOriginalName();

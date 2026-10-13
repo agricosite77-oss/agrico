@@ -34,9 +34,6 @@ export const checkForAppUpdate = async () => {
       const isNewer = compareVersions(serverVersion, CURRENT_APP_VERSION) > 0;
 
       let directApk = res.data.direct_apk_url || '';
-      if (directApk.includes('github.com/agricosite77-oss/agrico/')) {
-        directApk = directApk.replace('github.com/agricosite77-oss/agrico/', 'github.com/agricosite77-oss/agrico-releases/');
-      }
 
       return {
         hasUpdate: isNewer,
@@ -61,9 +58,6 @@ export const checkForAppUpdate = async () => {
  */
 export const downloadAndInstallApk = async (apkUrl, onProgress) => {
   let cleanUrl = apkUrl;
-  if (cleanUrl && cleanUrl.includes('github.com/agricosite77-oss/agrico/')) {
-    cleanUrl = cleanUrl.replace('github.com/agricosite77-oss/agrico/', 'github.com/agricosite77-oss/agrico-releases/');
-  }
 
   if (Platform.OS !== 'android') {
     if (cleanUrl) {

@@ -21,7 +21,7 @@ class ApplicationSeeder extends Seeder
                 'release_notes'    => "• Full on-device offline soil scanning (6-Stage ML determination)\n• Complete offline Munsell color chart with 207 colors\n• Enhanced camera preview with auto-zoom & bounding box alignment\n• Persistent offline scan history with auto-sync\n• In-app version checker with instant one-tap update",
                 'status'           => 'ACTIVE',
                 'uploaded_by'      => 'Super Administrator',
-                'file_path'        => 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.4/agrico-app-v1.0.4.apk',
+                'file_path'        => 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.4/agrico-app-v1.0.4.apk',
             ]);
         }
     }
