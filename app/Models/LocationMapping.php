@@ -266,13 +266,13 @@ class LocationMapping extends Model
         if ($this->soilScan?->before_after_image_url) {
             return $this->soilScan->before_after_image_url;
         }
-        $rawImg = $this->soilScan?->scan_image ?? $this->soil?->image;
+        $rawImg = $this->soilScan?->scan_image ?? ($this->soil?->image ?? $this->soilScan?->scan_note);
         if (!empty($rawImg) && preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
             $scanUuid = $m[1];
-            $rel = "storage/scans/scan_{$scanUuid}_before_after.jpg";
-            if (file_exists(public_path($rel)) || file_exists(storage_path("app/public/scans/scan_{$scanUuid}_before_after.jpg"))) {
-                return asset($rel);
-            }
+            return asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
+        }
+        if ($this->soil_scan_id) {
+            return asset("storage/scans/scan_{$this->soil_scan_id}_before_after.jpg");
         }
         return null;
     }

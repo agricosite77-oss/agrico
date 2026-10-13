@@ -4681,10 +4681,10 @@
                                     <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                                 </svg>
-                                STAGE 2: LIGHTING NORMALIZATION
+                                SOIL NORMALIZATION
                             </div>
                             <span id="resStage2EngineBadge" class="before-after-badge" style="font-size: 9.5px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.18); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid rgba(16, 185, 129, 0.3);">
-                                STAGE 2 NORMALIZED
+                                BEFORE / AFTER
                             </span>
                         </div>
                         <div id="resStage2EngineDesc" style="font-size: 11px; color: #8EB69B; margin-bottom: 9px; line-height: 1.4;">
@@ -4865,32 +4865,47 @@
 
                                 $rawImg = $scan->scan_image;
                                 $scanImg = $scan->scan_image_url ?: '';
-                                $baImg = '';
+                                $baImg = $scan->before_after_image_url ?: '';
                                 $rawPhotoImg = '';
-                                if (empty($scanImg) && !empty($rawImg)) {
-                                    if (str_starts_with($rawImg, 'http') || str_starts_with($rawImg, 'data:')) {
-                                        $scanImg = $rawImg;
-                                    } elseif (str_starts_with($rawImg, 'storage/')) {
-                                        $scanImg = asset($rawImg);
-                                    } else {
-                                        $scanImg = asset('storage/' . ltrim($rawImg, '/'));
+                                if (!empty($rawImg)) {
+                                    if (!$scanImg) {
+                                        if (str_starts_with($rawImg, 'http') || str_starts_with($rawImg, 'data:')) {
+                                            $scanImg = $rawImg;
+                                        } elseif (str_starts_with($rawImg, 'storage/')) {
+                                            $scanImg = asset($rawImg);
+                                        } else {
+                                            $scanImg = asset('storage/' . ltrim($rawImg, '/'));
+                                        }
                                     }
 
                                     try {
                                         if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
                                             $scanUuid = $m[1];
-                                            $baRel = "storage/scans/scan_{$scanUuid}_before_after.jpg";
-                                            $rawRel = "storage/scans/scan_{$scanUuid}_raw.jpg";
-                                            if (@file_exists(public_path($baRel))) {
-                                                $baImg = asset($baRel);
-                                            } elseif (@file_exists(storage_path("app/public/scans/scan_{$scanUuid}_before_after.jpg"))) {
-                                                $baImg = asset($baRel);
+                                            if (!$baImg) {
+                                                $baImg = asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
                                             }
-                                            if (@file_exists(public_path($rawRel))) {
-                                                $rawPhotoImg = asset($rawRel);
-                                            }
+                                            $rawPhotoImg = asset("storage/scans/scan_{$scanUuid}_raw.jpg");
                                         }
                                     } catch (\Throwable $e_img) {}
+                                }
+                                if (!$baImg && $scan->scan_note && preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $scan->scan_note, $m)) {
+                                    $scanUuid = $m[1];
+                                    $baImg = asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
+                                    if (!$rawPhotoImg) {
+                                        $rawPhotoImg = asset("storage/scans/scan_{$scanUuid}_raw.jpg");
+                                    }
+                                }
+                                if (!$baImg && $scan->soil_scan_id) {
+                                    $baImg = asset("storage/scans/scan_{$scan->soil_scan_id}_before_after.jpg");
+                                }
+                                if (!$rawPhotoImg && $scan->soil_scan_id) {
+                                    $rawPhotoImg = asset("storage/scans/scan_{$scan->soil_scan_id}_raw.jpg");
+                                }
+                                if (!$rawPhotoImg) {
+                                    $rawPhotoImg = $scanImg;
+                                }
+                                if (!$baImg) {
+                                    $baImg = $scanImg;
                                 }
                                 if (!$scanImg && $scan->soil?->munsellColor?->image) {
                                     $scanImg = asset('storage/' . ltrim($scan->soil->munsellColor->image, '/'));
@@ -7439,29 +7454,18 @@
                     const stage2Mode = (data.stage2_mode || data.stage2_engine || '').toLowerCase();
 
                     if (resStage2Badge) {
+                        resStage2Badge.textContent = 'BEFORE / AFTER';
+                        resStage2Badge.style.background = 'rgba(16, 185, 129, 0.18)';
+                        resStage2Badge.style.color = '#10b981';
+                        resStage2Badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                    }
+                    if (resStage2Desc) {
                         if (stage2Mode === 'promptnorm') {
-                            resStage2Badge.textContent = 'PROMPTNORM (ACTIVE)';
-                            resStage2Badge.style.background = 'rgba(16, 185, 129, 0.18)';
-                            resStage2Badge.style.color = '#10b981';
-                            resStage2Badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
-                            if (resStage2Desc) {
-                                resStage2Desc.textContent = 'Neural Sidecar Active — Corrected illumination & surface normals via PromptNorm before color detection.';
-                            }
+                            resStage2Desc.textContent = 'PromptNorm Sidecar Active — Corrected illumination & surface normals before Munsell color matching.';
                         } else if (stage2Mode.includes('fallback')) {
-                            resStage2Badge.textContent = 'CLASSICAL FALLBACK (SIDECAR OFFLINE)';
-                            resStage2Badge.style.background = 'rgba(245, 158, 11, 0.18)';
-                            resStage2Badge.style.color = '#fbbf24';
-                            resStage2Badge.style.border = '1px solid rgba(245, 158, 11, 0.3)';
-                            if (resStage2Desc) {
-                                resStage2Desc.textContent = 'PromptNorm sidecar unreachable — Corrected lighting via Classical LAB flat-fielding & CLAHE fallback.';
-                            }
-                            resStage2Badge.textContent = 'CLASSICAL LAB NORMALIZER';
-                            resStage2Badge.style.background = 'rgba(16, 185, 129, 0.18)';
-                            resStage2Badge.style.color = '#10b981';
-                            resStage2Badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
-                            if (resStage2Desc) {
-                                resStage2Desc.textContent = 'Classical LAB Engine Active — Uneven illumination & gradients corrected via flat-fielding & CLAHE.';
-                            }
+                            resStage2Desc.textContent = 'Classical Fallback — Corrected lighting via LAB flat-fielding & CLAHE before color matching.';
+                        } else {
+                            resStage2Desc.textContent = 'Uneven illumination & shadows corrected before Munsell color matching.';
                         }
                     }
 
@@ -8357,8 +8361,20 @@
                         baUrl += `?t=${Date.now()}`;
                     }
 
-                    const rawSrc = data.raw_image_url || data.raw_image;
+                    let rawSrc = data.raw_image_url || data.raw_image;
                     const normSrc = cleanSourceImg || data.image || data.scan_image;
+                    if (!rawSrc && data.image) {
+                        const uuidMatch = data.image.match(/(?:scan|region)_([a-f0-9\-]{10,})/i);
+                        if (uuidMatch) {
+                            rawSrc = `/storage/scans/scan_${uuidMatch[1]}_raw.jpg`;
+                        }
+                    }
+                    if (!rawSrc && data.scan_id) {
+                        rawSrc = `/storage/scans/scan_${data.scan_id}_raw.jpg`;
+                    }
+                    if (!rawSrc) {
+                        rawSrc = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || normSrc;
+                    }
                     window.currentBeforeAfterRegion = targetRegion;
 
                     function showModalBeforeAfter(src) {
@@ -8368,14 +8384,28 @@
                             if (modalBeforeAfterBoxes) renderBeforeAfterBoxes(modalBeforeAfterBoxes, regions);
                         };
                         modalBeforeAfterImg.onerror = () => {
-                            if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = '';
-                            const fallbackSrc = normSrc || rawSrc;
-                            if (fallbackSrc && modalBeforeAfterImg.src !== fallbackSrc) {
-                                modalBeforeAfterImg.src = fallbackSrc;
+                            const fallbackRaw = rawSrc || (typeof base64Image !== 'undefined' ? base64Image : null) || window.currentClientSoilPhoto;
+                            const fallbackNorm = normSrc || cleanSourceImg || data.image || data.scan_image;
+                            if (fallbackRaw && fallbackNorm) {
+                                try {
+                                    generateBeforeAfterCanvas(fallbackRaw, fallbackNorm, code, targetRegion, (stitchedDataUrl) => {
+                                        if (stitchedDataUrl && modalBeforeAfterImg.src !== stitchedDataUrl) {
+                                            showModalBeforeAfter(stitchedDataUrl);
+                                        } else if (fallbackNorm && modalBeforeAfterImg.src !== fallbackNorm) {
+                                            modalBeforeAfterImg.src = fallbackNorm;
+                                            modalBeforeAfterCard.style.display = 'block';
+                                            if (modalBeforeAfterBoxes) renderBeforeAfterBoxes(modalBeforeAfterBoxes, regions);
+                                        }
+                                    });
+                                    return;
+                                } catch (e) {}
+                            }
+                            if (fallbackNorm && modalBeforeAfterImg.src !== fallbackNorm) {
+                                modalBeforeAfterImg.src = fallbackNorm;
                                 modalBeforeAfterCard.style.display = 'block';
+                                if (modalBeforeAfterBoxes) renderBeforeAfterBoxes(modalBeforeAfterBoxes, regions);
                             } else {
                                 modalBeforeAfterImg.dataset.loaded = 'false';
-                                modalBeforeAfterCard.style.display = 'none';
                             }
                         };
                         modalBeforeAfterImg.dataset.loaded = 'pending';
@@ -8386,6 +8416,18 @@
 
                     if (baUrl) {
                         showModalBeforeAfter(baUrl);
+                    } else if (rawSrc && normSrc) {
+                        try {
+                            generateBeforeAfterCanvas(rawSrc, normSrc, code, targetRegion, (stitchedDataUrl) => {
+                                if (stitchedDataUrl) {
+                                    showModalBeforeAfter(stitchedDataUrl);
+                                } else {
+                                    showModalBeforeAfter(normSrc || rawSrc);
+                                }
+                            });
+                        } catch (e) {
+                            showModalBeforeAfter(normSrc || rawSrc);
+                        }
                     } else if (normSrc || rawSrc) {
                         showModalBeforeAfter(normSrc || rawSrc);
                     } else {

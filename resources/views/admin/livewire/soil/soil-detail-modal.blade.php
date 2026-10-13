@@ -117,23 +117,27 @@
         $rawImg = $scan->scan_image;
         if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
             $scanUuid = $m[1];
-            $baRel = "storage/scans/scan_{$scanUuid}_before_after.jpg";
-            $baClean = "scans/scan_{$scanUuid}_before_after.jpg";
-            if (file_exists(public_path($baRel)) || file_exists(storage_path('app/public/' . $baClean))) {
-                $baImg = asset($baRel);
-            }
+            $baImg = asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
+        }
+    }
+    if (!$baImg && $scan?->scan_note) {
+        if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $scan->scan_note, $m)) {
+            $scanUuid = $m[1];
+            $baImg = asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
         }
     }
     if (!$baImg && $soil?->image) {
         $rawImg = $soil->image;
         if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
             $scanUuid = $m[1];
-            $baRel = "storage/scans/scan_{$scanUuid}_before_after.jpg";
-            $baClean = "scans/scan_{$scanUuid}_before_after.jpg";
-            if (file_exists(public_path($baRel)) || file_exists(storage_path('app/public/' . $baClean))) {
-                $baImg = asset($baRel);
-            }
+            $baImg = asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
         }
+    }
+    if (!$baImg && $scan?->soil_scan_id) {
+        $baImg = asset("storage/scans/scan_{$scan->soil_scan_id}_before_after.jpg");
+    }
+    if (!$baImg) {
+        $baImg = $scanImg ?: $thumbFallback;
     }
 
     $normalizeBox = function($r) {
@@ -1117,7 +1121,10 @@
             @endif
 
             {{-- 7. SOIL NORMALIZATION: BEFORE / AFTER CARD --}}
-            @if($baImg)
+            @if($baImg || $scanImg)
+                @php
+                    $displayBaImg = $baImg ?: $scanImg;
+                @endphp
                 <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <div class="soil-metric-card-label" style="margin-bottom: 0;">
@@ -1128,7 +1135,7 @@
                         </span>
                     </div>
                     <div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25);">
-                        <img src="{{ $baImg }}" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 8px;" onerror="this.closest('.soil-metric-card').style.display='none';">
+                        <img src="{{ $displayBaImg }}" data-fallback="{{ $scanImg ?: $thumbFallback }}" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 8px;" onerror="if(this.dataset.fallback && this.src !== this.dataset.fallback){ this.src = this.dataset.fallback; }">
                         @php
                             $renderRegions = !empty($regions) ? $regions : [($dominant ?: ['box' => ['x' => 0.25, 'y' => 0.25, 'w' => 0.5, 'h' => 0.5]])];
                             $ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];

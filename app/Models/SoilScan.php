@@ -265,14 +265,13 @@ class SoilScan extends Model
 
     public function getBeforeAfterImageUrlAttribute(): ?string
     {
-        $rawImg = $this->scan_image;
+        $rawImg = $this->scan_image ?? $this->scan_note;
         if (!empty($rawImg) && preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
             $scanUuid = $m[1];
-            $rel = "storage/scans/scan_{$scanUuid}_before_after.jpg";
-            $cleanRel = "scans/scan_{$scanUuid}_before_after.jpg";
-            if (file_exists(public_path($rel)) || file_exists(storage_path('app/public/' . $cleanRel))) {
-                return asset($rel);
-            }
+            return asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
+        }
+        if ($this->soil_scan_id) {
+            return asset("storage/scans/scan_{$this->soil_scan_id}_before_after.jpg");
         }
         return null;
     }
