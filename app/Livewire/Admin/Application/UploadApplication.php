@@ -12,11 +12,13 @@ class UploadApplication extends Component
 
     public $appFile;
     public $versionNumber = '';
+    public $githubUrl = '';
     public $releaseNotes = '';
 
     protected $rules = [
         'versionNumber' => 'required|string',
-        'releaseNotes' => 'required|string',
+        'releaseNotes'  => 'required|string',
+        'githubUrl'     => 'nullable|string',
     ];
 
     protected function checkSuperAdmin(): void
@@ -41,13 +43,13 @@ class UploadApplication extends Component
             } else {
                 Application::create([
                     'application_name' => 'AgriCo Mobile App',
-                    'version' => 'v1.0.0',
-                    'filename' => 'agrico-app-v1.0.0.apk',
-                    'file_size' => '48.5 MB',
-                    'release_notes' => 'Official AgriCo mobile app release with soil scanning and GPS location mapping.',
-                    'status' => 'ACTIVE',
-                    'uploaded_by' => auth()->user()?->name ?? 'AgriCo Administrator',
-                    'file_path' => 'applications/agrico-app-v1.0.0.apk',
+                    'version'          => 'v1.0.4',
+                    'filename'         => 'agrico-app-v1.0.4.apk',
+                    'file_size'        => '59.5 MB',
+                    'release_notes'    => "Official AgriCo mobile app release with on-device 6-Stage ML soil scanning and offline Munsell color chart.",
+                    'status'           => 'ACTIVE',
+                    'uploaded_by'      => auth()->user()?->name ?? 'AgriCo Administrator',
+                    'file_path'        => 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.4/agrico-app-v1.0.4.apk',
                 ]);
             }
         }
@@ -57,16 +59,21 @@ class UploadApplication extends Component
     {
         $this->checkSuperAdmin();
         $app = Application::find($id);
-        if ($app && $app->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($app->file_path)) {
-            return \Illuminate\Support\Facades\Storage::disk('public')->download($app->file_path, $app->filename ?: 'agrico-app.apk');
+        if ($app) {
+            if ($app->file_path && (str_starts_with($app->file_path, 'http://') || str_starts_with($app->file_path, 'https://'))) {
+                return redirect()->away($app->file_path);
+            }
+            if ($app->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($app->file_path)) {
+                return \Illuminate\Support\Facades\Storage::disk('public')->download($app->file_path, $app->filename ?: 'agrico-app.apk');
+            }
         }
 
-        $samplePath = 'applications/agrico-mobile-v1.0.0.apk';
-        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($samplePath)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->put($samplePath, 'AgriCo Mobile Application Package');
+        $samplePath = 'applications/agrico-app-v1.0.4.apk';
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($samplePath)) {
+            return \Illuminate\Support\Facades\Storage::disk('public')->download($samplePath, ($app?->filename) ?: 'agrico-app-v1.0.4.apk');
         }
 
-        return \Illuminate\Support\Facades\Storage::disk('public')->download($samplePath, ($app?->filename) ?: 'agrico-mobile-v1.0.0.apk');
+        return redirect()->away('https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.4/agrico-app-v1.0.4.apk');
     }
 
     public function uploadVersion()
@@ -76,14 +83,23 @@ class UploadApplication extends Component
 
         $versionFormatted = str_starts_with(strtolower(trim($this->versionNumber)), 'v') ? trim($this->versionNumber) : 'v' . trim($this->versionNumber);
         $originalName = 'agrico-app-' . $versionFormatted . '.apk';
-        $fileSize = '48.5 MB';
-        $path = 'applications/' . $originalName;
+        $fileSize = '59.5 MB';
+        $path = !empty($this->githubUrl) ? trim($this->githubUrl) : ('https://github.com/agricosite77-oss/agrico-releases/releases/download/' . $versionFormatted . '/' . $originalName);
 
         if ($this->appFile) {
             $originalName = $this->appFile->getClientOriginalName();
             $bytes = $this->appFile->getSize();
             $fileSize = round($bytes / 1024 / 1024, 1) . ' MB';
             $path = $this->appFile->store('applications', 'public');
+        } elseif (!empty($this->githubUrl)) {
+            $path = trim($this->githubUrl);
+        } else {
+            // Check if existing file in storage matches this version
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists('applications/' . $originalName)) {
+                $path = 'applications/' . $originalName;
+                $bytes = \Illuminate\Support\Facades\Storage::disk('public')->size($path);
+                $fileSize = round($bytes / 1024 / 1024, 1) . ' MB';
+            }
         }
 
         // Set previous ACTIVE apps to ARCHIVED
@@ -94,16 +110,16 @@ class UploadApplication extends Component
 
         Application::create([
             'application_name' => 'AgriCo Mobile App',
-            'version' => $versionFormatted,
-            'filename' => $originalName,
-            'file_size' => $fileSize,
-            'release_notes' => $this->releaseNotes,
-            'status' => 'ACTIVE',
-            'uploaded_by' => $uploaderName,
-            'file_path' => $path,
+            'version'          => $versionFormatted,
+            'filename'         => $originalName,
+            'file_size'        => $fileSize,
+            'release_notes'    => $this->releaseNotes,
+            'status'           => 'ACTIVE',
+            'uploaded_by'      => $uploaderName,
+            'file_path'        => $path,
         ]);
 
-        $this->reset(['appFile', 'versionNumber', 'releaseNotes']);
+        $this->reset(['appFile', 'versionNumber', 'githubUrl', 'releaseNotes']);
         session()->flash('message', 'New application version ' . $versionFormatted . ' uploaded and deployed successfully!');
     }
 

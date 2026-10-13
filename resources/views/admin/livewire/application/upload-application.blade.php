@@ -166,13 +166,31 @@
                     <input
                         type="text"
                         wire:model="versionNumber"
-                        placeholder="e.g. v2.5.0"
+                        placeholder="e.g. v1.0.4"
                         style="width:100%; border:1px solid #e2e8f0; border-radius:12px; background:#ffffff; padding:11px 16px; font-size:14px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
                         onfocus="this.style.borderColor='#93e098'; this.style.boxShadow='0 0 0 3px rgba(147,224,152,0.2)';"
                         onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
                         required
                     />
                     @error('versionNumber')
+                        <span style="font-size:12px; color:#ef4444; font-weight:600; margin-top:4px; display:block;">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{-- GITHUB RELEASE ASSET URL (OPTIONAL) --}}
+                <div style="width:100%;">
+                    <label style="font-size:12px; font-weight:800; color:#475569; display:block; margin-bottom:6px;">
+                        GitHub Release APK URL <span style="font-size:11px; color:#94a3b8; font-weight:500;">(Optional if uploading file above)</span>
+                    </label>
+                    <input
+                        type="url"
+                        wire:model="githubUrl"
+                        placeholder="https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.4/agrico-app-v1.0.4.apk"
+                        style="width:100%; border:1px solid #e2e8f0; border-radius:12px; background:#ffffff; padding:11px 16px; font-size:13px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
+                        onfocus="this.style.borderColor='#93e098'; this.style.boxShadow='0 0 0 3px rgba(147,224,152,0.2)';"
+                        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
+                    />
+                    @error('githubUrl')
                         <span style="font-size:12px; color:#ef4444; font-weight:600; margin-top:4px; display:block;">{{ $message }}</span>
                     @enderror
                 </div>
@@ -203,7 +221,7 @@
                     onmouseover="this.style.background='#7ec983';"
                     onmouseout="this.style.background='#93e098';"
                 >
-                    Upload Version
+                    Deploy New Version
                 </button>
             </form>
         </div>
@@ -258,6 +276,13 @@
                                         <span style="background:#f1f5f9; color:#64748b; font-size:10px; font-weight:800; border-radius:9999px; padding:2px 8px; border:1px solid #e2e8f0; text-transform:uppercase;">
                                             ARCHIVED
                                         </span>
+                                    @endif
+
+                                    @if(str_contains($app->file_path ?? '', 'github.com'))
+                                        <a href="{{ $app->file_path }}" target="_blank" rel="noopener noreferrer" style="background:#f8fafc; color:#0f172a; font-size:10px; font-weight:700; border-radius:9999px; padding:2px 8px; border:1px solid #e2e8f0; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:border-color 0.2s ease;" onmouseover="this.style.borderColor='#94a3b8';" onmouseout="this.style.borderColor='#e2e8f0';" title="View GitHub Release Asset">
+                                            <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                                            GitHub Release
+                                        </a>
                                     @endif
                                 </div>
 
@@ -319,7 +344,7 @@
                             {{-- DELETE ICON --}}
                             @if($app->status !== 'ACTIVE')
                                 <button
-                                    wire:click="deleteVersion({{ $app->id }})"
+                                    wire:click="deleteVersion({{ $app->application_id }})"
                                     style="color:#94a3b8; background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:color 0.2s ease;"
                                     onmouseover="this.style.color='#ef4444';"
                                     onmouseout="this.style.color='#94a3b8';"

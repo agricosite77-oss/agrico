@@ -15,15 +15,15 @@ class AppVersionController extends Controller
     {
         $activeApp = Application::where('status', 'ACTIVE')->latest()->first();
 
-        $defaultVersion = 'v1.0.3';
-        $defaultNotes = "• Full on-device offline soil scanning (6-Stage ML determination)\n• Complete offline Munsell color chart with 207 colors\n• Persistent offline scan history with auto-sync\n• Check for Updates button in Profile";
+        $defaultVersion = 'v1.0.4';
+        $defaultNotes = "• Full on-device offline soil scanning (6-Stage ML determination)\n• Complete offline Munsell color chart with 207 colors\n• Enhanced camera preview with auto-zoom & bounding box alignment\n• Persistent offline scan history with auto-sync\n• In-app version checker with instant one-tap update";
         $defaultSize = '59.5 MB';
-        $defaultUrl = 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.2/agrico-app-v1.0.2.apk';
+        $defaultUrl = 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.4/agrico-app-v1.0.4.apk';
 
         $version = $activeApp?->version ?: $defaultVersion;
-        // Ensure version is at least v1.0.3 so online clients get the update prompt
-        if (in_array($version, ['v1.0.0', 'v1.0.1', 'v1.0.2'])) {
-            $version = 'v1.0.3';
+        // Ensure version is at least v1.0.4 so older clients get the update prompt
+        if (in_array($version, ['v1.0.0', 'v1.0.1', 'v1.0.2', 'v1.0.3'])) {
+            $version = 'v1.0.4';
         }
 
         $releaseNotes = $activeApp?->release_notes ?: $defaultNotes;
@@ -39,8 +39,8 @@ class AppVersionController extends Controller
         if (str_contains($apkUrl, 'github.com/agricosite77-oss/agrico/')) {
             $apkUrl = str_replace('github.com/agricosite77-oss/agrico/', 'github.com/agricosite77-oss/agrico-releases/', $apkUrl);
         }
-        if (str_contains($apkUrl, 'v1.0.0')) {
-            $apkUrl = str_replace('v1.0.0', 'v1.0.2', $apkUrl);
+        if (str_contains($apkUrl, 'v1.0.0') || str_contains($apkUrl, 'v1.0.2')) {
+            $apkUrl = str_replace(['v1.0.0', 'v1.0.2'], 'v1.0.4', $apkUrl);
         }
 
         $isMaintenance = Application::isMaintenanceMode();

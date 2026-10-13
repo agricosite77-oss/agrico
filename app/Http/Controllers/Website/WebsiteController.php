@@ -722,15 +722,15 @@ class WebsiteController extends Controller
             ]);
         } catch (\Throwable $e) {}
 
-        $releaseFallbackUrl = 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.2/agrico-app-v1.0.2.apk';
+        $releaseFallbackUrl = 'https://github.com/agricosite77-oss/agrico-releases/releases/download/v1.0.4/agrico-app-v1.0.4.apk';
 
         if ($activeApp && $activeApp->file_path) {
             $targetUrl = $activeApp->file_path;
             if (str_contains($targetUrl, 'github.com/agricosite77-oss/agrico/')) {
                 $targetUrl = str_replace('github.com/agricosite77-oss/agrico/', 'github.com/agricosite77-oss/agrico-releases/', $targetUrl);
             }
-            if (str_contains($targetUrl, 'v1.0.0')) {
-                $targetUrl = str_replace('v1.0.0', 'v1.0.2', $targetUrl);
+            if (str_contains($targetUrl, 'v1.0.0') || str_contains($targetUrl, 'v1.0.2')) {
+                $targetUrl = str_replace(['v1.0.0', 'v1.0.2'], 'v1.0.4', $targetUrl);
             }
 
             if (str_starts_with($targetUrl, 'http://') || str_starts_with($targetUrl, 'https://')) {
@@ -738,7 +738,7 @@ class WebsiteController extends Controller
             }
 
             if (\Illuminate\Support\Facades\Storage::disk('public')->exists($activeApp->file_path)) {
-                return \Illuminate\Support\Facades\Storage::disk('public')->download($activeApp->file_path, $activeApp->filename ?: 'agrico-app-v1.0.0.apk');
+                return \Illuminate\Support\Facades\Storage::disk('public')->download($activeApp->file_path, $activeApp->filename ?: 'agrico-app-v1.0.4.apk');
             }
         }
 
