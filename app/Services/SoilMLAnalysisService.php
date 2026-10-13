@@ -329,6 +329,8 @@ class SoilMLAnalysisService
         $fullPublicJpg = storage_path('app/public/' . $scanJpgName);
         $normJpgName = "scans/scan_{$scanId}_normalized.jpg";
         $fullNormJpg = storage_path('app/public/' . $normJpgName);
+        $baJpgName = "scans/scan_{$scanId}_before_after.jpg";
+        $fullBaJpg = storage_path('app/public/' . $baJpgName);
 
         // Check for candidate Stage 2 normalized image path
         $candidateNormPath = $pythonResult['stage2_normalized_path']
@@ -337,6 +339,77 @@ class SoilMLAnalysisService
 
         if (!file_exists($fullNormJpg) && !empty($candidateNormPath) && file_exists($candidateNormPath)) {
             @copy($candidateNormPath, $fullNormJpg);
+        }
+
+        // Check for candidate Before & After comparison image path
+        $candidateBaPath = $pythonResult['before_after_image_path']
+            ?? $analysis['before_after_image_path']
+            ?? null;
+
+        if (!file_exists($fullBaJpg) && !empty($candidateBaPath) && file_exists($candidateBaPath)) {
+            @copy($candidateBaPath, $fullBaJpg);
+        }
+
+        // If Before & After comparison image does not exist yet, generate it via GD
+        if (!file_exists($fullBaJpg) && extension_loaded('gd')) {
+            $rawSource = file_exists(storage_path('app/public/scans/scan_' . $scanId . '_raw.jpg'))
+                ? storage_path('app/public/scans/scan_' . $scanId . '_raw.jpg')
+                : (file_exists($fullPublicJpg) ? $fullPublicJpg : null);
+            $normSource = file_exists($fullNormJpg)
+                ? $fullNormJpg
+                : (file_exists($fullPublicJpg) ? $fullPublicJpg : null);
+
+            if ($rawSource && $normSource) {
+                try {
+                    $imRaw = @imagecreatefromjpeg($rawSource) ?: @imagecreatefrompng($rawSource);
+                    $imNorm = @imagecreatefromjpeg($normSource) ?: @imagecreatefrompng($normSource);
+                    if ($imRaw && $imNorm) {
+                        $rw = imagesx($imRaw);
+                        $rh = imagesy($imRaw);
+                        $maxW = 1200;
+                        if ($rw > $maxW) {
+                            $scale = $maxW / (float)$rw;
+                            $targetW = (int)($rw * $scale);
+                            $targetH = (int)($rh * $scale);
+                            $scaledRaw = imagecreatetruecolor($targetW, $targetH);
+                            imagecopyresampled($scaledRaw, $imRaw, 0, 0, 0, 0, $targetW, $targetH, $rw, $rh);
+                            imagedestroy($imRaw);
+                            $imRaw = $scaledRaw;
+                            $rw = $targetW;
+                            $rh = $targetH;
+                        }
+
+                        $barH = max(30, (int)($rh * 0.08));
+                        $canvasW = $rw * 2;
+                        $canvasH = $rh + $barH;
+                        $canvas = imagecreatetruecolor($canvasW, $canvasH);
+
+                        $bgColor = imagecolorallocate($canvas, 18, 30, 24);
+                        imagefilledrectangle($canvas, 0, 0, $canvasW, $canvasH, $bgColor);
+
+                        imagecopyresampled($canvas, $imRaw, 0, $barH, 0, 0, $rw, $rh, imagesx($imRaw), imagesy($imRaw));
+                        imagecopyresampled($canvas, $imNorm, $rw, $barH, 0, 0, $rw, $rh, imagesx($imNorm), imagesy($imNorm));
+
+                        $divColor = imagecolorallocatealpha($canvas, 255, 255, 255, 64);
+                        imageline($canvas, $rw, 0, $rw, $canvasH, $divColor);
+
+                        $amber = imagecolorallocate($canvas, 251, 191, 36);
+                        $mint = imagecolorallocate($canvas, 142, 242, 178);
+                        $font = 4;
+                        imagestring($canvas, $font, 12, (int)($barH * 0.25), "BEFORE", $amber);
+                        $mCodeStr = $analysis['munsell_code'] ?? ($analysis['munsell'] ?? '');
+                        $afterLabel = "AFTER (NORMALIZED)" . ($mCodeStr ? " -- {$mCodeStr}" : "");
+                        imagestring($canvas, $font, $rw + 12, (int)($barH * 0.25), $afterLabel, $mint);
+
+                        @imagejpeg($canvas, $fullBaJpg, 92);
+                        imagedestroy($canvas);
+                        imagedestroy($imRaw);
+                        imagedestroy($imNorm);
+                    }
+                } catch (\Throwable $e_gd) {
+                    Log::warning('[SoilMLAnalysisService] GD before/after stitch failed: ' . $e_gd->getMessage());
+                }
+            }
         }
 
         $publicScanRelativePath = null;
@@ -359,6 +432,9 @@ class SoilMLAnalysisService
         $disk = env('FILESYSTEM_DISK', 'public');
         if ($disk === 's3') {
             try {
+                if (file_exists($fullBaJpg)) {
+                    Storage::disk('s3')->put($baJpgName, file_get_contents($fullBaJpg), 'public');
+                }
                 if (file_exists($fullNormJpg)) {
                     $uploadedNorm = Storage::disk('s3')->put($normJpgName, file_get_contents($fullNormJpg), 'public');
                     if ($uploadedNorm) {

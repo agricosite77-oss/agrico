@@ -84,32 +84,20 @@
     $munsellFallback = $mColor?->image ? $formatImageUrl($mColor->image) : ($soil?->image ? $formatImageUrl($soil->image) : '');
 
     $scanImg = $scan?->scan_image_url ?? ($scan?->scan_image ? $formatImageUrl($scan->scan_image) : '');
-    if ($scanImg && !str_starts_with($scanImg, 'data:')) {
-        $localRel = null;
-        if (preg_match('#/storage/(scans/[^?#]+)#i', $scanImg, $mPath)) {
-            $localRel = $mPath[1];
-        } elseif ($scan?->scan_image && !str_starts_with($scan->scan_image, 'http')) {
-            $localRel = ltrim(str_replace('storage/', '', $scan->scan_image), '/');
-        }
-        if ($localRel) {
-            $pubPath = public_path('storage/' . $localRel);
-            $appPub = storage_path('app/public/' . $localRel);
-            if (!file_exists($pubPath) && !file_exists($appPub)) {
-                $scanImg = $thumbFallback ?: ($siblingScanImg ?: ($munsellFallback ?: $scanImg));
-            }
-        }
-    }
-    if (!$scanImg && $thumbFallback) {
-        $scanImg = $thumbFallback;
-    }
     if (!$scanImg && !empty($dominant['image'])) {
         $scanImg = $formatImageUrl($dominant['image']);
     }
     if (!$scanImg && !empty($dominant['image_url'])) {
         $scanImg = $formatImageUrl($dominant['image_url']);
     }
+    if (!$scanImg && $siblingScanImg) {
+        $scanImg = $siblingScanImg;
+    }
     if (!$scanImg && $munsellFallback) {
         $scanImg = $munsellFallback;
+    }
+    if (!$scanImg && $thumbFallback) {
+        $scanImg = $thumbFallback;
     }
 
     $scanUser = $scan?->user?->name ?? 'Admin Analyst';
@@ -139,8 +127,12 @@
     if (!$baImg && $scan?->soil_scan_id) {
         $baImg = asset("storage/scans/scan_{$scan->soil_scan_id}_before_after.jpg");
     }
-    if (!$baImg) {
-        $baImg = $scanImg ?: $thumbFallback;
+
+    $rawPhotoImg = '';
+    if ($scan?->scan_image && preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $scan->scan_image, $m)) {
+        $rawPhotoImg = asset("storage/scans/scan_{$m[1]}_raw.jpg");
+    } elseif ($scan?->soil_scan_id) {
+        $rawPhotoImg = asset("storage/scans/scan_{$scan->soil_scan_id}_raw.jpg");
     }
 
     $normalizeBox = function($r) {
@@ -1037,9 +1029,13 @@
             @endif
 
             {{-- 6. SOIL NORMALIZATION: BEFORE / AFTER CARD (Matching Screenshot 1) --}}
-            @if($baImg || $scanImg)
+            @if($baImg || $scanImg || $rawPhotoImg)
                 @php
-                    $displayBaImg = $baImg ?: $scanImg;
+                    $displayBaImg = $baImg ?: ($rawPhotoImg ?: $scanImg);
+                    $renderRegions = !empty($regions) ? $regions : [($dominant ?: ['box' => ['x' => 0.25, 'y' => 0.25, 'w' => 0.5, 'h' => 0.5]])];
+                    $ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
+                    $rawSource = $rawPhotoImg ?: $scanImg;
+                    $normSource = $scanImg ?: $rawPhotoImg;
                 @endphp
                 <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -1050,13 +1046,20 @@
                             BEFORE / AFTER
                         </span>
                     </div>
-                    <div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25);">
-                        <img src="{{ $displayBaImg }}" data-fallback="{{ $scanImg ?: $thumbFallback }}" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 8px;" onerror="if(this.dataset.fallback && this.src !== this.dataset.fallback){ this.src = this.dataset.fallback; }">
-                        @php
-                            $renderRegions = !empty($regions) ? $regions : [($dominant ?: ['box' => ['x' => 0.25, 'y' => 0.25, 'w' => 0.5, 'h' => 0.5]])];
-                            $ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
-                        @endphp
-                        <div style="position: absolute; inset: 0; pointer-events: none;">
+
+                    {{-- Unified Before & After Container (Composite Image with Canvas Stitching Fallback) --}}
+                    <div id="mappingBeforeAfterWrapper-{{ $mapping->mapping_id ?? ($scan?->soil_scan_id ?? $soil?->soil_id) }}" style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25); cursor: pointer;" title="Click to view full resolution comparison">
+                        <img
+                            id="mappingSoilBaImg-{{ $mapping->mapping_id ?? ($scan?->soil_scan_id ?? $soil?->soil_id) }}"
+                            src="{{ $displayBaImg }}"
+                            data-raw="{{ $rawSource }}"
+                            data-norm="{{ $normSource }}"
+                            data-code="{{ $displayCode }}"
+                            alt="Soil Before & After Normalization"
+                            style="width: 100%; height: auto; display: block; border-radius: 8px;"
+                            onerror="window.handleAdminSoilBaFallback && window.handleAdminSoilBaFallback(this);"
+                        />
+                        <div style="position: absolute; inset: 0; pointer-events: none; z-index: 10;">
                             @foreach($renderRegions as $idx => $r)
                                 @php
                                     $bData = $normalizeBox($r);
@@ -1134,4 +1137,83 @@
     </div>
 </div>
 @endif
+
+    <script>
+        if (typeof window.handleAdminSoilBaFallback === 'undefined') {
+            window.handleAdminSoilBaFallback = function(img) {
+                if (!img || img.dataset.handledFallback === 'true') return;
+                img.dataset.handledFallback = 'true';
+
+                const rawSrc = img.dataset.raw;
+                const normSrc = img.dataset.norm;
+                const label = img.dataset.code || '';
+
+                if (rawSrc && normSrc) {
+                    const imgBefore = new Image();
+                    const imgAfter = new Image();
+                    if (!rawSrc.startsWith('data:') && !rawSrc.startsWith('blob:')) imgBefore.crossOrigin = 'anonymous';
+                    if (!normSrc.startsWith('data:') && !normSrc.startsWith('blob:')) imgAfter.crossOrigin = 'anonymous';
+
+                    let beforeDone = false, afterDone = false;
+                    const tryStitch = () => {
+                        try {
+                            const targetW = 640;
+                            const scale = targetW / (imgBefore.naturalWidth || targetW);
+                            const w = targetW;
+                            const h = Math.max(160, Math.round((imgBefore.naturalHeight || 360) * scale));
+                            const barH = Math.max(30, Math.round(h * 0.08));
+                            const canvas = document.createElement('canvas');
+                            canvas.width = w * 2;
+                            canvas.height = h + barH;
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) return;
+
+                            // Top Bar background (#121e18)
+                            ctx.fillStyle = '#121e18';
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                            // Draw Before and After images
+                            ctx.drawImage(imgBefore, 0, barH, w, h);
+                            ctx.drawImage(imgAfter, w, barH, w, h);
+
+                            // Bar text
+                            ctx.font = 'bold 12px Inter, ui-sans-serif, system-ui, sans-serif';
+                            ctx.textBaseline = 'middle';
+
+                            // BEFORE label (amber)
+                            ctx.fillStyle = '#fbbf24';
+                            ctx.fillText('BEFORE', 12, barH / 2);
+
+                            // AFTER label (mint green)
+                            ctx.fillStyle = '#8ef2b2';
+                            const afterText = 'AFTER (NORMALIZED)' + (label ? ' -- ' + label : '');
+                            ctx.fillText(afterText, w + 12, barH / 2);
+
+                            // Center divider line
+                            ctx.save();
+                            ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(w, 0);
+                            ctx.lineTo(w, canvas.height);
+                            ctx.stroke();
+                            ctx.restore();
+
+                            img.src = canvas.toDataURL('image/jpeg', 0.92);
+                        } catch (err) {
+                            console.warn('[Admin Mapping Detail] Canvas stitching fallback error:', err);
+                        }
+                    };
+
+                    imgBefore.onload = () => { beforeDone = true; if (afterDone) tryStitch(); };
+                    imgAfter.onload = () => { afterDone = true; if (beforeDone) tryStitch(); };
+                    imgBefore.onerror = () => { beforeDone = true; if (afterDone) tryStitch(); };
+                    imgAfter.onerror = () => { afterDone = true; if (beforeDone) tryStitch(); };
+
+                    imgBefore.src = rawSrc;
+                    imgAfter.src = normSrc;
+                }
+            };
+        }
+    </script>
 </div>

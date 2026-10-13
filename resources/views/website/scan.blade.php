@@ -8361,8 +8361,14 @@
                         baUrl += `?t=${Date.now()}`;
                     }
 
+                    const thumbData = (targetRegion && targetRegion.region_thumbnail)
+                        ? (targetRegion.region_thumbnail.startsWith('data:') ? targetRegion.region_thumbnail : 'data:image/png;base64,' + targetRegion.region_thumbnail)
+                        : (regions[0] && regions[0].region_thumbnail
+                            ? (regions[0].region_thumbnail.startsWith('data:') ? regions[0].region_thumbnail : 'data:image/png;base64,' + regions[0].region_thumbnail)
+                            : null);
+
                     let rawSrc = data.raw_image_url || data.raw_image;
-                    const normSrc = cleanSourceImg || data.image || data.scan_image;
+                    const normSrc = cleanSourceImg || data.image || data.scan_image || thumbData;
                     if (!rawSrc && data.image) {
                         const uuidMatch = data.image.match(/(?:scan|region)_([a-f0-9\-]{10,})/i);
                         if (uuidMatch) {
@@ -8373,7 +8379,7 @@
                         rawSrc = `/storage/scans/scan_${data.scan_id}_raw.jpg`;
                     }
                     if (!rawSrc) {
-                        rawSrc = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || normSrc;
+                        rawSrc = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || thumbData || normSrc;
                     }
                     window.currentBeforeAfterRegion = targetRegion;
 
@@ -8384,8 +8390,8 @@
                             if (modalBeforeAfterBoxes) renderBeforeAfterBoxes(modalBeforeAfterBoxes, regions);
                         };
                         modalBeforeAfterImg.onerror = () => {
-                            const fallbackRaw = rawSrc || (typeof base64Image !== 'undefined' ? base64Image : null) || window.currentClientSoilPhoto;
-                            const fallbackNorm = normSrc || cleanSourceImg || data.image || data.scan_image;
+                            const fallbackRaw = rawSrc || (typeof base64Image !== 'undefined' ? base64Image : null) || window.currentClientSoilPhoto || thumbData;
+                            const fallbackNorm = normSrc || thumbData || cleanSourceImg || data.image || data.scan_image;
                             if (fallbackRaw && fallbackNorm) {
                                 try {
                                     generateBeforeAfterCanvas(fallbackRaw, fallbackNorm, code, targetRegion, (stitchedDataUrl) => {
@@ -8709,8 +8715,11 @@
             }
 
             const clientPhoto = window.currentClientSoilPhoto || (typeof base64Image !== 'undefined' ? base64Image : null) || window.currentCleanScanImage;
-            const effectiveRaw = rawSrc || clientPhoto;
-            const effectiveNorm = normSrc || effectiveRaw || clientPhoto;
+            const regionThumb = (region && region.region_thumbnail)
+                ? (region.region_thumbnail.startsWith('data:') ? region.region_thumbnail : ('data:image/png;base64,' + region.region_thumbnail))
+                : null;
+            const effectiveRaw = rawSrc || clientPhoto || regionThumb;
+            const effectiveNorm = normSrc || effectiveRaw || clientPhoto || regionThumb;
 
             if (!effectiveRaw && !effectiveNorm) {
                 if (onComplete) onComplete(null);
@@ -8797,11 +8806,12 @@
                     beforeLoaded = true;
                     stitch();
                 } else if (beforeError && afterError) {
-                    if (clientPhoto && effectiveRaw !== clientPhoto) {
+                    const fallbackBackup = clientPhoto || regionThumb;
+                    if (fallbackBackup && imgBefore.src !== fallbackBackup) {
                         beforeError = false;
                         afterError = false;
-                        imgBefore.src = clientPhoto;
-                        imgAfter.src = clientPhoto;
+                        imgBefore.src = fallbackBackup;
+                        imgAfter.src = fallbackBackup;
                     } else {
                         if (onComplete) onComplete(null);
                     }
@@ -8810,8 +8820,9 @@
 
             imgBefore.onload = () => { beforeLoaded = true; checkComplete(); };
             imgBefore.onerror = () => {
-                if (clientPhoto && imgBefore.src !== clientPhoto) {
-                    imgBefore.src = clientPhoto;
+                const fb = clientPhoto || regionThumb;
+                if (fb && imgBefore.src !== fb) {
+                    imgBefore.src = fb;
                 } else {
                     beforeError = true;
                     checkComplete();
@@ -8820,8 +8831,13 @@
 
             imgAfter.onload = () => { afterLoaded = true; checkComplete(); };
             imgAfter.onerror = () => {
-                afterError = true;
-                checkComplete();
+                const fb = regionThumb || clientPhoto;
+                if (fb && imgAfter.src !== fb) {
+                    imgAfter.src = fb;
+                } else {
+                    afterError = true;
+                    checkComplete();
+                }
             };
 
             imgBefore.src = effectiveRaw;
