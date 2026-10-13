@@ -933,19 +933,6 @@
                     </div>
                 </div>
 
-                {{-- 5. ACTION BUTTON: EDIT SOIL RECORD (Admin Wireframe) --}}
-                <div style="margin-bottom: 14px;">
-                    <button
-                        wire:click="edit"
-                        type="button"
-                        style="width: 100%; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: #ffffff; font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); box-sizing: border-box;"
-                        onmouseover="this.style.background='linear-gradient(135deg, #16a34a, #15803d)';"
-                        onmouseout="this.style.background='linear-gradient(135deg, #22c55e, #16a34a)';"
-                        title="Edit Soil Record"
-                    >
-                        <span>Edit Soil Record</span>
-                    </button>
-                </div>
 
                 {{-- 6. MULTI-LAYER DETECTED ACCORDION (Secondary Layers) --}}
                 <div style="margin-bottom: 12px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
@@ -1198,28 +1185,17 @@
         </div>
 
         {{-- FIXED FOOTER BAR FOR RECORD DETAILS --}}
-        <div class="soil-detail-modal-footer" style="padding: 16px 24px 20px; display: flex; gap: 12px; align-items: center; width: 100%; box-sizing: border-box; flex-shrink: 0;">
+        <div class="soil-detail-modal-footer" style="padding: 16px 24px 20px; display: flex; justify-content: center; width: 100%; box-sizing: border-box; flex-shrink: 0;">
             <button
                 type="button"
                 wire:click="closeModal"
-                class="flex-1 py-3 rounded-full text-sm font-bold transition cursor-pointer text-center modal-cancel-btn"
-                style="background: #f8fafc; border: 1.5px solid #cbd5e1; color: #334155;"
+                class="w-full py-3 rounded-full text-sm font-bold transition cursor-pointer text-center modal-cancel-btn"
+                style="background: #f8fafc; border: 1.5px solid #cbd5e1; color: #334155; width: 100%;"
                 onmouseover="this.style.background='#e2e8f0';"
                 onmouseout="this.style.background='#f8fafc';"
                 title="Cancel"
             >
                 Cancel
-            </button>
-            <button
-                wire:click="edit"
-                type="button"
-                class="flex-1 py-3 rounded-full text-white font-bold text-sm transition cursor-pointer flex items-center justify-center text-center"
-                style="background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); border: none;"
-                onmouseover="this.style.background='linear-gradient(135deg, #16a34a, #15803d)';"
-                onmouseout="this.style.background='linear-gradient(135deg, #22c55e, #16a34a)';"
-                title="Edit Soil Record"
-            >
-                <span>Edit Soil Record</span>
             </button>
         </div>
 
