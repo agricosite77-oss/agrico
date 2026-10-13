@@ -50,9 +50,57 @@
     $isMulti = count($regions) > 1;
     $dominant = !empty($regions) ? $regions[0] : null;
 
+    // Fallback image candidates
+    $thumbFallback = '';
+    if (!empty($dominant['region_thumbnail'])) {
+        $thumbFallback = str_starts_with($dominant['region_thumbnail'], 'data:') 
+            ? $dominant['region_thumbnail'] 
+            : ('data:image/png;base64,' . $dominant['region_thumbnail']);
+    }
+    if (!$thumbFallback && !empty($regions)) {
+        foreach ($regions as $r) {
+            if (!empty($r['region_thumbnail'])) {
+                $thumbFallback = str_starts_with($r['region_thumbnail'], 'data:') 
+                    ? $r['region_thumbnail'] 
+                    : ('data:image/png;base64,' . $r['region_thumbnail']);
+                break;
+            }
+        }
+    }
+
+    $siblingScanImg = '';
+    if ($soil) {
+        $sibling = \App\Models\SoilScan::where('soil_id', $soil->soil_id)
+            ->whereNotNull('scan_image')
+            ->where('scan_image', '!=', '')
+            ->where('soil_scan_id', '!=', $scan?->soil_scan_id ?? 0)
+            ->latest('soil_scan_id')
+            ->first();
+        if ($sibling) {
+            $siblingScanImg = $sibling->scan_image_url;
+        }
+    }
+
+    $munsellFallback = $mColor?->image ? $formatImageUrl($mColor->image) : ($soil?->image ? $formatImageUrl($soil->image) : '');
+
     $scanImg = $scan?->scan_image_url ?? ($scan?->scan_image ? $formatImageUrl($scan->scan_image) : '');
-    if (!$scanImg && !empty($dominant['region_thumbnail'])) {
-        $scanImg = str_starts_with($dominant['region_thumbnail'], 'data:') ? $dominant['region_thumbnail'] : ('data:image/png;base64,' . $dominant['region_thumbnail']);
+    if ($scanImg && !str_starts_with($scanImg, 'data:')) {
+        $localRel = null;
+        if (preg_match('#/storage/(scans/[^?#]+)#i', $scanImg, $mPath)) {
+            $localRel = $mPath[1];
+        } elseif ($scan?->scan_image && !str_starts_with($scan->scan_image, 'http')) {
+            $localRel = ltrim(str_replace('storage/', '', $scan->scan_image), '/');
+        }
+        if ($localRel) {
+            $pubPath = public_path('storage/' . $localRel);
+            $appPub = storage_path('app/public/' . $localRel);
+            if (!file_exists($pubPath) && !file_exists($appPub)) {
+                $scanImg = $thumbFallback ?: ($siblingScanImg ?: ($munsellFallback ?: $scanImg));
+            }
+        }
+    }
+    if (!$scanImg && $thumbFallback) {
+        $scanImg = $thumbFallback;
     }
     if (!$scanImg && !empty($dominant['image'])) {
         $scanImg = $formatImageUrl($dominant['image']);
@@ -60,21 +108,29 @@
     if (!$scanImg && !empty($dominant['image_url'])) {
         $scanImg = $formatImageUrl($dominant['image_url']);
     }
-    if (!$scanImg && $mColor?->image) {
-        $scanImg = $formatImageUrl($mColor->image);
+    if (!$scanImg && $munsellFallback) {
+        $scanImg = $munsellFallback;
     }
-    if (!$scanImg && $soil?->image) {
-        $scanImg = $formatImageUrl($soil->image);
-    }
+
     $scanUser = $scan?->user?->name ?? 'Admin Analyst';
     $scanPlatform = $scan?->platform ?? 'website';
 
     $baImg = $mapping->before_after_image_url ?: ($scan?->before_after_image_url ?? null);
+    if ($baImg && !str_starts_with($baImg, 'data:')) {
+        $baRel = str_replace(asset(''), '', $baImg);
+        if (!file_exists(public_path($baRel))) {
+            $baImg = null;
+        }
+    }
     if (!$baImg && $scan?->scan_image) {
         $rawImg = $scan->scan_image;
         if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
             $scanUuid = $m[1];
-            $baImg = asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
+            $baRel = "storage/scans/scan_{$scanUuid}_before_after.jpg";
+            $baClean = "scans/scan_{$scanUuid}_before_after.jpg";
+            if (file_exists(public_path($baRel)) || file_exists(storage_path('app/public/' . $baClean))) {
+                $baImg = asset($baRel);
+            }
         }
     }
 
@@ -708,9 +764,33 @@
                     @if($scanImg)
                         <img
                             src="{{ $scanImg }}"
+                            data-fallback-thumb="{{ $thumbFallback }}"
+                            data-fallback-sibling="{{ $siblingScanImg }}"
+                            data-fallback-munsell="{{ $munsellFallback }}"
                             alt=""
                             onload="var b = this.parentElement.querySelector('.soil-bounding-box'); if(b) b.style.display='block';"
-                            onerror="this.style.setProperty('display', 'none', 'important'); var b = this.parentElement.querySelector('.soil-bounding-box'); if(b) b.style.display='none'; var fb = this.parentElement.querySelector('.soil-avatar-fallback'); if(fb) fb.style.display='flex';"
+                            onerror="
+                                var fbThumb = this.getAttribute('data-fallback-thumb');
+                                var fbSib = this.getAttribute('data-fallback-sibling');
+                                var fbMun = this.getAttribute('data-fallback-munsell');
+                                if (fbThumb && this.src !== fbThumb) {
+                                    this.src = fbThumb;
+                                    return;
+                                }
+                                if (fbSib && this.src !== fbSib) {
+                                    this.src = fbSib;
+                                    return;
+                                }
+                                if (fbMun && this.src !== fbMun) {
+                                    this.src = fbMun;
+                                    return;
+                                }
+                                this.style.setProperty('display', 'none', 'important');
+                                var b = this.parentElement.querySelector('.soil-bounding-box');
+                                if(b) b.style.display='none';
+                                var fb = this.parentElement.querySelector('.soil-avatar-fallback');
+                                if(fb) fb.style.display='flex';
+                            "
                         />
                         <div class="soil-bounding-box" style="display: none; position: absolute; left: {{ $domBox['left'] }}%; top: {{ $domBox['top'] }}%; width: {{ $domBox['width'] }}%; height: {{ $domBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                         <div class="soil-avatar-fallback" style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: rgba(0,0,0,0.25);">
@@ -856,9 +936,33 @@
                                 <div x-show="open" class="layer-accordion-body" style="padding: 14px;" x-transition>
                                     {{-- Swatch Banner with ROI Crop Box --}}
                                     <div class="soil-swatch-banner" style="background: {{ $subHex }}; margin-bottom: 10px; min-height: 64px; padding: 12px 16px;">
-                                        @if($scanImg)
+                                        @php
+                                            $subThumb = !empty($sub['region_thumbnail']) 
+                                                ? (str_starts_with($sub['region_thumbnail'], 'data:') ? $sub['region_thumbnail'] : 'data:image/png;base64,' . $sub['region_thumbnail']) 
+                                                : $thumbFallback;
+                                            $subImg = $scanImg ?: ($subThumb ?: ($siblingScanImg ?: $munsellFallback));
+                                        @endphp
+                                        @if($subImg)
                                              <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; position: relative;">
-                                                <img src="{{ $scanImg }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;" onload="if(this.nextElementSibling) this.nextElementSibling.style.display='block';" onerror="this.style.setProperty('display', 'none', 'important'); if(this.nextElementSibling) this.nextElementSibling.style.display='none';" />
+                                                <img
+                                                    src="{{ $subImg }}"
+                                                    data-fallback-thumb="{{ $subThumb }}"
+                                                    data-fallback-sibling="{{ $siblingScanImg }}"
+                                                    data-fallback-munsell="{{ $munsellFallback }}"
+                                                    alt=""
+                                                    style="width: 100%; height: 100%; object-fit: cover; display: block;"
+                                                    onload="if(this.nextElementSibling) this.nextElementSibling.style.display='block';"
+                                                    onerror="
+                                                        var fbT = this.getAttribute('data-fallback-thumb');
+                                                        var fbS = this.getAttribute('data-fallback-sibling');
+                                                        var fbM = this.getAttribute('data-fallback-munsell');
+                                                        if (fbT && this.src !== fbT) { this.src = fbT; return; }
+                                                        if (fbS && this.src !== fbS) { this.src = fbS; return; }
+                                                        if (fbM && this.src !== fbM) { this.src = fbM; return; }
+                                                        this.style.setProperty('display', 'none', 'important');
+                                                        if(this.nextElementSibling) this.nextElementSibling.style.display='none';
+                                                    "
+                                                />
                                                 <div style="display: none; position: absolute; left: {{ $subBox['left'] }}%; top: {{ $subBox['top'] }}%; width: {{ $subBox['width'] }}%; height: {{ $subBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                                             </div>
                                         @endif
@@ -935,7 +1039,7 @@
                         </span>
                     </div>
                     <div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25);">
-                        <img src="{{ $baImg }}" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 8px;">
+                        <img src="{{ $baImg }}" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 8px;" onerror="this.closest('.soil-metric-card').style.display='none';">
                         @php
                             $renderRegions = !empty($regions) ? $regions : [($dominant ?: ['box' => ['x' => 0.25, 'y' => 0.25, 'w' => 0.5, 'h' => 0.5]])];
                             $ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
