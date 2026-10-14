@@ -97,3 +97,26 @@ test('mobile api login blocks suspended user and returns structured suspension d
         ],
     ]);
 });
+
+test('login auto-reactivates user when suspended_until has passed', function () {
+    $user = User::create([
+        'name' => 'Expired Suspended User',
+        'email' => 'expired_susp@agrico.com',
+        'password' => Hash::make('Secret123!'),
+        'status' => 'Suspended',
+        'suspend_reason' => '1-day penalty',
+        'suspended_by_admin_id' => 'ADM-001',
+        'suspended_until' => now()->subMinutes(10), // expired 10 minutes ago
+    ]);
+
+    $response = $this->from(route('login'))->post(route('login.store'), [
+        'email' => 'expired_susp@agrico.com',
+        'password' => 'Secret123!',
+    ]);
+
+    $response->assertRedirect(route('website.home'));
+    $this->assertAuthenticatedAs($user->fresh());
+    expect($user->fresh()->status)->toBe('Active')
+        ->and($user->fresh()->suspended_until)->toBeNull()
+        ->and($user->fresh()->suspend_reason)->toBeNull();
+});

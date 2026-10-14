@@ -52,6 +52,11 @@ Route::get('/soil-scans', [SoilScanController::class, 'index']);
 Route::post('/soil-scan', [SoilScanController::class, 'store']);
 Route::get('/app-version', [AppVersionController::class, 'checkVersion']);
 
+// Notifications API (Mobile & Web)
+Route::get('/notifications', [\App\Http\Controllers\Mobile\Api\NotificationController::class, 'index']);
+Route::post('/notifications/read-all', [\App\Http\Controllers\Mobile\Api\NotificationController::class, 'markAllAsRead']);
+Route::post('/notifications/{id}/read', [\App\Http\Controllers\Mobile\Api\NotificationController::class, 'markAsRead']);
+
 /*
 |--------------------------------------------------------------------------
 | USER + MOBILE APPLICATION API ROUTES

@@ -13,16 +13,27 @@
             </p>
         </div>
 
-        <button
-            wire:click="$dispatch('create-munsell')"
-            class="munsell-add-btn ui-reveal-text"
-            style="--i:0; background: #22c55e !important; color: #ffffff !important; font-weight: 700; font-size: 13px; border: none; padding: 10px 20px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); cursor: pointer; transition: all 0.2s ease; width: fit-content; flex-shrink: 0;"
-            onmouseover="this.style.background='#16a34a';"
-            onmouseout="this.style.background='#22c55e';"
-        >
-            <span style="font-size: 16px; font-weight: 800; line-height: 1;">+</span>
-            <span>Add Munsell Color</span>
-        </button>
+        <div class="flex items-center gap-3 flex-wrap">
+            <a
+                href="{{ route('dashboard') }}"
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold text-gray-700 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 hover:text-gray-900 transition"
+                title="Back to Dashboard"
+            >
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Dashboard
+            </a>
+
+            <button
+                wire:click="$dispatch('create-munsell')"
+                class="munsell-add-btn ui-reveal-text"
+                style="--i:0; background: #22c55e !important; color: #ffffff !important; font-weight: 700; font-size: 13px; border: none; padding: 10px 20px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); cursor: pointer; transition: all 0.2s ease; width: fit-content; flex-shrink: 0;"
+                onmouseover="this.style.background='#16a34a';"
+                onmouseout="this.style.background='#22c55e';"
+            >
+                <span style="font-size: 16px; font-weight: 800; line-height: 1;">+</span>
+                <span>Add Munsell Color</span>
+            </button>
+        </div>
     </div>
 
 

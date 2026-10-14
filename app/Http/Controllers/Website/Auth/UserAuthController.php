@@ -76,18 +76,26 @@ class UserAuthController extends Controller
                 RateLimiter::clear($ipKey);
 
                 if (strtolower($user->status ?? '') === 'suspended') {
-                    $hasPendingReactivation = \App\Models\UserRequest::where('user_email', $user->email)
-                        ->where('type', 'Account Reactivation Request')
-                        ->where('status', 'Pending')
-                        ->exists();
+                    if ($user->suspended_until && $user->suspended_until->isPast()) {
+                        $user->update([
+                            'status'          => 'Active',
+                            'suspended_until' => null,
+                            'suspend_reason'  => null,
+                        ]);
+                    } else {
+                        $hasPendingReactivation = \App\Models\UserRequest::where('user_email', $user->email)
+                            ->where('type', 'Account Reactivation Request')
+                            ->where('status', 'Pending')
+                            ->exists();
 
-                    return redirect()->route('login')->with('suspended_user_data', [
-                        'email'                    => $user->email,
-                        'name'                     => $user->name,
-                        'suspend_reason'           => $user->suspend_reason ?? 'Account suspended by administrator.',
-                        'suspended_until'          => $user->suspended_until ? $user->suspended_until->toIso8601String() : null,
-                        'has_pending_reactivation' => $hasPendingReactivation,
-                    ]);
+                        return redirect()->route('login')->with('suspended_user_data', [
+                            'email'                    => $user->email,
+                            'name'                     => $user->name,
+                            'suspend_reason'           => $user->suspend_reason ?? 'Account suspended by administrator.',
+                            'suspended_until'          => $user->suspended_until ? $user->suspended_until->toIso8601String() : null,
+                            'has_pending_reactivation' => $hasPendingReactivation,
+                        ]);
+                    }
                 }
 
                 $request->session()->invalidate();

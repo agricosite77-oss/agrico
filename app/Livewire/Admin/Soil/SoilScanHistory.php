@@ -22,8 +22,9 @@ class SoilScanHistory extends Component
     public $perPage = 10;
 
     protected $listeners = [
-        'soil-updated' => '$refresh',
-        'soil-deleted' => '$refresh',
+        'soil-updated'   => '$refresh',
+        'soil-deleted'   => '$refresh',
+        'scan-moderated' => '$refresh',
     ];
 
     public function selectSuggestion($value)
@@ -84,6 +85,22 @@ class SoilScanHistory extends Component
         $this->resetPage();
     }
 
+    public function approveScan($id)
+    {
+        $scan = SoilScan::approveScan($id);
+        if ($scan) {
+            session()->flash('message', "Soil Scan #{$scan->soil_scan_id} approved. Mark verified and map pin published!");
+        }
+    }
+
+    public function rejectScan($id)
+    {
+        $scan = SoilScan::rejectScan($id);
+        if ($scan) {
+            session()->flash('message', "Soil Scan #{$scan->soil_scan_id} rejected. Pin hidden from public map.");
+        }
+    }
+
     public function toggleStatus($id)
     {
         $scan = SoilScan::with('soil')->find($id);
@@ -102,8 +119,12 @@ class SoilScanHistory extends Component
         }
 
         if ($this->status) {
-            $query->whereHas('soil', function ($sq) {
-                $sq->where('status', $this->status);
+            $st = $this->status;
+            $query->where(function ($q) use ($st) {
+                $q->where('verification_status', $st)
+                  ->orWhereHas('soil', function ($sq) use ($st) {
+                      $sq->where('status', $st);
+                  });
             });
         }
 

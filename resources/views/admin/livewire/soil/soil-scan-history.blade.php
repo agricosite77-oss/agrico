@@ -1,7 +1,7 @@
 <div wire:poll.3s class="space-y-6">
 
     {{-- HEADER --}}
-    <div class="ui-reveal flex items-center justify-between" style="--i:0">
+    <div class="ui-reveal flex items-center justify-between gap-4 flex-wrap" style="--i:0">
         <div>
             <h1 class="ui-reveal-text text-3xl font-extrabold text-gray-900" style="--i:0">
                 Soil Scan History
@@ -10,6 +10,14 @@
                 <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) ($soils->total() ?? 0) }}, { delay: 400 })">{{ $soils->total() ?? 0 }}</span> soil records in database
             </p>
         </div>
+        <a
+            href="{{ route('dashboard') }}"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold text-gray-700 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 hover:text-gray-900 transition"
+            title="Back to Dashboard"
+        >
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to Dashboard
+        </a>
     </div>
 
     {{-- SEARCH AND FILTER CARD --}}
@@ -103,6 +111,9 @@
             onblur="this.style.borderColor='#e2e8f0';"
         >
             <option value="">All Status</option>
+            <option value="Verified">Verified</option>
+            <option value="Pending">Pending Review</option>
+            <option value="Rejected">Rejected</option>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
         </select>
@@ -336,6 +347,8 @@
 
         /* Action buttons standard styling */
         .soil-table .agrico-view-btn,
+        .soil-table .agrico-approve-btn,
+        .soil-table .agrico-reject-btn,
         .soil-table .agrico-edit-btn,
         .soil-table .agrico-delete-btn {
             width: 36px !important;
@@ -348,12 +361,33 @@
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
+            transition: all 0.2s ease !important;
         }
         .soil-table .agrico-view-btn svg,
+        .soil-table .agrico-approve-btn svg,
+        .soil-table .agrico-reject-btn svg,
         .soil-table .agrico-edit-btn svg,
         .soil-table .agrico-delete-btn svg {
             width: 17px !important;
             height: 17px !important;
+        }
+        .soil-table .agrico-approve-btn {
+            background: #f0fdf4 !important;
+            border: 1px solid #bbf7d0 !important;
+            color: #16a34a !important;
+        }
+        .soil-table .agrico-approve-btn:hover {
+            background: #16a34a !important;
+            color: #ffffff !important;
+        }
+        .soil-table .agrico-reject-btn {
+            background: #fef2f2 !important;
+            border: 1px solid #fecaca !important;
+            color: #ef4444 !important;
+        }
+        .soil-table .agrico-reject-btn:hover {
+            background: #ef4444 !important;
+            color: #ffffff !important;
         }
 
         .soil-table tbody tr:hover td.col-sticky-soil,
@@ -648,6 +682,11 @@
                             </div>
                         </th>
 
+                        {{-- STATUS --}}
+                        <th class="px-4 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap">
+                            STATUS
+                        </th>
+
                         {{-- ACTION (no sorting) --}}
                         <th class="px-3 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap col-sticky-action">
                             ACTIONS
@@ -734,9 +773,58 @@
                             {{ $scan->scan_date ? \Carbon\Carbon::parse($scan->scan_date)->format('m/d/Y') : $scan->created_at?->format('m/d/Y') }}
                         </td>
 
+                        {{-- STATUS --}}
+                        <td class="px-4 py-5 text-center whitespace-nowrap">
+                            @php
+                                $modStatus = $scan->verification_status ?: 'Pending';
+                            @endphp
+                            @if(strtolower($modStatus) === 'verified')
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200" title="Verified — Map pin is visible on public map">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    Verified
+                                </span>
+                            @elseif(strtolower($modStatus) === 'rejected')
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200" title="Rejected — Map pin is hidden">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                    Rejected
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200" title="Pending — Awaiting review">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    Pending
+                                </span>
+                            @endif
+                        </td>
+
                         {{-- ACTION --}}
                         <td class="px-3 py-5 whitespace-nowrap col-sticky-action text-center">
                             <div class="flex justify-center items-center gap-1.5 whitespace-nowrap">
+                                {{-- QUICK APPROVE --}}
+                                @if(strtolower($scan->verification_status ?? '') !== 'verified')
+                                <button
+                                    wire:click="approveScan({{ $scan->soil_scan_id }})"
+                                    class="agrico-approve-btn"
+                                    title="Approve Scan & Publish Pin"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </button>
+                                @endif
+
+                                {{-- QUICK REJECT --}}
+                                @if(strtolower($scan->verification_status ?? '') !== 'rejected')
+                                <button
+                                    wire:click="rejectScan({{ $scan->soil_scan_id }})"
+                                    class="agrico-reject-btn"
+                                    title="Reject Scan & Hide Pin"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                                @endif
+
                                 {{-- VIEW (Line Eye) --}}
                                 <button
                                     wire:click="$dispatch('view-soil',{id:{{ $scan->soil_scan_id }}})"

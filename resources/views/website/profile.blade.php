@@ -738,6 +738,269 @@
             stroke: #FFFFFF !important;
         }
 
+        /* ── Profile Card Divider & Settings Group ── */
+        .profile-card-divider {
+            width: 100%;
+            height: 1px;
+            background: rgba(142, 182, 155, 0.2);
+            margin: 20px 0 16px 0;
+            border: none;
+        }
+
+        .profile-settings-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .profile-settings-header-label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #8EB69B;
+            padding-left: 4px;
+            margin-bottom: 2px;
+        }
+
+        .profile-setting-item {
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 14px;
+            background: rgba(11, 43, 38, 0.55);
+            border: 1px solid rgba(142, 182, 155, 0.25);
+            color: inherit;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            font-family: inherit;
+            text-decoration: none;
+        }
+        .profile-setting-item:hover {
+            background: rgba(35, 83, 71, 0.65);
+            border-color: rgba(142, 182, 155, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-setting-left {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .profile-setting-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        .profile-setting-icon.notif {
+            background: rgba(34, 197, 94, 0.18);
+            color: #4ADE80;
+        }
+        .profile-setting-icon.theme {
+            background: rgba(251, 191, 36, 0.16);
+            color: #FBBF24;
+        }
+
+        .profile-setting-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .profile-setting-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #DAF1DE;
+            line-height: 1.2;
+        }
+        .profile-setting-desc {
+            font-size: 11px;
+            font-weight: 500;
+            color: #8EB69B;
+            line-height: 1.2;
+        }
+
+        .profile-setting-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-notif-pill {
+            display: inline-flex;
+            align-items: center;
+            background: #22c55e;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 999px;
+            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.35);
+        }
+        .profile-notif-pill.zero {
+            background: rgba(142, 182, 155, 0.25);
+            color: #8EB69B;
+            box-shadow: none;
+        }
+
+        .profile-setting-chevron {
+            stroke: #8EB69B;
+            transition: transform 0.2s ease;
+        }
+        .profile-setting-item:hover .profile-setting-chevron {
+            transform: translateX(2px);
+        }
+
+        /* Toggle switch */
+        .profile-theme-switch {
+            width: 44px;
+            height: 24px;
+            border-radius: 999px;
+            background: rgba(142, 182, 155, 0.35);
+            position: relative;
+            cursor: pointer;
+            transition: background 0.25s ease;
+            flex-shrink: 0;
+        }
+        .profile-theme-switch.is-light {
+            background: #22c55e;
+        }
+        .profile-switch-knob {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffffff;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+        }
+        .profile-theme-switch.is-light .profile-switch-knob {
+            transform: translateX(20px);
+        }
+
+        /* Modal Notifications List */
+        .profile-notif-card {
+            display: flex;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(11, 43, 38, 0.45);
+            border: 1px solid rgba(142, 182, 155, 0.2);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            text-align: left;
+        }
+        .profile-notif-card:hover {
+            background: rgba(35, 83, 71, 0.6);
+            border-color: rgba(142, 182, 155, 0.4);
+        }
+        .profile-notif-card.unread {
+            background: rgba(35, 83, 71, 0.45);
+            border-color: rgba(74, 222, 128, 0.45);
+        }
+        .profile-notif-card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .profile-notif-card-icon.approved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ADE80;
+        }
+        .profile-notif-card-icon.rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+        .profile-notif-card-icon.pin {
+            background: rgba(14, 165, 233, 0.2);
+            color: #38bdf8;
+        }
+        .profile-notif-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .profile-notif-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 3px;
+        }
+        .profile-notif-card-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #DAF1DE;
+        }
+        .profile-notif-card-time {
+            font-size: 11px;
+            color: #8EB69B;
+            white-space: nowrap;
+        }
+        .profile-notif-card-msg {
+            margin: 0 0 6px 0;
+            font-size: 12px;
+            color: #c0ded0;
+            line-height: 1.45;
+        }
+        .profile-notif-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .notif-tag {
+            display: inline-block;
+            background: rgba(142, 182, 155, 0.18);
+            color: #8EB69B;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 1px 7px;
+            border-radius: 6px;
+        }
+        .notif-tag.coords {
+            font-family: monospace;
+            color: #38bdf8;
+            background: rgba(14, 165, 233, 0.15);
+        }
+        .notif-map-link {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4ADE80;
+            text-decoration: none;
+            margin-left: auto;
+        }
+        .notif-map-link:hover {
+            text-decoration: underline;
+        }
+        .profile-notif-unread-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+        }
+
         .profile-edit-btn {
             display: inline-flex;
             align-items: center;
@@ -1380,6 +1643,85 @@
 
         .ws-breadcrumb-current { color: #DAF1DE; font-weight: 700; }
         html.light-mode .ws-breadcrumb-current { color: #051F20 !important; font-weight: 700 !important; }
+
+        html.light-mode .profile-card-divider {
+            background: #e2e8f0 !important;
+        }
+        html.light-mode .profile-settings-header-label {
+            color: #64748b !important;
+        }
+        html.light-mode .profile-setting-item {
+            background: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+        }
+        html.light-mode .profile-setting-item:hover {
+            background: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+        }
+        html.light-mode .profile-setting-icon.notif {
+            background: #dcfce7 !important;
+            color: #15803d !important;
+        }
+        html.light-mode .profile-setting-icon.theme {
+            background: #fef3c7 !important;
+            color: #b45309 !important;
+        }
+        html.light-mode .profile-setting-title {
+            color: #0f172a !important;
+        }
+        html.light-mode .profile-setting-desc {
+            color: #64748b !important;
+        }
+        html.light-mode .profile-setting-chevron {
+            stroke: #94a3b8 !important;
+        }
+        html.light-mode .profile-notif-pill.zero {
+            background: #e2e8f0 !important;
+            color: #64748b !important;
+        }
+        html.light-mode .profile-theme-switch {
+            background: #cbd5e1 !important;
+        }
+        html.light-mode .profile-theme-switch.is-light {
+            background: #22c55e !important;
+        }
+        html.light-mode .profile-notif-card {
+            background: #ffffff !important;
+            border-color: #e2e8f0 !important;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+        }
+        html.light-mode .profile-notif-card:hover {
+            background: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+        }
+        html.light-mode .profile-notif-card.unread {
+            background: #f0fdf4 !important;
+            border-color: #86efac !important;
+        }
+        html.light-mode .profile-notif-card-title {
+            color: #0f172a !important;
+        }
+        html.light-mode .profile-notif-card-time {
+            color: #64748b !important;
+        }
+        html.light-mode .profile-notif-card-msg {
+            color: #334155 !important;
+        }
+        html.light-mode .notif-tag {
+            background: #f1f5f9 !important;
+            color: #475569 !important;
+        }
+        html.light-mode .notif-tag.coords {
+            background: #e0f2fe !important;
+            color: #0284c7 !important;
+        }
+        html.light-mode .notif-map-link {
+            color: #16a34a !important;
+        }
+        html.light-mode .profile-admin-btn {
+            border-radius: 999px !important;
+        }
     </style>
 
     {{-- Page Hero --}}
@@ -1524,6 +1866,63 @@
             this.isCurrentPassCorrect = false;
             this.checkingCurrentPass = false;
             this.passStatusMsg = '';
+        },
+        showNotificationsModal: false,
+        isLightMode: document.documentElement.classList.contains('light-mode'),
+        unreadCount: {{ (int) ($unreadCount ?? 0) }},
+        toggleTheme() {
+            const isLight = document.documentElement.classList.toggle('light-mode');
+            this.isLightMode = isLight;
+            const newTheme = isLight ? 'light' : 'dark';
+            document.documentElement.style.colorScheme = newTheme;
+            localStorage.setItem('agrico-theme', newTheme);
+            fetch('{{ route("user.update-theme") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ theme: newTheme })
+            }).catch(e => console.warn(e));
+        },
+        async markAllAsRead() {
+            try {
+                await fetch('{{ route("website.notifications.read-all") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ user_id: '{{ $userId }}' })
+                });
+                this.unreadCount = 0;
+                document.querySelectorAll('.profile-notif-card.unread').forEach(el => {
+                    el.classList.remove('unread');
+                    const dot = el.querySelector('.profile-notif-unread-dot');
+                    if (dot) dot.remove();
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        },
+        async markSingleRead(id, el) {
+            if (el && el.classList.contains('unread')) {
+                try {
+                    await fetch(`/api/notifications/${id}/read`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    });
+                    el.classList.remove('unread');
+                    const dot = el.querySelector('.profile-notif-unread-dot');
+                    if (dot) dot.remove();
+                    if (this.unreadCount > 0) this.unreadCount--;
+                } catch (e) {
+                    console.error(e);
+                }
+            }
         }
     }" x-init="$watch('showEditModal', val => {
         if (val) {
@@ -1535,6 +1934,18 @@
         } else {
             photoPreview = null;
             if ($refs.photoInput) $refs.photoInput.value = '';
+            document.documentElement.classList.remove('no-scroll');
+            document.body.classList.remove('no-scroll');
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+        }
+    }); $watch('showNotificationsModal', val => {
+        if (val) {
+            document.documentElement.classList.add('no-scroll');
+            document.body.classList.add('no-scroll');
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+        } else {
             document.documentElement.classList.remove('no-scroll');
             document.body.classList.remove('no-scroll');
             document.documentElement.style.overflow = '';
@@ -1563,6 +1974,72 @@
                         Admin Dashboard
                     </a>
                 @endif
+
+                {{-- Line Separator --}}
+                <div class="profile-card-divider"></div>
+
+                {{-- Settings Part: Notification & Dark/Light Mode --}}
+                <div class="profile-settings-group">
+                    <span class="profile-settings-header-label">Settings</span>
+
+                    {{-- 1. Notification --}}
+                    <div class="profile-setting-item" @click="showNotificationsModal = true" role="button" tabindex="0">
+                        <div class="profile-setting-left">
+                            <div class="profile-setting-icon notif">
+                                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                </svg>
+                            </div>
+                            <div class="profile-setting-text">
+                                <span class="profile-setting-title">Notifications</span>
+                                <span class="profile-setting-desc">Pins & scan reviews</span>
+                            </div>
+                        </div>
+                        <div class="profile-setting-right">
+                            <template x-if="unreadCount > 0">
+                                <span class="profile-notif-pill" x-text="unreadCount + ' new'"></span>
+                            </template>
+                            <template x-if="unreadCount === 0">
+                                <span class="profile-notif-pill zero">All read</span>
+                            </template>
+                            <svg class="profile-setting-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    {{-- 2. Dark and Light Mode --}}
+                    <div class="profile-setting-item" @click="toggleTheme()" role="button" tabindex="0">
+                        <div class="profile-setting-left">
+                            <div class="profile-setting-icon theme">
+                                <template x-if="isLightMode">
+                                    <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="5"/>
+                                        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                    </svg>
+                                </template>
+                                <template x-if="!isLightMode">
+                                    <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                    </svg>
+                                </template>
+                            </div>
+                            <div class="profile-setting-text">
+                                <span class="profile-setting-title">Appearance</span>
+                                <span class="profile-setting-desc" x-text="isLightMode ? 'Light mode' : 'Dark mode'"></span>
+                            </div>
+                        </div>
+                        <div class="profile-setting-right">
+                            <div class="profile-theme-switch" :class="{ 'is-light': isLightMode }">
+                                <div class="profile-switch-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {{-- Logout Card right after Profile Card --}}
@@ -2026,6 +2503,122 @@
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </template>
+
+            {{-- NOTIFICATIONS MODAL --}}
+            <template x-teleport="body">
+                <div
+                    x-show="showNotificationsModal"
+                    x-cloak
+                    @click.self="showNotificationsModal = false"
+                    class="profile-modal-overlay"
+                >
+                    <div class="profile-modal-card" style="max-width: 540px; width: 92%; max-height: 85vh; display: flex; flex-direction: column;">
+                        {{-- Modal Header --}}
+                        <div class="profile-modal-header" style="justify-content: space-between; align-items: center; padding-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="profile-setting-icon notif" style="width: 38px; height: 38px; border-radius: 12px;">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="profile-modal-title" style="margin: 0; font-size: 18px; font-weight: 800;">Notifications</h3>
+                                    <p class="profile-modal-last-updated" style="margin: 2px 0 0; font-size: 12px;" x-text="unreadCount > 0 ? unreadCount + ' unread updates' : 'All notifications read'"></p>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <template x-if="unreadCount > 0">
+                                    <button
+                                        type="button"
+                                        @click="markAllAsRead()"
+                                        style="background: transparent; border: 1.5px solid #22c55e; color: #22c55e; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 4px 12px; cursor: pointer; transition: all 0.2s ease;"
+                                        onmouseover="this.style.background='#22c55e';this.style.color='#ffffff';"
+                                        onmouseout="this.style.background='transparent';this.style.color='#22c55e';"
+                                    >
+                                        Mark all read
+                                    </button>
+                                </template>
+                                <button
+                                    type="button"
+                                    @click="showNotificationsModal = false"
+                                    class="profile-modal-close-btn"
+                                    aria-label="Close"
+                                >
+                                    &times;
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Modal Scrollable Body --}}
+                        <div class="profile-modal-body" style="padding: 16px 24px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                            @forelse($notifications as $notif)
+                                @php
+                                    $data = $notif->data ?? [];
+                                    $isPin = $notif->type === 'pin_submitted';
+                                    $isApproved = $notif->type === 'scan_approved';
+                                    $isRejected = $notif->type === 'scan_rejected';
+                                @endphp
+                                <div
+                                    class="profile-notif-card {{ $notif->is_read ? 'read' : 'unread' }}"
+                                    data-notif-id="{{ $notif->notification_id }}"
+                                    @click="markSingleRead({{ $notif->notification_id }}, $el)"
+                                >
+                                    <div class="profile-notif-card-icon {{ $isApproved ? 'approved' : ($isRejected ? 'rejected' : 'pin') }}">
+                                        @if($isApproved)
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                                        @elseif($isRejected)
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                        @else
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                        @endif
+                                    </div>
+                                    <div class="profile-notif-card-body">
+                                        <div class="profile-notif-card-head">
+                                            <span class="profile-notif-card-title">{{ $notif->title }}</span>
+                                            <span class="profile-notif-card-time">{{ $notif->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <p class="profile-notif-card-msg">{{ $notif->message }}</p>
+                                        @if(!empty($data['barangay']) || !empty($data['latitude']))
+                                            <div class="profile-notif-card-tags">
+                                                @if(!empty($data['barangay']))
+                                                    <span class="notif-tag">📍 Brgy. {{ $data['barangay'] }}</span>
+                                                @endif
+                                                @if(!empty($data['latitude']) && !empty($data['longitude']))
+                                                    <span class="notif-tag coords">{{ number_format($data['latitude'], 4) }}, {{ number_format($data['longitude'], 4) }}</span>
+                                                @endif
+                                                <a href="{{ route('website.map') }}" class="notif-map-link">View on Map &rarr;</a>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    @if(!$notif->is_read)
+                                        <span class="profile-notif-unread-dot"></span>
+                                    @endif
+                                </div>
+                            @empty
+                                <div style="text-align: center; padding: 48px 20px; color: #8EB69B;">
+                                    <div style="font-size: 34px; margin-bottom: 10px;">🔔</div>
+                                    <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: inherit;">No Notifications Yet</h4>
+                                    <p style="margin: 6px 0 0; font-size: 13px; opacity: 0.85;">When you pin soil coordinates or scans are reviewed, alerts will show here.</p>
+                                </div>
+                            @endforelse
+                        </div>
+
+                        {{-- Modal Footer --}}
+                        <div class="profile-modal-footer" style="justify-content: flex-end;">
+                            <button
+                                type="button"
+                                @click="showNotificationsModal = false"
+                                class="profile-modal-save-btn"
+                                style="width: auto; padding: 9px 24px; font-size: 13.5px; border-radius: 999px;"
+                            >
+                                Done
+                            </button>
+                        </div>
                     </div>
                 </div>
             </template>

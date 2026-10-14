@@ -11,13 +11,24 @@
             </p>
         </div>
 
-        {{-- TOP RIGHT BADGE --}}
-        <div class="ui-reveal-text" style="--i:0; background:transparent; color:#22c55e; font-weight:700; border-radius:9999px; padding:6px 18px; font-size:13px; border:1px solid #bbf7d0; display:inline-flex; align-items:center; gap:6px;">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            <span>Current: {{ $currentActive ? $currentActive->version : 'v2.4.0' }}</span>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <a
+                href="{{ route('dashboard') }}"
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold text-gray-700 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 hover:text-gray-900 transition"
+                title="Back to Dashboard"
+            >
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Dashboard
+            </a>
+
+            {{-- TOP RIGHT BADGE --}}
+            <div class="ui-reveal-text" style="--i:0; background:transparent; color:#22c55e; font-weight:700; border-radius:9999px; padding:6px 18px; font-size:13px; border:1px solid #bbf7d0; display:inline-flex; align-items:center; gap:6px;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>Current: {{ $currentActive ? $currentActive->version : 'v2.4.0' }}</span>
+            </div>
         </div>
     </div>
 

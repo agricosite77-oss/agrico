@@ -58,7 +58,7 @@
     </style>
 
     {{-- PAGE HEADER --}}
-    <div class="ui-reveal flex items-center justify-between" style="--i:0">
+    <div class="ui-reveal flex items-center justify-between gap-4 flex-wrap" style="--i:0">
         <div>
             <h1 class="ui-reveal-text text-3xl font-extrabold text-gray-900" style="--i:0">
                 Manage Map
@@ -67,6 +67,14 @@
                 Interactive soil location GIS mapping & geographic distribution
             </p>
         </div>
+        <a
+            href="{{ route('dashboard') }}"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold text-gray-700 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 hover:text-gray-900 transition"
+            title="Back to Dashboard"
+        >
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to Dashboard
+        </a>
     </div>
 
     {{-- STATS CARDS GRID --}}

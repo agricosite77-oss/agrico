@@ -77,20 +77,31 @@
             </p>
         </div>
 
-        {{-- ONLINE / OFFLINE STATUS PILL --}}
-        <div class="ui-reveal-text" style="--i:0; background:#ffffff; border:1px solid #f1f5f9; border-radius:9999px; padding:4px 6px; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:inline-flex; align-items:center; gap:8px; flex-shrink:0;">
-            {{-- GREEN ONLINE PILL --}}
-            <span style="background:#dcfce7; color:#22c55e; border-radius:9999px; padding:4px 14px; font-size:12.5px; font-weight:700; display:inline-flex; align-items:center; white-space:nowrap;">
-                <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $onlineCount }}, { suffix: ' Online', delay: 400 })">{{ $onlineCount }} Online</span>
-            </span>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <a
+                href="{{ route('dashboard') }}"
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold text-gray-700 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 hover:text-gray-900 transition"
+                title="Back to Dashboard"
+            >
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Dashboard
+            </a>
 
-            {{-- VERTICAL DIVIDER --}}
-            <span style="width:1px; height:14px; background:#cbd5e1; display:inline-block;"></span>
+            {{-- ONLINE / OFFLINE STATUS PILL --}}
+            <div class="ui-reveal-text" style="--i:0; background:#ffffff; border:1px solid #f1f5f9; border-radius:9999px; padding:4px 6px; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:inline-flex; align-items:center; gap:8px; flex-shrink:0;">
+                {{-- GREEN ONLINE PILL --}}
+                <span style="background:#dcfce7; color:#22c55e; border-radius:9999px; padding:4px 14px; font-size:12.5px; font-weight:700; display:inline-flex; align-items:center; white-space:nowrap;">
+                    <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $onlineCount }}, { suffix: ' Online', delay: 400 })">{{ $onlineCount }} Online</span>
+                </span>
 
-            {{-- GRAY OFFLINE TEXT --}}
-            <span style="color:#64748b; font-size:12.5px; font-weight:600; padding-right:12px; display:inline-flex; align-items:center; white-space:nowrap;">
-                <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $offlineCount }}, { suffix: ' Offline', delay: 400 })">{{ $offlineCount }} Offline</span>
-            </span>
+                {{-- VERTICAL DIVIDER --}}
+                <span style="width:1px; height:14px; background:#cbd5e1; display:inline-block;"></span>
+
+                {{-- GRAY OFFLINE TEXT --}}
+                <span style="color:#64748b; font-size:12.5px; font-weight:600; padding-right:12px; display:inline-flex; align-items:center; white-space:nowrap;">
+                    <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $offlineCount }}, { suffix: ' Offline', delay: 400 })">{{ $offlineCount }} Offline</span>
+                </span>
+            </div>
         </div>
     </div>
 

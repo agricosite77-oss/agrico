@@ -581,6 +581,14 @@ class WebsiteController extends Controller
                 }
             }
 
+            // Trigger notifications across Website, Mobile Application, and Email
+            try {
+                $targetUser = $authUser ?? User::where('user_id', $finalUserId)->first();
+                \App\Services\NotificationService::notifyPinSubmitted($location, $targetUser, 'website');
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return response()->json([
                 'success'  => true,
                 'message'  => $directPublish
@@ -625,6 +633,9 @@ class WebsiteController extends Controller
                 $q->where('status', 'Active')
                   ->orWhereNull('status')
                   ->orWhere('status', '');
+            })
+            ->whereDoesntHave('soilScan', function ($sq) {
+                $sq->where('verification_status', 'Rejected');
             })
             ->orderBy('location_mapping_id', 'asc')
             ->get();
@@ -748,7 +759,14 @@ class WebsiteController extends Controller
 
         $scanCount = $userId ? SoilScan::where('user_id', $userId)->count() : 0;
 
-        return view('website.profile', compact('user', 'scanCount'));
+        $notifications = $userId
+            ? \App\Models\UserNotification::where('user_id', $userId)->orderBy('created_at', 'desc')->limit(30)->get()
+            : collect();
+        $unreadCount = $userId
+            ? \App\Models\UserNotification::where('user_id', $userId)->where('is_read', false)->count()
+            : 0;
+
+        return view('website.profile', compact('user', 'scanCount', 'notifications', 'unreadCount'));
     }
 
     /**

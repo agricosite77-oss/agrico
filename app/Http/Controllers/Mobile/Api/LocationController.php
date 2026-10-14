@@ -118,6 +118,13 @@ class LocationController extends Controller
             report($e);
         }
 
+        // Trigger notifications across Mobile Application, Website, and Email
+        try {
+            \App\Services\NotificationService::notifyPinSubmitted($location, $user ?? User::find($userId), 'mobile application');
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
         $loadedLocation = LocationMapping::with(['soil.munsellColor', 'soilScan'])
             ->find($location->location_mapping_id);
 

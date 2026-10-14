@@ -1,0 +1,202 @@
+<?php
+
+namespace App\Services;
+
+use App\Mail\SoilPinSubmittedMail;
+use App\Mail\SoilScanModeratedMail;
+use App\Models\LocationMapping;
+use App\Models\SoilScan;
+use App\Models\User;
+use App\Models\UserNotification;
+use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+
+class NotificationService
+{
+    /**
+     * Send cross-platform notifications (Database + Email) when a user pins a location.
+     */
+    public static function notifyPinSubmitted(LocationMapping $location, ?User $user = null, string $platform = 'application'): void
+    {
+        try {
+            // Resolve target user
+            if (!$user) {
+                if ($location->soilScan?->user_id) {
+                    $user = User::where('user_id', $location->soilScan->user_id)->first();
+                } elseif ($location->soil_id) {
+                    $scan = SoilScan::where('soil_id', $location->soil_id)->latest('soil_scan_id')->first();
+                    if ($scan?->user_id) {
+                        $user = User::where('user_id', $scan->user_id)->first();
+                    }
+                }
+            }
+
+            $userId = $user?->user_id ?? 'USR-001';
+            $brgy = $location->barangay ?: 'Lal-lo Overall';
+            $coords = number_format((float)$location->latitude, 4) . ', ' . number_format((float)$location->longitude, 4);
+
+            // 1. Create In-App / Website Notification in Database
+            UserNotification::create([
+                'user_id' => $userId,
+                'title'   => 'Soil Location Pin Submitted',
+                'message' => "Your soil sample pin in Brgy. {$brgy} ({$coords}) has been submitted from the {$platform} and is awaiting admin verification.",
+                'type'    => 'pin_submitted',
+                'data'    => [
+                    'location_id'  => $location->location_mapping_id,
+                    'soil_scan_id' => $location->soil_scan_id,
+                    'barangay'     => $brgy,
+                    'latitude'     => (float) $location->latitude,
+                    'longitude'    => (float) $location->longitude,
+                    'platform'     => $platform,
+                    'status'       => 'Pending',
+                ],
+                'is_read' => false,
+            ]);
+
+            // 2. Dispatch Email Confirmation
+            if ($user && !empty($user->email) && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+                $mailable = new SoilPinSubmittedMail($location, $user, $platform);
+                $renderedHtml = (string) view('emails.soil-pin-submitted', [
+                    'location' => $location,
+                    'user'     => $user,
+                    'platform' => $platform,
+                ])->render();
+
+                self::sendEmail(
+                    toEmail: $user->email,
+                    subject: "[AgriCo] Soil Location Pin Submitted: Brgy. {$brgy}",
+                    html: $renderedHtml,
+                    mailable: $mailable
+                );
+            }
+        } catch (\Throwable $e) {
+            Log::error('[NotificationService@notifyPinSubmitted] ' . $e->getMessage(), [
+                'exception' => $e,
+                'location_id' => $location->location_mapping_id ?? null,
+            ]);
+        }
+    }
+
+    /**
+     * Send cross-platform notifications (Database + Email) when admin approves or rejects a scan.
+     */
+    public static function notifyScanModerated(SoilScan $scan, string $status, ?string $adminId = null): void
+    {
+        try {
+            // Find target user
+            $user = null;
+            if (!empty($scan->user_id)) {
+                $user = User::where('user_id', $scan->user_id)->first();
+            }
+
+            $userId = $user?->user_id ?? $scan->user_id ?? 'USR-001';
+            $isVerified = $status === 'Verified';
+
+            $title = $isVerified
+                ? 'Soil Scan Approved & Published'
+                : 'Soil Scan Disapproved';
+
+            $message = $isVerified
+                ? "Your soil sample scan #{$scan->soil_scan_id} has been approved by an administrator! Your location pin is now live on the AgriCo Map."
+                : "Your soil sample scan #{$scan->soil_scan_id} was reviewed and disapproved. The location pin will remain hidden.";
+
+            $location = $scan->location ?? LocationMapping::where('soil_scan_id', $scan->soil_scan_id)->first();
+
+            // 1. Create In-App / Website Notification in Database
+            UserNotification::create([
+                'user_id' => $userId,
+                'title'   => $title,
+                'message' => $message,
+                'type'    => $isVerified ? 'scan_approved' : 'scan_rejected',
+                'data'    => [
+                    'soil_scan_id' => $scan->soil_scan_id,
+                    'soil_id'      => $scan->soil_id,
+                    'status'       => $status,
+                    'admin_id'     => $adminId,
+                    'barangay'     => $location?->barangay,
+                    'latitude'     => $location?->latitude ? (float) $location->latitude : null,
+                    'longitude'    => $location?->longitude ? (float) $location->longitude : null,
+                ],
+                'is_read' => false,
+            ]);
+
+            // 2. Dispatch Email Notification
+            if ($user && !empty($user->email) && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+                $mailable = new SoilScanModeratedMail($scan, $status, $user, $adminId);
+                $renderedHtml = (string) view('emails.soil-scan-moderated', [
+                    'scan'    => $scan,
+                    'status'  => $status,
+                    'user'    => $user,
+                    'adminId' => $adminId,
+                ])->render();
+
+                $subjectStatus = $isVerified ? 'Approved & Published' : 'Disapproved';
+                self::sendEmail(
+                    toEmail: $user->email,
+                    subject: "[AgriCo] Soil Scan #{$scan->soil_scan_id} {$subjectStatus}",
+                    html: $renderedHtml,
+                    mailable: $mailable
+                );
+            }
+        } catch (\Throwable $e) {
+            Log::error('[NotificationService@notifyScanModerated] ' . $e->getMessage(), [
+                'exception' => $e,
+                'soil_scan_id' => $scan->soil_scan_id ?? null,
+            ]);
+        }
+    }
+
+    /**
+     * Dispatch email via Resend HTTP API (fallback to Laravel Mail driver).
+     */
+    protected static function sendEmail(string $toEmail, string $subject, string $html, Mailable $mailable): bool
+    {
+        $sent = false;
+
+        $fromEmail = (string) config('services.resend.from', 'AgriCo Support <onboarding@resend.dev>');
+        if (str_starts_with($fromEmail, 'RESEND_FROM=')) {
+            $fromEmail = substr($fromEmail, strlen('RESEND_FROM='));
+        }
+        $fromEmail = trim($fromEmail, " \t\n\r\0\x0B\"'") ?: 'AgriCo Support <onboarding@resend.dev>';
+
+        $resendKey = config('services.resend.key') ?: env('RESEND_API_KEY');
+        if (is_string($resendKey)) {
+            $resendKey = trim($resendKey);
+            if (str_starts_with($resendKey, 'RESEND_API_KEY=')) {
+                $resendKey = substr($resendKey, strlen('RESEND_API_KEY='));
+            }
+            $resendKey = trim($resendKey, " \t\n\r\0\x0B\"'");
+        }
+
+        // 1. Try Resend HTTP API if key is present
+        if (class_exists(\Resend::class) && !empty($resendKey)) {
+            try {
+                $resend = \Resend::client($resendKey);
+                $resend->emails->send([
+                    'from'    => $fromEmail,
+                    'to'      => [$toEmail],
+                    'subject' => $subject,
+                    'html'    => $html,
+                ]);
+                $sent = true;
+                Log::info("[NotificationService] Email sent via Resend HTTP API to {$toEmail}: {$subject}");
+            } catch (\Throwable $re) {
+                Log::warning("[NotificationService] Resend HTTP API error for {$toEmail}: " . $re->getMessage());
+            }
+        }
+
+        // 2. Fallback to Laravel Mail driver
+        if (!$sent) {
+            try {
+                Mail::to($toEmail)->send($mailable);
+                $sent = true;
+                Log::info("[NotificationService] Email sent via Mail driver to {$toEmail}: {$subject}");
+            } catch (\Throwable $e) {
+                Log::error("[NotificationService] Failed to send email via Mail driver to {$toEmail}: " . $e->getMessage());
+            }
+        }
+
+        return $sent;
+    }
+}

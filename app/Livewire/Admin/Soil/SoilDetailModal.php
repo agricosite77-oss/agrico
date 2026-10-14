@@ -71,6 +71,28 @@ class SoilDetailModal extends Component
         $this->coverage = '';
     }
 
+    public function approveScan()
+    {
+        $id = $this->scan ? $this->scan->soil_scan_id : ($this->soil ? $this->soil->soil_id : null);
+        if ($id) {
+            \App\Models\SoilScan::approveScan($id);
+            $this->dispatch('scan-moderated');
+            $this->openModal($id);
+            session()->flash('modal_message', 'Scan marked Verified and map pin published!');
+        }
+    }
+
+    public function rejectScan()
+    {
+        $id = $this->scan ? $this->scan->soil_scan_id : ($this->soil ? $this->soil->soil_id : null);
+        if ($id) {
+            \App\Models\SoilScan::rejectScan($id);
+            $this->dispatch('scan-moderated');
+            $this->openModal($id);
+            session()->flash('modal_message', 'Scan marked Rejected and map pin hidden.');
+        }
+    }
+
     public function edit()
     {
         $id = $this->scan ? $this->scan->soil_scan_id : ($this->soil ? $this->soil->soil_id : null);

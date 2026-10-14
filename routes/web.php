@@ -81,6 +81,10 @@ Route::prefix('')->name('website.')->group(function () {
     Route::post('/profile/verify-password', [WebsiteController::class, 'verifyPassword'])
         ->middleware('auth:web,admin')
         ->name('profile.verify-password');
+
+    Route::get('/notifications', [\App\Http\Controllers\Mobile\Api\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\Mobile\Api\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\Mobile\Api\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
 });
 
 require __DIR__.'/admin.php';

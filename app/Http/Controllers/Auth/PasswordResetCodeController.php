@@ -87,28 +87,20 @@ class PasswordResetCodeController extends Controller
             $resendKey = trim($resendKey, " \t\n\r\0\x0B\"'");
         }
 
-        $keysToTry = array_filter(array_unique([
-            're_4ZWQHtqY_BiqLj9e1krUdnUtshCVTnDpj',
-            is_string($resendKey) ? $resendKey : '',
-        ]));
-
-        if (class_exists(\Resend::class)) {
-            foreach ($keysToTry as $candidateKey) {
-                try {
-                    $resend = \Resend::client($candidateKey);
-                    $resend->emails->send([
-                        'from' => $fromEmail,
-                        'to' => [$email],
-                        'subject' => "Your AgriCo Password Reset Code: {$code}",
-                        'html' => (string) view('emails.password-reset-code', ['code' => $code, 'email' => $email])->render(),
-                    ]);
-                    $sent = true;
-                    Log::info("AgriCo Password Reset Code sent via Resend HTTP API to {$email}");
-                    break;
-                } catch (\Throwable $re) {
-                    $sendError = $re->getMessage();
-                    Log::warning("Resend HTTP API failed with key " . substr($candidateKey, 0, 8) . "...: " . $sendError);
-                }
+        if (class_exists(\Resend::class) && !empty($resendKey)) {
+            try {
+                $resend = \Resend::client($resendKey);
+                $resend->emails->send([
+                    'from' => $fromEmail,
+                    'to' => [$email],
+                    'subject' => "Your AgriCo Password Reset Code: {$code}",
+                    'html' => (string) view('emails.password-reset-code', ['code' => $code, 'email' => $email])->render(),
+                ]);
+                $sent = true;
+                Log::info("AgriCo Password Reset Code sent via Resend HTTP API to {$email}");
+            } catch (\Throwable $re) {
+                $sendError = $re->getMessage();
+                Log::warning("Resend HTTP API failed with key " . substr($resendKey, 0, 8) . "...: " . $sendError);
             }
         }
 

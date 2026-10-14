@@ -20,6 +20,8 @@ class SoilScan extends Model
         'scan_date',
         'user_id',
         'soil_id',
+        'verification_status',
+        'moderated_by_admin_id',
     ];
 
     protected $casts = [
@@ -55,6 +57,90 @@ class SoilScan extends Model
                 static::whereIn('soil_scan_id', $oldestIds)->delete();
             }
         }
+    }
+
+    public static function approveScan(int|string $scanId, ?string $adminId = null): ?self
+    {
+        $scan = static::with(['soil', 'location'])->find($scanId);
+        if (!$scan) {
+            return null;
+        }
+
+        $adminId = $adminId ?: \App\Models\Admin::currentAdminId();
+
+        $scan->verification_status = 'Verified';
+        $scan->moderated_by_admin_id = $adminId;
+        $scan->save();
+
+        if ($scan->soil) {
+            $scan->soil->status = 'Active';
+            $scan->soil->last_admin_id = $adminId;
+            $scan->soil->save();
+        }
+
+        $locations = \App\Models\LocationMapping::where('soil_scan_id', $scan->soil_scan_id)->get();
+        if ($locations->isEmpty() && $scan->soil_id) {
+            $locations = \App\Models\LocationMapping::where('soil_id', $scan->soil_id)->get();
+        }
+
+        foreach ($locations as $loc) {
+            $loc->status = 'Active';
+            $loc->save();
+
+            \App\Models\UserRequest::where('status', 'Pending')
+                ->where(function ($q) use ($loc) {
+                    $q->where('description', 'like', "%#{$loc->location_mapping_id}%")
+                      ->orWhere('description', 'like', "%({$loc->latitude}, {$loc->longitude})%");
+                })
+                ->update([
+                    'status'   => 'Approved',
+                    'admin_id' => $adminId,
+                ]);
+        }
+
+        // Trigger notifications across Mobile App, Website, and Email
+        \App\Services\NotificationService::notifyScanModerated($scan, 'Verified', $adminId);
+
+        return $scan;
+    }
+
+    public static function rejectScan(int|string $scanId, ?string $adminId = null): ?self
+    {
+        $scan = static::with(['soil', 'location'])->find($scanId);
+        if (!$scan) {
+            return null;
+        }
+
+        $adminId = $adminId ?: \App\Models\Admin::currentAdminId();
+
+        $scan->verification_status = 'Rejected';
+        $scan->moderated_by_admin_id = $adminId;
+        $scan->save();
+
+        $locations = \App\Models\LocationMapping::where('soil_scan_id', $scan->soil_scan_id)->get();
+        if ($locations->isEmpty() && $scan->soil_id) {
+            $locations = \App\Models\LocationMapping::where('soil_id', $scan->soil_id)->get();
+        }
+
+        foreach ($locations as $loc) {
+            $loc->status = 'Inactive';
+            $loc->save();
+
+            \App\Models\UserRequest::where('status', 'Pending')
+                ->where(function ($q) use ($loc) {
+                    $q->where('description', 'like', "%#{$loc->location_mapping_id}%")
+                      ->orWhere('description', 'like', "%({$loc->latitude}, {$loc->longitude})%");
+                })
+                ->update([
+                    'status'   => 'Disapproved',
+                    'admin_id' => $adminId,
+                ]);
+        }
+
+        // Trigger notifications across Mobile App, Website, and Email
+        \App\Services\NotificationService::notifyScanModerated($scan, 'Rejected', $adminId);
+
+        return $scan;
     }
 
     public function getIdAttribute()
