@@ -1,97 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Approved - AgriCo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your AgriCo account has been approved</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; padding: 32px 16px;">
+<body style="margin: 0; padding: 0; background-color: #f4f7f5; font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; color: #334155;">
+
+    <!-- Hidden Preheader -->
+    <div style="display: none; font-size: 1px; color: #f4f7f5; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+        Welcome to AgriCo! Your account registration has been approved. You can now sign in to access full soil intelligence tools.
+    </div>
+
+    <!-- Outer Container Table -->
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f7f5; padding: 32px 16px;">
         <tr>
             <td align="center">
-                <table role="presentation" width="100%" style="max-width: 580px; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;" cellspacing="0" cellpadding="0">
-                    {{-- Header Banner --}}
+                <!-- 600px Email Card -->
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden;">
+                    
+                    <!-- Top Brand Bar -->
                     <tr>
-                        <td style="background: linear-gradient(135deg, #15803d 0%, #16a34a 100%); padding: 32px 36px; text-align: center;">
-                            <div style="display: inline-block; background: rgba(255, 255, 255, 0.2); border-radius: 14px; padding: 10px 14px; margin-bottom: 12px;">
-                                <span style="font-size: 26px;">🎉</span>
-                            </div>
-                            <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">
-                                Account Registration Approved!
+                        <td align="center" style="padding: 28px 32px 16px 32px; border-bottom: 1px solid #f1f5f9;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: bold; color: #16a34a; letter-spacing: -0.5px;">
+                                        🌱 AgriCo
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="font-family: Arial, Helvetica, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; padding-top: 4px;">
+                                        Soil Intelligence Platform
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Status Banner & Title -->
+                    <tr>
+                        <td align="center" style="padding: 28px 32px 12px 32px;">
+                            <!-- Soft Green Badge -->
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 14px;">
+                                <tr>
+                                    <td style="background-color: #dcfce7; border: 1px solid #86efac; border-radius: 20px; padding: 6px 14px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        ✓ &nbsp; Account Registration Approved
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <h1 style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 22px; font-weight: bold; color: #0f172a; line-height: 1.3;">
+                                Welcome to AgriCo, {{ $userName ?? $user?->name ?? 'User' }}!
                             </h1>
-                            <p style="margin: 6px 0 0; color: #dcfce7; font-size: 13.5px; font-weight: 500;">
-                                Your AgriCo account is now fully active
+                            <p style="margin: 10px 0 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 14.5px; color: #475569; line-height: 1.6;">
+                                Great news! Your registration request has been reviewed and approved by an administrator. Your account is now fully active, and all platform features are unlocked.
                             </p>
                         </td>
                     </tr>
 
-                    {{-- Body Content --}}
+                    <!-- Details Box -->
                     <tr>
-                        <td style="padding: 32px 36px;">
-                            <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #334155;">
-                                Hello <strong>{{ $user->name ?? 'AgriCo User' }}</strong>,
-                            </p>
-                            <p style="margin: 0 0 20px; font-size: 14px; line-height: 1.6; color: #475569;">
-                                Great news! An AgriCo administrator has reviewed and approved your account registration. Full access to the AgriCo Soil Intelligence platform—including soil sample scanning, the interactive soil map, and scan history—is now unlocked.
-                            </p>
-
-                            {{-- Details Card --}}
-                            <div style="background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 18px 20px; margin-bottom: 24px;">
-                                <table width="100%" cellspacing="0" cellpadding="4" style="font-size: 13.5px;">
-                                    <tr>
-                                        <td style="color: #64748b; font-weight: 600; width: 35%;">User ID:</td>
-                                        <td style="color: #0f172a; font-weight: 700;">{{ $user->formatted_id ?? ('USR-' . str_pad($user->id ?? $user->user_id, 4, '0', STR_PAD_LEFT)) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="color: #64748b; font-weight: 600;">Full Name:</td>
-                                        <td style="color: #0f172a; font-weight: 700;">{{ $user->name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="color: #64748b; font-weight: 600;">Email:</td>
-                                        <td style="color: #0f172a; font-weight: 600;">{{ $user->email }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="color: #64748b; font-weight: 600;">Role:</td>
-                                        <td style="color: #0f172a; font-weight: 600;">{{ ucfirst($user->role ?? 'User') }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="color: #64748b; font-weight: 600;">Account Status:</td>
-                                        <td>
-                                            <span style="display: inline-block; background-color: #dcfce7; color: #15803d; font-weight: 700; font-size: 11px; padding: 2px 8px; border-radius: 9999px;">
-                                                ACTIVE / APPROVED
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    @if($adminId)
-                                    <tr>
-                                        <td style="color: #64748b; font-weight: 600;">Approved By:</td>
-                                        <td style="color: #475569; font-size: 12.5px;">Admin ({{ $adminId }})</td>
-                                    </tr>
-                                    @endif
-                                </table>
-                            </div>
-
-                            {{-- CTA Button --}}
-                            <div style="text-align: center; margin: 28px 0 20px;">
-                                <a href="{{ $loginUrl }}" style="display: inline-block; background-color: #16a34a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 12px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);">
-                                    Log In to AgriCo Platform &rarr;
-                                </a>
-                            </div>
-
-                            <p style="margin: 0; font-size: 12.5px; line-height: 1.5; color: #94a3b8; text-align: center;">
-                                You can sign in using your registered email and password on both the web portal and mobile application.
-                            </p>
+                        <td style="padding: 12px 32px 24px 32px;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                                <tr>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #64748b; padding-bottom: 8px; width: 38%;">Full Name:</td>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: bold; color: #0f172a; padding-bottom: 8px;">{{ $userName ?? $user?->name ?? 'AgriCo User' }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #64748b; padding-bottom: 8px;">Registered Email:</td>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; padding-bottom: 8px;">{{ $userEmail ?? $user?->email ?? '—' }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #64748b; padding-bottom: 8px;">Account Status:</td>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #16a34a; padding-bottom: 8px;">ACTIVE / APPROVED</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #64748b;">Approval Date:</td>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a;">{{ $approvalDate ?? date('d M Y') }}</td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
 
-                    {{-- Footer --}}
+                    <!-- Bulletproof CTA Button -->
                     <tr>
-                        <td style="background-color: #f1f5f9; padding: 18px 36px; text-align: center; border-top: 1px solid #e2e8f0;">
-                            <p style="margin: 0; font-size: 12px; color: #64748b;">
-                                &copy; {{ date('Y') }} AgriCo Soil Intelligence Platform &bull; Lal-lo, Cagayan
-                            </p>
+                        <td align="center" style="padding: 0 32px 32px 32px;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="border-radius: 10px; background-color: #16a34a;">
+                                        <a href="https://agrico-production-1eb3.up.railway.app/login" target="_blank" style="display: inline-block; padding: 14px 32px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 10px; letter-spacing: 0.2px;">
+                                            Sign in to AgriCo &rarr;
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center" style="padding: 20px 32px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #64748b; line-height: 1.5;">
+                            AgriCo Soil Intelligence &bull; Municipality of Lal-lo, Cagayan<br />
+                            Need help? Contact support at <a href="mailto:agricosite77@gmail.com" style="color: #16a34a; text-decoration: none;">agricosite77@gmail.com</a>
+                        </td>
+                    </tr>
+
                 </table>
             </td>
         </tr>

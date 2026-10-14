@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Mail\AccountApprovedMail;
 use App\Mail\AccountDisapprovedMail;
+use App\Mail\SoilPinApprovedMail;
+use App\Mail\SoilPinDisapprovedMail;
 use App\Mail\SoilPinSubmittedMail;
 use App\Mail\SoilScanModeratedMail;
 use App\Models\LocationMapping;
@@ -125,18 +127,49 @@ class NotificationService
 
             // 2. Dispatch Email Notification
             if ($user && !empty($user->email) && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                $mailable = new SoilScanModeratedMail($scan, $status, $user, $adminId);
-                $renderedHtml = (string) view('emails.soil-scan-moderated', [
-                    'scan'    => $scan,
-                    'status'  => $status,
-                    'user'    => $user,
-                    'adminId' => $adminId,
-                ])->render();
+                $barangay = $location?->barangay ?? 'Centro (Poblacion)';
+                $latitude = $location?->latitude ? (string) $location->latitude : '18.1965';
+                $longitude = $location?->longitude ? (string) $location->longitude : '121.6621';
 
-                $subjectStatus = $isVerified ? 'Approved & Published' : 'Disapproved';
+                if ($isVerified) {
+                    $mailable = new SoilPinApprovedMail(
+                        userName: $user->name ?? 'AgriCo Contributor',
+                        scanId: $scan->soil_scan_id,
+                        barangay: $barangay,
+                        latitude: $latitude,
+                        longitude: $longitude,
+                        munsellCode: $scan->soil?->munsell_notation ?? 'Verified',
+                        soilName: $scan->soil?->soil_name ?? 'Soil Sample'
+                    );
+                    $renderedHtml = (string) view('emails.soil-pin-approved', [
+                        'userName'    => $user->name ?? 'AgriCo Contributor',
+                        'scanId'      => $scan->soil_scan_id,
+                        'barangay'    => $barangay,
+                        'latitude'    => $latitude,
+                        'longitude'   => $longitude,
+                        'munsellCode' => $scan->soil?->munsell_notation ?? 'Verified',
+                        'soilName'    => $scan->soil?->soil_name ?? 'Soil Sample',
+                    ])->render();
+                    $subject = "[AgriCo] Your Soil Pin #{$scan->soil_scan_id} Has Been Approved & Published!";
+                } else {
+                    $mailable = new SoilPinDisapprovedMail(
+                        userName: $user->name ?? 'AgriCo Contributor',
+                        scanId: $scan->soil_scan_id,
+                        barangay: $barangay,
+                        reason: 'Ambiguous soil sample illumination or coordinate mismatch with barangay boundary.'
+                    );
+                    $renderedHtml = (string) view('emails.soil-pin-disapproved', [
+                        'userName' => $user->name ?? 'AgriCo Contributor',
+                        'scanId'   => $scan->soil_scan_id,
+                        'barangay' => $barangay,
+                        'reason'   => 'Ambiguous soil sample illumination or coordinate mismatch with barangay boundary.',
+                    ])->render();
+                    $subject = "[AgriCo] Notice Regarding Soil Pin Submission #{$scan->soil_scan_id}";
+                }
+
                 self::sendEmail(
                     toEmail: $user->email,
-                    subject: "[AgriCo] Soil Scan #{$scan->soil_scan_id} {$subjectStatus}",
+                    subject: $subject,
                     html: $renderedHtml,
                     mailable: $mailable
                 );
@@ -239,7 +272,7 @@ class NotificationService
     /**
      * Dispatch email via Resend HTTP API (fallback to Laravel Mail driver).
      */
-    protected static function sendEmail(string $toEmail, string $subject, string $html, Mailable $mailable): bool
+    public static function sendEmail(string $toEmail, string $subject, string $html, Mailable $mailable): bool
     {
         $sent = false;
 

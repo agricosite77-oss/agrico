@@ -14,11 +14,15 @@ class AccountApprovedMail extends Mailable
     use Queueable, SerializesModels;
 
     public function __construct(
-        public User $user,
+        public ?User $user = null,
         public ?string $adminId = null,
-        public ?string $loginUrl = null
+        public ?string $loginUrl = null,
+        public ?string $userName = null,
+        public ?string $userEmail = null
     ) {
-        $this->loginUrl = $loginUrl ?: url('/login');
+        $this->userName = $this->userName ?: ($this->user?->name ?? 'AgriCo Member');
+        $this->userEmail = $this->userEmail ?: ($this->user?->email ?? '');
+        $this->loginUrl = $loginUrl ?: 'https://agrico-production-1eb3.up.railway.app/login';
     }
 
     public function envelope(): Envelope
@@ -33,9 +37,11 @@ class AccountApprovedMail extends Mailable
         return new Content(
             view: 'emails.account-approved',
             with: [
-                'user'     => $this->user,
-                'adminId'  => $this->adminId,
-                'loginUrl' => $this->loginUrl,
+                'user'      => $this->user,
+                'userName'  => $this->userName,
+                'userEmail' => $this->userEmail,
+                'adminId'   => $this->adminId,
+                'loginUrl'  => $this->loginUrl,
             ],
         );
     }
