@@ -354,6 +354,7 @@ class ManageUser extends Component
                     return;
                 }
 
+                $previousStatus = $user->status;
                 $user->name = $this->editName;
                 $user->email = $this->editEmail;
                 $user->status = $this->editStatus;
@@ -402,6 +403,13 @@ class ManageUser extends Component
                     'status'   => $targetReqStatus,
                     'admin_id' => $adminIdToSave,
                 ]);
+
+                // Send cross-platform notifications if account was approved or disapproved
+                if (ucfirst((string)$previousStatus) !== 'Active' && ucfirst((string)$this->editStatus) === 'Active') {
+                    \App\Services\NotificationService::notifyAccountApproved($user, $adminIdToSave);
+                } elseif (ucfirst((string)$previousStatus) !== 'Disapproved' && ucfirst((string)$this->editStatus) === 'Disapproved') {
+                    \App\Services\NotificationService::notifyAccountDisapproved($user, $user->name, $adminIdToSave);
+                }
             }
         }
 

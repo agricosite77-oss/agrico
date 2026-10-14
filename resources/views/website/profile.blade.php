@@ -2560,8 +2560,8 @@
                                 @php
                                     $data = $notif->data ?? [];
                                     $isPin = $notif->type === 'pin_submitted';
-                                    $isApproved = $notif->type === 'scan_approved';
-                                    $isRejected = $notif->type === 'scan_rejected';
+                                    $isApproved = in_array($notif->type, ['scan_approved', 'account_approved']);
+                                    $isRejected = in_array($notif->type, ['scan_rejected', 'account_rejected', 'account_disapproved']);
                                 @endphp
                                 <div
                                     class="profile-notif-card {{ $notif->is_read ? 'read' : 'unread' }}"

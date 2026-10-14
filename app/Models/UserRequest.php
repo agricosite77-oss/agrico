@@ -88,6 +88,7 @@ class UserRequest extends Model
                     'suspended_until' => null,
                     'last_admin_id'   => $adminId,
                 ]);
+                \App\Services\NotificationService::notifyAccountApproved($user, $adminId);
             }
         } else {
             $user = User::whereRaw('LOWER(email) = ?', [strtolower(trim((string) $req->user_email))])->first();
@@ -97,6 +98,7 @@ class UserRequest extends Model
                     $updateData['last_admin_id'] = $adminId;
                 }
                 $user->update($updateData);
+                \App\Services\NotificationService::notifyAccountApproved($user, $adminId);
             }
         }
 
@@ -158,6 +160,15 @@ class UserRequest extends Model
         } elseif (str_contains($type, 'account') || str_contains($type, 'register') || str_contains($type, 'signup')) {
             // Only unapproved new account registrations are removed upon disapproval
             $user = User::whereRaw('LOWER(email) = ?', [strtolower(trim((string) $req->user_email))])->first();
+            $applicantName = $user?->name ?? $req->user_name ?? 'AgriCo Applicant';
+            $applicantEmail = $user?->email ?? $req->user_email;
+
+            \App\Services\NotificationService::notifyAccountDisapproved(
+                userOrEmail: $applicantEmail,
+                userName: $applicantName,
+                adminId: $adminId
+            );
+
             if ($user && $user->status === 'Pending') {
                 $user->delete();
             }

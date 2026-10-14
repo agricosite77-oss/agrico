@@ -234,3 +234,103 @@ test('website profile page renders line separator, notifications, and dark and l
     $response->assertSee('profile-theme-switch', false);
 });
 
+test('AccountApprovedMail and AccountDisapprovedMail render valid html', function () {
+    $user = User::create([
+        'name'     => 'Approval Test User',
+        'email'    => 'approval_test_' . uniqid() . '@agrico.com',
+        'password' => bcrypt('secret123'),
+        'role'     => 'User',
+        'status'   => 'Active',
+    ]);
+
+    $approvedMail = new \App\Mail\AccountApprovedMail($user, 'ADM-001');
+    $html = $approvedMail->render();
+    expect($html)->toContain('Account Registration Approved')
+        ->toContain($user->name)
+        ->toContain('ACTIVE / APPROVED');
+
+    $disapprovedMail = new \App\Mail\AccountDisapprovedMail(user: $user, userName: $user->name, userEmail: $user->email, adminId: 'ADM-001', reason: 'Invalid student ID');
+    $disHtml = $disapprovedMail->render();
+    expect($disHtml)->toContain('Account Registration Disapproved')
+        ->toContain('Invalid student ID')
+        ->toContain('DISAPPROVED');
+});
+
+test('NotificationService notifyAccountApproved creates notification and sends email', function () {
+    $user = User::create([
+        'name'     => 'Approve Service User',
+        'email'    => 'service_approve_' . uniqid() . '@agrico.com',
+        'password' => bcrypt('secret123'),
+        'role'     => 'User',
+        'status'   => 'Pending',
+    ]);
+
+    \App\Services\NotificationService::notifyAccountApproved($user, 'ADM-001');
+
+    $notif = UserNotification::where('user_id', $user->user_id)->latest('notification_id')->first();
+    expect($notif)->not->toBeNull()
+        ->and($notif->type)->toBe('account_approved')
+        ->and($notif->title)->toContain('Approved');
+
+    Mail::assertSent(\App\Mail\AccountApprovedMail::class, function ($mail) use ($user) {
+        return $mail->user->email === $user->email;
+    });
+});
+
+test('UserRequest approveRequest and disapproveRequest trigger notifications', function () {
+    $user = User::create([
+        'name'     => 'Request User',
+        'email'    => 'req_user_' . uniqid() . '@agrico.com',
+        'password' => bcrypt('secret123'),
+        'role'     => 'User',
+        'status'   => 'Pending',
+    ]);
+
+    $req = \App\Models\UserRequest::create([
+        'user_name'    => $user->name,
+        'user_email'   => $user->email,
+        'type'         => 'Account Registration',
+        'description'  => 'New account approval test',
+        'status'       => 'Pending',
+        'request_code' => 'REQ-TEST-001',
+    ]);
+
+    // Test approveRequest
+    $res = \App\Models\UserRequest::approveRequest($req->id, 'ADM-001');
+    expect($res['success'])->toBeTrue();
+    expect($user->fresh()->status)->toBe('Active');
+
+    Mail::assertSent(\App\Mail\AccountApprovedMail::class, function ($mail) use ($user) {
+        return $mail->user->email === $user->email;
+    });
+
+    $notif = UserNotification::where('user_id', $user->user_id)->latest('notification_id')->first();
+    expect($notif)->not->toBeNull()
+        ->and($notif->type)->toBe('account_approved');
+
+    // Test disapproveRequest
+    $pendingUser = User::create([
+        'name'     => 'Disapprove User',
+        'email'    => 'disapprove_' . uniqid() . '@agrico.com',
+        'password' => bcrypt('secret123'),
+        'role'     => 'User',
+        'status'   => 'Pending',
+    ]);
+
+    $disReq = \App\Models\UserRequest::create([
+        'user_name'    => $pendingUser->name,
+        'user_email'   => $pendingUser->email,
+        'type'         => 'Account Registration',
+        'description'  => 'Disapproval test',
+        'status'       => 'Pending',
+        'request_code' => 'REQ-TEST-002',
+    ]);
+
+    $disRes = \App\Models\UserRequest::disapproveRequest($disReq->id, 'ADM-001');
+    expect($disRes['success'])->toBeTrue();
+
+    Mail::assertSent(\App\Mail\AccountDisapprovedMail::class, function ($mail) use ($pendingUser) {
+        return $mail->userEmail === $pendingUser->email;
+    });
+});
+

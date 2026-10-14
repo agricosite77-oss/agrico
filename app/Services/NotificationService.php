@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Mail\AccountApprovedMail;
+use App\Mail\AccountDisapprovedMail;
 use App\Mail\SoilPinSubmittedMail;
 use App\Mail\SoilScanModeratedMail;
 use App\Models\LocationMapping;
@@ -143,6 +145,93 @@ class NotificationService
             Log::error('[NotificationService@notifyScanModerated] ' . $e->getMessage(), [
                 'exception' => $e,
                 'soil_scan_id' => $scan->soil_scan_id ?? null,
+            ]);
+        }
+    }
+
+    /**
+     * Send cross-platform notifications (Database + Email) when admin approves an account registration/reactivation.
+     */
+    public static function notifyAccountApproved(User $user, ?string $adminId = null): void
+    {
+        try {
+            $userId = $user->user_id ?? $user->id;
+
+            // 1. In-App / Database Notification
+            UserNotification::create([
+                'user_id' => $userId,
+                'title'   => 'Account Registration Approved',
+                'message' => 'Welcome to AgriCo! Your account registration has been reviewed and approved by an administrator. Scanning, mapping, and all platform features are now unlocked.',
+                'type'    => 'account_approved',
+                'data'    => [
+                    'user_id'  => $userId,
+                    'role'     => $user->role,
+                    'admin_id' => $adminId,
+                    'status'   => 'Active',
+                ],
+                'is_read' => false,
+            ]);
+
+            // 2. Dispatch Welcome / Approval Email
+            if (!empty($user->email) && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+                $mailable = new AccountApprovedMail($user, $adminId);
+                $renderedHtml = (string) view('emails.account-approved', [
+                    'user'     => $user,
+                    'adminId'  => $adminId,
+                    'loginUrl' => url('/login'),
+                ])->render();
+
+                self::sendEmail(
+                    toEmail: $user->email,
+                    subject: '[AgriCo] Account Registration Approved - Welcome to AgriCo!',
+                    html: $renderedHtml,
+                    mailable: $mailable
+                );
+            }
+        } catch (\Throwable $e) {
+            Log::error('[NotificationService@notifyAccountApproved] ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id'   => $user->user_id ?? null,
+            ]);
+        }
+    }
+
+    /**
+     * Send email notification when admin disapproves an account registration.
+     */
+    public static function notifyAccountDisapproved(User|string $userOrEmail, ?string $userName = null, ?string $adminId = null, ?string $reason = null): void
+    {
+        try {
+            $user = $userOrEmail instanceof User ? $userOrEmail : null;
+            $email = $user ? $user->email : (string) $userOrEmail;
+            $name = $userName ?: ($user?->name ?? 'AgriCo Applicant');
+
+            if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $mailable = new AccountDisapprovedMail(
+                    user: $user,
+                    userName: $name,
+                    userEmail: $email,
+                    adminId: $adminId,
+                    reason: $reason
+                );
+                $renderedHtml = (string) view('emails.account-disapproved', [
+                    'user'      => $user,
+                    'userName'  => $name,
+                    'userEmail' => $email,
+                    'adminId'   => $adminId,
+                    'reason'    => $reason,
+                ])->render();
+
+                self::sendEmail(
+                    toEmail: $email,
+                    subject: '[AgriCo] Account Registration Update - Disapproved',
+                    html: $renderedHtml,
+                    mailable: $mailable
+                );
+            }
+        } catch (\Throwable $e) {
+            Log::error('[NotificationService@notifyAccountDisapproved] ' . $e->getMessage(), [
+                'exception' => $e,
             ]);
         }
     }

@@ -779,6 +779,7 @@ class StudentRecord extends Component
         if ($this->editUserId) {
             $user = User::find($this->editUserId);
             if ($user) {
+                $previousStatus = $user->status;
                 $user->name = $this->editName;
                 $user->email = $this->editEmail;
                 $user->student_id = trim($this->editStudentId) ?: null;
@@ -808,6 +809,13 @@ class StudentRecord extends Component
                     'status'   => $targetReqStatus,
                     'admin_id' => $adminIdToSave,
                 ]);
+
+                // Send cross-platform notifications if student account was approved or disapproved
+                if (ucfirst((string)$previousStatus) !== 'Active' && ucfirst((string)$this->editStatus) === 'Active') {
+                    \App\Services\NotificationService::notifyAccountApproved($user, $adminIdToSave);
+                } elseif (ucfirst((string)$previousStatus) !== 'Disapproved' && ucfirst((string)$this->editStatus) === 'Disapproved') {
+                    \App\Services\NotificationService::notifyAccountDisapproved($user, $user->name, $adminIdToSave);
+                }
             }
         }
 
