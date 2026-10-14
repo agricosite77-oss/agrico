@@ -496,60 +496,7 @@
             will-change: transform;
         }
 
-        /* ── THEME TOGGLE BUTTON ── */
-        .ws-theme-toggle {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            border: 1.5px solid #8EB69B;
-            background: rgba(35, 83, 71, 0.45);
-            color: #DAF1DE;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                        border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        .ws-theme-toggle:focus-visible {
-            outline: 2px solid #22c55e;
-            outline-offset: 2px;
-        }
-        .ws-theme-toggle:hover {
-            background: #235347;
-            color: #ffffff;
-            border-color: #DAF1DE;
-            transform: scale(1.08);
-        }
-        .ws-theme-toggle .icon-sun,
-        .ws-theme-toggle .icon-moon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -8.5px;
-            margin-left: -8.5px;
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
-            pointer-events: none;
-        }
-        html:not(.light-mode) .ws-theme-toggle .icon-sun {
-            opacity: 0;
-            transform: rotate(-90deg) scale(0.4);
-        }
-        html:not(.light-mode) .ws-theme-toggle .icon-moon {
-            opacity: 1;
-            transform: rotate(0deg) scale(1);
-        }
-        html.light-mode .ws-theme-toggle .icon-sun {
-            opacity: 1;
-            transform: rotate(0deg) scale(1);
-        }
-        html.light-mode .ws-theme-toggle .icon-moon {
-            opacity: 0;
-            transform: rotate(90deg) scale(0.4);
-        }
+
 
         /* ── LIGHT MODE HEADER OVERRIDES (MATCHING IMAGE 17) ── */
         html.light-mode .ws-nav {
@@ -621,16 +568,7 @@
             box-shadow: 0 6px 18px rgba(34, 197, 94, 0.45) !important;
             transform: translateY(-1px) !important;
         }
-        html.light-mode .ws-theme-toggle {
-            background: #f0fdf4;
-            border-color: #22c55e;
-            color: #22c55e;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        }
-        html.light-mode .ws-theme-toggle:hover {
-            background: #22c55e;
-            color: #ffffff;
-        }
+
         html.light-mode .ws-mobile-menu {
             background: rgba(255, 255, 255, 0.98);
             border-bottom: 1px solid #f1f5f9;
@@ -1283,22 +1221,6 @@
                 @endif
             </div>
 
-            <button class="ws-theme-toggle" id="wsThemeToggle" aria-label="{{ $currentTheme === 'light' ? 'Switch to dark mode' : 'Switch to light mode' }}" aria-pressed="{{ $currentTheme === 'light' ? 'true' : 'false' }}" type="button" title="Toggle Light/Dark Mode">
-                {{-- Moon icon (shown in dark mode) --}}
-                <svg class="icon-moon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                </svg>
-                {{-- Sun icon (shown in light mode) --}}
-                <svg class="icon-sun" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5"/>
-                    <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                </svg>
-            </button>
 
             {{-- Hamburger --}}
             <button class="ws-hamburger" id="wsHamburger" aria-label="Toggle menu" type="button">
@@ -1943,7 +1865,6 @@
     // ── CIRCULAR REVEAL THEME TOGGLE (VIEW TRANSITIONS API + FALLBACK) ──
     (function() {
         const html = document.documentElement;
-        const btn  = document.getElementById('wsThemeToggle');
         let isThemeTransitioning = false;
 
         // Configurable duration (ms) and easing function
@@ -1955,11 +1876,6 @@
             html.style.colorScheme = isLight ? 'light' : 'dark';
             const themeStr = isLight ? 'light' : 'dark';
             localStorage.setItem('agrico-theme', themeStr);
-
-            if (btn) {
-                btn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
-                btn.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
-            }
 
             // Dispatch global event for in-page profile switches or widgets
             window.dispatchEvent(new CustomEvent('agrico:theme-changed', {
@@ -2059,12 +1975,7 @@
             }
         };
 
-        if (btn) {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.agricoToggleTheme();
-            });
-        }
+
     })();
 
     // Mobile hamburger toggle
