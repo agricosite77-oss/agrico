@@ -19,71 +19,16 @@ use Illuminate\Support\Facades\Mail;
 class NotificationService
 {
     /**
-     * Send cross-platform notifications (Database + Email) when a user pins a location.
+     * Pin submission notification (Disabled per user requirements: only admin decisions generate notifications/emails).
      */
     public static function notifyPinSubmitted(LocationMapping $location, ?User $user = null, string $platform = 'application'): void
     {
-        try {
-            // Resolve target user
-            if (!$user) {
-                if ($location->soilScan?->user_id) {
-                    $user = User::where('user_id', $location->soilScan->user_id)->first();
-                } elseif ($location->soil_id) {
-                    $scan = SoilScan::where('soil_id', $location->soil_id)->latest('soil_scan_id')->first();
-                    if ($scan?->user_id) {
-                        $user = User::where('user_id', $scan->user_id)->first();
-                    }
-                }
-            }
-
-            $userId = $user?->user_id ?? 'USR-001';
-            $brgy = $location->barangay ?: 'Lal-lo Overall';
-            $coords = number_format((float)$location->latitude, 4) . ', ' . number_format((float)$location->longitude, 4);
-
-            // 1. Create In-App / Website Notification in Database
-            UserNotification::create([
-                'user_id' => $userId,
-                'title'   => 'Soil Location Pin Submitted',
-                'message' => "Your soil sample pin in Brgy. {$brgy} ({$coords}) has been submitted from the {$platform} and is awaiting admin verification.",
-                'type'    => 'pin_submitted',
-                'data'    => [
-                    'location_id'  => $location->location_mapping_id,
-                    'soil_scan_id' => $location->soil_scan_id,
-                    'barangay'     => $brgy,
-                    'latitude'     => (float) $location->latitude,
-                    'longitude'    => (float) $location->longitude,
-                    'platform'     => $platform,
-                    'status'       => 'Pending',
-                ],
-                'is_read' => false,
-            ]);
-
-            // 2. Dispatch Email Confirmation
-            if ($user && !empty($user->email) && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                $mailable = new SoilPinSubmittedMail($location, $user, $platform);
-                $renderedHtml = (string) view('emails.soil-pin-submitted', [
-                    'location' => $location,
-                    'user'     => $user,
-                    'platform' => $platform,
-                ])->render();
-
-                self::sendEmail(
-                    toEmail: $user->email,
-                    subject: "[AgriCo] Soil Location Pin Submitted: Brgy. {$brgy}",
-                    html: $renderedHtml,
-                    mailable: $mailable
-                );
-            }
-        } catch (\Throwable $e) {
-            Log::error('[NotificationService@notifyPinSubmitted] ' . $e->getMessage(), [
-                'exception' => $e,
-                'location_id' => $location->location_mapping_id ?? null,
-            ]);
-        }
+        // No-op: pin submissions do not generate notifications or emails.
+        return;
     }
 
     /**
-     * Send cross-platform notifications (Database + Email) when admin approves or rejects a scan.
+     * Send mobile notifications (Database + Email) when admin approves or rejects a scan.
      */
     public static function notifyScanModerated(SoilScan $scan, string $status, ?string $adminId = null): void
     {
@@ -94,8 +39,24 @@ class NotificationService
                 $user = User::where('user_id', $scan->user_id)->first();
             }
 
-            $userId = $user?->user_id ?? $scan->user_id ?? 'USR-001';
+            if (!$user && empty($scan->user_id)) {
+                return;
+            }
+
+            $userId = $user?->user_id ?? $scan->user_id;
             $isVerified = $status === 'Verified';
+            $type = $isVerified ? 'scan_approved' : 'scan_rejected';
+
+            // Idempotency guard: prevent duplicate moderation notification for same scan & decision
+            $alreadyNotified = UserNotification::where('user_id', $userId)
+                ->where('type', $type)
+                ->where('data->soil_scan_id', $scan->soil_scan_id)
+                ->exists();
+
+            if ($alreadyNotified) {
+                Log::info("[NotificationService] Scan moderation notification already exists for scan #{$scan->soil_scan_id}. Skipping duplicate.");
+                return;
+            }
 
             $title = $isVerified
                 ? 'Soil Scan Approved & Published'
@@ -107,13 +68,14 @@ class NotificationService
 
             $location = $scan->location ?? LocationMapping::where('soil_scan_id', $scan->soil_scan_id)->first();
 
-            // 1. Create In-App / Website Notification in Database
+            // 1. Create In-App Notification in Database (Mobile Platform Only)
             UserNotification::create([
-                'user_id' => $userId,
-                'title'   => $title,
-                'message' => $message,
-                'type'    => $isVerified ? 'scan_approved' : 'scan_rejected',
-                'data'    => [
+                'user_id'  => $userId,
+                'title'    => $title,
+                'message'  => $message,
+                'type'     => $type,
+                'platform' => 'mobile',
+                'data'     => [
                     'soil_scan_id' => $scan->soil_scan_id,
                     'soil_id'      => $scan->soil_id,
                     'status'       => $status,
@@ -183,20 +145,31 @@ class NotificationService
     }
 
     /**
-     * Send cross-platform notifications (Database + Email) when admin approves an account registration/reactivation.
+     * Send website notifications (Database + Email) when admin approves an account registration/reactivation.
      */
     public static function notifyAccountApproved(User $user, ?string $adminId = null): void
     {
         try {
             $userId = $user->user_id ?? $user->id;
 
-            // 1. In-App / Database Notification
+            // Idempotency guard: prevent duplicate approval notification for same account
+            $alreadyNotified = UserNotification::where('user_id', $userId)
+                ->where('type', 'account_approved')
+                ->exists();
+
+            if ($alreadyNotified) {
+                Log::info("[NotificationService] Account approval notification already exists for user {$userId}. Skipping duplicate.");
+                return;
+            }
+
+            // 1. In-App / Database Notification (Website Platform Only)
             UserNotification::create([
-                'user_id' => $userId,
-                'title'   => 'Account Registration Approved',
-                'message' => 'Welcome to AgriCo! Your account registration has been reviewed and approved by an administrator. Scanning, mapping, and all platform features are now unlocked.',
-                'type'    => 'account_approved',
-                'data'    => [
+                'user_id'  => $userId,
+                'title'    => 'Account Registration Approved',
+                'message'  => 'Welcome to AgriCo! Your account registration has been reviewed and approved by an administrator. Scanning, mapping, and all platform features are now unlocked.',
+                'type'     => 'account_approved',
+                'platform' => 'website',
+                'data'     => [
                     'user_id'  => $userId,
                     'role'     => $user->role,
                     'admin_id' => $adminId,
@@ -240,7 +213,7 @@ class NotificationService
     }
 
     /**
-     * Send email notification when admin disapproves an account registration.
+     * Send website notifications (Database + Email) when admin disapproves an account registration.
      */
     public static function notifyAccountDisapproved(User|string $userOrEmail, ?string $userName = null, ?string $adminId = null, ?string $reason = null): void
     {
@@ -248,7 +221,43 @@ class NotificationService
             $user = $userOrEmail instanceof User ? $userOrEmail : null;
             $email = $user ? $user->email : (string) $userOrEmail;
             $name = $userName ?: ($user?->name ?? 'AgriCo Applicant');
+            $userId = $user?->user_id ?? ($user ? ($user->user_id ?? $user->id) : null);
 
+            // If we don't have user object but have email, look up user
+            if (!$userId && !empty($email)) {
+                $foundUser = User::whereRaw('LOWER(email) = ?', [strtolower(trim($email))])->first();
+                $userId = $foundUser?->user_id;
+            }
+
+            // Idempotency guard: prevent duplicate disapproval notification
+            if ($userId) {
+                $alreadyNotified = UserNotification::where('user_id', $userId)
+                    ->where('type', 'account_disapproved')
+                    ->exists();
+
+                if ($alreadyNotified) {
+                    Log::info("[NotificationService] Account disapproval notification already exists for user {$userId}. Skipping duplicate.");
+                    return;
+                }
+
+                // 1. In-App Notification (Website Platform Only)
+                UserNotification::create([
+                    'user_id'  => $userId,
+                    'title'    => 'Account Registration Disapproved',
+                    'message'  => 'Your account registration was reviewed and could not be approved at this time' . ($reason ? ": {$reason}" : '.'),
+                    'type'     => 'account_disapproved',
+                    'platform' => 'website',
+                    'data'     => [
+                        'user_id'  => $userId,
+                        'admin_id' => $adminId,
+                        'reason'   => $reason,
+                        'status'   => 'Disapproved',
+                    ],
+                    'is_read'  => false,
+                ]);
+            }
+
+            // 2. Dispatch Disapproval Email
             if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $mailable = new AccountDisapprovedMail(
                     user: $user,

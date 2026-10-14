@@ -16,6 +16,7 @@ class UserNotification extends Model
         'title',
         'message',
         'type',
+        'platform',
         'data',
         'is_read',
         'read_at',
@@ -35,6 +36,22 @@ class UserNotification extends Model
     public function scopeUnread($query)
     {
         return $query->where('is_read', false);
+    }
+
+    public function scopeForWebsite($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('platform', 'website')
+              ->orWhereIn('type', ['account_approved', 'account_disapproved']);
+        });
+    }
+
+    public function scopeForMobile($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('platform', 'mobile')
+              ->orWhereIn('type', ['scan_approved', 'scan_rejected']);
+        });
     }
 
     public function markAsRead(): void

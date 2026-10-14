@@ -102,10 +102,8 @@ test('pin submission generates in-app user notification and attempts email dispa
         ->latest('created_at')
         ->first();
 
-    expect($notif)->not->toBeNull()
-        ->and($notif->title)->toBe('Soil Location Pin Submitted')
-        ->and($notif->message)->toContain('Bagumbayan')
-        ->and($notif->is_read)->toBeFalse();
+    // Per platform rules, pin submission notifications are disabled; only admin decisions trigger notifications
+    expect($notif)->toBeNull();
 });
 
 test('scan moderation triggers in-app notification when approved or rejected', function () {
