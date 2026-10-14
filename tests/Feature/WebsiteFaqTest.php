@@ -46,9 +46,11 @@ class WebsiteFaqTest extends TestCase
         $response->assertSee('id="terms-and-privacy"', false);
         $response->assertSee('id="contact-support"', false);
 
-        // Check search box & expand toggle
+        // Check search box & expand toggle & category navigation arrows
         $response->assertSee('id="faqSearchInput"', false);
         $response->assertSee('id="faqExpandAllToggle"', false);
+        $response->assertSee('id="faqCatPrev"', false);
+        $response->assertSee('id="faqCatNext"', false);
     }
 
     /**

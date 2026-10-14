@@ -126,15 +126,56 @@
             color: #0f172a;
         }
 
-        /* ── CATEGORY PILLS ── */
+        /* ── CATEGORY PILLS & NAVIGATION ARROWS ── */
+        .faq-categories-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+        .faq-cat-arrow {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            color: #166534;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+            padding: 0;
+        }
+        .faq-cat-arrow:hover:not(:disabled) {
+            background: #f0fdf4;
+            border-color: #22c55e;
+            color: #15803d;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+            transform: translateY(-1px);
+        }
+        .faq-cat-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+            color: #94a3b8;
+            box-shadow: none;
+            transform: none;
+        }
         .faq-categories {
             display: flex;
             align-items: center;
             gap: 8px;
             overflow-x: auto;
-            padding-bottom: 6px;
+            scroll-behavior: smooth;
+            padding: 4px 2px 6px;
             scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
+            flex: 1;
         }
         .faq-categories::-webkit-scrollbar {
             display: none;
@@ -514,6 +555,10 @@
                 flex-direction: column;
                 width: 100%;
             }
+            .faq-cat-arrow {
+                width: 32px;
+                height: 32px;
+            }
             .faq-btn-primary, .faq-btn-secondary {
                 width: 100%;
                 justify-content: center;
@@ -567,38 +612,64 @@
                 >&times;</button>
             </div>
 
-            {{-- Category Filter Pills --}}
-            <div class="faq-categories" role="tablist" aria-label="FAQ Categories">
+            {{-- Category Filter Pills with Navigation Arrows --}}
+            <div class="faq-categories-container">
                 <button
                     type="button"
-                    class="faq-cat-btn active"
-                    data-category="all"
-                    role="tab"
-                    aria-selected="true"
+                    class="faq-cat-arrow"
+                    id="faqCatPrev"
+                    aria-label="Scroll categories left"
+                    title="Scroll left"
                 >
-                    <span>All Questions</span>
-                    <span class="faq-cat-count" id="count-all">{{ count($faqs) }}</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
                 </button>
 
-                @foreach($categories as $catKey => $catTitle)
-                    @if($catKey !== 'all')
-                        @php
-                            $catItemsCount = collect($faqs)->where('category', $catKey)->count();
-                        @endphp
-                        @if($catItemsCount > 0)
-                            <button
-                                type="button"
-                                class="faq-cat-btn"
-                                data-category="{{ $catKey }}"
-                                role="tab"
-                                aria-selected="false"
-                            >
-                                <span>{{ $catTitle }}</span>
-                                <span class="faq-cat-count">{{ $catItemsCount }}</span>
-                            </button>
+                <div class="faq-categories" id="faqCategoriesTrack" role="tablist" aria-label="FAQ Categories">
+                    <button
+                        type="button"
+                        class="faq-cat-btn active"
+                        data-category="all"
+                        role="tab"
+                        aria-selected="true"
+                    >
+                        <span>All Questions</span>
+                        <span class="faq-cat-count" id="count-all">{{ count($faqs) }}</span>
+                    </button>
+
+                    @foreach($categories as $catKey => $catTitle)
+                        @if($catKey !== 'all')
+                            @php
+                                $catItemsCount = collect($faqs)->where('category', $catKey)->count();
+                            @endphp
+                            @if($catItemsCount > 0)
+                                <button
+                                    type="button"
+                                    class="faq-cat-btn"
+                                    data-category="{{ $catKey }}"
+                                    role="tab"
+                                    aria-selected="false"
+                                >
+                                    <span>{{ $catTitle }}</span>
+                                    <span class="faq-cat-count">{{ $catItemsCount }}</span>
+                                </button>
+                            @endif
                         @endif
-                    @endif
-                @endforeach
+                    @endforeach
+                </div>
+
+                <button
+                    type="button"
+                    class="faq-cat-arrow"
+                    id="faqCatNext"
+                    aria-label="Scroll categories right"
+                    title="Scroll right"
+                >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
             </div>
         </div>
 
@@ -838,6 +909,56 @@
                 }
             }
 
+            // ── CATEGORY BAR ARROWS & SCROLL NAVIGATION ──
+            const categoriesTrack = document.getElementById('faqCategoriesTrack');
+            const catPrevBtn = document.getElementById('faqCatPrev');
+            const catNextBtn = document.getElementById('faqCatNext');
+
+            function updateCatArrowStates() {
+                if (!categoriesTrack || !catPrevBtn || !catNextBtn) return;
+                const scrollLeft = categoriesTrack.scrollLeft;
+                const maxScroll = categoriesTrack.scrollWidth - categoriesTrack.clientWidth;
+
+                // Disable when at edge
+                catPrevBtn.disabled = scrollLeft <= 4;
+                catNextBtn.disabled = scrollLeft >= maxScroll - 4;
+
+                // If all categories fit without scroll, hide arrows
+                if (maxScroll <= 4) {
+                    catPrevBtn.style.display = 'none';
+                    catNextBtn.style.display = 'none';
+                } else {
+                    catPrevBtn.style.display = 'flex';
+                    catNextBtn.style.display = 'flex';
+                }
+            }
+
+            if (catPrevBtn && categoriesTrack) {
+                catPrevBtn.addEventListener('click', function () {
+                    categoriesTrack.scrollBy({ left: -220, behavior: 'smooth' });
+                    setTimeout(updateCatArrowStates, 320);
+                });
+            }
+
+            if (catNextBtn && categoriesTrack) {
+                catNextBtn.addEventListener('click', function () {
+                    categoriesTrack.scrollBy({ left: 220, behavior: 'smooth' });
+                    setTimeout(updateCatArrowStates, 320);
+                });
+            }
+
+            if (categoriesTrack) {
+                categoriesTrack.addEventListener('scroll', updateCatArrowStates, { passive: true });
+                window.addEventListener('resize', updateCatArrowStates);
+                setTimeout(updateCatArrowStates, 80);
+            }
+
+            function scrollActiveCategoryIntoView(btn) {
+                if (!btn || !categoriesTrack) return;
+                btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                setTimeout(updateCatArrowStates, 320);
+            }
+
             // Category Tab Clicks
             categoryButtons.forEach(btn => {
                 btn.addEventListener('click', function () {
@@ -850,6 +971,7 @@
 
                     currentCategory = this.getAttribute('data-category') || 'all';
                     applyFilters();
+                    scrollActiveCategoryIntoView(this);
                 });
             });
 
@@ -893,6 +1015,7 @@
                 if (allBtn) {
                     allBtn.classList.add('active');
                     allBtn.setAttribute('aria-selected', 'true');
+                    scrollActiveCategoryIntoView(allBtn);
                 }
                 currentCategory = 'all';
                 applyFilters();
@@ -928,11 +1051,14 @@
                     // Switch category to target item's category or 'all' if hidden
                     const itemCat = targetItem.getAttribute('data-category');
                     if (itemCat && currentCategory !== 'all' && currentCategory !== itemCat) {
+                        let matchedBtn = null;
                         categoryButtons.forEach(b => {
                             const isMatch = b.getAttribute('data-category') === itemCat;
                             b.classList.toggle('active', isMatch);
                             b.setAttribute('aria-selected', isMatch ? 'true' : 'false');
+                            if (isMatch) matchedBtn = b;
                         });
+                        if (matchedBtn) scrollActiveCategoryIntoView(matchedBtn);
                         currentCategory = itemCat;
                         applyFilters();
                     }
