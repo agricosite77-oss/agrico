@@ -301,8 +301,20 @@ class NotificationService
             $resendKey = trim($resendKey, " \t\n\r\0\x0B\"'");
         }
 
-        // 1. Try Resend HTTP API if key is present
-        if (class_exists(\Resend::class) && !empty($resendKey)) {
+        // 1. Try configured Laravel Mail driver (e.g. Gmail SMTP) first
+        $mailDefault = config('mail.default', 'smtp');
+        if ($mailDefault === 'smtp' && !empty(config('mail.mailers.smtp.host'))) {
+            try {
+                Mail::to($toEmail)->send($mailable);
+                $sent = true;
+                Log::info("[NotificationService] Email sent via Mail driver ({$mailDefault}) to {$toEmail}: {$subject}");
+            } catch (\Throwable $e) {
+                Log::warning("[NotificationService] Mail driver ({$mailDefault}) failed for {$toEmail}: " . $e->getMessage());
+            }
+        }
+
+        // 2. Fallback / alternative: Resend HTTP API
+        if (!$sent && class_exists(\Resend::class) && !empty($resendKey)) {
             try {
                 $resend = \Resend::client($resendKey);
                 $resend->emails->send([
@@ -318,14 +330,14 @@ class NotificationService
             }
         }
 
-        // 2. Fallback to Laravel Mail driver
+        // 3. Final fallback to default Mail driver if not yet attempted
         if (!$sent) {
             try {
                 Mail::to($toEmail)->send($mailable);
                 $sent = true;
-                Log::info("[NotificationService] Email sent via Mail driver to {$toEmail}: {$subject}");
+                Log::info("[NotificationService] Email sent via fallback Mail driver to {$toEmail}: {$subject}");
             } catch (\Throwable $e) {
-                Log::error("[NotificationService] Failed to send email via Mail driver to {$toEmail}: " . $e->getMessage());
+                Log::error("[NotificationService] Failed to send email via fallback Mail driver to {$toEmail}: " . $e->getMessage());
             }
         }
 
