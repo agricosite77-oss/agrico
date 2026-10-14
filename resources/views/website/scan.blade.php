@@ -4401,7 +4401,13 @@
                 <span class="ws-breadcrumb-current">Soil Scanner</span>
             </div>
             <h1 class="ws-page-title">Soil Color Scanner</h1>
-            <p class="ws-page-sub">Determine Munsell Soil Color records in real-time via live camera feed or sample upload.</p>
+            <p class="ws-page-sub">
+                Determine Munsell Soil Color records in real-time via live camera feed or sample upload.
+                <a href="{{ route('website.faq') }}#photo-guide" target="_blank" style="margin-left: 8px; color: #DAF1DE; text-decoration: underline; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span>Photo Guidelines FAQ</span>
+                </a>
+            </p>
         </div>
     </div>
 

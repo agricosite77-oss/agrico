@@ -1466,7 +1466,7 @@
                         </div>
                     </div>
                     <span class="terms-policy-text">
-                        I agree to the <a href="{{ route('website.faq') }}" target="_blank" onclick="event.stopPropagation();">Terms of Service</a> and <a href="{{ route('website.faq') }}" target="_blank" onclick="event.stopPropagation();">Privacy Policy</a>.
+                        I agree to the <a href="{{ route('website.faq') }}#terms-and-privacy" target="_blank" onclick="event.stopPropagation();">Terms of Service</a> and <a href="{{ route('website.faq') }}#terms-and-privacy" target="_blank" onclick="event.stopPropagation();">Privacy Policy</a>.
                     </span>
                 </label>
             </div>
@@ -1490,6 +1490,12 @@
             <div class="auth-bottom-link">
                 Already have an account?
                 <a href="{{ route('login') }}">Log in</a>
+            </div>
+            <div style="margin-top: -4px; margin-bottom: 8px; font-size: 0.76rem;">
+                <a href="{{ route('website.faq') }}#account-approval" style="color: #64748b; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" onmouseover="this.style.color='#22c55e'" onmouseout="this.style.color='#64748b'">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span>Questions about account approval? Read FAQ</span>
+                </a>
             </div>
             <div class="auth-guest-wrap">
                 <a href="{{ route('website.home') }}" class="auth-guest-link">

@@ -1,381 +1,961 @@
 <x-website-layout>
-    <x-slot name="title">FAQ</x-slot>
+    <x-slot name="title">Frequently Asked Questions — AgriCo</x-slot>
+
+    {{-- SEO Meta Description --}}
+    @push('head')
+        <meta name="description" content="Find quick answers about AgriCo soil scanning, Munsell color codes, account registration, administrator approval, interactive map pins, and the mobile application." />
+    @endpush
 
     <style>
-        .ws-page-hero {
-            background: linear-gradient(135deg, #051F20 0%, #0B2B26 100%);
-            padding: 16px 24px 14px;
-            border-bottom: 1px solid rgba(142, 182, 155, 0.2);
-            flex-shrink: 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        /* ── PAGE HERO (LIGHT GREEN AGRI-GRADIENT) ── */
+        .faq-hero {
+            background: linear-gradient(135deg, #f0fdf4 0%, #e2f7e8 50%, #daf1de 100%);
+            border-bottom: 1px solid #c7ecd1;
+            padding: 32px 24px 28px;
+            box-shadow: 0 4px 18px rgba(34, 197, 94, 0.06);
         }
-        .ws-page-hero-inner { max-width: 1400px; margin: 0 auto; width: 100%; }
-        .ws-breadcrumb {
-            display: flex; align-items: center; gap: 6px;
-            font-size: 12px; color: #8EB69B; margin-bottom: 4px;
-            font-weight: 500;
-        }
-        .ws-breadcrumb a { color: #DAF1DE; text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
-        .ws-breadcrumb a:hover { text-decoration: underline; color: #8EB69B; }
-        .ws-page-title {
-            font-size: clamp(1.3rem, 2.5vw, 1.75rem); font-weight: 900;
-            color: #DAF1DE; margin: 0 0 2px 0; letter-spacing: -0.5px; line-height: 1.2;
-        }
-        .ws-page-sub { font-size: 13px; color: #8EB69B; margin: 0; font-weight: 400; }
-
-        .faq-wrapper {
-            max-width: 1080px;
+        .faq-hero-inner {
+            max-width: 1040px;
             margin: 0 auto;
-            padding: 40px 24px 80px;
+            width: 100%;
+        }
+        .faq-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #15803d;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .faq-breadcrumb a {
+            color: #166534;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .faq-breadcrumb a:hover {
+            color: #22c55e;
+            text-decoration: underline;
+        }
+        .faq-title {
+            font-size: clamp(1.6rem, 3.2vw, 2.25rem);
+            font-weight: 900;
+            color: #0f172a;
+            letter-spacing: -0.025em;
+            line-height: 1.2;
+            margin: 0 0 6px 0;
+        }
+        .faq-subtitle {
+            font-size: 14.5px;
+            color: #475569;
+            margin: 0;
+            line-height: 1.5;
+            max-width: 680px;
         }
 
-        /* Section header */
-        .faq-count-chip {
-            display: inline-flex;
+        /* ── MAIN CONTENT WRAPPER ── */
+        .faq-container {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 28px 20px 80px;
+            box-sizing: border-box;
+        }
+
+        /* ── SEARCH & FILTER CONTROLS ── */
+        .faq-controls {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .faq-search-box {
+            position: relative;
+            width: 100%;
+        }
+        .faq-search-input {
+            width: 100%;
+            height: 50px;
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 10px 48px 10px 48px;
+            font-size: 15px;
+            color: #0f172a;
+            box-sizing: border-box;
+            outline: none;
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .faq-search-input:focus {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+        }
+        .faq-search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            stroke: #94a3b8;
+            pointer-events: none;
+        }
+        .faq-search-clear {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f1f5f9;
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            transition: all 0.15s ease;
+        }
+        .faq-search-clear:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* ── CATEGORY PILLS ── */
+        .faq-categories {
+            display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(11, 43, 38, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(142, 182, 155, 0.25);
-            border-radius: 12px;
-            padding: 8px 18px;
-            font-size: 13.5px;
-            color: #8EB69B;
-            font-weight: 600;
-            margin-bottom: 28px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
-        .faq-count-chip span { color: #4ADE80; font-weight: 800; }
+        .faq-categories::-webkit-scrollbar {
+            display: none;
+        }
+        .faq-cat-btn {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 9999px;
+            padding: 8px 16px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+        }
+        .faq-cat-btn:hover {
+            border-color: #86efac;
+            color: #166534;
+            background: #f0fdf4;
+        }
+        .faq-cat-btn.active {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        .faq-cat-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 9999px;
+            padding: 2px 7px;
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+        .faq-cat-btn.active .faq-cat-count {
+            background: rgba(255, 255, 255, 0.28);
+            color: #ffffff;
+        }
 
-        /* Accordion Cards */
-        .faq-item {
-            background: linear-gradient(145deg, #0B2B26 0%, #163832 100%);
-            border: 1px solid rgba(142, 182, 155, 0.22);
-            border-radius: 18px;
+        /* ── ACCORDION TOOLBAR (COUNT & EXPAND ALL) ── */
+        .faq-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 16px;
+            padding: 0 4px;
+        }
+        .faq-status-text {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #166534;
+        }
+        .faq-expand-toggle {
+            background: none;
+            border: none;
+            color: #16a34a;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .faq-expand-toggle:hover {
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        /* ── ACCORDION ITEMS ── */
+        .faq-item {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 18px;
+            margin-bottom: 14px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
         }
         .faq-item:hover {
-            border-color: rgba(142, 182, 155, 0.45);
-            transform: translateY(-2px);
-            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+            border-color: #86efac;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.08);
+            transform: translateY(-1px);
         }
-        .faq-item.open {
-            border-color: #DAF1DE !important;
-            background: linear-gradient(145deg, #163832 0%, #0B2B26 100%) !important;
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(35, 83, 71, 0.3) !important;
+        .faq-item.is-open {
+            border-color: #22c55e;
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.12);
         }
+        .faq-item.is-hidden {
+            display: none !important;
+        }
+        .faq-item.highlight-target {
+            animation: highlightPulse 2s ease-out;
+        }
+        @keyframes highlightPulse {
+            0% { box-shadow: 0 0 0 4px #86efac; border-color: #22c55e; }
+            50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0.25); border-color: #16a34a; }
+            100% { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02); border-color: #22c55e; }
+        }
+
+        /* ── TRIGGER BUTTON ── */
         .faq-trigger {
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
-            padding: 22px 26px;
+            padding: 20px 24px;
             background: none;
             border: none;
             cursor: pointer;
             text-align: left;
             font-family: inherit;
-            transition: background 0.2s ease;
+            color: inherit;
+            outline: none;
+        }
+        .faq-trigger:focus-visible {
+            outline: 2px solid #22c55e;
+            outline-offset: -2px;
+            border-radius: 18px;
+        }
+        .faq-header-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .faq-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #16a34a;
         }
         .faq-question {
             font-size: 16px;
-            font-weight: 800;
-            color: #DAF1DE;
+            font-weight: 700;
+            color: #0f172a;
             line-height: 1.45;
-            flex: 1;
-            letter-spacing: -0.01em;
-            transition: color 0.25s ease;
+            transition: color 0.2s ease;
         }
-        .faq-item.open .faq-question { color: #FFFFFF !important; font-weight: 800; }
+        .faq-item.is-open .faq-question {
+            color: #15803d;
+        }
+        .faq-icon-bubble {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f0fdf4;
+            border: 1.5px solid #bbf7d0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease;
+        }
+        .faq-icon-bubble svg {
+            stroke: #16a34a;
+            transition: stroke 0.2s ease, transform 0.3s ease;
+        }
+        .faq-item.is-open .faq-icon-bubble {
+            background: #22c55e;
+            border-color: #22c55e;
+            transform: rotate(180deg);
+        }
+        .faq-item.is-open .faq-icon-bubble svg {
+            stroke: #ffffff;
+        }
+
+        /* ── BODY / ANSWER ── */
         .faq-body {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .faq-answer {
-            padding: 16px 26px 26px;
+        .faq-answer-inner {
+            padding: 4px 24px 24px;
             font-size: 14.5px;
-            color: #DAF1DE;
-            line-height: 1.75;
-            border-top: 1px solid rgba(142, 182, 155, 0.18);
-            font-weight: 400;
-            opacity: 0;
-            transform: translateY(-8px);
-            transition: opacity 0.3s ease 0.05s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+            line-height: 1.7;
+            color: #334155;
+            border-top: 1px solid #f1f5f9;
         }
-        .faq-item.open .faq-answer {
-            opacity: 1;
-            transform: translateY(0);
+        .faq-answer-inner a {
+            color: #15803d;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            transition: color 0.15s ease;
         }
-        .faq-icon {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: rgba(5, 31, 32, 0.7);
-            border: 1.5px solid rgba(142, 182, 155, 0.35);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        .faq-answer-inner a:hover {
+            color: #22c55e;
         }
-        .faq-icon svg { stroke: #4ADE80 !important; transition: stroke 0.25s ease; }
-        .faq-trigger:hover .faq-icon {
-            transform: scale(1.1);
-            border-color: #DAF1DE;
-            box-shadow: 0 0 14px rgba(218, 241, 222, 0.3);
-        }
-        .faq-item.open .faq-icon {
-            background: linear-gradient(135deg, #235347, #163832) !important;
-            border-color: #DAF1DE !important;
-            transform: rotate(135deg) scale(1.05);
-            box-shadow: 0 4px 16px rgba(35, 83, 71, 0.5) !important;
-        }
-        .faq-item.open .faq-icon svg { stroke: #FFFFFF !important; }
 
-        /* Empty state */
-        .ws-empty {
+        /* ── ACTION FOOTER IN ANSWER (COPY LINK) ── */
+        .faq-answer-footer {
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px dashed #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .faq-copy-anchor-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .faq-copy-anchor-btn:hover {
+            background: #f1f5f9;
+            color: #16a34a;
+        }
+
+        /* ── EMPTY / NO RESULTS STATE ── */
+        .faq-no-results {
+            display: none;
             text-align: center;
-            padding: 80px 24px;
-            color: #8EB69B;
-            font-size: 15px;
+            padding: 56px 20px;
+            background: #ffffff;
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+        .faq-no-results-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            color: #94a3b8;
+        }
+        .faq-no-results h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0 0 6px 0;
+        }
+        .faq-no-results p {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0 0 16px 0;
+        }
+        .faq-clear-search-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            background: #f0fdf4;
+            border: 1.5px solid #86efac;
+            color: #15803d;
+            font-size: 13.5px;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .faq-clear-search-btn:hover {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: #ffffff;
         }
 
-        /* Contact CTA */
-        .faq-contact-cta {
-            margin-top: 56px;
-            background: linear-gradient(135deg, #051F20 0%, #163832 100%);
-            border: 1px solid rgba(142, 182, 155, 0.3);
+        /* ── STILL NEED HELP (CONTACT CTA) ── */
+        .faq-contact-card {
+            margin-top: 48px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #e2f7e8 100%);
+            border: 2px solid #bbf7d0;
             border-radius: 24px;
-            padding: 42px 36px;
+            padding: 36px 32px;
             text-align: center;
-            color: #DAF1DE;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(35, 83, 71, 0.25);
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.08);
         }
-        .faq-contact-cta h3 {
+        .faq-contact-card h2 {
             font-size: 22px;
             font-weight: 900;
-            color: #DAF1DE;
-            margin: 0 0 10px 0;
+            color: #0f172a;
+            margin: 0 0 8px 0;
             letter-spacing: -0.02em;
         }
-        .faq-contact-cta p {
-            font-size: 14px;
-            color: #8EB69B;
-            margin: 0 0 26px 0;
+        .faq-contact-card p {
+            font-size: 14.5px;
+            color: #475569;
+            margin: 0 0 24px 0;
             line-height: 1.6;
+            max-width: 580px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .faq-contact-btn {
+        .faq-contact-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .faq-btn-primary {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 24px;
-            background: rgba(35, 83, 71, 0.45);
-            border: 1.5px solid #8EB69B;
-            color: #DAF1DE;
+            padding: 12px 24px;
+            background: #22c55e;
+            border: none;
+            color: #ffffff !important;
             font-size: 14px;
             font-weight: 700;
-            border-radius: 12px;
+            border-radius: 14px;
             text-decoration: none;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .faq-contact-btn:hover {
-            background: #235347;
-            border-color: #DAF1DE;
+        .faq-btn-primary:hover {
+            background: #16a34a;
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(35, 83, 71, 0.5);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45);
         }
-
-        /* ── LIGHT MODE OVERRIDES ── */
-        html.light-mode .ws-page-hero {
-            background: linear-gradient(135deg, #DAF1DE 0%, #EEF7F1 100%) !important;
-            border-bottom-color: rgba(142, 182, 155, 0.4) !important;
-        }
-        html.light-mode .ws-page-title { color: #051F20 !important; }
-        html.light-mode .ws-page-sub   { color: #163832 !important; }
-        html.light-mode .ws-breadcrumb { color: #235347 !important; }
-        html.light-mode .ws-breadcrumb a { color: #051F20 !important; }
-        html.light-mode .ws-breadcrumb span { color: #051F20 !important; }
-
-        html.light-mode .faq-count-chip {
-            background: #FFFFFF;
-            border-color: rgba(142, 182, 155, 0.5);
-            color: #163832;
-            box-shadow: 0 2px 10px rgba(5, 31, 32, 0.08);
-        }
-        html.light-mode .faq-count-chip span { color: #235347; }
-
-        html.light-mode .faq-item {
-            background: #FFFFFF !important;
-            border: 1.5px solid #e2e8f0 !important;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
-            border-radius: 18px !important;
-        }
-        html.light-mode .faq-item:hover {
-            border-color: #22c55e !important;
-            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.15) !important;
-        }
-        html.light-mode .faq-item.open {
-            background: #FFFFFF !important;
-            border-color: #22c55e !important;
-            box-shadow: 0 8px 28px rgba(34, 197, 94, 0.18) !important;
-        }
-        html.light-mode .faq-question {
-            color: #0f172a !important;
-            font-weight: 800 !important;
-        }
-        html.light-mode .faq-trigger:hover .faq-question,
-        html.light-mode .faq-item.open .faq-question {
-            color: #16a34a !important;
-            font-weight: 800 !important;
-        }
-
-        html.light-mode .faq-icon {
-            background: #f0fdf4 !important;
-            border: 1.5px solid #86efac !important;
-            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.1) !important;
-        }
-        html.light-mode .faq-icon svg {
-            stroke: #16a34a !important;
-        }
-        html.light-mode .faq-item.open .faq-icon {
-            background: #22c55e !important;
-            border-color: #22c55e !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
-        }
-        html.light-mode .faq-item.open .faq-icon svg {
-            stroke: #FFFFFF !important;
-        }
-
-        html.light-mode .faq-answer {
+        .faq-btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 22px;
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
             color: #334155 !important;
-            border-top-color: #f1f5f9 !important;
-            font-weight: 500 !important;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .faq-btn-secondary:hover {
+            border-color: #22c55e;
+            color: #16a34a !important;
+            background: #f8fafc;
+            transform: translateY(-1px);
         }
 
-        html.light-mode .faq-contact-cta {
-            background: linear-gradient(135deg, #DAF1DE 0%, #EEF7F1 100%);
-            border-color: rgba(142, 182, 155, 0.5);
-            box-shadow: 0 8px 28px rgba(5, 31, 32, 0.08);
-        }
-        html.light-mode .faq-contact-cta h3 { color: #051F20; }
-        html.light-mode .faq-contact-cta p  { color: #163832; }
-        html.light-mode .faq-contact-btn {
-            background: #22c55e !important;
-            color: #ffffff !important;
-            border: none !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-        html.light-mode .faq-contact-btn:hover {
-            background: #16a34a !important;
-            box-shadow: 0 6px 18px rgba(34, 197, 94, 0.45) !important;
-            transform: translateY(-1px) !important;
-        }
-        .ws-breadcrumb-current { color: #DAF1DE; font-weight: 700; }
-        html.light-mode .ws-breadcrumb-current { color: #051F20 !important; font-weight: 700 !important; }
-
-        html.light-mode .ws-empty { color: #235347; }
-    </style>
-
-    {{-- Page Hero --}}
-    <div class="ws-page-hero">
-        <div class="ws-page-hero-inner ui-reveal">
-            <div class="ws-breadcrumb">
-                <a href="{{ route('website.home') }}">Home</a>
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
-                     viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-                <span class="ws-breadcrumb-current">FAQ</span>
-            </div>
-            <h1 class="ws-page-title">Frequently Asked Questions</h1>
-            <p class="ws-page-sub">Everything you need to know about AgriCo and soil scanning.</p>
-        </div>
-    </div>
-
-    <div class="faq-wrapper">
-
-        @if($faqs->count() > 0)
-            <div class="faq-count-chip ui-reveal">
-                <span>{{ $faqs->count() }}</span> questions answered
-            </div>
-
-            @foreach($faqs as $i => $faq)
-            <div class="faq-item ui-reveal" id="faq-{{ $i }}" data-index="{{ $i }}">
-                <button class="faq-trigger" onclick="toggleFaq({{ $i }})" type="button"
-                        aria-expanded="false" aria-controls="faq-body-{{ $i }}">
-                    <span class="faq-question">{{ $faq->question }}</span>
-                    <div class="faq-icon">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
-                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                    </div>
-                </button>
-                <div class="faq-body" id="faq-body-{{ $i }}" role="region">
-                    <div class="faq-answer">
-                        {{ $faq->answer }}
-                    </div>
-                </div>
-            </div>
-            @endforeach
-
-        @else
-            <div class="ws-empty">
-                <svg width="48" height="48" fill="none" stroke="#8EB69B" stroke-width="1.5"
-                     viewBox="0 0 24 24" style="margin:0 auto 16px;display:block;">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                <p>No FAQs have been added yet. Check back soon!</p>
-            </div>
-        @endif
-
-        {{-- Contact CTA --}}
-        <div class="faq-contact-cta ui-scroll-reveal">
-            <h3>Still have questions?</h3>
-            <p>Browse the Munsell Color Chart or explore our interactive soil map for more insights about AgriCo.</p>
-            <a href="{{ route('website.munsell') }}" class="faq-contact-btn">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <rect x="3" y="3" width="18" height="18" rx="3"/>
-                    <line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
-                </svg>
-                View Color Chart
-            </a>
-        </div>
-
-    </div>
-
-    <script>
-        function toggleFaq(index) {
-            const item = document.getElementById('faq-' + index);
-            if (!item) return;
-            const body = item.querySelector('.faq-body');
-            const trigger = item.querySelector('.faq-trigger');
-            const isOpen = item.classList.contains('open');
-
-            // Close all items smoothly
-            document.querySelectorAll('.faq-item').forEach(el => {
-                const elBody = el.querySelector('.faq-body');
-                const elTrigger = el.querySelector('.faq-trigger');
-                el.classList.remove('open');
-                if (elBody) elBody.style.maxHeight = '0px';
-                if (elTrigger) elTrigger.setAttribute('aria-expanded', 'false');
-            });
-
-            // Open clicked item smoothly
-            if (!isOpen && body) {
-                item.classList.add('open');
-                if (trigger) trigger.setAttribute('aria-expanded', 'true');
-                body.style.maxHeight = (body.scrollHeight + 40) + 'px';
+        /* ── RESPONSIVE DESIGN ── */
+        @media (max-width: 640px) {
+            .faq-hero {
+                padding: 24px 16px 20px;
+            }
+            .faq-container {
+                padding: 20px 14px 60px;
+            }
+            .faq-trigger {
+                padding: 16px 18px;
+            }
+            .faq-question {
+                font-size: 15px;
+            }
+            .faq-answer-inner {
+                padding: 4px 18px 20px;
+                font-size: 14px;
+            }
+            .faq-contact-card {
+                padding: 28px 18px;
+            }
+            .faq-contact-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            .faq-btn-primary, .faq-btn-secondary {
+                width: 100%;
+                justify-content: center;
+                box-sizing: border-box;
             }
         }
-    </script>
+    </style>
 
+    {{-- Page Hero Banner --}}
+    <section class="faq-hero">
+        <div class="faq-hero-inner">
+            <nav class="faq-breadcrumb" aria-label="Breadcrumb">
+                <a href="{{ route('website.home') }}">Home</a>
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+                <span>Help & FAQ</span>
+            </nav>
+            <h1 class="faq-title">Frequently Asked Questions</h1>
+            <p class="faq-subtitle">
+                Everything you need to know about AgriCo soil scanning, Munsell color classification, accounts, and maps.
+            </p>
+        </div>
+    </section>
+
+    {{-- Main FAQ Content --}}
+    <main class="faq-container">
+
+        {{-- Search and Category Filters --}}
+        <div class="faq-controls">
+            {{-- Search Bar --}}
+            <div class="faq-search-box">
+                <svg class="faq-search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input
+                    type="text"
+                    id="faqSearchInput"
+                    class="faq-search-input"
+                    placeholder="Search questions by topic, keyword, or feature (e.g. forgot password, lighting, pins)..."
+                    aria-label="Search frequently asked questions"
+                    autocomplete="off"
+                />
+                <button
+                    type="button"
+                    id="faqSearchClear"
+                    class="faq-search-clear"
+                    aria-label="Clear search"
+                    title="Clear search"
+                >&times;</button>
+            </div>
+
+            {{-- Category Filter Pills --}}
+            <div class="faq-categories" role="tablist" aria-label="FAQ Categories">
+                <button
+                    type="button"
+                    class="faq-cat-btn active"
+                    data-category="all"
+                    role="tab"
+                    aria-selected="true"
+                >
+                    <span>All Questions</span>
+                    <span class="faq-cat-count" id="count-all">{{ count($faqs) }}</span>
+                </button>
+
+                @foreach($categories as $catKey => $catTitle)
+                    @if($catKey !== 'all')
+                        @php
+                            $catItemsCount = collect($faqs)->where('category', $catKey)->count();
+                        @endphp
+                        @if($catItemsCount > 0)
+                            <button
+                                type="button"
+                                class="faq-cat-btn"
+                                data-category="{{ $catKey }}"
+                                role="tab"
+                                aria-selected="false"
+                            >
+                                <span>{{ $catTitle }}</span>
+                                <span class="faq-cat-count">{{ $catItemsCount }}</span>
+                            </button>
+                        @endif
+                    @endif
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Toolbar: Results count & Expand/Collapse All toggle --}}
+        <div class="faq-toolbar">
+            <div class="faq-status-text" id="faqStatusText">
+                Showing all {{ count($faqs) }} questions
+            </div>
+            <button type="button" class="faq-expand-toggle" id="faqExpandAllToggle">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M7 11l5 5 5-5M7 7l5 5 5-5"/>
+                </svg>
+                <span id="faqExpandAllLabel">Expand All</span>
+            </button>
+        </div>
+
+        {{-- Accordion Question Cards --}}
+        <div class="faq-list" id="faqList" role="region" aria-label="FAQ Questions">
+            @foreach($faqs as $index => $item)
+                <article
+                    class="faq-item"
+                    id="{{ $item['id'] }}"
+                    data-index="{{ $index }}"
+                    data-category="{{ $item['category'] }}"
+                    data-keywords="{{ $item['keywords'] }}"
+                >
+                    <button
+                        type="button"
+                        class="faq-trigger"
+                        onclick="toggleAccordion('{{ $item['id'] }}')"
+                        aria-expanded="false"
+                        aria-controls="faq-body-{{ $item['id'] }}"
+                    >
+                        <div class="faq-header-content">
+                            <span class="faq-tag">{{ $item['category_name'] }}</span>
+                            <span class="faq-question">{{ $item['question'] }}</span>
+                        </div>
+                        <div class="faq-icon-bubble" aria-hidden="true">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </div>
+                    </button>
+                    <div
+                        class="faq-body"
+                        id="faq-body-{{ $item['id'] }}"
+                        role="region"
+                        aria-labelledby="{{ $item['id'] }}"
+                    >
+                        <div class="faq-answer-inner">
+                            {!! $item['answer'] !!}
+
+                            <div class="faq-answer-footer">
+                                <span>AgriCo Knowledge Base</span>
+                                <button
+                                    type="button"
+                                    class="faq-copy-anchor-btn"
+                                    onclick="copyFaqAnchor('{{ $item['id'] }}', this)"
+                                    title="Copy direct link to this answer"
+                                >
+                                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+                                        <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+                                    </svg>
+                                    <span>Copy Link</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+
+        {{-- No Results Match State --}}
+        <div class="faq-no-results" id="faqNoResults">
+            <svg class="faq-no-results-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <line x1="8" y1="11" x2="14" y2="11"/>
+            </svg>
+            <h3>No matching questions found</h3>
+            <p id="faqNoResultsSub">We couldn't find any questions matching your query. Try searching with different terms or reset your filters.</p>
+            <button type="button" class="faq-clear-search-btn" onclick="resetFaqFilters()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                <span>Reset All Filters</span>
+            </button>
+        </div>
+
+        {{-- Still Need Help Card --}}
+        <section class="faq-contact-card" aria-labelledby="faqContactTitle">
+            <h2 id="faqContactTitle">Still have questions?</h2>
+            <p>
+                Can't find the answer you're looking for? Our administrative team is here to help with account verification, scan inquiries, or soil classification questions.
+            </p>
+            <div class="faq-contact-actions">
+                <a href="mailto:agricosite77@gmail.com" class="faq-btn-primary">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span>Contact Support (agricosite77@gmail.com)</span>
+                </a>
+                <a href="{{ route('website.map') }}" class="faq-btn-secondary">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+                        <line x1="8" y1="2" x2="8" y2="18"/>
+                        <line x1="16" y1="6" x2="16" y2="22"/>
+                    </svg>
+                    <span>View Soil Map</span>
+                </a>
+                <a href="{{ route('website.munsell') }}" class="faq-btn-secondary">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="3"/>
+                        <line x1="3" y1="9" x2="21" y2="9"/>
+                        <line x1="9" y1="21" x2="9" y2="9"/>
+                    </svg>
+                    <span>Munsell Color Chart</span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    {{-- Interactive Logic: Search, Category Filters, Single-Open Accordion, Deep Linking --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('faqSearchInput');
+            const searchClear = document.getElementById('faqSearchClear');
+            const categoryButtons = document.querySelectorAll('.faq-cat-btn');
+            const faqItems = document.querySelectorAll('.faq-item');
+            const statusText = document.getElementById('faqStatusText');
+            const noResults = document.getElementById('faqNoResults');
+            const expandAllToggle = document.getElementById('faqExpandAllToggle');
+            const expandAllLabel = document.getElementById('faqExpandAllLabel');
+
+            let currentCategory = 'all';
+            let searchQuery = '';
+            let isAllExpanded = false;
+
+            // ── ACCORDION TOGGLE (SINGLE-OPEN BY DEFAULT) ──
+            window.toggleAccordion = function (id, forceState = null) {
+                const targetItem = document.getElementById(id);
+                if (!targetItem) return;
+
+                const body = targetItem.querySelector('.faq-body');
+                const trigger = targetItem.querySelector('.faq-trigger');
+                const isOpen = targetItem.classList.contains('is-open');
+                const shouldOpen = forceState !== null ? forceState : !isOpen;
+
+                // If opening, close other items unless we're in "expand all" mode
+                if (shouldOpen && !isAllExpanded) {
+                    faqItems.forEach(item => {
+                        if (item.id !== id && item.classList.contains('is-open')) {
+                            item.classList.remove('is-open');
+                            const itemBody = item.querySelector('.faq-body');
+                            const itemTrigger = item.querySelector('.faq-trigger');
+                            if (itemBody) itemBody.style.maxHeight = '0px';
+                            if (itemTrigger) itemTrigger.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
+
+                if (shouldOpen) {
+                    targetItem.classList.add('is-open');
+                    if (trigger) trigger.setAttribute('aria-expanded', 'true');
+                    if (body) body.style.maxHeight = (body.scrollHeight + 32) + 'px';
+                } else {
+                    targetItem.classList.remove('is-open');
+                    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+                    if (body) body.style.maxHeight = '0px';
+                }
+            };
+
+            // ── EXPAND / COLLAPSE ALL TOGGLE ──
+            if (expandAllToggle) {
+                expandAllToggle.addEventListener('click', function () {
+                    isAllExpanded = !isAllExpanded;
+                    expandAllLabel.textContent = isAllExpanded ? 'Collapse All' : 'Expand All';
+
+                    faqItems.forEach(item => {
+                        if (!item.classList.contains('is-hidden')) {
+                            window.toggleAccordion(item.id, isAllExpanded);
+                        }
+                    });
+                });
+            }
+
+            // ── FILTERING (CATEGORY + SEARCH) ──
+            function applyFilters() {
+                const query = searchQuery.trim().toLowerCase();
+                let visibleCount = 0;
+
+                faqItems.forEach(item => {
+                    const itemCat = item.getAttribute('data-category');
+                    const keywords = (item.getAttribute('data-keywords') || '').toLowerCase();
+                    const questionText = (item.querySelector('.faq-question')?.textContent || '').toLowerCase();
+                    const answerText = (item.querySelector('.faq-answer-inner')?.textContent || '').toLowerCase();
+
+                    const matchesCategory = (currentCategory === 'all' || itemCat === currentCategory);
+                    const matchesSearch = !query || questionText.includes(query) || answerText.includes(query) || keywords.includes(query);
+
+                    if (matchesCategory && matchesSearch) {
+                        item.classList.remove('is-hidden');
+                        visibleCount++;
+                    } else {
+                        item.classList.add('is-hidden');
+                        // Close hidden item so it doesn't take up space
+                        item.classList.remove('is-open');
+                        const body = item.querySelector('.faq-body');
+                        const trigger = item.querySelector('.faq-trigger');
+                        if (body) body.style.maxHeight = '0px';
+                        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                // Update status text
+                if (statusText) {
+                    if (query) {
+                        statusText.textContent = `Found ${visibleCount} ${visibleCount === 1 ? 'question' : 'questions'} matching "${query}"`;
+                    } else if (currentCategory !== 'all') {
+                        const activeBtn = document.querySelector(`.faq-cat-btn[data-category="${currentCategory}"] span`);
+                        const catName = activeBtn ? activeBtn.textContent : currentCategory;
+                        statusText.textContent = `Showing ${visibleCount} in ${catName}`;
+                    } else {
+                        statusText.textContent = `Showing all ${visibleCount} questions`;
+                    }
+                }
+
+                // Show/hide empty state
+                if (noResults) {
+                    if (visibleCount === 0) {
+                        noResults.style.display = 'block';
+                    } else {
+                        noResults.style.display = 'none';
+                    }
+                }
+            }
+
+            // Category Tab Clicks
+            categoryButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    categoryButtons.forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
+                    this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
+
+                    currentCategory = this.getAttribute('data-category') || 'all';
+                    applyFilters();
+                });
+            });
+
+            // Search Input Event
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    searchQuery = this.value;
+                    if (searchClear) {
+                        searchClear.style.display = searchQuery ? 'flex' : 'none';
+                    }
+                    applyFilters();
+                });
+            }
+
+            // Search Clear Button
+            if (searchClear) {
+                searchClear.addEventListener('click', function () {
+                    if (searchInput) {
+                        searchInput.value = '';
+                        searchQuery = '';
+                        searchInput.focus();
+                    }
+                    searchClear.style.display = 'none';
+                    applyFilters();
+                });
+            }
+
+            // Global Reset Filters
+            window.resetFaqFilters = function () {
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchQuery = '';
+                }
+                if (searchClear) searchClear.style.display = 'none';
+
+                categoryButtons.forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
+                const allBtn = document.querySelector('.faq-cat-btn[data-category="all"]');
+                if (allBtn) {
+                    allBtn.classList.add('active');
+                    allBtn.setAttribute('aria-selected', 'true');
+                }
+                currentCategory = 'all';
+                applyFilters();
+            };
+
+            // ── COPY ANCHOR LINK ──
+            window.copyFaqAnchor = function (id, btn) {
+                const url = window.location.origin + window.location.pathname + '#' + id;
+                navigator.clipboard.writeText(url).then(() => {
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = `
+                        <svg width="13" height="13" fill="none" stroke="#16a34a" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                        <span style="color:#16a34a; font-weight:700;">Copied!</span>
+                    `;
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                    }, 2200);
+                }).catch(() => {
+                    // Fallback
+                    prompt('Copy this FAQ link:', url);
+                });
+            };
+
+            // ── DEEP LINK / ANCHOR HASH HANDLING ON PAGE LOAD ──
+            function handleUrlHash() {
+                const hash = window.location.hash ? window.location.hash.substring(1) : '';
+                if (!hash) return;
+
+                const targetItem = document.getElementById(hash);
+                if (targetItem) {
+                    // Switch category to target item's category or 'all' if hidden
+                    const itemCat = targetItem.getAttribute('data-category');
+                    if (itemCat && currentCategory !== 'all' && currentCategory !== itemCat) {
+                        categoryButtons.forEach(b => {
+                            const isMatch = b.getAttribute('data-category') === itemCat;
+                            b.classList.toggle('active', isMatch);
+                            b.setAttribute('aria-selected', isMatch ? 'true' : 'false');
+                        });
+                        currentCategory = itemCat;
+                        applyFilters();
+                    }
+
+                    // Open accordion
+                    window.toggleAccordion(hash, true);
+
+                    // Add highlight pulse
+                    targetItem.classList.add('highlight-target');
+                    setTimeout(() => targetItem.classList.remove('highlight-target'), 2500);
+
+                    // Smooth scroll with offset for sticky navbar
+                    setTimeout(() => {
+                        const yOffset = -90;
+                        const y = targetItem.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                    }, 150);
+                }
+            }
+
+            // Run hash handler on load
+            handleUrlHash();
+            window.addEventListener('hashchange', handleUrlHash);
+        });
+    </script>
 </x-website-layout>

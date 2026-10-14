@@ -359,6 +359,12 @@
                 <span>{{ $loginText }}</span>
             </a>
         </div>
+        <div style="text-align: center; margin-top: 12px; font-size: 0.80rem;">
+            <a href="{{ route('website.faq') }}#forgot-password" target="_blank" style="color: #64748b; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" onmouseover="this.style.color='#22c55e'" onmouseout="this.style.color='#64748b'">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span>Need help with password reset? Read FAQ</span>
+            </a>
+        </div>
     </div>
 
     <!-- Mailcheck.js for Forgot Password email typo checking -->

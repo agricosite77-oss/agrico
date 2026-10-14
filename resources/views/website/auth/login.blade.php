@@ -393,8 +393,12 @@
             <a href="{{ route('register') }}" style="color: #22c55e; font-weight: 700; text-decoration: none; margin-left: 4px;">Sign Up</a>
         </div>
 
-        <div style="text-align: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
-            <a href="{{ route('website.home') }}" style="font-size: 0.82rem; font-weight: 600; color: #64748b; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s ease;" onmouseover="this.style.color='#22c55e'" onmouseout="this.style.color='#64748b'">
+        <div style="text-align: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; font-size: 0.80rem;">
+            <a href="{{ route('website.faq') }}" style="font-weight: 600; color: #64748b; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s ease;" onmouseover="this.style.color='#22c55e'" onmouseout="this.style.color='#64748b'">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span>Need help? FAQ</span>
+            </a>
+            <a href="{{ route('website.home') }}" style="font-weight: 600; color: #64748b; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s ease;" onmouseover="this.style.color='#22c55e'" onmouseout="this.style.color='#64748b'">
                 <span>Continue as Guest</span>
                 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -724,6 +728,12 @@
                             <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Time Remaining</span>
                             <div id="suspension-countdown-display" style="font-size:13px; font-weight:700; color:#22c55e; font-family:monospace;">{{ ($susp['suspension_countdown'] ?? null) ?: 'Calculating...' }}</div>
                         </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 6px;">
+                        <a href="{{ route('website.faq') }}#why-suspended" target="_blank" style="font-size: 12px; color: #16a34a; font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            <span>Why was my account suspended? Read FAQ</span>
+                        </a>
                     </div>
                 </div>
 

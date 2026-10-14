@@ -898,7 +898,13 @@
                     <span class="ws-breadcrumb-current">Soil Map</span>
                 </div>
                 <h1 class="ws-page-title">Interactive Soil Map</h1>
-                <p class="ws-page-sub">Explore all geo-tagged soil scan locations across the municipality.</p>
+                <p class="ws-page-sub">
+                    Explore all geo-tagged soil scan locations across the municipality.
+                    <a href="{{ route('website.faq') }}#map-pins" target="_blank" style="margin-left: 8px; color: #DAF1DE; text-decoration: underline; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        <span>How are pins verified? FAQ</span>
+                    </a>
+                </p>
             </div>
         </div>
 

@@ -683,15 +683,44 @@ class WebsiteController extends Controller
     }
 
     /**
-     * FAQ page — all FAQ entries.
+     * FAQ page — all FAQ entries with category tabs and search.
      */
     public function faq()
     {
-        $faqs = FAQ::where(function ($q) {
+        $categories = config('faq.categories', []);
+        $configItems = config('faq.items', []);
+
+        // Check if database has custom FAQ records
+        $dbFaqs = FAQ::where(function ($q) {
             $q->where('status', 'Active')->orWhereNull('status');
         })->orderBy('faq_id')->get();
 
-        return view('website.faq', compact('faqs'));
+        if ($dbFaqs->isNotEmpty()) {
+            $faqs = $dbFaqs->map(function ($faq) use ($categories) {
+                $catSlug = \Illuminate\Support\Str::slug($faq->category ?: 'getting-started');
+                return [
+                    'id'            => 'faq-' . $faq->faq_id,
+                    'category'      => $catSlug,
+                    'category_name' => $categories[$catSlug] ?? ($faq->category ?: 'General'),
+                    'question'      => $faq->question,
+                    'answer'        => $faq->answer,
+                    'keywords'      => strtolower($faq->question . ' ' . strip_tags($faq->answer)),
+                ];
+            });
+        } else {
+            $faqs = collect($configItems)->map(function ($item) use ($categories) {
+                return [
+                    'id'            => $item['id'],
+                    'category'      => $item['category'],
+                    'category_name' => $categories[$item['category']] ?? 'General',
+                    'question'      => $item['question'],
+                    'answer'        => $item['answer'],
+                    'keywords'      => strtolower($item['question'] . ' ' . strip_tags($item['answer']) . ' ' . ($item['keywords'] ?? '')),
+                ];
+            });
+        }
+
+        return view('website.faq', compact('faqs', 'categories'));
     }
 
     /**
