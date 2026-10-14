@@ -1870,20 +1870,30 @@
         showNotificationsModal: false,
         isLightMode: document.documentElement.classList.contains('light-mode'),
         unreadCount: {{ (int) ($unreadCount ?? 0) }},
+        init() {
+            window.addEventListener('agrico:theme-changed', (e) => {
+                this.isLightMode = e.detail ? e.detail.isLight : document.documentElement.classList.contains('light-mode');
+            });
+        },
         toggleTheme() {
-            const isLight = document.documentElement.classList.toggle('light-mode');
-            this.isLightMode = isLight;
-            const newTheme = isLight ? 'light' : 'dark';
-            document.documentElement.style.colorScheme = newTheme;
-            localStorage.setItem('agrico-theme', newTheme);
-            fetch('{{ route("user.update-theme") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ theme: newTheme })
-            }).catch(e => console.warn(e));
+            if (typeof window.agricoToggleTheme === 'function') {
+                window.agricoToggleTheme();
+                this.isLightMode = document.documentElement.classList.contains('light-mode');
+            } else {
+                const isLight = document.documentElement.classList.toggle('light-mode');
+                this.isLightMode = isLight;
+                const newTheme = isLight ? 'light' : 'dark';
+                document.documentElement.style.colorScheme = newTheme;
+                localStorage.setItem('agrico-theme', newTheme);
+                fetch('{{ route("user.update-theme") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ theme: newTheme })
+                }).catch(e => console.warn(e));
+            }
         },
         async markAllAsRead() {
             try {

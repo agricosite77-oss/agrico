@@ -459,7 +459,44 @@
             transform: translateY(-1px);
         }
 
-        /* â”€â”€ THEME TOGGLE BUTTON â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+        /* ── CIRCULAR REVEAL THEME TRANSITION TOKENS ── */
+        :root {
+            --theme-reveal-duration: 700ms;
+            --theme-reveal-ease: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* View Transitions API Root Clipping Configuration */
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation: none !important;
+            mix-blend-mode: normal !important;
+        }
+
+        ::view-transition-old(root) {
+            z-index: 1 !important;
+        }
+
+        ::view-transition-new(root) {
+            z-index: 9999 !important;
+        }
+
+        /* Fallback Circular Overlay for browsers lacking View Transitions */
+        .theme-reveal-fallback-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            transform: translate(50%, -50%) scale(0);
+            transform-origin: center center;
+            pointer-events: none;
+            z-index: 999999;
+            transition: transform var(--theme-reveal-duration, 700ms) var(--theme-reveal-ease, cubic-bezier(0.4, 0, 0.2, 1));
+            will-change: transform;
+        }
+
+        /* ── THEME TOGGLE BUTTON ── */
         .ws-theme-toggle {
             width: 36px; height: 36px;
             border-radius: 50%;
@@ -468,9 +505,18 @@
             color: #DAF1DE;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             flex-shrink: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .ws-theme-toggle:focus-visible {
+            outline: 2px solid #22c55e;
+            outline-offset: 2px;
         }
         .ws-theme-toggle:hover {
             background: #235347;
@@ -479,11 +525,31 @@
             transform: scale(1.08);
         }
         .ws-theme-toggle .icon-sun,
-        .ws-theme-toggle .icon-moon { transition: opacity 0.2s ease, transform 0.3s ease; }
-        html:not(.light-mode) .ws-theme-toggle .icon-sun  { display: none; }
-        html:not(.light-mode) .ws-theme-toggle .icon-moon { display: block; }
-        html.light-mode .ws-theme-toggle .icon-sun  { display: block; }
-        html.light-mode .ws-theme-toggle .icon-moon { display: none; }
+        .ws-theme-toggle .icon-moon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -8.5px;
+            margin-left: -8.5px;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+            pointer-events: none;
+        }
+        html:not(.light-mode) .ws-theme-toggle .icon-sun {
+            opacity: 0;
+            transform: rotate(-90deg) scale(0.4);
+        }
+        html:not(.light-mode) .ws-theme-toggle .icon-moon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+        html.light-mode .ws-theme-toggle .icon-sun {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+        html.light-mode .ws-theme-toggle .icon-moon {
+            opacity: 0;
+            transform: rotate(90deg) scale(0.4);
+        }
 
         /* ── LIGHT MODE HEADER OVERRIDES (MATCHING IMAGE 17) ── */
         html.light-mode .ws-nav {
@@ -1217,8 +1283,7 @@
                 @endif
             </div>
 
-            {{-- Theme Toggle --}}
-            <button class="ws-theme-toggle" id="wsThemeToggle" aria-label="Toggle light/dark mode" type="button" title="Toggle Light/Dark Mode">
+            <button class="ws-theme-toggle" id="wsThemeToggle" aria-label="{{ $currentTheme === 'light' ? 'Switch to dark mode' : 'Switch to light mode' }}" aria-pressed="{{ $currentTheme === 'light' ? 'true' : 'false' }}" type="button" title="Toggle Light/Dark Mode">
                 {{-- Moon icon (shown in dark mode) --}}
                 <svg class="icon-moon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -1875,32 +1940,131 @@
         });
     });
 
-    // Theme Toggle Logic
+    // ── CIRCULAR REVEAL THEME TOGGLE (VIEW TRANSITIONS API + FALLBACK) ──
     (function() {
         const html = document.documentElement;
         const btn  = document.getElementById('wsThemeToggle');
-        if (!btn) return;
+        let isThemeTransitioning = false;
 
-        btn.addEventListener('click', () => {
-            const isLight = html.classList.toggle('light-mode');
-            const newTheme = isLight ? 'light' : 'dark';
+        // Configurable duration (ms) and easing function
+        const THEME_DURATION = 700;
+        const THEME_EASING   = 'cubic-bezier(0.4, 0, 0.2, 1)';
+
+        function applyThemeState(isLight) {
+            html.classList.toggle('light-mode', isLight);
             html.style.colorScheme = isLight ? 'light' : 'dark';
-            localStorage.setItem('agrico-theme', newTheme);
+            const themeStr = isLight ? 'light' : 'dark';
+            localStorage.setItem('agrico-theme', themeStr);
+
+            if (btn) {
+                btn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+                btn.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+            }
+
+            // Dispatch global event for in-page profile switches or widgets
+            window.dispatchEvent(new CustomEvent('agrico:theme-changed', {
+                detail: { theme: themeStr, isLight: isLight }
+            }));
 
             @if($wsAuthUser)
-                // Persist theme choice for logged-in user in database
+                // Persist theme preference for authenticated user in database
                 fetch('{{ route("user.update-theme") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ theme: newTheme })
+                    body: JSON.stringify({ theme: themeStr })
                 }).catch(function(err) {
                     console.warn('Failed to save user theme preference:', err);
                 });
             @endif
-        });
+        }
+
+        window.agricoToggleTheme = function() {
+            // Prevent multiple rapid clicks while animation is running
+            if (isThemeTransitioning) return;
+
+            const isCurrentlyLight = html.classList.contains('light-mode');
+            const targetIsLight = !isCurrentlyLight;
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // Calculate radius from top-right corner (100% 0) to farthest corner (bottom-left 0 100%)
+            const maxRadius = Math.hypot(window.innerWidth, window.innerHeight);
+
+            // 1. Accessibility: Instant toggle if reduced motion is requested
+            if (prefersReducedMotion) {
+                applyThemeState(targetIsLight);
+                return;
+            }
+
+            // 2. Modern View Transitions API (Chrome 111+, Edge 111+, Safari 18+)
+            if (typeof document.startViewTransition === 'function') {
+                isThemeTransitioning = true;
+                try {
+                    const transition = document.startViewTransition(() => {
+                        applyThemeState(targetIsLight);
+                    });
+
+                    transition.ready.then(() => {
+                        const anim = document.documentElement.animate(
+                            {
+                                clipPath: [
+                                    'circle(0px at 100% 0px)',
+                                    `circle(${maxRadius}px at 100% 0px)`
+                                ]
+                            },
+                            {
+                                duration: THEME_DURATION,
+                                easing: THEME_EASING,
+                                pseudoElement: '::view-transition-new(root)'
+                            }
+                        );
+
+                        anim.finished.finally(() => {
+                            isThemeTransitioning = false;
+                        });
+                    }).catch(() => {
+                        isThemeTransitioning = false;
+                    });
+                } catch (e) {
+                    applyThemeState(targetIsLight);
+                    isThemeTransitioning = false;
+                }
+                return;
+            }
+
+            // 3. Fallback for browsers lacking View Transitions API (Firefox, Safari <18)
+            isThemeTransitioning = true;
+            try {
+                const overlay = document.createElement('div');
+                overlay.className = 'theme-reveal-fallback-overlay';
+                overlay.style.backgroundColor = targetIsLight ? '#F7FBF8' : '#051F20';
+                document.body.appendChild(overlay);
+
+                // Force layout reflow before triggering scale transform
+                void overlay.offsetWidth;
+                overlay.style.transform = `translate(50%, -50%) scale(${(maxRadius * 2) / 20})`;
+
+                setTimeout(() => {
+                    applyThemeState(targetIsLight);
+                    setTimeout(() => {
+                        overlay.remove();
+                        isThemeTransitioning = false;
+                    }, 60);
+                }, THEME_DURATION);
+            } catch (err) {
+                applyThemeState(targetIsLight);
+                isThemeTransitioning = false;
+            }
+        };
+
+        if (btn) {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.agricoToggleTheme();
+            });
+        }
     })();
 
     // Mobile hamburger toggle
