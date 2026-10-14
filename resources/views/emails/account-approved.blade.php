@@ -19,40 +19,36 @@
                 <!-- 600px Email Card -->
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden;">
                     
-                    <!-- Top Brand Bar -->
-                    <tr>
-                        <td align="center" style="padding: 28px 32px 16px 32px; border-bottom: 1px solid #f1f5f9;">
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                <tr>
-                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: bold; color: #16a34a; letter-spacing: -0.5px;">
-                                        🌱 AgriCo
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center" style="font-family: Arial, Helvetica, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; padding-top: 4px;">
-                                        Soil Intelligence Platform
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
+                    <!-- Top Brand Bar (Shared Centered Partial with Official Logo) -->
+                    @include('emails.partials.header')
 
                     <!-- Status Banner & Title -->
                     <tr>
-                        <td align="center" style="padding: 28px 32px 12px 32px;">
-                            <!-- Soft Green Badge -->
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 14px;">
+                        <td align="center" style="padding: 28px 32px 12px 32px; text-align: center;">
+                            <!-- Soft Green Centered Badge -->
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto 16px auto; text-align: center;">
                                 <tr>
-                                    <td style="background-color: #dcfce7; border: 1px solid #86efac; border-radius: 20px; padding: 6px 14px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    <td align="center" style="background-color: #dcfce7; border: 1px solid #86efac; border-radius: 20px; padding: 7px 18px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; text-align: center;">
                                         ✓ &nbsp; Account Registration Approved
                                     </td>
                                 </tr>
                             </table>
 
-                            <h1 style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 22px; font-weight: bold; color: #0f172a; line-height: 1.3;">
-                                Welcome to AgriCo, {{ $userName ?? $user?->name ?? 'User' }}!
+                            @php
+                                $displayName = trim((string)($userName ?? $user?->name ?? ''));
+                            @endphp
+
+                            <h1 style="margin: 0 0 10px 0; font-family: Arial, Helvetica, sans-serif; font-size: 22px; font-weight: bold; color: #0f172a; line-height: 1.3; text-align: center;">
+                                Welcome to AgriCo!
                             </h1>
-                            <p style="margin: 10px 0 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 14.5px; color: #475569; line-height: 1.6;">
+                            <p style="margin: 0 0 10px 0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; color: #334155; line-height: 1.6; text-align: center;">
+                                @if(!empty($displayName))
+                                    Hello <strong>{{ $displayName }}</strong>,
+                                @else
+                                    Hello there,
+                                @endif
+                            </p>
+                            <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 14.5px; color: #475569; line-height: 1.6; text-align: center;">
                                 Great news! Your registration request has been reviewed and approved by an administrator. Your account is now fully active, and all platform features are unlocked.
                             </p>
                         </td>
@@ -64,11 +60,11 @@
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
                                 <tr>
                                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #64748b; padding-bottom: 8px; width: 38%;">Full Name:</td>
-                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: bold; color: #0f172a; padding-bottom: 8px;">{{ $userName ?? $user?->name ?? 'AgriCo User' }}</td>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: bold; color: #0f172a; padding-bottom: 8px;">{{ !empty($displayName) ? $displayName : 'AgriCo Member' }}</td>
                                 </tr>
                                 <tr>
                                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #64748b; padding-bottom: 8px;">Registered Email:</td>
-                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; padding-bottom: 8px;">{{ $userEmail ?? $user?->email ?? '—' }}</td>
+                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #0f172a; padding-bottom: 8px;">{{ !empty(trim((string)($userEmail ?? $user?->email ?? ''))) ? trim((string)($userEmail ?? $user?->email)) : '—' }}</td>
                                 </tr>
                                 <tr>
                                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #64748b; padding-bottom: 8px;">Account Status:</td>

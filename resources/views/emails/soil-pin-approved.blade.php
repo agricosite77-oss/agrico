@@ -19,31 +19,16 @@
                 <!-- 600px Email Card -->
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden;">
                     
-                    <!-- Top Brand Bar -->
-                    <tr>
-                        <td align="center" style="padding: 28px 32px 16px 32px; border-bottom: 1px solid #f1f5f9;">
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                <tr>
-                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: bold; color: #16a34a; letter-spacing: -0.5px;">
-                                        🌱 AgriCo
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center" style="font-family: Arial, Helvetica, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; padding-top: 4px;">
-                                        Soil Intelligence Platform
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
+                    <!-- Top Brand Bar (Shared Centered Partial with Official Logo) -->
+                    @include('emails.partials.header')
 
                     <!-- Status Banner & Title -->
                     <tr>
-                        <td align="center" style="padding: 28px 32px 12px 32px;">
-                            <!-- Soft Green Badge -->
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 14px;">
+                        <td align="center" style="padding: 28px 32px 12px 32px; text-align: center;">
+                            <!-- Soft Green Centered Badge -->
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto 16px auto; text-align: center;">
                                 <tr>
-                                    <td style="background-color: #dcfce7; border: 1px solid #86efac; border-radius: 20px; padding: 6px 14px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    <td align="center" style="background-color: #dcfce7; border: 1px solid #86efac; border-radius: 20px; padding: 7px 18px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; text-align: center;">
                                         📍 &nbsp; Pin Approved &amp; Published
                                     </td>
                                 </tr>

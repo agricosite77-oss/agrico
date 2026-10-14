@@ -19,40 +19,33 @@
                 <!-- 600px Email Card -->
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden;">
                     
-                    <!-- Top Brand Bar -->
-                    <tr>
-                        <td align="center" style="padding: 28px 32px 16px 32px; border-bottom: 1px solid #f1f5f9;">
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                <tr>
-                                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: bold; color: #16a34a; letter-spacing: -0.5px;">
-                                        🌱 AgriCo
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center" style="font-family: Arial, Helvetica, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; padding-top: 4px;">
-                                        Soil Intelligence Platform
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
+                    <!-- Top Brand Bar (Shared Centered Partial with Official Logo) -->
+                    @include('emails.partials.header')
 
                     <!-- Status Banner & Title -->
                     <tr>
-                        <td align="center" style="padding: 28px 32px 12px 32px;">
-                            <!-- Soft Amber/Warm Red Badge -->
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 14px;">
+                        <td align="center" style="padding: 28px 32px 12px 32px; text-align: center;">
+                            <!-- Soft Amber/Warm Red Centered Badge -->
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto 16px auto; text-align: center;">
                                 <tr>
-                                    <td style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 20px; padding: 6px 14px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    <td align="center" style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 20px; padding: 7px 18px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; text-align: center;">
                                         Notice &bull; Account Registration Disapproved
                                     </td>
                                 </tr>
                             </table>
 
-                            <h1 style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 22px; font-weight: bold; color: #0f172a; line-height: 1.3;">
-                                Hello {{ $userName ?? $user?->name ?? 'AgriCo Applicant' }},
+                            @php
+                                $displayName = trim((string)($userName ?? $user?->name ?? ''));
+                            @endphp
+
+                            <h1 style="margin: 0 0 10px 0; font-family: Arial, Helvetica, sans-serif; font-size: 22px; font-weight: bold; color: #0f172a; line-height: 1.3; text-align: center;">
+                                @if(!empty($displayName))
+                                    Hello {{ $displayName }},
+                                @else
+                                    Hello there,
+                                @endif
                             </h1>
-                            <p style="margin: 10px 0 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 14.5px; color: #475569; line-height: 1.6;">
+                            <p style="margin: 0; font-family: Arial, Helvetica, sans-serif; font-size: 14.5px; color: #475569; line-height: 1.6; text-align: center;">
                                 Thank you for your interest in AgriCo. After careful administrative review, we regret to inform you that your account registration request could not be approved at this time.
                             </p>
                         </td>

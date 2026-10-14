@@ -207,11 +207,21 @@ class NotificationService
 
             // 2. Dispatch Welcome / Approval Email
             if (!empty($user->email) && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                $mailable = new AccountApprovedMail($user, $adminId);
+                $userName = trim((string) $user->name);
+                $userEmail = trim((string) $user->email);
+                $mailable = new AccountApprovedMail(
+                    user: $user,
+                    adminId: $adminId,
+                    loginUrl: 'https://agrico-production-1eb3.up.railway.app/login',
+                    userName: $userName,
+                    userEmail: $userEmail
+                );
                 $renderedHtml = (string) view('emails.account-approved', [
-                    'user'     => $user,
-                    'adminId'  => $adminId,
-                    'loginUrl' => url('/login'),
+                    'user'      => $user,
+                    'userName'  => $userName,
+                    'userEmail' => $userEmail,
+                    'adminId'   => $adminId,
+                    'loginUrl'  => 'https://agrico-production-1eb3.up.railway.app/login',
                 ])->render();
 
                 self::sendEmail(
