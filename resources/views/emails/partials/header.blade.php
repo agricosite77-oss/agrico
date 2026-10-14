@@ -1,29 +1,37 @@
-<!-- Top Brand Header (Gmail-Compatible & Centered) -->
+@php
+    $logoSrc = 'https://agrico-production-1eb3.up.railway.app/images/agrico-logo.png';
+    if (isset($message) && method_exists($message, 'embed') && file_exists(public_path('images/agrico-logo.png'))) {
+        try {
+            $logoSrc = $message->embed(public_path('images/agrico-logo.png'));
+        } catch (\Throwable $e) {
+            $logoSrc = 'https://agrico-production-1eb3.up.railway.app/images/agrico-logo.png';
+        }
+    }
+@endphp
+<!-- Top Brand Header (Horizontal Lockup Matching Password Reset Code) -->
 <tr>
     <td align="center" style="padding: 32px 32px 20px 32px; border-bottom: 1px solid #f1f5f9; text-align: center; background-color: #ffffff;">
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto; text-align: center;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto; border-collapse: collapse;">
             <tr>
-                <td align="center" style="padding-bottom: 10px;">
-                    <a href="https://agrico-production-1eb3.up.railway.app" target="_blank" style="text-decoration: none; display: inline-block;">
-                        <img src="https://agrico-production-1eb3.up.railway.app/images/agrico-logo.png" 
-                             alt="AgriCo" 
-                             width="56" 
-                             height="56" 
-                             border="0" 
-                             style="display: block; margin: 0 auto; width: 56px; height: 56px; max-width: 56px; outline: none; text-decoration: none; border: none;" />
+                <td style="vertical-align: middle; padding-right: 12px;">
+                    <a href="https://agrico-production-1eb3.up.railway.app" target="_blank" style="text-decoration: none; display: block;">
+                        <img src="{{ $logoSrc }}" 
+                             alt="AgriCo Logo" 
+                             width="48" 
+                             height="48" 
+                             border="0"
+                             style="width: 48px; height: 48px; display: block; object-fit: contain; border: 0; outline: none; text-decoration: none;">
+                    </a>
+                </td>
+                <td style="vertical-align: middle; text-align: left;">
+                    <a href="https://agrico-production-1eb3.up.railway.app" target="_blank" style="text-decoration: none;">
+                        <div style="font-family: Arial, Helvetica, sans-serif; font-size: 26px; font-weight: 900; color: #22c55e; margin: 0; line-height: 1; letter-spacing: -0.02em;">AgriCo</div>
                     </a>
                 </td>
             </tr>
-            <tr>
-                <td align="center" style="font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: bold; color: #16a34a; letter-spacing: -0.5px; line-height: 1.2;">
-                    AgriCo
-                </td>
-            </tr>
-            <tr>
-                <td align="center" style="font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.8px; color: #64748b; padding-top: 5px; line-height: 1.2;">
-                    Soil Intelligence Platform
-                </td>
-            </tr>
         </table>
+        <div style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #94a3b8; margin-top: 10px; text-align: center;">
+            Agricultural Soil Analysis &amp; Mapping Platform
+        </div>
     </td>
 </tr>
