@@ -4894,20 +4894,11 @@
                                 $uAvatar = strtoupper(substr($uName, 0, 1));
 
                                 $rawImg = $scan->scan_image;
-                                $scanImg = $scan->scan_image_url ?: '';
-                                $baImg = $scan->before_after_image_url ?: '';
+                                $scanImg = \App\Helpers\SoilImageHelper::scanImageUrl($scan) ?: ($scan->scan_image_url ?: '');
+                                $thumbImg = \App\Helpers\SoilImageHelper::scanImageUrl($scan, 'thumb') ?: $scanImg;
+                                $baImg = \App\Helpers\SoilImageHelper::beforeAfterImageUrl($scan) ?: ($scan->before_after_image_url ?: '');
                                 $rawPhotoImg = '';
                                 if (!empty($rawImg)) {
-                                    if (!$scanImg) {
-                                        if (str_starts_with($rawImg, 'http') || str_starts_with($rawImg, 'data:')) {
-                                            $scanImg = $rawImg;
-                                        } elseif (str_starts_with($rawImg, 'storage/')) {
-                                            $scanImg = asset($rawImg);
-                                        } else {
-                                            $scanImg = asset('storage/' . ltrim($rawImg, '/'));
-                                        }
-                                    }
-
                                     try {
                                         if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
                                             $scanUuid = $m[1];
@@ -4925,17 +4916,8 @@
                                         $rawPhotoImg = asset("storage/scans/scan_{$scanUuid}_raw.jpg");
                                     }
                                 }
-                                if (!$baImg && $scan->soil_scan_id) {
-                                    $baImg = asset("storage/scans/scan_{$scan->soil_scan_id}_before_after.jpg");
-                                }
-                                if (!$rawPhotoImg && $scan->soil_scan_id) {
-                                    $rawPhotoImg = asset("storage/scans/scan_{$scan->soil_scan_id}_raw.jpg");
-                                }
                                 if (!$rawPhotoImg) {
                                     $rawPhotoImg = $scanImg;
-                                }
-                                if (!$baImg) {
-                                    $baImg = $scanImg;
                                 }
                                 if (!$scanImg && $scan->soil?->munsellColor?->image) {
                                     $scanImg = asset('storage/' . ltrim($scan->soil->munsellColor->image, '/'));
@@ -5062,6 +5044,7 @@
                                     data-confidence="{{ $confidenceVal }}"
                                     data-percent="{{ $scanPct }}"
                                     data-image="{{ $scanImg }}"
+                                    data-thumbnail="{{ $thumbImg }}"
                                     data-before-after="{{ $baImg }}"
                                     data-raw-image="{{ $rawPhotoImg }}"
                                     data-scan-id="{{ $scan->soil_scan_id ?? 0 }}"
@@ -7280,6 +7263,9 @@
 
                 // Match format expected by UI rendering
                 const match = {
+                    scan_id:    data.scan_id,
+                    soil_scan_id: data.scan_id,
+                    soil_id:    data.soil_id || (data.soil_model ? data.soil_model.soil_id : null),
                     code:       data.munsell_code,
                     color_name: data.color_name || 'Determined Soil Specimen',
                     soil_type:  data.soil_name  || 'Agricultural Loam',
@@ -7325,6 +7311,9 @@
                 regions.forEach((r, idx) => {
                     r.pinned_index = idx;
                     r.index = idx;
+                    r.scan_id = (data.created_scans && data.created_scans[idx] ? data.created_scans[idx].scan_id : data.scan_id);
+                    r.soil_scan_id = r.scan_id;
+                    r.soil_id = (data.created_scans && data.created_scans[idx] ? data.created_scans[idx].soil_id : (data.soil_id || (data.soil_model ? data.soil_model.soil_id : null)));
                 });
                 window.currentScanPinnedIndices = [];
                 window.currentActiveSelectedSoilIndex = 0;
@@ -8086,6 +8075,7 @@
                 scan_note: btn.getAttribute('data-scan-note') || null,
                 percent: btn.getAttribute('data-percent'),
                 image: btn.getAttribute('data-image'),
+                thumbnail_image_url: btn.getAttribute('data-thumbnail') || null,
                 before_after_image_url: btn.getAttribute('data-before-after') || null,
                 raw_image_url: btn.getAttribute('data-raw-image') || null,
                 scan_id: btn.getAttribute('data-scan-id') || null,
@@ -8219,7 +8209,7 @@
                 // Only use window.currentCleanScanImage when viewing a LIVE scan result (data.image set)
                 // Do NOT bleed previous session's scan image into historical record views
                 const domRegionThumb = (regions && regions[0] && regions[0].region_thumbnail) ? regions[0].region_thumbnail : null;
-                let cleanSourceImg = data.normalized_image_url || data.stage2_normalized_url || data.image || data.scan_image || domRegionThumb || null;
+                let cleanSourceImg = data.thumbnail_image_url || data.thumbnail_image || data.normalized_image_url || data.stage2_normalized_url || data.image || data.scan_image || domRegionThumb || null;
                 if (cleanSourceImg && typeof cleanSourceImg === 'string') {
                     if (cleanSourceImg.startsWith('storage/')) {
                         cleanSourceImg = '/' + cleanSourceImg;
@@ -8429,8 +8419,11 @@
                     window.currentBeforeAfterRegion = targetRegion;
 
                     function showModalBeforeAfter(src) {
+                        const placeholder = document.getElementById('modalBeforeAfterPlaceholder');
                         modalBeforeAfterImg.onload = () => {
                             modalBeforeAfterImg.dataset.loaded = 'true';
+                            modalBeforeAfterImg.style.display = 'block';
+                            if (placeholder) placeholder.style.display = 'none';
                             modalBeforeAfterCard.style.display = 'block';
                             if (modalBeforeAfterBoxes) renderBeforeAfterBoxes(modalBeforeAfterBoxes, regions);
                         };
@@ -8444,6 +8437,8 @@
                                             showModalBeforeAfter(stitchedDataUrl);
                                         } else if (fallbackNorm && modalBeforeAfterImg.src !== fallbackNorm) {
                                             modalBeforeAfterImg.src = fallbackNorm;
+                                            modalBeforeAfterImg.style.display = 'block';
+                                            if (placeholder) placeholder.style.display = 'none';
                                             modalBeforeAfterCard.style.display = 'block';
                                             if (modalBeforeAfterBoxes) renderBeforeAfterBoxes(modalBeforeAfterBoxes, regions);
                                         }
@@ -8453,13 +8448,16 @@
                             }
                             if (fallbackNorm && modalBeforeAfterImg.src !== fallbackNorm) {
                                 modalBeforeAfterImg.src = fallbackNorm;
+                                modalBeforeAfterImg.style.display = 'block';
+                                if (placeholder) placeholder.style.display = 'none';
                                 modalBeforeAfterCard.style.display = 'block';
                                 if (modalBeforeAfterBoxes) renderBeforeAfterBoxes(modalBeforeAfterBoxes, regions);
                             } else {
                                 modalBeforeAfterImg.dataset.loaded = 'false';
                                 modalBeforeAfterImg.style.display = 'none';
+                                if (placeholder) placeholder.style.display = 'flex';
                                 if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = '';
-                                modalBeforeAfterCard.style.display = 'none';
+                                modalBeforeAfterCard.style.display = 'block';
                             }
                         };
                         modalBeforeAfterImg.dataset.loaded = 'pending';
@@ -8485,10 +8483,12 @@
                     } else if (normSrc || rawSrc) {
                         showModalBeforeAfter(normSrc || rawSrc);
                     } else {
+                        const placeholder = document.getElementById('modalBeforeAfterPlaceholder');
                         if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = '';
                         modalBeforeAfterImg.dataset.loaded = 'false';
-                        modalBeforeAfterImg.removeAttribute('src');
-                        modalBeforeAfterCard.style.display = 'none';
+                        modalBeforeAfterImg.style.display = 'none';
+                        if (placeholder) placeholder.style.display = 'flex';
+                        modalBeforeAfterCard.style.display = 'block';
                     }
                 }
 
@@ -8497,6 +8497,12 @@
                 window.currentDetectedSoilRegion = targetRegion;
                 if (modalBeforeAfterSwatches) {
                     renderStage3Swatches(modalBeforeAfterSwatches, regions, { hex: hex, munsell: code, proportion: 0.7 });
+                }
+
+                // Update Metadata Row inside Before/After Card
+                const metaText = document.getElementById('modalBeforeAfterMetaText');
+                if (metaText) {
+                    metaText.textContent = `CREATED: ${data.date || '—'}  |  DETECTED COLORS: ${regions.length || 1}`;
                 }
 
                 // Multi-Layer Accordion for Secondary Layers
@@ -8773,6 +8779,9 @@
                 if (modal) {
                     modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
+                    if (typeof updatePinButtonStates === 'function') {
+                        updatePinButtonStates();
+                    }
                 }
             }
         }
@@ -9286,32 +9295,34 @@
 
             // 2. Accordion sub-layer pin buttons
             if (activeRegions.length > 1) {
-                const accordionBtns = document.querySelectorAll('.btn-layer-pin-btn');
-                accordionBtns.forEach((b, i) => {
-                    const regIdx = i + 1;
-                    const isRegPinned = pinned.includes(regIdx);
-                    if (isRegPinned) {
-                        b.disabled = true;
-                        b.style.opacity = '0.75';
-                        b.style.cursor = 'default';
-                        b.innerHTML = `
-                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            <span>Pinned (Pending Review)</span>
-                        `;
-                    } else {
-                        b.disabled = false;
-                        b.style.opacity = '1';
-                        b.style.cursor = 'pointer';
-                        b.innerHTML = `
-                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            <span>Pin Location</span>
-                        `;
-                    }
+                ['.btn-layer-pin-btn', '.modal-layer-pin-btn'].forEach(selector => {
+                    const accordionBtns = document.querySelectorAll(selector);
+                    accordionBtns.forEach((b, i) => {
+                        const regIdx = i + 1;
+                        const isRegPinned = pinned.includes(regIdx);
+                        if (isRegPinned) {
+                            b.disabled = true;
+                            b.style.opacity = '0.75';
+                            b.style.cursor = 'default';
+                            b.innerHTML = `
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>Pinned (Pending Review)</span>
+                            `;
+                        } else {
+                            b.disabled = false;
+                            b.style.opacity = '1';
+                            b.style.cursor = 'pointer';
+                            b.innerHTML = `
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <span>Pin Location</span>
+                            `;
+                        }
+                    });
                 });
             }
 
@@ -9945,11 +9956,14 @@
                 : null;
 
             const soilId = (!isPinningAllSoils && currentPinTargetSoil && (currentPinTargetSoil.soil_id || currentPinTargetSoil.id)) 
+                || (window.currentScanResult && (window.currentScanResult.soil_id || (window.currentScanResult.soil_model && window.currentScanResult.soil_model.soil_id)))
                 || (lastScanMatch && lastScanMatch.soil_id) 
                 || null;
-            const scanId = (currentPinTargetSoil && (currentPinTargetSoil.scan_id || currentPinTargetSoil.soil_scan_id)) 
-                || (currentScanResponseData && currentScanResponseData.scan_id) 
-                || (window.currentScanResult && window.currentScanResult.scan_id)
+
+            const scanId = (!isPinningAllSoils && currentPinTargetSoil && (currentPinTargetSoil.scan_id || currentPinTargetSoil.soil_scan_id)) 
+                || (window.currentScanResult && (window.currentScanResult.scan_id || window.currentScanResult.soil_scan_id))
+                || (lastScanMatch && (lastScanMatch.scan_id || lastScanMatch.soil_scan_id))
+                || (typeof currentScanResponseData !== 'undefined' && currentScanResponseData ? currentScanResponseData.scan_id : null)
                 || null;
 
             fetch("{{ route('website.scan.pin') }}", {
@@ -10802,10 +10816,13 @@
                     <div id="modalSoilSnippetAvatarContainer" 
                          style="position: relative; width: 60px; height: 60px; min-width: 60px; border-radius: 12px; overflow: hidden; flex-shrink: 0; box-shadow: none !important; background: transparent; pointer-events: none; border: none; outline: none;">
                         <img id="modalSoilCircleSnippet" src="" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;" />
-                        <div id="modalSoilSnippetFallback" style="position: absolute; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); color: rgba(255,255,255,0.85);">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <div id="modalSoilSnippetFallback" style="position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.24); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;" title="Image not available for this record">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
                             </svg>
+                            <span style="font-size: 7px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; opacity: 0.95; text-transform: uppercase;">Image Not Available</span>
                         </div>
                     </div>
 
@@ -10968,8 +10985,17 @@
 
                         <!-- Replaces the single static modalBeforeAfterBox -->
                         <div id="modalBeforeAfterBoxes" style="position: absolute; inset: 0; pointer-events: none; z-index: 10;"></div>
+                        <div id="modalBeforeAfterPlaceholder" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 28px 16px; background: rgba(12, 26, 23, 0.95); text-align: center; border-radius: 8px;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            <span style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85);">Image not available</span>
+                            <span style="font-size: 10.5px; color: rgba(255,255,255,0.5); margin-top: 3px;">Normalization comparison image was not retained for this record</span>
+                        </div>
                     </div>
                     <div id="modalBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(142, 182, 155, 0.25); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;">
+                        <strong>METADATA</strong>
+                        <span id="modalBeforeAfterMetaText" style="font-weight: 600; opacity: 0.8;">CREATED: — | DETECTED COLORS: 1</span>
+                    </div>
                 </div>
 
                 <!-- Metadata Footer -->

@@ -1532,14 +1532,6 @@
                         if (Array.isArray(parsedR)) regions = parsedR;
                     } catch(e) {}
                 }
-                if (regions.length <= 1 && Array.isArray(loc.detected_soils) && loc.detected_soils.length > regions.length) {
-                    regions = loc.detected_soils;
-                } else if (regions.length <= 1 && typeof loc.detected_soils === 'string') {
-                    try {
-                        const parsedDs = JSON.parse(loc.detected_soils);
-                        if (Array.isArray(parsedDs) && parsedDs.length > regions.length) regions = parsedDs;
-                    } catch(e) {}
-                }
 
                 const isMulti = regions.length > 1;
                 const domSoil = regions[0] || {};

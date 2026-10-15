@@ -135,135 +135,63 @@ class LocationMapping extends Model
 
     public function getDetectedSoilsAttribute(): array
     {
-        // If this pin is explicitly pinned to a single soil layer:
-        if ($this->pinned_soil_index !== null) {
-            $meta = is_array($this->soil_layer_meta) ? $this->soil_layer_meta : json_decode($this->soil_layer_meta ?? '[]', true);
-            $sSoil = $this->soil;
-            $sMColor = $sSoil?->munsellColor;
-            $sHex = $meta['hex'] ?? ($sSoil?->effective_hex_color ?: ($sSoil?->hex_color ?: ($sMColor?->hex_code ?: '#8F694E')));
-            if ($sHex && !str_starts_with($sHex, '#')) $sHex = '#' . $sHex;
-
-            $pct = $this->soil_percentage ?? (!empty($meta['percent']) ? ($meta['percent'] . '%') : '100%');
-            if (is_numeric($pct)) $pct = $pct . '%';
-            $conf = $this->soil_confidence ?? ($meta['confidence'] ?? '95%');
-
-            return [[
-                'scan_id'        => $this->soil_scan_id,
-                'is_primary'     => true,
-                'soil_name'      => $meta['label'] ?? ($meta['color_name'] ?? ($sSoil?->soil_name ?: ($sMColor?->color_name ?: 'Soil Color'))),
-                'full_code'      => $meta['munsell_code'] ?? ($meta['munsell'] ?? ($sSoil?->full_code ?: ($sMColor?->full_code ?: '—'))),
-                'hex_color'      => $sHex,
-                'soil_type'      => $meta['soil_name'] ?? ($sSoil?->effective_soil_type ?: ($sSoil?->soil_type ?: ($sMColor?->soil_type ?: 'Leached grayish brown'))),
-                'organic_matter' => $meta['organic_matter'] ?? ($sSoil?->effective_organic_matter ?: ($sMColor?->organic_matter ?: 'Moderate (2.2% – 3.7%)')),
-                'drainage'       => $sSoil?->drainage ?: ($sMColor?->drainage_profile ?: 'Well Drained'),
-                'percentage'     => $pct,
-                'confidence'     => $conf,
-                'image_url'      => $this->soilScan ? \App\Helpers\SoilImageHelper::scanImageUrl($this->soilScan) : null,
-                'description'    => $sSoil?->description ?: ($meta['description'] ?? ($this->soilScan?->scan_note ?: '')),
-                'pinned_index'   => $this->pinned_soil_index,
-            ]];
-        }
-
+        $meta = is_array($this->soil_layer_meta) ? $this->soil_layer_meta : json_decode($this->soil_layer_meta ?? '[]', true);
+        $sSoil = $this->soil;
+        $sMColor = $sSoil?->munsellColor;
         $scan = $this->soilScan;
-        $detectedSoils = [];
 
-        if ($scan) {
-            // Check if scan has a session UUID in scan_image
-            if ($scan->scan_image && preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $scan->scan_image, $uuidMatch)) {
-                $uuid = $uuidMatch[1];
-                $sessionScans = SoilScan::with('soil.munsellColor')
-                    ->where('scan_image', 'LIKE', "%{$uuid}%")
-                    ->orderBy('soil_scan_id', 'asc')
-                    ->get();
+        $sHex = $meta['hex'] ?? ($sSoil?->effective_hex_color ?: ($sSoil?->hex_color ?: ($sMColor?->hex_code ?: '#8F694E')));
+        if ($sHex && !str_starts_with($sHex, '#')) $sHex = '#' . $sHex;
 
-                foreach ($sessionScans as $sScan) {
-                    $sSoil = $sScan->soil;
-                    $sMColor = $sSoil?->munsellColor;
-                    $sHex = $sSoil?->effective_hex_color ?: ($sSoil?->hex_color ?: ($sMColor?->hex_code ?: '#8F694E'));
-                    if ($sHex && !str_starts_with($sHex, '#')) $sHex = '#' . $sHex;
+        $pct = $this->soil_percentage ?? (!empty($meta['percent']) ? ($meta['percent'] . '%') : null);
+        $conf = $this->soil_confidence ?? ($meta['confidence'] ?? null);
 
-                    $pct = null;
-                    $conf = null;
-                    if ($sScan->scan_note && preg_match('/Soil Percentage:\s*([0-9.]+%?)/i', $sScan->scan_note, $pm)) {
-                        $pct = $pm[1];
+        // Fallback to scan regions_data if percentage/confidence not explicitly set
+        if ((!$pct || !$conf) && $scan && !empty($scan->regions_data)) {
+            $rd = is_array($scan->regions_data) ? $scan->regions_data : json_decode($scan->regions_data, true);
+            if (is_array($rd)) {
+                $match = null;
+                if ($this->pinned_soil_index !== null && isset($rd[$this->pinned_soil_index])) {
+                    $match = $rd[$this->pinned_soil_index];
+                } else {
+                    foreach ($rd as $r) {
+                        if ((isset($r['soil_id']) && $r['soil_id'] == $this->soil_id) ||
+                            (isset($r['munsell']) && $r['munsell'] == ($sSoil?->full_code ?? '')) ||
+                            (isset($r['munsell_code']) && $r['munsell_code'] == ($sSoil?->full_code ?? ''))) {
+                            $match = $r;
+                            break;
+                        }
                     }
-                    if ($sScan->scan_note && preg_match('/Confidence:\s*([0-9.]+%?)/i', $sScan->scan_note, $cm)) {
-                        $conf = $cm[1];
+                    if (!$match && isset($rd[0])) {
+                        $match = $rd[0];
                     }
-                    if (!$pct && !empty($sScan->regions_data)) {
-                        $rd = is_array($sScan->regions_data) ? $sScan->regions_data : json_decode($sScan->regions_data, true);
-                        if (!empty($rd[0]['percent'])) $pct = $rd[0]['percent'] . '%';
-                        if (!empty($rd[0]['confidence'])) $conf = round($rd[0]['confidence'], 1) . '%';
-                    }
-
-                    $detectedSoils[] = [
-                        'scan_id'       => $sScan->soil_scan_id,
-                        'is_primary'    => ($sScan->soil_scan_id === $scan->soil_scan_id),
-                        'soil_name'     => $sSoil?->soil_name ?: ($sMColor?->color_name ?: 'Soil Color'),
-                        'full_code'     => $sSoil?->full_code ?: ($sMColor?->full_code ?: '—'),
-                        'hex_color'     => $sHex,
-                        'soil_type'     => $sSoil?->effective_soil_type ?: ($sSoil?->soil_type ?: ($sMColor?->soil_type ?: 'Leached grayish brown')),
-                        'organic_matter'=> $sSoil?->effective_organic_matter ?: ($sMColor?->organic_matter ?: 'Moderate (2.2% – 3.7%)'),
-                        'drainage'      => $sSoil?->drainage ?: ($sMColor?->drainage_profile ?: 'Well Drained'),
-                        'percentage'    => $pct ?: ($sScan->soil_scan_id === $scan->soil_scan_id ? '57.2%' : '15%'),
-                        'confidence'    => $conf ?: '95%',
-                        'image_url'     => $sScan->scan_image ? (str_starts_with($sScan->scan_image, 'http') ? $sScan->scan_image : asset($sScan->scan_image)) : null,
-                        'description'   => $sSoil?->description ?: ($sScan->scan_note ?: ''),
-                    ];
                 }
-            }
-
-            if (empty($detectedSoils) && !empty($scan->regions_data)) {
-                $rd = is_array($scan->regions_data) ? $scan->regions_data : json_decode($scan->regions_data, true);
-                if (is_array($rd)) {
-                    foreach ($rd as $rIdx => $r) {
-                        $rHex = $r['hex'] ?? $this->soil?->effective_hex_color ?? '#8F694E';
-                        if (!str_starts_with($rHex, '#')) $rHex = '#' . $rHex;
-                        $detectedSoils[] = [
-                            'scan_id'       => $scan->soil_scan_id,
-                            'is_primary'    => ($rIdx === 0),
-                            'soil_name'     => $r['soil_name'] ?? $r['label'] ?? $this->soil?->soil_name ?? 'Detected Soil',
-                            'full_code'     => $r['munsell_code'] ?? $r['munsell'] ?? $this->soil?->full_code ?? '—',
-                            'hex_color'     => $rHex,
-                            'soil_type'     => $this->soil?->effective_soil_type ?: ($this->soil?->soil_type ?: ($this->soil?->munsellColor?->soil_type ?: 'Leached grayish brown')),
-                            'organic_matter'=> $this->soil?->effective_organic_matter ?: 'Moderate (2.2% – 3.7%)',
-                            'drainage'      => $this->soil?->drainage ?: 'Well Drained',
-                            'percentage'    => isset($r['percent']) ? ($r['percent'] . '%') : '—',
-                            'confidence'    => isset($r['confidence']) ? ($r['confidence'] . '%') : '95%',
-                            'image_url'     => null,
-                            'description'   => $this->soil?->description ?? '',
-                        ];
-                    }
+                if ($match) {
+                    if (!$pct && isset($match['percent'])) $pct = $match['percent'] . '%';
+                    if (!$conf && isset($match['confidence'])) $conf = is_numeric($match['confidence']) ? round($match['confidence'], 1) . '%' : $match['confidence'];
                 }
             }
         }
 
-        if (!empty($detectedSoils)) {
-            usort($detectedSoils, function($a, $b) {
-                if ($a['is_primary'] && !$b['is_primary']) return -1;
-                if (!$a['is_primary'] && $b['is_primary']) return 1;
-                $pA = (float) filter_var($a['percentage'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-                $pB = (float) filter_var($b['percentage'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-                return $pB <=> $pA;
-            });
-        } else {
-            $detectedSoils[] = [
-                'scan_id'       => $scan?->soil_scan_id ?? $this->location_mapping_id,
-                'is_primary'    => true,
-                'soil_name'     => $this->soil?->soil_name ?? 'Soil Specimen',
-                'full_code'     => $this->soil?->full_code ?? '—',
-                'hex_color'     => $this->soil?->effective_hex_color ?? '#8F694E',
-                'soil_type'     => $this->soil?->effective_soil_type ?: ($this->soil?->soil_type ?: ($this->soil?->munsellColor?->soil_type ?: 'Leached grayish brown')),
-                'organic_matter'=> $this->soil?->effective_organic_matter ?? 'Moderate (2.2% – 3.7%)',
-                'drainage'      => $this->soil?->drainage ?? 'Well Drained',
-                'percentage'    => '100%',
-                'confidence'    => '95%',
-                'image_url'     => $scan ? \App\Helpers\SoilImageHelper::scanImageUrl($scan) : \App\Helpers\SoilImageHelper::scanImageUrl($this),
-                'description'   => $this->soil?->description ?? '',
-            ];
-        }
+        if (!$pct) $pct = '100%';
+        if (is_numeric($pct)) $pct = $pct . '%';
+        if (!$conf) $conf = '95%';
 
-        return $detectedSoils;
+        return [[
+            'scan_id'        => $this->soil_scan_id ?: $this->location_mapping_id,
+            'is_primary'     => true,
+            'soil_name'      => $meta['label'] ?? ($meta['color_name'] ?? ($sSoil?->soil_name ?: ($sMColor?->color_name ?: 'Soil Color'))),
+            'full_code'      => $meta['munsell_code'] ?? ($meta['munsell'] ?? ($sSoil?->full_code ?: ($sMColor?->full_code ?: '—'))),
+            'hex_color'      => $sHex,
+            'soil_type'      => $meta['soil_name'] ?? ($sSoil?->effective_soil_type ?: ($sSoil?->soil_type ?: ($sMColor?->soil_type ?: 'Leached grayish brown'))),
+            'organic_matter' => $meta['organic_matter'] ?? ($sSoil?->effective_organic_matter ?: ($sMColor?->organic_matter ?: 'Moderate (2.2% – 3.7%)')),
+            'drainage'       => $sSoil?->drainage ?: ($sMColor?->drainage_profile ?: 'Well Drained'),
+            'percentage'     => $pct,
+            'confidence'     => $conf,
+            'image_url'      => $scan ? \App\Helpers\SoilImageHelper::scanImageUrl($scan) : \App\Helpers\SoilImageHelper::scanImageUrl($this),
+            'description'    => $sSoil?->description ?: ($meta['description'] ?? ($scan?->scan_note ?: '')),
+            'pinned_index'   => $this->pinned_soil_index,
+        ]];
     }
 
     public function getDetectedSoilsCountAttribute(): int
@@ -304,158 +232,72 @@ class LocationMapping extends Model
 
     public function getRegionsAttribute(): array
     {
-        // If this pin is explicitly pinned to a single soil layer:
-        if ($this->pinned_soil_index !== null) {
-            $meta = is_array($this->soil_layer_meta) ? $this->soil_layer_meta : json_decode($this->soil_layer_meta ?? '[]', true);
-            $sSoil = $this->soil;
-            $sMColor = $sSoil?->munsellColor;
-            $sHex = $meta['hex'] ?? ($sSoil?->effective_hex_color ?: ($sSoil?->hex_color ?: ($sMColor?->hex_code ?: '#8F694E')));
-            if ($sHex && !str_starts_with($sHex, '#')) $sHex = '#' . $sHex;
-
-            $pctVal = (float) filter_var($this->soil_percentage ?? ($meta['percent'] ?? 100), FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-            if (!$pctVal) $pctVal = 100.0;
-
-            $mCode = $meta['munsell_code'] ?? ($meta['munsell'] ?? ($sSoil?->full_code ?: ($sMColor?->full_code ?: '—')));
-            $label = $meta['label'] ?? ($meta['color_name'] ?? ($sSoil?->soil_name ?: ($sMColor?->color_name ?: 'Soil Color')));
-            $conf = $this->soil_confidence ?? ($meta['confidence'] ?? '95%');
-
-            return [[
-                'scan_id'        => $this->soil_scan_id,
-                'is_primary'     => true,
-                'munsell'        => $mCode,
-                'munsell_code'   => $mCode,
-                'label'          => $label,
-                'color_name'     => $label,
-                'hex'            => $sHex,
-                'percent'        => $pctVal,
-                'proportion'     => $pctVal / 100,
-                'confidence'     => $conf,
-                'near_match'     => $meta['near_match'] ?? $conf,
-                'organic_matter' => $meta['organic_matter'] ?? ($sSoil?->effective_organic_matter ?: 'Moderate (2.2% – 3.7%)'),
-                'soil_name'      => $meta['soil_name'] ?? ($sSoil?->soil_type_label ?: ($sSoil?->soil_type ?: 'Unspecified')),
-                'description'    => $sSoil?->description ?: ($meta['description'] ?? ($this->soilScan?->scan_note ?: '')),
-                'box'            => $meta['box'] ?? ($meta['bounding_box'] ?? null),
-                'bounding_box'   => $meta['box'] ?? ($meta['bounding_box'] ?? null),
-                'image'          => $this->soilScan?->scan_image ? (str_starts_with($this->soilScan->scan_image, 'http') ? $this->soilScan->scan_image : asset($this->soilScan->scan_image)) : null,
-                'pinned_index'   => $this->pinned_soil_index,
-            ]];
-        }
-
+        $meta = is_array($this->soil_layer_meta) ? $this->soil_layer_meta : json_decode($this->soil_layer_meta ?? '[]', true);
+        $sSoil = $this->soil;
+        $sMColor = $sSoil?->munsellColor;
         $scan = $this->soilScan;
-        $allRegions = [];
 
-        if ($scan) {
-            // 1. If scan belongs to a multi-scan session (grouped by UUID in scan_image)
-            if ($scan->scan_image && preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $scan->scan_image, $uuidMatch)) {
-                $uuid = $uuidMatch[1];
-                $sessionScans = SoilScan::with('soil.munsellColor')
-                    ->where('scan_image', 'LIKE', "%{$uuid}%")
-                    ->get();
+        $sHex = $meta['hex'] ?? ($sSoil?->effective_hex_color ?: ($sSoil?->hex_color ?: ($sMColor?->hex_code ?: '#8F694E')));
+        if ($sHex && !str_starts_with($sHex, '#')) $sHex = '#' . $sHex;
 
-                if ($sessionScans->count() > 1) {
-                    foreach ($sessionScans as $sScan) {
-                        $sSoil = $sScan->soil;
-                        $sMColor = $sSoil?->munsellColor;
-                        $sHex = $sSoil?->effective_hex_color ?: ($sSoil?->hex_color ?: ($sMColor?->hex_code ?: '#8F694E'));
-                        if ($sHex && !str_starts_with($sHex, '#')) $sHex = '#' . $sHex;
+        $pctVal = (float) filter_var($this->soil_percentage ?? ($meta['percent'] ?? 0), FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $conf = $this->soil_confidence ?? ($meta['confidence'] ?? null);
+        $box = $meta['box'] ?? ($meta['bounding_box'] ?? null);
 
-                        $rd = $sScan->regions_data;
-                        $r0 = (!empty($rd) && is_array($rd)) ? ($rd[0] ?? []) : [];
-
-                        $mCode = $r0['munsell'] ?? ($r0['munsell_code'] ?? ($sSoil?->full_code ?? '—'));
-                        $label = $r0['label'] ?? ($r0['color_name'] ?? ($sSoil?->soil_name ?: ($sMColor?->color_name ?: 'Soil Color')));
-                        $hex = $r0['hex'] ?? $sHex;
-                        if ($hex && !str_starts_with($hex, '#')) $hex = '#' . $hex;
-
-                        $pct = $r0['percent'] ?? (!empty($r0['proportion']) ? round($r0['proportion'] * 100, 1) : null);
-                        if ($pct === null && $sScan->scan_note && preg_match('/Soil Percentage:\s*([0-9.]+%?)/i', $sScan->scan_note, $pm)) {
-                            $pct = (float) filter_var($pm[1], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        // Fallback to scan regions_data if needed
+        if ((!$pctVal || !$conf || !$box) && $scan && !empty($scan->regions_data)) {
+            $rd = is_array($scan->regions_data) ? $scan->regions_data : json_decode($scan->regions_data, true);
+            if (is_array($rd)) {
+                $match = null;
+                if ($this->pinned_soil_index !== null && isset($rd[$this->pinned_soil_index])) {
+                    $match = $rd[$this->pinned_soil_index];
+                } else {
+                    foreach ($rd as $r) {
+                        if ((isset($r['soil_id']) && $r['soil_id'] == $this->soil_id) ||
+                            (isset($r['munsell']) && $r['munsell'] == ($sSoil?->full_code ?? '')) ||
+                            (isset($r['munsell_code']) && $r['munsell_code'] == ($sSoil?->full_code ?? ''))) {
+                            $match = $r;
+                            break;
                         }
-                        $pct = $pct ?? 25;
-
-                        $conf = $r0['confidence_formatted'] ?? ($r0['confidence'] ?? null);
-                        if (!$conf && $sScan->scan_note && preg_match('/Confidence:\s*([0-9.]+%?)/i', $sScan->scan_note, $cm)) {
-                            $conf = $cm[1];
-                        }
-                        if ($conf && is_numeric($conf)) $conf = round($conf, 1) . '%';
-                        $conf = $conf ?? '96.5%';
-
-                        $box = $r0['box'] ?? ($r0['bounding_box'] ?? null);
-
-                        $allRegions[] = [
-                            'scan_id'        => $sScan->soil_scan_id,
-                            'is_primary'     => ($sScan->soil_scan_id === $scan->soil_scan_id),
-                            'munsell'        => $mCode,
-                            'munsell_code'   => $mCode,
-                            'label'          => $label,
-                            'color_name'     => $label,
-                            'hex'            => $hex,
-                            'percent'        => (float)$pct,
-                            'proportion'     => ((float)$pct) / 100,
-                            'confidence'     => $conf,
-                            'near_match'     => $r0['near_match'] ?? $conf,
-                            'organic_matter' => $sSoil?->effective_organic_matter ?: ($sMColor?->organic_matter ?: 'Moderate (2.2% – 3.7%)'),
-                            'soil_name'      => $sSoil?->soil_type_label ?: ($sSoil?->soil_type ?: ($sMColor?->soil_type ?: 'Unspecified')),
-                            'description'    => $sSoil?->description ?: ($sScan->scan_note ?: ''),
-                            'box'            => $box,
-                            'bounding_box'   => $box,
-                            'image'          => $sScan->scan_image ? (str_starts_with($sScan->scan_image, 'http') ? $sScan->scan_image : asset($sScan->scan_image)) : null,
-                        ];
                     }
-
-                    // Sort: primary first, then higher percent
-                    usort($allRegions, function($a, $b) {
-                        if ($a['is_primary'] && !$b['is_primary']) return -1;
-                        if (!$a['is_primary'] && $b['is_primary']) return 1;
-                        return ($b['percent'] <=> $a['percent']);
-                    });
-
-                    return $allRegions;
+                    if (!$match && isset($rd[0])) {
+                        $match = $rd[0];
+                    }
+                }
+                if ($match) {
+                    if (!$pctVal && isset($match['percent'])) $pctVal = (float) $match['percent'];
+                    if (!$conf && isset($match['confidence'])) $conf = is_numeric($match['confidence']) ? round($match['confidence'], 1) . '%' : $match['confidence'];
+                    if (!$box) $box = $match['box'] ?? ($match['bounding_box'] ?? null);
                 }
             }
-
-            // 2. If single scan already has multiple regions in regions_data
-            if (!empty($scan->regions) && count($scan->regions) > 1) {
-                return $scan->regions;
-            }
         }
 
-        // 3. Fallback to detected_soils if multiple items exist
-        if (!empty($this->detected_soils) && count($this->detected_soils) > 1) {
-            $out = [];
-            foreach ($this->detected_soils as $idx => $ds) {
-                $pct = (float) filter_var($ds['percentage'] ?? '25', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-                $out[] = [
-                    'scan_id'       => $ds['scan_id'] ?? null,
-                    'is_primary'    => !empty($ds['is_primary']),
-                    'munsell'       => $ds['full_code'] ?? '—',
-                    'munsell_code'  => $ds['full_code'] ?? '—',
-                    'hex'           => $ds['hex_color'] ?? '#8F694E',
-                    'label'         => $ds['soil_name'] ?? 'Soil Layer',
-                    'color_name'    => $ds['soil_name'] ?? 'Soil Layer',
-                    'percent'       => $pct,
-                    'proportion'    => $pct / 100,
-                    'confidence'    => $ds['confidence'] ?? '95%',
-                    'near_match'    => $ds['confidence'] ?? '95%',
-                    'organic_matter'=> $ds['organic_matter'] ?? 'Low (1.1% – 2.0%)',
-                    'soil_name'     => $ds['soil_type'] ?? 'Unspecified',
-                    'description'   => $ds['description'] ?? '',
-                    'box'           => [
-                        'x' => 0.15 + (($idx % 2) * 0.4),
-                        'y' => 0.2 + (floor($idx / 2) * 0.35),
-                        'w' => 0.3,
-                        'h' => 0.3,
-                    ],
-                ];
-            }
-            return $out;
-        }
+        if (!$pctVal) $pctVal = 100.0;
+        if (!$conf) $conf = '95%';
 
-        if (!empty($scan?->regions)) {
-            return $scan->regions;
-        }
+        $mCode = $meta['munsell_code'] ?? ($meta['munsell'] ?? ($sSoil?->full_code ?: ($sMColor?->full_code ?: '—')));
+        $label = $meta['label'] ?? ($meta['color_name'] ?? ($sSoil?->soil_name ?: ($sMColor?->color_name ?: 'Soil Color')));
 
-        return [];
+        return [[
+            'scan_id'        => $this->soil_scan_id ?: $this->location_mapping_id,
+            'is_primary'     => true,
+            'munsell'        => $mCode,
+            'munsell_code'   => $mCode,
+            'label'          => $label,
+            'color_name'     => $label,
+            'hex'            => $sHex,
+            'percent'        => $pctVal,
+            'proportion'     => $pctVal / 100,
+            'confidence'     => $conf,
+            'near_match'     => $meta['near_match'] ?? $conf,
+            'organic_matter' => $meta['organic_matter'] ?? ($sSoil?->effective_organic_matter ?: 'Moderate (2.2% – 3.7%)'),
+            'soil_name'      => $meta['soil_name'] ?? ($sSoil?->soil_type_label ?: ($sSoil?->soil_type ?: 'Unspecified')),
+            'description'    => $sSoil?->description ?: ($meta['description'] ?? ($scan?->scan_note ?: '')),
+            'box'            => $box,
+            'bounding_box'   => $box,
+            'image'          => $scan ? \App\Helpers\SoilImageHelper::scanImageUrl($scan) : null,
+            'pinned_index'   => $this->pinned_soil_index,
+        ]];
     }
 
     public function getScanNoteTextAttribute(): string
@@ -465,6 +307,6 @@ class LocationMapping extends Model
 
     public function getIsSingleSoilPinAttribute(): bool
     {
-        return $this->pinned_soil_index !== null;
+        return true;
     }
 }

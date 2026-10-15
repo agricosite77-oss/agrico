@@ -16,6 +16,8 @@ class SoilScan extends Model
         'scan_note',
         'regions_data',
         'scan_image',
+        'before_after_image',
+        'thumbnail_image',
         'platform',
         'scan_date',
         'user_id',
@@ -31,6 +33,8 @@ class SoilScan extends Model
 
     protected $appends = [
         'scan_image_url',
+        'before_after_image_url',
+        'thumbnail_image_url',
     ];
 
     protected static function booted(): void
@@ -48,7 +52,9 @@ class SoilScan extends Model
         $total = static::count();
         if ($total > $limit) {
             $excess = $total - $limit;
-            $oldestIds = static::orderBy('soil_scan_id', 'asc')
+            $pinnedScanIds = LocationMapping::whereNotNull('soil_scan_id')->pluck('soil_scan_id')->toArray();
+            $oldestIds = static::whereNotIn('soil_scan_id', $pinnedScanIds)
+                ->orderBy('soil_scan_id', 'asc')
                 ->limit($excess)
                 ->pluck('soil_scan_id')
                 ->toArray();
@@ -246,6 +252,11 @@ class SoilScan extends Model
     public function getBeforeAfterImageUrlAttribute(): ?string
     {
         return \App\Helpers\SoilImageHelper::beforeAfterImageUrl($this);
+    }
+
+    public function getThumbnailImageUrlAttribute(): ?string
+    {
+        return \App\Helpers\SoilImageHelper::scanImageUrl($this, true);
     }
 
     public function location()

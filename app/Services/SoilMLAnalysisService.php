@@ -325,18 +325,21 @@ class SoilMLAnalysisService
             @mkdir($publicScansDir, 0755, true);
         }
 
-        $scanJpgName = "scans/scan_{$scanId}.jpg";
-        $fullPublicJpg = storage_path('app/public/' . $scanJpgName);
-        $normJpgName = "scans/scan_{$scanId}_normalized.jpg";
-        $fullNormJpg = storage_path('app/public/' . $normJpgName);
-        $baJpgName = "scans/scan_{$scanId}_before_after.jpg";
-        $fullBaJpg = storage_path('app/public/' . $baJpgName);
+        $scanJpgName  = "scans/scan_{$scanId}.jpg";
+        $fullPublicJpg= storage_path('app/public/' . $scanJpgName);
+        $rawJpgName   = "scans/scan_{$scanId}_raw.jpg";
+        $fullRawJpg   = storage_path('app/public/' . $rawJpgName);
+        $normJpgName  = "scans/scan_{$scanId}_normalized.jpg";
+        $fullNormJpg  = storage_path('app/public/' . $normJpgName);
+        $baJpgName    = "scans/scan_{$scanId}_before_after.jpg";
+        $fullBaJpg    = storage_path('app/public/' . $baJpgName);
+        $thumbJpgName = "scans/scan_{$scanId}_thumb.jpg";
+        $fullThumbJpg = storage_path('app/public/' . $thumbJpgName);
 
         // Check for candidate Stage 2 normalized image path
         $candidateNormPath = $pythonResult['stage2_normalized_path']
             ?? $analysis['stage2_normalized_path']
             ?? null;
-
         if (!file_exists($fullNormJpg) && !empty($candidateNormPath) && file_exists($candidateNormPath)) {
             @copy($candidateNormPath, $fullNormJpg);
         }
@@ -345,108 +348,165 @@ class SoilMLAnalysisService
         $candidateBaPath = $pythonResult['before_after_image_path']
             ?? $analysis['before_after_image_path']
             ?? null;
-
         if (!file_exists($fullBaJpg) && !empty($candidateBaPath) && file_exists($candidateBaPath)) {
             @copy($candidateBaPath, $fullBaJpg);
         }
 
-        // If Before & After comparison image does not exist yet, generate it via GD
-        if (!file_exists($fullBaJpg) && extension_loaded('gd')) {
-            $rawSource = file_exists(storage_path('app/public/scans/scan_' . $scanId . '_raw.jpg'))
-                ? storage_path('app/public/scans/scan_' . $scanId . '_raw.jpg')
-                : (file_exists($fullPublicJpg) ? $fullPublicJpg : null);
-            $normSource = file_exists($fullNormJpg)
-                ? $fullNormJpg
-                : (file_exists($fullPublicJpg) ? $fullPublicJpg : null);
+        $rawSource = file_exists($fullRawJpg) ? $fullRawJpg : (file_exists($fullPublicJpg) ? $fullPublicJpg : null);
+        $normSource = file_exists($fullNormJpg) ? $fullNormJpg : (file_exists($fullPublicJpg) ? $fullPublicJpg : null);
 
-            if ($rawSource && $normSource) {
-                try {
-                    $imRaw = @imagecreatefromjpeg($rawSource) ?: @imagecreatefrompng($rawSource);
-                    $imNorm = @imagecreatefromjpeg($normSource) ?: @imagecreatefrompng($normSource);
-                    if ($imRaw && $imNorm) {
-                        $rw = imagesx($imRaw);
-                        $rh = imagesy($imRaw);
-                        $maxW = 1200;
-                        if ($rw > $maxW) {
-                            $scale = $maxW / (float)$rw;
-                            $targetW = (int)($rw * $scale);
-                            $targetH = (int)($rh * $scale);
-                            $scaledRaw = imagecreatetruecolor($targetW, $targetH);
-                            imagecopyresampled($scaledRaw, $imRaw, 0, 0, 0, 0, $targetW, $targetH, $rw, $rh);
-                            imagedestroy($imRaw);
-                            $imRaw = $scaledRaw;
-                            $rw = $targetW;
-                            $rh = $targetH;
-                        }
-
-                        $barH = max(30, (int)($rh * 0.08));
-                        $canvasW = $rw * 2;
-                        $canvasH = $rh + $barH;
-                        $canvas = imagecreatetruecolor($canvasW, $canvasH);
-
-                        $bgColor = imagecolorallocate($canvas, 18, 30, 24);
-                        imagefilledrectangle($canvas, 0, 0, $canvasW, $canvasH, $bgColor);
-
-                        imagecopyresampled($canvas, $imRaw, 0, $barH, 0, 0, $rw, $rh, imagesx($imRaw), imagesy($imRaw));
-                        imagecopyresampled($canvas, $imNorm, $rw, $barH, 0, 0, $rw, $rh, imagesx($imNorm), imagesy($imNorm));
-
-                        $divColor = imagecolorallocatealpha($canvas, 255, 255, 255, 64);
-                        imageline($canvas, $rw, 0, $rw, $canvasH, $divColor);
-
-                        $amber = imagecolorallocate($canvas, 251, 191, 36);
-                        $mint = imagecolorallocate($canvas, 142, 242, 178);
-                        $font = 4;
-                        imagestring($canvas, $font, 12, (int)($barH * 0.25), "BEFORE", $amber);
-                        $mCodeStr = $analysis['munsell_code'] ?? ($analysis['munsell'] ?? '');
-                        $afterLabel = "AFTER (NORMALIZED)" . ($mCodeStr ? " -- {$mCodeStr}" : "");
-                        imagestring($canvas, $font, $rw + 12, (int)($barH * 0.25), $afterLabel, $mint);
-
-                        @imagejpeg($canvas, $fullBaJpg, 92);
-                        imagedestroy($canvas);
+        // 1. Synthesize Before & After comparison image via GD if missing
+        if (!file_exists($fullBaJpg) && $rawSource && $normSource && extension_loaded('gd')) {
+            try {
+                $imRaw = @imagecreatefromstring((string) file_get_contents($rawSource));
+                $imNorm = @imagecreatefromstring((string) file_get_contents($normSource));
+                if ($imRaw && $imNorm) {
+                    $rw = imagesx($imRaw);
+                    $rh = imagesy($imRaw);
+                    $maxW = 1000;
+                    if ($rw > $maxW) {
+                        $scale = $maxW / (float)$rw;
+                        $nw = $maxW;
+                        $nh = (int)($rh * $scale);
+                        $rRes = imagecreatetruecolor($nw, $nh);
+                        imagecopyresampled($rRes, $imRaw, 0, 0, 0, 0, $nw, $nh, $rw, $rh);
                         imagedestroy($imRaw);
-                        imagedestroy($imNorm);
+                        $imRaw = $rRes;
+                        $rw = $nw;
+                        $rh = $nh;
                     }
-                } catch (\Throwable $e_gd) {
-                    Log::warning('[SoilMLAnalysisService] GD before/after stitch failed: ' . $e_gd->getMessage());
+                    $nRes = imagecreatetruecolor($rw, $rh);
+                    imagecopyresampled($nRes, $imNorm, 0, 0, 0, 0, $rw, $rh, imagesx($imNorm), imagesy($imNorm));
+                    imagedestroy($imNorm);
+                    $imNorm = $nRes;
+
+                    $barH = max(28, (int)($rh * 0.08));
+                    $canvas = imagecreatetruecolor($rw * 2, $rh + $barH);
+                    $bg = imagecolorallocate($canvas, 18, 30, 24);
+                    imagefilledrectangle($canvas, 0, 0, $rw * 2, $rh + $barH, $bg);
+                    imagecopy($canvas, $imRaw, 0, $barH, 0, 0, $rw, $rh);
+                    imagecopy($canvas, $imNorm, $rw, $barH, 0, 0, $rw, $rh);
+
+                    // Divider line
+                    $divColor = imagecolorallocatealpha($canvas, 255, 255, 255, 64);
+                    imageline($canvas, $rw, 0, $rw, $rh + $barH, $divColor);
+
+                    $colorBefore = imagecolorallocate($canvas, 251, 191, 36);
+                    $colorAfter = imagecolorallocate($canvas, 142, 242, 178);
+                    imagestring($canvas, 4, 10, (int)($barH * 0.2), "BEFORE", $colorBefore);
+                    $munsellCode = $analysis['munsell_code'] ?? ($analysis['munsell'] ?? '');
+                    imagestring($canvas, 4, $rw + 10, (int)($barH * 0.2), "AFTER (NORMALIZED) " . $munsellCode, $colorAfter);
+
+                    // Draw green ROI square on BEFORE (left half)
+                    $targetBox = $regions[0]['bounding_box'] ?? $regions[0]['box'] ?? null;
+                    if (!$targetBox) {
+                        $targetBox = ['x' => 0.25, 'y' => 0.25, 'w' => 0.5, 'h' => 0.5];
+                    }
+                    $bx = isset($targetBox['w']) ? (int)($targetBox['x'] * $rw) : (int)($targetBox['x'] ?? (0.25 * $rw));
+                    $by = isset($targetBox['h']) ? (int)($barH + ($targetBox['y'] * $rh)) : (int)($barH + ($targetBox['y'] ?? (0.25 * $rh)));
+                    $bw = isset($targetBox['w']) ? (int)($targetBox['w'] * $rw) : (int)($targetBox['width'] ?? ($rw * 0.5));
+                    $bh = isset($targetBox['h']) ? (int)($targetBox['h'] * $rh) : (int)($targetBox['height'] ?? ($rh * 0.5));
+                    $bx = max(0, min($rw - 1, $bx));
+                    $by = max($barH, min($rh + $barH - 1, $by));
+                    $bw = max(10, min($rw - $bx, $bw));
+                    $bh = max(10, min($rh + $barH - $by, $bh));
+
+                    $greenColor = imagecolorallocate($canvas, 74, 222, 128);
+                    $darkColor = imagecolorallocate($canvas, 0, 0, 0);
+                    imagesetthickness($canvas, 4);
+                    imagerectangle($canvas, $bx - 1, $by - 1, $bx + $bw + 1, $by + $bh + 1, $darkColor);
+                    imagesetthickness($canvas, 3);
+                    imagerectangle($canvas, $bx, $by, $bx + $bw, $by + $bh, $greenColor);
+
+                    @imagejpeg($canvas, $fullBaJpg, 90);
+                    imagedestroy($canvas);
+                    imagedestroy($imRaw);
+                    imagedestroy($imNorm);
                 }
+            } catch (\Throwable $e_gd) {
+                Log::warning('[SoilMLAnalysisService] GD before/after stitch failed: ' . $e_gd->getMessage());
             }
         }
 
-        $publicScanRelativePath = null;
-        if (file_exists($fullNormJpg)) {
-            @copy($fullNormJpg, $fullPublicJpg);
-            $publicScanRelativePath = 'storage/' . $normJpgName;
-        } elseif (!empty($candidateNormPath) && file_exists($candidateNormPath)) {
-            @copy($candidateNormPath, $fullPublicJpg);
-            @copy($candidateNormPath, $fullNormJpg);
-            $publicScanRelativePath = 'storage/' . $normJpgName;
-        } elseif (file_exists($fullPublicJpg)) {
-            $publicScanRelativePath = 'storage/' . $scanJpgName;
-        } elseif (!empty($pythonResult['stored_path']) && file_exists($pythonResult['stored_path'])) {
-            @copy($pythonResult['stored_path'], $fullPublicJpg);
-            $publicScanRelativePath = 'storage/' . $scanJpgName;
-        } else {
-            $publicScanRelativePath = 'storage/' . $scanJpgName;
+        // 2. Synthesize Thumbnail with green sample square via GD if missing
+        if (!file_exists($fullThumbJpg) && ($rawSource || $normSource) && extension_loaded('gd')) {
+            try {
+                $baseImgSrc = $rawSource ?: $normSource;
+                $imThumb = @imagecreatefromstring((string) file_get_contents($baseImgSrc));
+                if ($imThumb) {
+                    $tw = imagesx($imThumb);
+                    $th = imagesy($imThumb);
+                    $maxDim = 360;
+                    $scale = min($maxDim / $tw, $maxDim / $th, 1.0);
+                    $targetTw = (int)($tw * $scale);
+                    $targetTh = (int)($th * $scale);
+                    $thumbCanvas = imagecreatetruecolor($targetTw, $targetTh);
+                    imagecopyresampled($thumbCanvas, $imThumb, 0, 0, 0, 0, $targetTw, $targetTh, $tw, $th);
+
+                    // Draw green ROI marker box
+                    $targetBox = $regions[0]['bounding_box'] ?? $regions[0]['box'] ?? null;
+                    if (!$targetBox) {
+                        $targetBox = ['x' => 0.25, 'y' => 0.25, 'w' => 0.5, 'h' => 0.5];
+                    }
+                    $bx = isset($targetBox['w']) ? (int)($targetBox['x'] * $targetTw) : (int)($targetBox['x'] ?? (0.25 * $targetTw));
+                    $by = isset($targetBox['h']) ? (int)($targetBox['y'] * $targetTh) : (int)($targetBox['y'] ?? (0.25 * $targetTh));
+                    $bw = isset($targetBox['w']) ? (int)($targetBox['w'] * $targetTw) : (int)($targetBox['width'] ?? ($targetTw * 0.5));
+                    $bh = isset($targetBox['h']) ? (int)($targetBox['h'] * $targetTh) : (int)($targetBox['height'] ?? ($targetTh * 0.5));
+                    $bx = max(0, min($targetTw - 1, $bx));
+                    $by = max(0, min($targetTh - 1, $by));
+                    $bw = max(10, min($targetTw - $bx, $bw));
+                    $bh = max(10, min($targetTh - $by, $bh));
+
+                    $greenColor = imagecolorallocate($thumbCanvas, 74, 222, 128);
+                    $darkColor = imagecolorallocate($thumbCanvas, 0, 0, 0);
+                    imagesetthickness($thumbCanvas, 4);
+                    imagerectangle($thumbCanvas, $bx - 1, $by - 1, $bx + $bw + 1, $by + $bh + 1, $darkColor);
+                    imagesetthickness($thumbCanvas, 3);
+                    imagerectangle($thumbCanvas, $bx, $by, $bx + $bw, $by + $bh, $greenColor);
+
+                    @imagejpeg($thumbCanvas, $fullThumbJpg, 85);
+                    imagedestroy($thumbCanvas);
+                    imagedestroy($imThumb);
+                }
+            } catch (\Throwable $e_thumb) {
+                Log::warning('[SoilMLAnalysisService] GD thumbnail creation failed: ' . $e_thumb->getMessage());
+            }
         }
 
-        $supabaseStorage = app(\App\Services\SupabaseStorageService::class);
+        $publicScanRelativePath = 'storage/' . $normJpgName;
+        $publicBaRelativePath   = file_exists($fullBaJpg) ? ('storage/' . $baJpgName) : null;
+        $publicThumbRelativePath= file_exists($fullThumbJpg) ? ('storage/' . $thumbJpgName) : null;
+
+        // 3. Upload all generated assets to Cloudflare R2 / Persistent Storage
+        $cloudStorage = app(\App\Services\CloudStorageService::class);
         try {
-            if (file_exists($fullBaJpg)) {
-                $supabaseStorage->uploadFile($fullBaJpg, $baJpgName);
-            }
             if (file_exists($fullNormJpg)) {
-                $uploadedUrl = $supabaseStorage->uploadFile($fullNormJpg, $normJpgName);
-                if ($uploadedUrl) {
-                    $publicScanRelativePath = $uploadedUrl;
+                $uploadedNorm = $cloudStorage->uploadFile($fullNormJpg, $normJpgName);
+                if ($uploadedNorm) {
+                    $publicScanRelativePath = $uploadedNorm;
                 }
             } elseif (file_exists($fullPublicJpg)) {
-                $uploadedUrl = $supabaseStorage->uploadFile($fullPublicJpg, $scanJpgName);
-                if ($uploadedUrl) {
-                    $publicScanRelativePath = $uploadedUrl;
+                $uploadedPub = $cloudStorage->uploadFile($fullPublicJpg, $scanJpgName);
+                if ($uploadedPub) {
+                    $publicScanRelativePath = $uploadedPub;
+                }
+            }
+
+            if (file_exists($fullBaJpg)) {
+                $uploadedBa = $cloudStorage->uploadFile($fullBaJpg, $baJpgName);
+                if ($uploadedBa) {
+                    $publicBaRelativePath = $uploadedBa;
+                }
+            }
+
+            if (file_exists($fullThumbJpg)) {
+                $uploadedThumb = $cloudStorage->uploadFile($fullThumbJpg, $thumbJpgName);
+                if ($uploadedThumb) {
+                    $publicThumbRelativePath = $uploadedThumb;
                 }
             }
         } catch (\Throwable $e) {
-            Log::warning('[SoilMLAnalysisService] Supabase scan upload failed: ' . $e->getMessage());
+            Log::warning('[SoilMLAnalysisService] Cloud storage scan upload failed: ' . $e->getMessage());
         }
 
         $saveRegionImage = function ($thumbBase64, $idx) use ($scanId, $publicScanRelativePath, $supabaseStorage) {
@@ -518,9 +578,12 @@ class SoilMLAnalysisService
                     'platform' => $platform, 'scan_note' => $note,
                     'regions_data' => [$r], 'scan_date' => now(),
                     'scan_image' => $rImgPath,
+                    'before_after_image' => $publicBaRelativePath,
+                    'thumbnail_image' => $publicThumbRelativePath ?: $rImgPath,
                 ]);
                 $subScansCreated[$i] = [
                     'scan_id' => $subScan->soil_scan_id,
+                    'soil_id' => $layerSoil->soil_id,
                     'scan_seq' => SoilScan::where('soil_id', $layerSoil->soil_id)->count(),
                     'name' => $layerSoil->effective_soil_name, 'color_name' => $layerSoil->effective_soil_name,
                     'code' => $mCode, 'hue' => $layerSoil->hue ?? $layerHue,
@@ -560,9 +623,12 @@ class SoilMLAnalysisService
                 'scan_note' => "Determined Soil: {$soil->effective_soil_name} ({$domCode})" . ($domPct ? " - Soil Percentage: {$domPct}%" : "") . " - Confidence: {$domConf}",
                 'regions_data' => [$domR], 'scan_date' => now(),
                 'scan_image' => $dominantScanImage,
+                'before_after_image' => $publicBaRelativePath,
+                'thumbnail_image' => $publicThumbRelativePath ?: $domImgPath,
             ]);
             $createdScans = [[
                 'scan_id' => $soilScan->soil_scan_id,
+                'soil_id' => $soil->soil_id,
                 'scan_seq' => SoilScan::where('soil_id', $soil->soil_id)->count(),
                 'name' => $soil->effective_soil_name, 'color_name' => $soil->effective_soil_name,
                 'code' => $domCode, 'hue' => $soil->hue ?? $domHue,
@@ -597,9 +663,12 @@ class SoilMLAnalysisService
                 'scan_note' => "Determined Soil: {$analysis['soil_name']} ({$analysis['munsell_code']}) - Confidence: {$analysis['confidence_formatted']}",
                 'regions_data' => $regions, 'scan_date' => now(),
                 'scan_image' => $publicScanRelativePath,
+                'before_after_image' => $publicBaRelativePath,
+                'thumbnail_image' => $publicThumbRelativePath,
             ]);
             $createdScans = [[
                 'scan_id' => $soilScan->soil_scan_id,
+                'soil_id' => $soil->soil_id,
                 'scan_seq' => SoilScan::where('soil_id', $soil->soil_id)->count(),
                 'name' => $soil->effective_soil_name, 'color_name' => $soil->effective_soil_name,
                 'code' => $analysis['munsell_code'], 'hue' => $soil->hue ?? $analysis['hue'],
@@ -608,8 +677,8 @@ class SoilMLAnalysisService
                 'drainage' => $soil->effective_soil_type, 'soil_type' => $soil->effective_soil_type,
                 'confidence' => $analysis['confidence_formatted'] ?? '97.4%',
                 'percent' => 100, 'regions' => $regions,
-                'image' => $publicScanRelativePath ? asset($publicScanRelativePath) : null,
-                'scan_image' => $publicScanRelativePath ? asset($publicScanRelativePath) : null,
+                'image' => $publicScanRelativePath ? (str_starts_with($publicScanRelativePath, 'http') ? $publicScanRelativePath : asset($publicScanRelativePath)) : null,
+                'scan_image' => $publicScanRelativePath ? (str_starts_with($publicScanRelativePath, 'http') ? $publicScanRelativePath : asset($publicScanRelativePath)) : null,
             ]];
         }
 
@@ -639,123 +708,14 @@ class SoilMLAnalysisService
             }
         }
 
-        $cacheBuster = '?t=' . time();
-        $normalizedUrl = $publicScanRelativePath ? (asset($publicScanRelativePath) . $cacheBuster) : null;
-
-        $baJpgName = "scans/scan_{$scanId}_before_after.jpg";
-        $fullBaJpg = storage_path('app/public/' . $baJpgName);
-        $candidateBaPath = $pythonResult['before_after_image_path'] ?? null;
-        if (!file_exists($fullBaJpg) && !empty($candidateBaPath) && file_exists($candidateBaPath)) {
-            @copy($candidateBaPath, $fullBaJpg);
-        }
-
-        $rawJpgName = "scans/scan_{$scanId}_raw.jpg";
-        $fullRawJpg = storage_path('app/public/' . $rawJpgName);
-
-        if (!file_exists($fullBaJpg) && file_exists($fullNormJpg) && file_exists($fullRawJpg) && extension_loaded('gd')) {
-            try {
-                $rawIm = @imagecreatefromstring(file_get_contents($fullRawJpg));
-                $normIm = @imagecreatefromstring(file_get_contents($fullNormJpg));
-                if ($rawIm && $normIm) {
-                    $rw = imagesx($rawIm);
-                    $rh = imagesy($rawIm);
-                    if ($rw > 1000) {
-                        $scale = 1000 / $rw;
-                        $nw = 1000;
-                        $nh = (int)($rh * $scale);
-                        $rResized = imagecreatetruecolor($nw, $nh);
-                        imagecopyresampled($rResized, $rawIm, 0, 0, 0, 0, $nw, $nh, $rw, $rh);
-                        imagedestroy($rawIm);
-                        $rawIm = $rResized;
-                        $rw = $nw;
-                        $rh = $nh;
-                    }
-                    $nResized = imagecreatetruecolor($rw, $rh);
-                    imagecopyresampled($nResized, $normIm, 0, 0, 0, 0, $rw, $rh, imagesx($normIm), imagesy($normIm));
-                    imagedestroy($normIm);
-                    $normIm = $nResized;
-
-                    $barH = max(28, (int)($rh * 0.08));
-                    $canvas = imagecreatetruecolor($rw * 2, $rh + $barH);
-                    $bg = imagecolorallocate($canvas, 18, 30, 24);
-                    imagefilledrectangle($canvas, 0, 0, $rw * 2, $rh + $barH, $bg);
-                    imagecopy($canvas, $rawIm, 0, $barH, 0, 0, $rw, $rh);
-                    imagecopy($canvas, $normIm, $rw, $barH, 0, 0, $rw, $rh);
-                    $colorBefore = imagecolorallocate($canvas, 255, 200, 100);
-                    $colorAfter = imagecolorallocate($canvas, 142, 242, 178);
-                    imagestring($canvas, 4, 10, (int)($barH * 0.2), "BEFORE", $colorBefore);
-                    $munsellCode = $analysis['munsell_code'] ?? '';
-                    imagestring($canvas, 4, $rw + 10, (int)($barH * 0.2), "AFTER (NORMALIZED) " . $munsellCode, $colorAfter);
-
-                    // Draw green ROI box on the BEFORE side (left half)
-                    $targetBox = $regions[0]['bounding_box'] ?? $regions[0]['box'] ?? null;
-                    if (!$targetBox) {
-                        $targetBox = ['x' => 0.25, 'y' => 0.25, 'w' => 0.5, 'h' => 0.5];
-                    }
-                    if ($targetBox) {
-                        $bx = isset($targetBox['w']) ? (int)($targetBox['x'] * $rw) : (int)($targetBox['x'] ?? (0.25 * $rw));
-                        $by = isset($targetBox['h']) ? (int)($barH + ($targetBox['y'] * $rh)) : (int)($barH + ($targetBox['y'] ?? (0.25 * $rh)));
-                        $bw = isset($targetBox['w']) ? (int)($targetBox['w'] * $rw) : (int)($targetBox['width'] ?? ($rw * 0.5));
-                        $bh = isset($targetBox['h']) ? (int)($targetBox['h'] * $rh) : (int)($targetBox['height'] ?? ($rh * 0.5));
-                        $bx = max(0, min($rw - 1, $bx));
-                        $by = max($barH, min($rh + $barH - 1, $by));
-                        $bw = max(10, min($rw - $bx, $bw));
-                        $bh = max(10, min($rh + $barH - $by, $bh));
-
-                        $greenColor = imagecolorallocate($canvas, 74, 222, 128);
-                        $darkColor = imagecolorallocate($canvas, 0, 0, 0);
-                        imagesetthickness($canvas, 4);
-                        imagerectangle($canvas, $bx - 1, $by - 1, $bx + $bw + 1, $by + $bh + 1, $darkColor);
-                        imagesetthickness($canvas, 3);
-                        imagerectangle($canvas, $bx, $by, $bx + $bw, $by + $bh, $greenColor);
-                    }
-
-                    imagejpeg($canvas, $fullBaJpg, 92);
-                    imagedestroy($canvas);
-                    imagedestroy($rawIm);
-                    imagedestroy($normIm);
-                }
-            } catch (\Throwable $e) {
-                Log::warning('[SoilMLAnalysisService] Could not generate fallback before_after image: ' . $e->getMessage());
-            }
-        }
-
-        $beforeAfterUrl = null;
-        $rawUrl = null;
-        if ($disk === 's3') {
-            try {
-                if (file_exists($fullBaJpg)) {
-                    $baData = file_get_contents($fullBaJpg);
-                    if ($baData !== false) {
-                        $uploadedBa = Storage::disk('s3')->put($baJpgName, $baData, 'public');
-                        if ($uploadedBa) {
-                            $beforeAfterUrl = Storage::disk('s3')->url($baJpgName);
-                        }
-                    }
-                }
-                if (file_exists($fullRawJpg)) {
-                    $rawData = file_get_contents($fullRawJpg);
-                    if ($rawData !== false) {
-                        $uploadedRaw = Storage::disk('s3')->put($rawJpgName, $rawData, 'public');
-                        if ($uploadedRaw) {
-                            $rawUrl = Storage::disk('s3')->url($rawJpgName);
-                        }
-                    }
-                }
-            } catch (\Throwable $e) {
-                Log::warning('[SoilMLAnalysisService] S3 BA/Raw upload failed: ' . $e->getMessage());
-            }
-        }
-
-        if (empty($beforeAfterUrl)) {
-            $beforeAfterUrl = file_exists($fullBaJpg) ? (asset('storage/' . $baJpgName) . $cacheBuster) : null;
-        }
-        if (empty($rawUrl)) {
-            $rawUrl = file_exists($fullRawJpg) ? (asset('storage/' . $rawJpgName) . $cacheBuster) : null;
-        }
+        $normalizedUrl  = \App\Helpers\SoilImageHelper::scanImageUrl($soilScan, false) ?: ($publicScanRelativePath ? (str_starts_with($publicScanRelativePath, 'http') ? $publicScanRelativePath : asset($publicScanRelativePath)) : null);
+        $beforeAfterUrl = \App\Helpers\SoilImageHelper::beforeAfterImageUrl($soilScan) ?: ($publicBaRelativePath ? (str_starts_with($publicBaRelativePath, 'http') ? $publicBaRelativePath : asset($publicBaRelativePath)) : null);
+        $thumbnailUrl   = \App\Helpers\SoilImageHelper::scanImageUrl($soilScan, 'thumb') ?: ($publicThumbRelativePath ? (str_starts_with($publicThumbRelativePath, 'http') ? $publicThumbRelativePath : asset($publicThumbRelativePath)) : null);
+        $rawUrl         = file_exists($fullRawJpg) ? asset('storage/' . $rawJpgName) : null;
 
         $analysis['scan_model']             = $soilScan;
         $analysis['soil_model']             = $soil;
+        $analysis['soil_id']                = $soil?->soil_id;
         $analysis['scan_id']                = $soilScan?->soil_scan_id;
         $analysis['scan_seq']               = $soil ? SoilScan::where('soil_id', $soil->soil_id)->count() : null;
         $analysis['created_scans']          = $createdScans;
@@ -765,6 +725,7 @@ class SoilMLAnalysisService
         $analysis['stage2_normalized_url']  = $normalizedUrl;
         $analysis['normalized_image_url']   = $normalizedUrl;
         $analysis['before_after_image_url'] = $beforeAfterUrl;
+        $analysis['thumbnail_image_url']    = $thumbnailUrl;
         $analysis['raw_image_url']          = $rawUrl;
         $analysis['stage2_mode']            = $analysis['stage2_mode'] ?? $pythonResult['stage2_mode'] ?? config('soil.stage2_mode', 'classical');
         $analysis['stage2_engine']          = $analysis['stage2_engine'] ?? $analysis['stage2_mode'];

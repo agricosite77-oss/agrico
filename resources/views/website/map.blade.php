@@ -1297,9 +1297,6 @@
                         if (Array.isArray(parsedR)) regions = parsedR;
                     } catch(e) {}
                 }
-                if (regions.length <= 1 && Array.isArray(m.detected_soils) && m.detected_soils.length > regions.length) {
-                    regions = m.detected_soils;
-                }
             }
 
             const isMulti = regions.length > 1;
@@ -1740,25 +1737,6 @@
                 });
             } else {
                 regions = Array.isArray(m.regions) && m.regions.length > 0 ? m.regions : [];
-                if (regions.length <= 1 && Array.isArray(m.detected_soils) && m.detected_soils.length > regions.length) {
-                    regions = m.detected_soils.map((ds, idx) => {
-                        const rawPct = parseFloat(String(ds.percentage || '25').replace('%', '')) || 25;
-                        return {
-                            munsell: ds.full_code || '—',
-                            munsell_code: ds.full_code || '—',
-                            hex: ds.hex_color || '#8F694E',
-                            label: ds.soil_name || 'Soil Layer',
-                            color_name: ds.soil_name || 'Soil Layer',
-                            percent: rawPct,
-                            proportion: rawPct / 100,
-                            confidence: ds.confidence || '96.8%',
-                            organic_matter: ds.organic_matter || organic,
-                            soil_name: ds.soil_type || drainage,
-                            description: ds.description || '',
-                            box: { x: 0.15 + ((idx % 2) * 0.4), y: 0.2 + (Math.floor(idx / 2) * 0.35), w: 0.3, h: 0.3 }
-                        };
-                    });
-                }
                 if (regions.length === 0) {
                     regions = [{
                         munsell: fullCode,
@@ -1847,13 +1825,13 @@
                                  " />
                             <div class="soil-avatar-box" style="display: none; position: absolute; left: ${domBox.left}%; top: ${domBox.top}%; width: ${domBox.width}%; height: ${domBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                         ` : ''}
-                        <div class="soil-avatar-placeholder" style="display: ${effectiveAvatarUrl ? 'none' : 'flex'}; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.22); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
+                        <div class="soil-avatar-placeholder" style="display: ${effectiveAvatarUrl ? 'none' : 'flex'}; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.24); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;" title="Image not available for this record">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                 <polyline points="21 15 16 10 5 21"></polyline>
                             </svg>
-                            <span style="font-size: 8px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; opacity: 0.9;">No Photo</span>
+                            <span style="font-size: 7.5px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; opacity: 0.95; text-transform: uppercase;">Image Not Available</span>
                         </div>
                     </div>
                     <div class="soil-swatch-center">

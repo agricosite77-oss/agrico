@@ -86,10 +86,13 @@ class LocationController extends Controller
 
         $pinnedIndex = isset($validated['pinned_soil_index']) ? (int) $validated['pinned_soil_index'] : 0;
 
-        // Prevent duplicate pinning of the same layer
+        // Prevent duplicate pinning of the same layer or soil for this scan
         if ($soilScanId !== null) {
             $existing = LocationMapping::where('soil_scan_id', $soilScanId)
-                ->where('pinned_soil_index', $pinnedIndex)
+                ->where(function ($q) use ($pinnedIndex, $soilId) {
+                    $q->where('pinned_soil_index', $pinnedIndex)
+                      ->orWhere('soil_id', $soilId);
+                })
                 ->first();
             if ($existing) {
                 return response()->json([

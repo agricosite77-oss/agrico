@@ -527,14 +527,27 @@ class WebsiteController extends Controller
             // Determine or create SoilScan record
             $soilScanId = $validated['soil_scan_id'] ?? null;
             if (!$soilScanId || !SoilScan::where('soil_scan_id', $soilScanId)->exists()) {
-                $newScan = SoilScan::create([
-                    'user_id'    => $finalUserId,
-                    'soil_id'    => $soilId,
-                    'platform'   => 'web',
-                    'scan_note'  => $validated['scan_note'] ?? 'Website soil location sample pin',
-                    'scan_date'  => now(),
-                ]);
-                $soilScanId = $newScan->soil_scan_id;
+                // Try finding the user's latest valid scan with an image
+                $recentScan = SoilScan::where('user_id', $finalUserId)
+                    ->whereNotNull('scan_image')
+                    ->latest('soil_scan_id')
+                    ->first();
+
+                if ($recentScan) {
+                    $soilScanId = $recentScan->soil_scan_id;
+                    if (!$soilId) {
+                        $soilId = $recentScan->soil_id;
+                    }
+                } else {
+                    $newScan = SoilScan::create([
+                        'user_id'    => $finalUserId,
+                        'soil_id'    => $soilId,
+                        'platform'   => 'web',
+                        'scan_note'  => $validated['scan_note'] ?? 'Website soil location sample pin',
+                        'scan_date'  => now(),
+                    ]);
+                    $soilScanId = $newScan->soil_scan_id;
+                }
             } elseif (!empty($validated['scan_note'])) {
                 SoilScan::where('soil_scan_id', $soilScanId)->update([
                     'scan_note' => $validated['scan_note'],
@@ -630,13 +643,11 @@ class WebsiteController extends Controller
                 // Single pin mode: exactly ONE soil
                 $targetIndex = isset($validated['pinned_soil_index']) ? (int)$validated['pinned_soil_index'] : 0;
 
-                // Check duplicate
+                // Check duplicate by either layer index or soil ID on the same scan
                 $alreadyExists = LocationMapping::where('soil_scan_id', $soilScanId)
                     ->where(function ($q) use ($targetIndex, $soilId) {
                         $q->where('pinned_soil_index', $targetIndex)
-                          ->orWhere(function ($sq) use ($targetIndex, $soilId) {
-                              $sq->whereNull('pinned_soil_index')->where('soil_id', $soilId);
-                          });
+                          ->orWhere('soil_id', $soilId);
                     })
                     ->exists();
 
@@ -649,6 +660,10 @@ class WebsiteController extends Controller
                 }
 
                 $meta = $validated['soil_layer_meta'] ?? null;
+                if (!$meta && !empty($validated['regions']) && is_array($validated['regions'])) {
+                    $meta = $validated['regions'][$targetIndex] ?? ($validated['regions'][0] ?? null);
+                }
+
                 $pct = $validated['soil_percentage'] ?? ($meta['percent'] ?? ($meta['percentage'] ?? '100%'));
                 if (is_numeric($pct)) $pct = $pct . '%';
                 $conf = $validated['soil_confidence'] ?? ($meta['confidence'] ?? '95%');
