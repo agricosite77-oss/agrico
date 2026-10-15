@@ -202,14 +202,14 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Consistent Responsive Card (Matching Soil Record Details exact dimensions) */
+        /* Consistent Responsive Card (Matching Soil Record Details max-width and styling) */
         .profile-modal-card {
             position: relative;
             z-index: 100000;
             width: 100% !important;
             max-width: 680px !important;
-            height: 75vh !important;
-            max-height: 75vh !important;
+            height: auto !important;
+            max-height: min(85vh, 680px) !important;
             background: var(--pm-bg);
             border-radius: 28px !important;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
@@ -327,9 +327,10 @@
         }
 
         /* Fixed Sticky Footer */
+        /* Unified Footer Layout across all tabs */
         .profile-modal-footer {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             padding: 14px 24px 16px 24px;
             flex-shrink: 0;
@@ -337,19 +338,38 @@
             background: var(--pm-footer-bg);
             z-index: 10;
             gap: 12px;
+            box-sizing: border-box;
+        }
+        .profile-modal-cancel-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            min-height: 42px;
+            border-radius: 12px !important;
+            background: var(--pm-btn-secondary-bg) !important;
+            border: 1px solid var(--pm-btn-secondary-border) !important;
+            color: var(--pm-btn-secondary-text) !important;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        .profile-modal-cancel-btn:hover {
+            background: var(--pm-btn-secondary-hover-bg) !important;
+            color: var(--pm-btn-secondary-hover-text) !important;
+            border-color: var(--pm-border-focus) !important;
         }
         .profile-modal-footer-left {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--pm-muted);
-            font-weight: 500;
+            display: none;
         }
         .profile-modal-footer-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-left: auto;
         }
 
@@ -1803,6 +1823,26 @@
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
             transform: translateY(-2px) !important;
         }
+        html.light-mode .profile-modal-cancel-btn,
+        .light-mode .profile-modal-cancel-btn,
+        body.light-mode .profile-modal-cancel-btn {
+            background: #f1f5f9 !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #475569 !important;
+        }
+        html.light-mode .profile-modal-cancel-btn:hover,
+        .light-mode .profile-modal-cancel-btn:hover,
+        body.light-mode .profile-modal-cancel-btn:hover {
+            background: #e2e8f0 !important;
+            color: #0f172a !important;
+            border-color: #94a3b8 !important;
+        }
+        html.light-mode .profile-modal-footer,
+        .light-mode .profile-modal-footer,
+        body.light-mode .profile-modal-footer {
+            background: #ffffff !important;
+            border-top: 1px solid #e2e8f0 !important;
+        }
 
         html.light-mode .profile-modal-card,
         .light-mode .profile-modal-card,
@@ -3173,19 +3213,21 @@
                                     </div>
                                 </div>
 
-                                {{-- FIXED STICKY FOOTER --}}
+                                {{-- UNIFIED FOOTER --}}
                                 <div class="profile-modal-footer">
-                                    <div class="profile-modal-footer-left">
-                                        <span>Last updated: {{ $user->updated_at ? $user->updated_at->format('M d, Y') : now()->format('M d, Y') }}</span>
-                                    </div>
-                                    <div class="profile-modal-footer-right">
-                                        <button
-                                            type="submit"
-                                            class="profile-modal-save-btn"
-                                        >
-                                            Save changes
-                                        </button>
-                                    </div>
+                                    <button
+                                        type="button"
+                                        @click="showEditModal = false"
+                                        class="profile-modal-cancel-btn"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        class="profile-modal-save-btn"
+                                    >
+                                        Save changes
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -3289,18 +3331,17 @@
                                 </div>
                             </div>
 
-                            {{-- FIXED STICKY FOOTER (BUTTON AT BOTTOM-RIGHT) --}}
+                            {{-- UNIFIED FOOTER --}}
                             <div class="profile-modal-footer">
-                                <div class="profile-modal-footer-left">
-                                    <template x-if="emailStep === 1">
-                                        <span>Security verification required</span>
-                                    </template>
-                                    <template x-if="emailStep === 2">
-                                        <span>Code valid for 10 minutes</span>
-                                    </template>
-                                </div>
-                                <div class="profile-modal-footer-right">
-                                    <template x-if="emailStep === 1">
+                                <template x-if="emailStep === 1">
+                                    <div style="display:flex; align-items:center; gap:12px; justify-content:flex-end;">
+                                        <button
+                                            type="button"
+                                            @click="showEditModal = false"
+                                            class="profile-modal-cancel-btn"
+                                        >
+                                            Cancel
+                                        </button>
                                         <button
                                             type="button"
                                             @click="sendEmailCode()"
@@ -3313,31 +3354,31 @@
                                             </template>
                                             <span x-text="sendingEmailCode ? 'Sending code...' : 'Send 6-digit Verification Code'"></span>
                                         </button>
-                                    </template>
-                                    <template x-if="emailStep === 2">
-                                        <div style="display:flex; align-items:center; gap:10px; width:100%;">
-                                            <button
-                                                type="button"
-                                                @click="emailStep = 1; emailCode = '';"
-                                                class="profile-cancel-req-btn"
-                                            >
-                                                Change Email
-                                            </button>
-                                            <button
-                                                type="button"
-                                                @click="verifyEmailCode()"
-                                                :disabled="verifyingEmailCode || emailCode.length !== 6"
-                                                class="profile-modal-save-btn"
-                                                :style="(verifyingEmailCode || emailCode.length !== 6) ? 'opacity:0.6; cursor:not-allowed;' : ''"
-                                            >
-                                                <template x-if="verifyingEmailCode">
-                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite; margin-right:6px;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
-                                                </template>
-                                                <span x-text="verifyingEmailCode ? 'Verifying...' : 'Verify & Change Email'"></span>
-                                            </button>
-                                        </div>
-                                    </template>
-                                </div>
+                                    </div>
+                                </template>
+                                <template x-if="emailStep === 2">
+                                    <div style="display:flex; align-items:center; gap:12px; justify-content:flex-end;">
+                                        <button
+                                            type="button"
+                                            @click="emailStep = 1; emailCode = '';"
+                                            class="profile-modal-cancel-btn"
+                                        >
+                                            Change Email
+                                        </button>
+                                        <button
+                                            type="button"
+                                            @click="verifyEmailCode()"
+                                            :disabled="verifyingEmailCode || emailCode.length !== 6"
+                                            class="profile-modal-save-btn"
+                                            :style="(verifyingEmailCode || emailCode.length !== 6) ? 'opacity:0.6; cursor:not-allowed;' : ''"
+                                        >
+                                            <template x-if="verifyingEmailCode">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite; margin-right:6px;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                                            </template>
+                                            <span x-text="verifyingEmailCode ? 'Verifying...' : 'Verify & Change Email'"></span>
+                                        </button>
+                                    </div>
+                                </template>
                             </div>
                         </div>
 
@@ -3536,21 +3577,23 @@
                                     </div>
                                 </div>
 
-                                {{-- FIXED STICKY FOOTER --}}
+                                {{-- UNIFIED FOOTER --}}
                                 <div class="profile-modal-footer">
-                                    <div class="profile-modal-footer-left">
-                                        <span>Signs out other active device sessions</span>
-                                    </div>
-                                    <div class="profile-modal-footer-right">
-                                        <button
-                                            type="submit"
-                                            :disabled="!isCurrentPassCorrect || strengthScore < 5 || newPassword !== confirmPassword"
-                                            class="profile-modal-save-btn"
-                                            :style="(!isCurrentPassCorrect || strengthScore < 5 || newPassword !== confirmPassword) ? 'opacity:0.6; cursor:not-allowed;' : ''"
-                                        >
-                                            Update password
-                                        </button>
-                                    </div>
+                                    <button
+                                        type="button"
+                                        @click="showEditModal = false"
+                                        class="profile-modal-cancel-btn"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        :disabled="!isCurrentPassCorrect || strengthScore < 5 || newPassword !== confirmPassword"
+                                        class="profile-modal-save-btn"
+                                        :style="(!isCurrentPassCorrect || strengthScore < 5 || newPassword !== confirmPassword) ? 'opacity:0.6; cursor:not-allowed;' : ''"
+                                    >
+                                        Update password
+                                    </button>
                                 </div>
                             </form>
                         </div>
