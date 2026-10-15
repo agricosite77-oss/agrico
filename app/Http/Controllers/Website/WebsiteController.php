@@ -814,7 +814,16 @@ class WebsiteController extends Controller
             ? \App\Models\UserNotification::where('user_id', $userId)->where('is_read', false)->count()
             : 0;
 
-        return view('website.profile', compact('user', 'scanCount', 'notifications', 'unreadCount'));
+        $pendingDeletionRequest = null;
+        if ($user && !empty($user->email)) {
+            $pendingDeletionRequest = \App\Models\UserRequest::where('user_email', $user->email)
+                ->where('type', 'Account Deletion Request')
+                ->where('status', 'Pending')
+                ->latest()
+                ->first();
+        }
+
+        return view('website.profile', compact('user', 'scanCount', 'notifications', 'unreadCount', 'pendingDeletionRequest'));
     }
 
     /**
@@ -910,6 +919,549 @@ class WebsiteController extends Controller
         }
 
         return back()->with('success', 'Account information updated successfully!');
+    }
+
+    /**
+     * Update personal profile information immediately (name, section, student_id, photo).
+     */
+    public function updatePersonalInfo(\Illuminate\Http\Request $request)
+    {
+        $user = Auth::user() ?? Auth::guard('admin')->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 401);
+        }
+
+        $request->validate([
+            'name'       => ['required', 'string', 'max:255'],
+            'student_id' => ['nullable', 'string', 'max:50'],
+            'section'    => ['nullable', 'string', 'max:100'],
+            'photo'      => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
+        ]);
+
+        $userRec = null;
+        $adminRec = null;
+        if ($user instanceof \App\Models\User) {
+            $userRec = $user;
+            $adminRec = \App\Models\Admin::where('email', $user->email)->orWhere('admin_id', $user->user_id)->first();
+        } elseif ($user instanceof \App\Models\Admin) {
+            $adminRec = $user;
+            $userRec = \App\Models\User::where('email', $user->email)->orWhere('user_id', $user->admin_id)->first();
+        }
+
+        $updateUserData = [];
+        $updateAdminData = [];
+
+        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            if ($userRec && $userRec->profile_photo_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($userRec->profile_photo_path);
+            }
+            if ($adminRec && $adminRec->profile_photo_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($adminRec->profile_photo_path);
+            }
+            $photoPath = $request->file('photo')->store('profile-photos', 'public');
+            $updateUserData['profile_photo_path'] = $photoPath;
+            $updateAdminData['profile_photo_path'] = $photoPath;
+        }
+
+        $newName = trim($request->input('name'));
+        if (!empty($newName)) {
+            $updateUserData['name'] = $newName;
+            $updateAdminData['full_name'] = $newName;
+        }
+
+        if ($request->has('student_id')) {
+            $updateUserData['student_id'] = $request->student_id ? trim($request->student_id) : null;
+        }
+        if ($request->has('section')) {
+            $updateUserData['section'] = $request->section ? trim($request->section) : null;
+        }
+
+        if ($userRec && !empty($updateUserData)) {
+            $userRec->update($updateUserData);
+        }
+        if ($adminRec && !empty($updateAdminData)) {
+            $adminRec->update($updateAdminData);
+        }
+
+        \Illuminate\Support\Facades\Log::info("User {$user->email} updated personal information successfully.");
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Your personal information was updated successfully!',
+                'name'    => $newName,
+            ]);
+        }
+
+        return back()->with('success', 'Your personal information was updated successfully!');
+    }
+
+    /**
+     * Send 6-digit email change verification code to new email.
+     */
+    public function sendEmailChangeCode(\Illuminate\Http\Request $request)
+    {
+        $user = Auth::user() ?? Auth::guard('admin')->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 401);
+        }
+
+        $request->validate([
+            'new_email' => ['required', 'string', 'email', 'max:255'],
+        ]);
+
+        $newEmail = strtolower(trim((string) $request->input('new_email')));
+        $currentEmail = strtolower(trim((string) $user->email));
+
+        if ($newEmail === $currentEmail) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The new email address cannot be the same as your current email.'
+            ], 422);
+        }
+
+        $userId = $user->user_id ?? $user->admin_id ?? null;
+
+        // Check if new email is in use by another user
+        $userExists = \App\Models\User::whereRaw('LOWER(email) = ?', [$newEmail])
+            ->where('user_id', '!=', $userId)
+            ->exists();
+        $adminExists = \App\Models\Admin::whereRaw('LOWER(email) = ?', [$newEmail])
+            ->where('admin_id', '!=', $userId)
+            ->exists();
+
+        if ($userExists || $adminExists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This email address is already in use by another account.'
+            ], 422);
+        }
+
+        // Rate limiting: 4 requests per 10 minutes
+        $rateKey = 'email_change_rate_' . ($userId ?: $request->ip());
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateKey, 4)) {
+            $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($rateKey);
+            $mins = ceil($seconds / 60);
+            return response()->json([
+                'success' => false,
+                'message' => "Too many verification code attempts. Please wait {$mins} minute(s) before requesting another code."
+            ], 429);
+        }
+        \Illuminate\Support\Facades\RateLimiter::hit($rateKey, 600);
+
+        // Generate 6-digit numeric verification code
+        $code = sprintf('%06d', random_int(100000, 999999));
+
+        // Persist code in cache (15 mins) and in password_reset_tokens
+        \Illuminate\Support\Facades\Cache::put('email_change_' . $userId, [
+            'code'      => $code,
+            'new_email' => $newEmail,
+            'old_email' => $currentEmail,
+            'user_id'   => $userId,
+        ], now()->addMinutes(15));
+
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => 'email_change:' . $userId],
+            [
+                'token'      => $code . '|' . $newEmail,
+                'created_at' => now(),
+            ]
+        );
+
+        // Dispatch email via Resend / Mail
+        \App\Services\AgriCoMailService::send(
+            $newEmail,
+            "Your AgriCo Email Verification Code: {$code}",
+            'emails.email-change-code',
+            [
+                'code'     => $code,
+                'newEmail' => $newEmail,
+                'userName' => $user->name,
+            ],
+            new \App\Mail\EmailChangeVerificationMail($code, $newEmail, $user->name)
+        );
+
+        \Illuminate\Support\Facades\Log::info("Sent email change verification code to {$newEmail} for user {$userId}");
+
+        return response()->json([
+            'success' => true,
+            'message' => "A 6-digit verification code has been sent to {$newEmail}. Please enter it below to confirm your change."
+        ]);
+    }
+
+    /**
+     * Verify 6-digit code and apply email change.
+     */
+    public function verifyEmailChangeCode(\Illuminate\Http\Request $request)
+    {
+        $user = Auth::user() ?? Auth::guard('admin')->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 401);
+        }
+
+        $request->validate([
+            'code'      => ['required', 'string', 'size:6'],
+            'new_email' => ['required', 'string', 'email', 'max:255'],
+        ]);
+
+        $code = trim((string) $request->input('code'));
+        $newEmail = strtolower(trim((string) $request->input('new_email')));
+        $userId = $user->user_id ?? $user->admin_id ?? null;
+
+        $cached = \Illuminate\Support\Facades\Cache::get('email_change_' . $userId);
+        $dbToken = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
+            ->where('email', 'email_change:' . $userId)
+            ->first();
+
+        $valid = false;
+        if ($cached && isset($cached['code'], $cached['new_email'])) {
+            if ($cached['code'] === $code && strtolower($cached['new_email']) === $newEmail) {
+                $valid = true;
+            }
+        } elseif ($dbToken && !empty($dbToken->token)) {
+            $parts = explode('|', $dbToken->token);
+            if (count($parts) >= 2 && $parts[0] === $code && strtolower($parts[1]) === $newEmail) {
+                $tokenCreated = \Carbon\Carbon::parse($dbToken->created_at);
+                if ($tokenCreated->addMinutes(15)->isFuture()) {
+                    $valid = true;
+                }
+            }
+        }
+
+        if (!$valid) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The verification code is invalid or has expired. Please request a new code.'
+            ], 422);
+        }
+
+        $oldEmail = $user->email;
+
+        // Apply new email
+        $userRec = null;
+        $adminRec = null;
+        if ($user instanceof \App\Models\User) {
+            $userRec = $user;
+            $adminRec = \App\Models\Admin::where('email', $user->email)->orWhere('admin_id', $user->user_id)->first();
+        } elseif ($user instanceof \App\Models\Admin) {
+            $adminRec = $user;
+            $userRec = \App\Models\User::where('email', $user->email)->orWhere('user_id', $user->admin_id)->first();
+        }
+
+        if ($userRec) {
+            $userRec->update(['email' => $newEmail]);
+        }
+        if ($adminRec) {
+            $adminRec->update(['email' => $newEmail]);
+        }
+
+        // Clean up code
+        \Illuminate\Support\Facades\Cache::forget('email_change_' . $userId);
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->where('email', 'email_change:' . $userId)->delete();
+
+        // Send security notice to OLD email
+        \App\Services\AgriCoMailService::send(
+            $oldEmail,
+            'Security Alert: Your AgriCo account email was updated',
+            'emails.email-changed-notice',
+            [
+                'oldEmail' => $oldEmail,
+                'newEmail' => $newEmail,
+                'userName' => $user->name,
+            ],
+            new \App\Mail\EmailChangedNoticeMail($oldEmail, $newEmail, $user->name)
+        );
+
+        \Illuminate\Support\Facades\Log::info("User {$userId} successfully changed email from {$oldEmail} to {$newEmail}");
+
+        return response()->json([
+            'success'   => true,
+            'message'   => "Your account email has been successfully updated to {$newEmail}!",
+            'new_email' => $newEmail,
+        ]);
+    }
+
+    /**
+     * Change user account password with security checks and session invalidation.
+     */
+    public function updatePassword(\Illuminate\Http\Request $request)
+    {
+        $user = Auth::user() ?? Auth::guard('admin')->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 401);
+        }
+
+        $request->validate([
+            'current_password' => ['required', 'string'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        if (empty($user->password) || !\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The current password you entered is incorrect.'
+            ], 422);
+        }
+
+        $newPass = (string) $request->input('password');
+        if (!preg_match('/[A-Z]/', $newPass) || !preg_match('/[a-z]/', $newPass) || !preg_match('/[0-9]/', $newPass) || !preg_match('/[^A-Za-z0-9]/', $newPass)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'New password must contain at least 8 characters, an uppercase letter, a lowercase letter, a number, and a special character.'
+            ], 422);
+        }
+
+        $hashed = \Illuminate\Support\Facades\Hash::make($newPass);
+
+        $userRec = null;
+        $adminRec = null;
+        if ($user instanceof \App\Models\User) {
+            $userRec = $user;
+            $adminRec = \App\Models\Admin::where('email', $user->email)->orWhere('admin_id', $user->user_id)->first();
+        } elseif ($user instanceof \App\Models\Admin) {
+            $adminRec = $user;
+            $userRec = \App\Models\User::where('email', $user->email)->orWhere('user_id', $user->admin_id)->first();
+        }
+
+        if ($userRec) {
+            $userRec->update(['password' => $hashed]);
+        }
+        if ($adminRec) {
+            $adminRec->update(['password' => $hashed]);
+        }
+
+        // Sign out other sessions
+        try {
+            Auth::logoutOtherDevices($newPass);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Could not logout other devices: " . $e->getMessage());
+        }
+
+        // Send security alert to user email
+        \App\Services\AgriCoMailService::send(
+            $user->email,
+            'Security Alert: Your AgriCo account password was changed',
+            'emails.password-changed-notice',
+            [
+                'userEmail' => $user->email,
+                'userName'  => $user->name,
+                'ipAddress' => $request->ip(),
+                'changedAt' => now()->format('M d, Y h:i A'),
+            ],
+            new \App\Mail\PasswordChangedNoticeMail($user->email, $user->name, $request->ip())
+        );
+
+        \Illuminate\Support\Facades\Log::info("User {$user->email} changed password from IP {$request->ip()}");
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your password was changed successfully! Other device sessions have been signed out.',
+        ]);
+    }
+
+    /**
+     * Submit an Account Deletion Request.
+     */
+    public function requestAccountDeletion(\Illuminate\Http\Request $request)
+    {
+        $user = Auth::user() ?? Auth::guard('admin')->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 401);
+        }
+
+        // Admins cannot delete via this user flow
+        $role = strtolower(trim((string) ($user->role ?? '')));
+        if (in_array($role, ['admin', 'superadmin', 'super admin']) || in_array(strtolower($user->email), ['agricosite77@gmail.com', 'admin@agrico.com'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Administrative accounts cannot be deleted through this user flow. Please contact system administrators.'
+            ], 403);
+        }
+
+        $request->validate([
+            'password'     => ['required', 'string'],
+            'confirmation' => ['accepted'],
+            'reason'       => ['nullable', 'string', 'max:255'],
+            'notes'        => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        if (empty($user->password) || !\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The password you entered is incorrect.'
+            ], 422);
+        }
+
+        // Check if an active deletion request already exists
+        $existing = \App\Models\UserRequest::where('user_email', $user->email)
+            ->where('type', 'Account Deletion Request')
+            ->where('status', 'Pending')
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'success' => false,
+                'message' => "You already have an active deletion request ({$existing->request_code}) currently pending review."
+            ], 422);
+        }
+
+        // Rate limiting
+        $rateKey = 'deletion_req_' . ($user->user_id ?? $request->ip());
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateKey, 2)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Too many deletion requests submitted. Please wait before submitting another request.'
+            ], 429);
+        }
+        \Illuminate\Support\Facades\RateLimiter::hit($rateKey, 3600);
+
+        // Generate request code
+        $count = \App\Models\UserRequest::count() + 1;
+        $requestCode = 'REQ-' . date('Y') . '-' . str_pad((string)$count, 3, '0', STR_PAD_LEFT);
+
+        $reasonText = $request->input('reason') ?: 'No reason specified';
+        $notesText = $request->input('notes') ? ' | Notes: ' . trim($request->input('notes')) : '';
+
+        $userRequest = \App\Models\UserRequest::create([
+            'request_code' => $requestCode,
+            'user_name'    => $user->name,
+            'user_email'   => $user->email,
+            'type'         => 'Account Deletion Request',
+            'description'  => "Reason: {$reasonText}{$notesText} | Requested by User ID: {$user->user_id}",
+            'status'       => 'Pending',
+            'submitted_at' => now(),
+        ]);
+
+        // Secure signed cancellation link valid for 30 days
+        $cancelUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'website.profile.delete-cancel-signed',
+            now()->addDays(30),
+            ['id' => $userRequest->user_request_id]
+        );
+
+        // Send ONE confirmation email to user's Gmail
+        \App\Services\AgriCoMailService::send(
+            $user->email,
+            "We received your AgriCo account deletion request ({$requestCode})",
+            'emails.account-deletion-requested',
+            [
+                'requestCode' => $requestCode,
+                'userEmail'   => $user->email,
+                'userName'    => $user->name,
+                'cancelUrl'   => $cancelUrl,
+                'reason'      => $reasonText,
+                'submittedAt' => now()->format('M d, Y h:i A'),
+            ],
+            new \App\Mail\AccountDeletionRequestedMail(
+                $requestCode,
+                $user->email,
+                $user->name,
+                $cancelUrl,
+                $reasonText,
+                now()->format('M d, Y h:i A')
+            )
+        );
+
+        \Illuminate\Support\Facades\Log::info("User {$user->email} submitted account deletion request {$requestCode}");
+
+        return response()->json([
+            'success'      => true,
+            'message'      => 'Your account deletion request has been submitted for review. A confirmation email has been sent to your Gmail with request details and a link to cancel.',
+            'request_code' => $requestCode,
+        ]);
+    }
+
+    /**
+     * Cancel an active account deletion request from the profile settings.
+     */
+    public function cancelAccountDeletion(\Illuminate\Http\Request $request)
+    {
+        $user = Auth::user() ?? Auth::guard('admin')->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 401);
+        }
+
+        $pending = \App\Models\UserRequest::where('user_email', $user->email)
+            ->where('type', 'Account Deletion Request')
+            ->where('status', 'Pending')
+            ->latest()
+            ->first();
+
+        if (!$pending) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No pending deletion request was found for your account.'
+            ], 404);
+        }
+
+        $pending->update(['status' => 'Cancelled']);
+
+        // Send cancellation notice email
+        \App\Services\AgriCoMailService::send(
+            $user->email,
+            "Your AgriCo account deletion request has been cancelled ({$pending->request_code})",
+            'emails.account-deletion-cancelled',
+            [
+                'requestCode' => $pending->request_code,
+                'userEmail'   => $user->email,
+                'userName'    => $user->name,
+            ],
+            new \App\Mail\AccountDeletionCancelledMail($pending->request_code, $user->email, $user->name)
+        );
+
+        \Illuminate\Support\Facades\Log::info("User {$user->email} cancelled deletion request {$pending->request_code}");
+
+        return response()->json([
+            'success' => true,
+            'message' => "Your account deletion request ({$pending->request_code}) has been successfully cancelled.",
+        ]);
+    }
+
+    /**
+     * Signed cancellation endpoint clicked from user's Gmail.
+     */
+    public function cancelAccountDeletionSigned(\Illuminate\Http\Request $request, $id)
+    {
+        if (!$request->hasValidSignature()) {
+            return redirect()->route('website.profile')->withErrors([
+                'error' => 'This cancellation link is invalid or has expired.'
+            ]);
+        }
+
+        $req = \App\Models\UserRequest::find($id);
+        if (!$req || !str_contains(strtolower($req->type), 'delet')) {
+            return redirect()->route('website.profile')->withErrors([
+                'error' => 'Deletion request was not found.'
+            ]);
+        }
+
+        if ($req->status === 'Cancelled') {
+            return redirect()->route('website.profile')->with('success', "Your deletion request ({$req->request_code}) was already cancelled.");
+        }
+
+        if ($req->status !== 'Pending') {
+            return redirect()->route('website.profile')->withErrors([
+                'error' => "This deletion request has already been {$req->status} and cannot be cancelled."
+            ]);
+        }
+
+        $req->update(['status' => 'Cancelled']);
+
+        \App\Services\AgriCoMailService::send(
+            $req->user_email,
+            "Your AgriCo account deletion request has been cancelled ({$req->request_code})",
+            'emails.account-deletion-cancelled',
+            [
+                'requestCode' => $req->request_code,
+                'userEmail'   => $req->user_email,
+                'userName'    => $req->user_name ?? 'AgriCo User',
+            ],
+            new \App\Mail\AccountDeletionCancelledMail($req->request_code, $req->user_email, $req->user_name ?? 'AgriCo User')
+        );
+
+        \Illuminate\Support\Facades\Log::info("Deletion request {$req->request_code} cancelled via signed URL for {$req->user_email}");
+
+        return redirect()->route('website.profile')->with('success', "Your account deletion request ({$req->request_code}) was successfully cancelled!");
     }
 
     /**

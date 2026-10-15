@@ -80,6 +80,33 @@ Route::prefix('')->name('website.')->group(function () {
         ->middleware('auth:web,admin')
         ->name('profile.update');
 
+    Route::post('/profile/update-personal', [WebsiteController::class, 'updatePersonalInfo'])
+        ->middleware('auth:web,admin')
+        ->name('profile.update-personal');
+
+    Route::post('/profile/email/send-code', [WebsiteController::class, 'sendEmailChangeCode'])
+        ->middleware('auth:web,admin')
+        ->name('profile.email.send-code');
+
+    Route::post('/profile/email/verify-code', [WebsiteController::class, 'verifyEmailChangeCode'])
+        ->middleware('auth:web,admin')
+        ->name('profile.email.verify-code');
+
+    Route::post('/profile/password/update', [WebsiteController::class, 'updatePassword'])
+        ->middleware('auth:web,admin')
+        ->name('profile.password.update');
+
+    Route::post('/profile/delete-request', [WebsiteController::class, 'requestAccountDeletion'])
+        ->middleware('auth:web,admin')
+        ->name('profile.delete-request');
+
+    Route::post('/profile/delete-cancel', [WebsiteController::class, 'cancelAccountDeletion'])
+        ->middleware('auth:web,admin')
+        ->name('profile.delete-cancel');
+
+    Route::get('/profile/delete-cancel/{id}', [WebsiteController::class, 'cancelAccountDeletionSigned'])
+        ->name('profile.delete-cancel-signed');
+
     Route::post('/profile/verify-password', [WebsiteController::class, 'verifyPassword'])
         ->middleware('auth:web,admin')
         ->name('profile.verify-password');

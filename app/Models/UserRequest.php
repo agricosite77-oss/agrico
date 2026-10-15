@@ -79,6 +79,66 @@ class UserRequest extends Model
                     ->where('status', 'Pending')
                     ->update(['status' => 'Active']);
             }
+        } elseif (str_contains($type, 'delet')) {
+            $user = User::whereRaw('LOWER(email) = ?', [strtolower(trim((string) $req->user_email))])->first();
+            if ($user) {
+                // Never delete last superadmin
+                if (in_array(strtolower($user->email), ['agricosite77@gmail.com', 'admin@agrico.com']) || $user->user_id === 'ADM-001') {
+                    $req->update(['status' => 'Pending']);
+                    return [
+                        'success'     => false,
+                        'message'     => 'Primary Super Admin account cannot be deleted.',
+                        'status_code' => 403,
+                    ];
+                }
+
+                // 1. Send final approval deletion email before wiping
+                \App\Services\AgriCoMailService::send(
+                    $user->email,
+                    'Your AgriCo account has been permanently deleted',
+                    'emails.account-deletion-approved',
+                    [
+                        'requestCode' => $req->request_code ?: ('REQ-' . str_pad((string)$req->id, 3, '0', STR_PAD_LEFT)),
+                        'userEmail'   => $user->email,
+                        'userName'    => $user->name,
+                        'deletedAt'   => now()->format('M d, Y h:i A'),
+                    ],
+                    new \App\Mail\AccountDeletionApprovedMail(
+                        $req->request_code ?: ('REQ-' . str_pad((string)$req->id, 3, '0', STR_PAD_LEFT)),
+                        $user->email,
+                        $user->name
+                    )
+                );
+
+                // 2. Anonymize user's soil scans (decouples all public map telemetry from user identity)
+                \App\Models\SoilScan::where('user_id', $user->user_id)->update(['user_id' => null]);
+
+                // 3. Delete all personal user notifications
+                \App\Models\UserNotification::where('user_id', $user->user_id)->delete();
+
+                // 4. Revoke all mobile Sanctum tokens
+                if (method_exists($user, 'tokens')) {
+                    $user->tokens()->delete();
+                }
+
+                // 5. Delete profile photo from disk if stored
+                if ($user->profile_photo_path) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($user->profile_photo_path);
+                }
+
+                // 6. Delete any other pending requests for this user to protect privacy
+                \App\Models\UserRequest::where('user_email', $user->email)
+                    ->where('user_request_id', '!=', $req->user_request_id)
+                    ->delete();
+
+                // 7. Expunge user record completely from database
+                $user->delete();
+
+                // Also delete matching non-superadmin Admin record if exists
+                \App\Models\Admin::where('email', $req->user_email)->whereNotIn('email', ['agricosite77@gmail.com', 'admin@agrico.com'])->delete();
+
+                \Illuminate\Support\Facades\Log::info("Admin {$adminId} approved account deletion for {$req->user_email} (Request: {$req->request_code}). All personal user information expunged.");
+            }
         } elseif (str_contains($type, 'reactivat')) {
             $user = User::whereRaw('LOWER(email) = ?', [strtolower(trim((string) $req->user_email))])->first();
             if ($user) {
@@ -157,6 +217,33 @@ class UserRequest extends Model
                     ->where('status', 'Pending')
                     ->update(['status' => 'Inactive']);
             }
+        } elseif (str_contains($type, 'delet')) {
+            $user = User::whereRaw('LOWER(email) = ?', [strtolower(trim((string) $req->user_email))])->first();
+            $userName = $user?->name ?? $req->user_name ?? 'AgriCo User';
+            $userEmail = $user?->email ?? $req->user_email;
+
+            // Send rejection email to user with admin reason
+            $adminReason = request('admin_notes') ?? request('reason') ?? null;
+            \App\Services\AgriCoMailService::send(
+                $userEmail,
+                "Update on your AgriCo account deletion request (" . ($req->request_code ?: ('REQ-' . str_pad((string)$req->id, 3, '0', STR_PAD_LEFT))) . ")",
+                'emails.account-deletion-rejected',
+                [
+                    'requestCode' => $req->request_code ?: ('REQ-' . str_pad((string)$req->id, 3, '0', STR_PAD_LEFT)),
+                    'userEmail'   => $userEmail,
+                    'userName'    => $userName,
+                    'adminReason' => $adminReason,
+                    'reviewedAt'  => now()->format('M d, Y h:i A'),
+                ],
+                new \App\Mail\AccountDeletionRejectedMail(
+                    $req->request_code ?: ('REQ-' . str_pad((string)$req->id, 3, '0', STR_PAD_LEFT)),
+                    $userEmail,
+                    $userName,
+                    $adminReason
+                )
+            );
+
+            \Illuminate\Support\Facades\Log::info("Admin {$adminId} disapproved account deletion for {$userEmail} (Request: {$req->request_code})");
         } elseif (str_contains($type, 'account') || str_contains($type, 'register') || str_contains($type, 'signup')) {
             // Only unapproved new account registrations are removed upon disapproval
             $user = User::whereRaw('LOWER(email) = ?', [strtolower(trim((string) $req->user_email))])->first();

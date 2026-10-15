@@ -230,7 +230,11 @@
                                     </div>
                                     {{-- MOBILE ONLY: Show Request Type Badge under user details if needed --}}
                                     <div class="request-mobile-type mt-1.5 hidden">
-                                        @if(str_contains(strtolower($req->type), 'reactivat'))
+                                        @if(str_contains(strtolower($req->type), 'delet'))
+                                            <span style="background:#fee2e2; color:#b91c1c; font-size:10px; font-weight:700; border-radius:9999px; padding:2px 8px; display:inline-block; border:1px solid #fecaca; line-height: 1.3;">
+                                                Account Deletion
+                                            </span>
+                                        @elseif(str_contains(strtolower($req->type), 'reactivat'))
                                             <span style="background:#fef3c7; color:#b45309; font-size:10px; font-weight:700; border-radius:9999px; padding:2px 8px; display:inline-block; border:1px solid #fde68a; line-height: 1.3;">
                                                 Reactivation
                                             </span>
@@ -293,7 +297,11 @@
 
                             {{-- TYPE BADGE (STICKY WITH ACTION) --}}
                             <td class="col-request-type text-center" style="padding:18px 20px; border-bottom:1px solid #f1f5f9; white-space:nowrap; text-align:center;">
-                                @if(str_contains(strtolower($req->type), 'reactivat'))
+                                @if(str_contains(strtolower($req->type), 'delet'))
+                                    <span style="background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:700; border-radius:9999px; padding:4px 12px; display:inline-block; border:1px solid #fecaca;">
+                                        Account Deletion
+                                    </span>
+                                @elseif(str_contains(strtolower($req->type), 'reactivat'))
                                     <span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:700; border-radius:9999px; padding:4px 12px; display:inline-block; border:1px solid #fde68a;">
                                         Reactivation
                                     </span>
@@ -590,7 +598,11 @@
                         <div>
                             <span style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em; display:block;">Request Type</span>
                             <div style="margin-top:4px;">
-                                @if(str_contains(strtolower($selectedRequest->type), 'reactivat'))
+                                @if(str_contains(strtolower($selectedRequest->type), 'delet'))
+                                    <span style="background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:700; border-radius:9999px; padding:4px 12px; display:inline-block; border:1px solid #fecaca;">
+                                        Account Deletion Request
+                                    </span>
+                                @elseif(str_contains(strtolower($selectedRequest->type), 'reactivat'))
                                     <span style="background:#fef3c7; color:#b45309; font-size:11px; font-weight:700; border-radius:9999px; padding:4px 12px; display:inline-block; border:1px solid #fde68a;">
                                         Reactivation Request
                                     </span>

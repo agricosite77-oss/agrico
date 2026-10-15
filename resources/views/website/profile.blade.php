@@ -808,9 +808,66 @@
             background: rgba(34, 197, 94, 0.18);
             color: #4ADE80;
         }
+        .profile-setting-icon.edit {
+            background: rgba(34, 197, 94, 0.18);
+            color: #4ADE80;
+        }
         .profile-setting-icon.theme {
             background: rgba(251, 191, 36, 0.16);
             color: #FBBF24;
+        }
+        .profile-setting-icon.danger {
+            background: rgba(239, 68, 68, 0.18);
+            color: #F87171;
+        }
+        .profile-setting-icon.pending {
+            background: rgba(245, 158, 11, 0.18);
+            color: #FBBF24;
+        }
+        .profile-setting-title.danger {
+            color: #F87171 !important;
+        }
+        .profile-setting-item.danger-item:hover {
+            background: rgba(127, 29, 29, 0.35) !important;
+            border-color: rgba(248, 113, 113, 0.45) !important;
+        }
+        .profile-danger-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0 6px 0;
+            padding: 0 4px;
+        }
+        .profile-danger-divider span {
+            font-size: 10.5px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #F87171;
+            white-space: nowrap;
+        }
+        .profile-danger-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(248, 113, 113, 0.25);
+        }
+        .profile-cancel-req-btn {
+            font-size: 11px;
+            font-weight: 700;
+            color: #F87171;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 4px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .profile-cancel-req-btn:hover {
+            background: rgba(239, 68, 68, 0.22);
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
         }
 
         .profile-setting-text {
@@ -1712,9 +1769,44 @@
             background: #dcfce7 !important;
             color: #15803d !important;
         }
+        html.light-mode .profile-setting-icon.edit {
+            background: #dcfce7 !important;
+            color: #15803d !important;
+        }
         html.light-mode .profile-setting-icon.theme {
             background: #fef3c7 !important;
             color: #b45309 !important;
+        }
+        html.light-mode .profile-setting-icon.danger {
+            background: #fee2e2 !important;
+            color: #b91c1c !important;
+        }
+        html.light-mode .profile-setting-icon.pending {
+            background: #fef3c7 !important;
+            color: #b45309 !important;
+        }
+        html.light-mode .profile-setting-title.danger {
+            color: #b91c1c !important;
+        }
+        html.light-mode .profile-setting-item.danger-item:hover {
+            background: #fef2f2 !important;
+            border-color: #fca5a5 !important;
+            box-shadow: 0 4px 12px rgba(185, 28, 28, 0.08) !important;
+        }
+        html.light-mode .profile-danger-divider span {
+            color: #b91c1c !important;
+        }
+        html.light-mode .profile-danger-divider::after {
+            background: #fecaca !important;
+        }
+        html.light-mode .profile-cancel-req-btn {
+            background: #fee2e2 !important;
+            color: #b91c1c !important;
+            border-color: #fca5a5 !important;
+        }
+        html.light-mode .profile-cancel-req-btn:hover {
+            background: #fecaca !important;
+            color: #991b1b !important;
         }
         html.light-mode .profile-setting-title {
             color: #0f172a !important;
@@ -1770,6 +1862,63 @@
         }
         html.light-mode .profile-admin-btn {
             border-radius: 12px !important;
+        }
+
+        /* ── Profile Modal Navigation Tabs ── */
+        .profile-modal-tabs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 44, 38, 0.6);
+            border: 1px solid rgba(142, 182, 155, 0.2);
+            border-radius: 14px;
+            padding: 4px;
+            margin: 0 24px 16px 24px;
+        }
+        html.light-mode .profile-modal-tabs,
+        .light-mode .profile-modal-tabs {
+            background: #f1f5f9 !important;
+            border-color: #e2e8f0 !important;
+        }
+        .profile-modal-tab-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12.5px;
+            font-weight: 700;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            color: #8eb69b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        html.light-mode .profile-modal-tab-btn,
+        .light-mode .profile-modal-tab-btn {
+            color: #64748b !important;
+        }
+        .profile-modal-tab-btn.active {
+            background: #235347;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        html.light-mode .profile-modal-tab-btn.active,
+        .light-mode .profile-modal-tab-btn.active {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08) !important;
+        }
+
+        /* ── 6-digit code box ── */
+        .email-code-box {
+            letter-spacing: 6px;
+            font-size: 20px;
+            font-weight: 800;
+            text-align: center;
+            font-family: monospace;
         }
     </style>
 
@@ -1843,12 +1992,17 @@
 
     <div class="profile-wrapper" x-data="{
         showEditModal: false,
+        showDeleteModal: false,
+        showCancelDeleteModal: false,
         showPasswordModal: {{ ($errors->has('current_password') || $errors->has('password')) ? 'true' : 'false' }},
+        editTab: 'personal',
         editName: '{{ addslashes(old('name', $user->name ?? '')) }}',
         editEmail: '{{ addslashes(old('email', $user->email ?? '')) }}',
         editStudentId: '{{ addslashes(old('student_id', $user->student_id ?? '')) }}',
         editSection: '{{ addslashes(old('section', $user->section ?? '')) }}',
         photoPreview: null,
+
+        // Password change state
         showCurrentPass: false,
         showNewPass: false,
         showConfirmPass: false,
@@ -1858,6 +2012,186 @@
         isCurrentPassCorrect: false,
         checkingCurrentPass: false,
         passStatusMsg: '',
+
+        // Email change state
+        newEmailInput: '',
+        emailStep: 1,
+        emailCode: '',
+        sendingEmailCode: false,
+        verifyingEmailCode: false,
+        emailChangeMsg: '',
+        emailChangeError: '',
+        resendCountdown: 0,
+        resendTimer: null,
+
+        // Account deletion state
+        deletePassword: '',
+        showDeletePass: false,
+        deleteReason: 'I no longer need the account',
+        deleteNotes: '',
+        deleteConfirmed: false,
+        submittingDeletion: false,
+        deleteError: '',
+        deleteSuccessMsg: '',
+
+        // Cancel deletion state
+        cancellingDeletion: false,
+        cancelDeletionError: '',
+        cancelDeletionSuccess: '',
+
+        async sendEmailCode() {
+            const email = (this.newEmailInput || '').trim();
+            if (!email || !email.includes('@')) {
+                this.emailChangeError = 'Please enter a valid email address.';
+                this.emailChangeMsg = '';
+                return;
+            }
+            this.sendingEmailCode = true;
+            this.emailChangeError = '';
+            this.emailChangeMsg = '';
+            try {
+                const res = await fetch('{{ route('website.profile.email.send-code') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ new_email: email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.emailStep = 2;
+                    this.emailChangeMsg = data.message;
+                    this.startResendCountdown(60);
+                } else {
+                    this.emailChangeError = data.message || 'Could not send verification code.';
+                }
+            } catch (e) {
+                this.emailChangeError = 'Network error. Please try again.';
+            } finally {
+                this.sendingEmailCode = false;
+            }
+        },
+
+        startResendCountdown(seconds) {
+            this.resendCountdown = seconds;
+            if (this.resendTimer) clearInterval(this.resendTimer);
+            this.resendTimer = setInterval(() => {
+                if (this.resendCountdown > 0) {
+                    this.resendCountdown--;
+                } else {
+                    clearInterval(this.resendTimer);
+                }
+            }, 1000);
+        },
+
+        async verifyEmailCode() {
+            const code = (this.emailCode || '').trim();
+            if (!code || code.length !== 6) {
+                this.emailChangeError = 'Please enter the 6-digit verification code.';
+                this.emailChangeMsg = '';
+                return;
+            }
+            this.verifyingEmailCode = true;
+            this.emailChangeError = '';
+            this.emailChangeMsg = '';
+            try {
+                const res = await fetch('{{ route('website.profile.email.verify-code') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                        new_email: (this.newEmailInput || '').trim()
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.emailChangeMsg = data.message;
+                    this.editEmail = data.new_email;
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1200);
+                } else {
+                    this.emailChangeError = data.message || 'The verification code is invalid.';
+                }
+            } catch (e) {
+                this.emailChangeError = 'Network error. Please try again.';
+            } finally {
+                this.verifyingEmailCode = false;
+            }
+        },
+
+        async submitDeletion() {
+            if (!this.deleteConfirmed) {
+                this.deleteError = 'Please confirm that you understand account deletion is permanent.';
+                return;
+            }
+            if (!this.deletePassword) {
+                this.deleteError = 'Please enter your password to confirm account deletion.';
+                return;
+            }
+            this.submittingDeletion = true;
+            this.deleteError = '';
+            this.deleteSuccessMsg = '';
+            try {
+                const res = await fetch('{{ route('website.profile.delete-request') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        password: this.deletePassword,
+                        confirmation: true,
+                        reason: this.deleteReason,
+                        notes: this.deleteNotes
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.deleteSuccessMsg = data.message;
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    this.deleteError = data.message || 'Could not submit deletion request.';
+                }
+            } catch (e) {
+                this.deleteError = 'Network error. Please try again.';
+            } finally {
+                this.submittingDeletion = false;
+            }
+        },
+
+        async submitCancelDeletion() {
+            this.cancellingDeletion = true;
+            this.cancelDeletionError = '';
+            try {
+                const res = await fetch('{{ route('website.profile.delete-cancel') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.cancelDeletionSuccess = data.message;
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1200);
+                } else {
+                    this.cancelDeletionError = data.message || 'Could not cancel request.';
+                }
+            } catch (e) {
+                this.cancelDeletionError = 'Network error. Please try again.';
+            } finally {
+                this.cancellingDeletion = false;
+            }
+        },
 
         async verifyCurrentPassword() {
             if (!this.currentPassword || this.currentPassword.trim() === '') {
@@ -1992,6 +2326,10 @@
     }" x-init="$watch('showEditModal', val => {
         if (val) {
             clearPasswords();
+            emailChangeError = '';
+            emailChangeMsg = '';
+            emailStep = 1;
+            emailCode = '';
             document.documentElement.classList.add('no-scroll');
             document.body.classList.add('no-scroll');
             document.documentElement.style.overflow = 'hidden';
@@ -1999,6 +2337,36 @@
         } else {
             photoPreview = null;
             if ($refs.photoInput) $refs.photoInput.value = '';
+            document.documentElement.classList.remove('no-scroll');
+            document.body.classList.remove('no-scroll');
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+        }
+    }); $watch('showDeleteModal', val => {
+        if (val) {
+            deletePassword = '';
+            deleteConfirmed = false;
+            deleteError = '';
+            deleteSuccessMsg = '';
+            document.documentElement.classList.add('no-scroll');
+            document.body.classList.add('no-scroll');
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.documentElement.classList.remove('no-scroll');
+            document.body.classList.remove('no-scroll');
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+        }
+    }); $watch('showCancelDeleteModal', val => {
+        if (val) {
+            cancelDeletionError = '';
+            cancelDeletionSuccess = '';
+            document.documentElement.classList.add('no-scroll');
+            document.body.classList.add('no-scroll');
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+        } else {
             document.documentElement.classList.remove('no-scroll');
             document.body.classList.remove('no-scroll');
             document.documentElement.style.overflow = '';
@@ -2043,11 +2411,31 @@
                 {{-- Line Separator --}}
                 <div class="profile-card-divider"></div>
 
-                {{-- Settings Part: Notification & Dark/Light Mode --}}
+                {{-- Settings Group: Edit Info, Notifications, Appearance & Danger Zone --}}
                 <div class="profile-settings-group">
                     <span class="profile-settings-header-label">Settings</span>
 
-                    {{-- 1. Notification --}}
+                    {{-- 1. Edit Information --}}
+                    <div class="profile-setting-item" @click="showEditModal = true" role="button" tabindex="0">
+                        <div class="profile-setting-left">
+                            <div class="profile-setting-icon edit">
+                                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                            </div>
+                            <div class="profile-setting-text">
+                                <span class="profile-setting-title">Edit Information</span>
+                                <span class="profile-setting-desc">Name, email and password</span>
+                            </div>
+                        </div>
+                        <div class="profile-setting-right">
+                            <svg class="profile-setting-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    {{-- 2. Notification --}}
                     <div class="profile-setting-item" @click="showNotificationsModal = true" role="button" tabindex="0">
                         <div class="profile-setting-left">
                             <div class="profile-setting-icon notif">
@@ -2074,7 +2462,7 @@
                         </div>
                     </div>
 
-                    {{-- 2. Dark and Light Mode --}}
+                    {{-- 3. Dark and Light Mode --}}
                     <div class="profile-setting-item" 
                          @click="toggleTheme()" 
                          @keydown.space.prevent="toggleTheme()" 
@@ -2111,6 +2499,76 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Danger Zone Divider --}}
+                    <div class="profile-danger-divider">
+                        <span>Danger zone</span>
+                    </div>
+
+                    {{-- 4. Delete Account (or Deletion Requested) --}}
+                    @if(!empty($pendingDeletionRequest))
+                        <div class="profile-setting-item danger-item" style="border-color: rgba(245, 158, 11, 0.45); background: rgba(245, 158, 11, 0.08);">
+                            <div class="profile-setting-left">
+                                <div class="profile-setting-icon pending">
+                                    <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12 6 12 12 16 14"/>
+                                    </svg>
+                                </div>
+                                <div class="profile-setting-text">
+                                    <span class="profile-setting-title" style="color:#FBBF24;">Deletion requested</span>
+                                    <span class="profile-setting-desc">Status: Pending review ({{ $pendingDeletionRequest->request_code }})</span>
+                                </div>
+                            </div>
+                            <div class="profile-setting-right">
+                                <button type="button" @click="showCancelDeleteModal = true" class="profile-cancel-req-btn" title="Cancel your deletion request">
+                                    Cancel request
+                                </button>
+                            </div>
+                        </div>
+                    @elseif($isAdminUser)
+                        <div class="profile-setting-item" style="opacity: 0.65; cursor: not-allowed;" title="Admin accounts cannot request deletion through this form.">
+                            <div class="profile-setting-left">
+                                <div class="profile-setting-icon danger">
+                                    <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                    </svg>
+                                </div>
+                                <div class="profile-setting-text">
+                                    <span class="profile-setting-title danger">Delete Account</span>
+                                    <span class="profile-setting-desc">Protected administrative account</span>
+                                </div>
+                            </div>
+                            <div class="profile-setting-right">
+                                <svg width="15" height="15" fill="none" stroke="#94a3b8" stroke-width="2" viewBox="0 0 24 24">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </div>
+                        </div>
+                    @else
+                        <div class="profile-setting-item danger-item" @click="showDeleteModal = true" role="button" tabindex="0">
+                            <div class="profile-setting-left">
+                                <div class="profile-setting-icon danger">
+                                    <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M3 6h18"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                        <line x1="10" y1="11" x2="10" y2="17"/>
+                                        <line x1="14" y1="11" x2="14" y2="17"/>
+                                    </svg>
+                                </div>
+                                <div class="profile-setting-text">
+                                    <span class="profile-setting-title danger">Delete Account</span>
+                                    <span class="profile-setting-desc">Request account deletion</span>
+                                </div>
+                            </div>
+                            <div class="profile-setting-right">
+                                <svg class="profile-setting-chevron" width="14" height="14" fill="none" stroke="#F87171" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <polyline points="9 18 15 12 9 6"/>
+                                </svg>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -2188,6 +2646,7 @@
                     </div>
                 </div>
                   {{-- EDIT YOUR PROFILE MODAL (Absolute Viewport Centering: Top 50%, Left 50%, Transform Translate) --}}
+            {{-- EDIT YOUR PROFILE MODAL WITH TABS --}}
             <template x-teleport="body">
                 <div
                     x-show="showEditModal"
@@ -2195,386 +2654,743 @@
                     @click.self="showEditModal = false"
                     class="profile-modal-overlay"
                 >
-                    <div class="profile-modal-card">
-                        <form method="POST" action="{{ route('website.profile.update') }}" enctype="multipart/form-data" autocomplete="off" style="display:flex; flex-direction:column; flex:1; min-height:0; margin:0;">
-                            @csrf
-
-                            {{-- Hidden photo file input for gallery/file explorer --}}
-                            <input
-                                type="file"
-                                id="profile_photo_input"
-                                name="photo"
-                                x-ref="photoInput"
-                                accept="image/*"
-                                class="hidden"
-                                style="display:none;"
-                                @change="
-                                    const file = $event.target.files[0];
-                                    if (file) {
-                                        const reader = new FileReader();
-                                        reader.onload = (e) => {
-                                            photoPreview = e.target.result;
-                                        };
-                                        reader.readAsDataURL(file);
-                                    }
-                                "
-                            >
-
-                            {{-- FIXED STICKY HEADER --}}
-                            <div class="profile-modal-header">
-                                <h2 class="profile-modal-title">
-                                    Edit your profile
+                    <div class="profile-modal-card" style="display:flex; flex-direction:column; max-height:90vh; overflow:hidden;">
+                        {{-- FIXED STICKY HEADER --}}
+                        <div class="profile-modal-header" style="justify-content:space-between; align-items:center;">
+                            <div>
+                                <h2 class="profile-modal-title" style="margin:0;">
+                                    Edit Information
                                 </h2>
-                                <button
-                                    type="button"
-                                    @click="showEditModal = false"
-                                    class="modal-close-circle-btn"
-                                    aria-label="Close"
-                                    title="Close"
-                                >
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
+                                <p class="profile-modal-last-updated" style="margin:2px 0 0; font-size:12px;">
+                                    Manage your personal identity, email, and password
+                                </p>
                             </div>
+                            <button
+                                type="button"
+                                @click="showEditModal = false"
+                                class="modal-close-circle-btn"
+                                aria-label="Close"
+                                title="Close"
+                            >
+                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
 
-                            {{-- 2-COLUMN BODY (RESPONSIVE SINGLE COLUMN ON SMALL SCREENS) --}}
-                            <div class="profile-modal-body">
-                                
-                                {{-- LEFT COLUMN: Form Inputs --}}
-                                <div class="profile-modal-inputs">
-                                    {{-- Full name --}}
-                                    <div style="position:relative;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                        </svg>
-                                        <input
-                                            id="edit_name"
-                                            type="text"
-                                            name="name"
-                                            x-model="editName"
-                                            required
-                                            placeholder=" "
-                                            class="floating-input"
-                                            style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
-                                        >
-                                        <label for="edit_name" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Full Name</label>
-                                    </div>
+                        {{-- MODAL NAVIGATION TABS --}}
+                        <div class="profile-modal-tabs">
+                            <button
+                                type="button"
+                                @click="editTab = 'personal'"
+                                class="profile-modal-tab-btn"
+                                :class="{ 'active': editTab === 'personal' }"
+                            >
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span>Personal Info</span>
+                            </button>
+                            <button
+                                type="button"
+                                @click="editTab = 'email'"
+                                class="profile-modal-tab-btn"
+                                :class="{ 'active': editTab === 'email' }"
+                            >
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                <span>Change Email</span>
+                            </button>
+                            <button
+                                type="button"
+                                @click="editTab = 'password'"
+                                class="profile-modal-tab-btn"
+                                :class="{ 'active': editTab === 'password' }"
+                            >
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                <span>Password & Security</span>
+                            </button>
+                        </div>
 
-                                    {{-- Email --}}
-                                    <div style="position:relative;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                                        </svg>
-                                        <input
-                                            id="edit_email"
-                                            type="email"
-                                            name="email"
-                                            x-model="editEmail"
-                                            required
-                                            placeholder=" "
-                                            class="floating-input"
-                                            style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
-                                        >
-                                        <label for="edit_email" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Email</label>
-                                    </div>
+                        {{-- TAB 1: PERSONAL INFO --}}
+                        <div x-show="editTab === 'personal'" style="display:flex; flex-direction:column; flex:1; min-height:0;">
+                            <form method="POST" action="{{ route('website.profile.update-personal') }}" enctype="multipart/form-data" autocomplete="off" style="display:flex; flex-direction:column; flex:1; min-height:0; margin:0;">
+                                @csrf
 
-                                    @if(strtolower(trim($user->role ?? '')) === 'student')
-                                        {{-- Student ID --}}
+                                {{-- Hidden photo file input --}}
+                                <input
+                                    type="file"
+                                    id="profile_photo_input"
+                                    name="photo"
+                                    x-ref="photoInput"
+                                    accept="image/*"
+                                    class="hidden"
+                                    style="display:none;"
+                                    @change="
+                                        const file = $event.target.files[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                photoPreview = e.target.result;
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    "
+                                >
+
+                                <div class="profile-modal-body">
+                                    {{-- LEFT COLUMN: Personal Info Inputs --}}
+                                    <div class="profile-modal-inputs">
+                                        {{-- Full name --}}
                                         <div style="position:relative;">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.364a4.125 4.125 0 0 0-6.338 0c-.267.319-.064.811.353.811h5.632c.417 0 .62-.492.353-.811Z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                             </svg>
                                             <input
-                                                id="edit_student_id"
+                                                id="edit_name"
                                                 type="text"
-                                                name="student_id"
-                                                x-model="editStudentId"
+                                                name="name"
+                                                x-model="editName"
+                                                required
                                                 placeholder=" "
                                                 class="floating-input"
                                                 style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
                                             >
-                                            <label for="edit_student_id" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Student ID</label>
+                                            <label for="edit_name" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Full Name</label>
                                         </div>
 
-                                        {{-- Section --}}
+                                        {{-- Current Email (Read-only on personal tab) --}}
                                         <div style="position:relative;">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-5.25 6.557c.75-.45 1.5-.85 2.25-1.2" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                                             </svg>
                                             <input
-                                                id="edit_section"
-                                                type="text"
-                                                name="section"
-                                                x-model="editSection"
-                                                placeholder=" "
+                                                type="email"
+                                                :value="editEmail"
+                                                disabled
                                                 class="floating-input"
-                                                style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
+                                                style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; opacity:0.75; cursor:not-allowed; box-sizing:border-box;"
                                             >
-                                            <label for="edit_section" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Section</label>
-                                        </div>
-                                    @endif
-
-                                    {{-- Divider --}}
-                                    <div class="profile-modal-divider">
-                                        <span class="profile-modal-section-title">Change Password (Optional)</span>
-                                    </div>
-
-                                    {{-- Current Password --}}
-                                    <div>
-                                        <div style="position:relative;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-                                            </svg>
-                                            <input
-                                                id="edit_current_password"
-                                                :type="showCurrentPass ? 'text' : 'password'"
-                                                name="current_password"
-                                                x-model="currentPassword"
-                                                @input.debounce.300ms="verifyCurrentPassword()"
-                                                autocomplete="new-password"
-                                                readonly
-                                                onfocus="this.removeAttribute('readonly');"
-                                                placeholder=" "
-                                                class="floating-input"
-                                                :class="{
-                                                    'border-correct': currentPassword.length > 0 && isCurrentPassCorrect,
-                                                    'border-incorrect': currentPassword.length > 0 && !checkingCurrentPass && !isCurrentPassCorrect
-                                                }"
-                                                style="width:100%; height:44px; padding:10px 40px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
-                                            >
-                                            <label for="edit_current_password" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Current Password</label>
-                                            <button
-                                                type="button"
-                                                @click="showCurrentPass = !showCurrentPass"
-                                                class="input-eye-btn"
-                                            >
-                                                <template x-if="!showCurrentPass">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:16px; height:16px;">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                                                    </svg>
-                                                </template>
-                                                <template x-if="showCurrentPass">
-                                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                </template>
-                                            </button>
+                                            <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#22c55e; background:rgba(34,197,94,0.12); border-radius:9999px; padding:2px 8px;">
+                                                Verified
+                                            </span>
                                         </div>
 
-                                        {{-- Verification Status Indicator & Forgot Password Link --}}
-                                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; margin-bottom:2px; min-height:18px;">
-                                            <div>
-                                                <div x-show="currentPassword.length > 0" style="font-size:11.5px; font-weight:600;">
-                                                    <template x-if="checkingCurrentPass">
-                                                        <span class="pass-status-checking">
-                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
-                                                            Verifying password...
-                                                        </span>
-                                                    </template>
-                                                    <template x-if="!checkingCurrentPass && isCurrentPassCorrect">
-                                                        <span class="pass-status-correct">
-                                                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                                            Current password correct
-                                                        </span>
-                                                    </template>
-                                                    <template x-if="!checkingCurrentPass && !isCurrentPassCorrect">
-                                                        <span class="pass-status-error">
-                                                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                                                            Incorrect current password
-                                                        </span>
-                                                    </template>
-                                                </div>
-                                            </div>
-                                            <div style="margin-left:auto;">
-                                                <a href="{{ route('password.request') }}" class="profile-forgot-link">Forgot password?</a>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- New Password --}}
-                                    <div>
-                                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; white-space:nowrap; gap:6px;">
-                                            <span class="pass-helper-label" x-show="!isCurrentPassCorrect">(Enter current password first)</span>
-                                            <div style="display:flex; align-items:center; gap:4px; margin-left:auto; white-space:nowrap; flex-shrink:0;">
-                                                <span class="pass-helper-label">Security level</span>
-                                                <div style="display:flex; align-items:center; gap:2px;">
-                                                    <div class="meter-bar" :style="{ background: strengthScore >= 1 ? (strengthScore <= 2 ? '#F87171' : (strengthScore <= 4 ? '#FBBF24' : '#4ADE80')) : '' }"></div>
-                                                    <div class="meter-bar" :style="{ background: strengthScore >= 2 ? (strengthScore <= 2 ? '#F87171' : (strengthScore <= 4 ? '#FBBF24' : '#4ADE80')) : '' }"></div>
-                                                    <div class="meter-bar" :style="{ background: strengthScore >= 3 ? (strengthScore <= 4 ? '#FBBF24' : '#4ADE80') : '' }"></div>
-                                                    <div class="meter-bar" :style="{ background: strengthScore >= 4 ? (strengthScore <= 4 ? '#FBBF24' : '#4ADE80') : '' }"></div>
-                                                    <div class="meter-bar" :style="{ background: strengthScore >= 5 ? '#4ADE80' : '' }"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div style="position:relative;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-                                            </svg>
-                                            <input
-                                                id="edit_password"
-                                                :type="showNewPass ? 'text' : 'password'"
-                                                name="password"
-                                                x-model="newPassword"
-                                                :disabled="!isCurrentPassCorrect"
-                                                autocomplete="new-password"
-                                                readonly
-                                                onfocus="this.removeAttribute('readonly');"
-                                                placeholder=" "
-                                                class="floating-input"
-                                                :class="!isCurrentPassCorrect ? 'input-locked' : 'input-unlocked'"
-                                                style="width:100%; height:44px; padding:10px 40px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
-                                            >
-                                            <label for="edit_password" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">New Password</label>
-                                            <button
-                                                type="button"
-                                                @click="showNewPass = !showNewPass"
-                                                class="input-eye-btn"
-                                            >
-                                                <template x-if="!showNewPass">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:16px; height:16px;">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                                                    </svg>
-                                                </template>
-                                                <template x-if="showNewPass">
-                                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                </template>
-                                            </button>
-                                        </div>
-
-                                        {{-- Password Requirements Badges --}}
-                                        <div class="pass-req-badges">
-                                            <div class="pass-req-badge" :class="{ 'active': hasMinLen }">
-                                                <span class="pass-req-icon" x-text="hasMinLen ? '✓' : '✕'">✕</span>
-                                                <span>8+ characters</span>
-                                            </div>
-                                            <div class="pass-req-badge" :class="{ 'active': hasNumber }">
-                                                <span class="pass-req-icon" x-text="hasNumber ? '✓' : '✕'">✕</span>
-                                                <span>Number</span>
-                                            </div>
-                                            <div class="pass-req-badge" :class="{ 'active': hasUppercase }">
-                                                <span class="pass-req-icon" x-text="hasUppercase ? '✓' : '✕'">✕</span>
-                                                <span>Uppercase letter</span>
-                                            </div>
-                                            <div class="pass-req-badge" :class="{ 'active': hasLowercase }">
-                                                <span class="pass-req-icon" x-text="hasLowercase ? '✓' : '✕'">✕</span>
-                                                <span>Lowercase letter</span>
-                                            </div>
-                                            <div class="pass-req-badge" :class="{ 'active': hasSpecial }">
-                                                <span class="pass-req-icon" x-text="hasSpecial ? '✓' : '✕'">✕</span>
-                                                <span>Special character</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Confirm Password --}}
-                                    <div>
-                                        <div style="display:flex; justify-content:flex-end; margin-bottom:2px;">
-                                            <button
-                                                type="button"
-                                                @click="clearPasswords()"
-                                                x-show="currentPassword || newPassword || confirmPassword"
-                                                class="pass-clear-btn"
-                                            >
-                                                Clear
-                                            </button>
-                                        </div>
-                                        <div style="position:relative;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-                                            </svg>
-                                            <input
-                                                id="edit_password_confirmation"
-                                                :type="showConfirmPass ? 'text' : 'password'"
-                                                name="password_confirmation"
-                                                x-model="confirmPassword"
-                                                :disabled="!isCurrentPassCorrect"
-                                                autocomplete="new-password"
-                                                readonly
-                                                onfocus="this.removeAttribute('readonly');"
-                                                placeholder=" "
-                                                class="floating-input"
-                                                :class="!isCurrentPassCorrect ? 'input-locked' : 'input-unlocked'"
-                                                style="width:100%; height:44px; padding:10px 40px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
-                                            >
-                                            <label for="edit_password_confirmation" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Confirm Password</label>
-                                            <button
-                                                type="button"
-                                                @click="showConfirmPass = !showConfirmPass"
-                                                class="input-eye-btn"
-                                            >
-                                                <template x-if="!showConfirmPass">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:16px; height:16px;">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                                                    </svg>
-                                                </template>
-                                                <template x-if="showConfirmPass">
-                                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                </template>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- RIGHT COLUMN: Live Preview Card --}}
-                                <div class="profile-modal-preview">
-                                    <span class="profile-modal-preview-title">Preview</span>
-
-                                    {{-- Circular Avatar Badge with Interactive Pencil Edit Button --}}
-                                    <div style="position:relative; margin-bottom:8px; cursor:pointer;" @click="$refs.photoInput.click()" title="Click to change profile picture">
-                                        <div class="profile-modal-avatar" style="overflow:hidden; position:relative; padding:0; display:flex; align-items:center; justify-content:center;">
-                                            <template x-if="photoPreview">
-                                                <img :src="photoPreview" alt="Profile Photo Preview" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
-                                            </template>
-                                            <template x-if="!photoPreview">
-                                                @if($user->profile_photo_url)
-                                                    <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
-                                                @else
-                                                    <span x-text="(editName ? editName.charAt(0).toUpperCase() : '{{ $initial }}')"></span>
-                                                @endif
-                                            </template>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            @click.stop="$refs.photoInput.click()"
-                                            title="Change Profile Photo"
-                                            aria-label="Change Profile Photo"
-                                            class="profile-modal-pencil-btn"
-                                        >
-                                            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                        </button>
-                                    </div>
-
-                                    {{-- Name --}}
-                                    <h4 class="profile-modal-preview-name" x-text="editName || '{{ $user->name }}'"></h4>
-
-                                    {{-- Role --}}
-                                    <p class="profile-modal-preview-role">{{ $roleBadge }}</p>
-
-                                    {{-- User ID --}}
-                                    <div class="profile-modal-preview-id">
                                         @if(strtolower(trim($user->role ?? '')) === 'student')
-                                            <span x-text="editStudentId || '{{ $userId }}'"></span>
-                                        @else
-                                            {{ $userId }}
+                                            {{-- Student ID --}}
+                                            <div style="position:relative;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.364a4.125 4.125 0 0 0-6.338 0c-.267.319-.064.811.353.811h5.632c.417 0 .62-.492.353-.811Z" />
+                                                </svg>
+                                                <input
+                                                    id="edit_student_id"
+                                                    type="text"
+                                                    name="student_id"
+                                                    x-model="editStudentId"
+                                                    placeholder=" "
+                                                    class="floating-input"
+                                                    style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
+                                                >
+                                                <label for="edit_student_id" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Student ID</label>
+                                            </div>
+
+                                            {{-- Section --}}
+                                            <div style="position:relative;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-5.25 6.557c.75-.45 1.5-.85 2.25-1.2" />
+                                                </svg>
+                                                <input
+                                                    id="edit_section"
+                                                    type="text"
+                                                    name="section"
+                                                    x-model="editSection"
+                                                    placeholder=" "
+                                                    class="floating-input"
+                                                    style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
+                                                >
+                                                <label for="edit_section" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Section</label>
+                                            </div>
                                         @endif
                                     </div>
+
+                                    {{-- RIGHT COLUMN: Live Preview Card --}}
+                                    <div class="profile-modal-preview">
+                                        <span class="profile-modal-preview-title">Preview</span>
+
+                                        {{-- Circular Avatar Badge with Interactive Pencil Edit Button --}}
+                                        <div style="position:relative; margin-bottom:8px; cursor:pointer;" @click="$refs.photoInput.click()" title="Click to change profile picture">
+                                            <div class="profile-modal-avatar" style="overflow:hidden; position:relative; padding:0; display:flex; align-items:center; justify-content:center;">
+                                                <template x-if="photoPreview">
+                                                    <img :src="photoPreview" alt="Profile Photo Preview" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                                                </template>
+                                                <template x-if="!photoPreview">
+                                                    @if($user->profile_photo_url)
+                                                        <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                                                    @else
+                                                        <span x-text="(editName ? editName.charAt(0).toUpperCase() : '{{ $initial }}')"></span>
+                                                    @endif
+                                                </template>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                @click.stop="$refs.photoInput.click()"
+                                                title="Change Profile Photo"
+                                                aria-label="Change Profile Photo"
+                                                class="profile-modal-pencil-btn"
+                                            >
+                                                <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                            </button>
+                                        </div>
+
+                                        {{-- Name --}}
+                                        <h4 class="profile-modal-preview-name" x-text="editName || '{{ $user->name }}'"></h4>
+
+                                        {{-- Role --}}
+                                        <p class="profile-modal-preview-role">{{ $roleBadge }}</p>
+
+                                        {{-- User ID --}}
+                                        <div class="profile-modal-preview-id">
+                                            @if(strtolower(trim($user->role ?? '')) === 'student')
+                                                <span x-text="editStudentId || '{{ $userId }}'"></span>
+                                            @else
+                                                {{ $userId }}
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
 
+                                {{-- FIXED STICKY FOOTER --}}
+                                <div class="profile-modal-footer">
+                                    <span class="profile-modal-last-updated">
+                                        Last updated: {{ $user->updated_at ? $user->updated_at->format('M d, Y') : now()->format('M d, Y') }}
+                                    </span>
+                                    <button
+                                        type="submit"
+                                        class="profile-modal-save-btn"
+                                    >
+                                        Save changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        {{-- TAB 2: CHANGE EMAIL --}}
+                        <div x-show="editTab === 'email'" style="display:flex; flex-direction:column; flex:1; min-height:0; padding:20px 24px; overflow-y:auto;">
+                            {{-- Privacy & Security Banner --}}
+                            <div style="background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); border-radius:14px; padding:14px 16px; margin-bottom:18px;">
+                                <div style="display:flex; align-items:flex-start; gap:10px;">
+                                    <svg width="18" height="18" fill="none" stroke="#4ADE80" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0; margin-top:2px;">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                    </svg>
+                                    <div>
+                                        <strong style="color:inherit; font-size:13px; display:block; margin-bottom:2px;">Encrypted & Private Information</strong>
+                                        <span style="font-size:12.5px; opacity:0.88; line-height:1.4; display:block;">
+                                            To ensure strict account privacy and security, a 6-digit confirmation code will be sent to your new email before updating. A security notification will also be sent to your current email.
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
-                            {{-- FIXED STICKY FOOTER --}}
-                            <div class="profile-modal-footer">
-                                <span class="profile-modal-last-updated">
-                                    Last updated: {{ $user->updated_at ? $user->updated_at->format('M d, Y') : now()->format('M d, Y') }}
+                            {{-- Current Email Card --}}
+                            <div style="background:rgba(16,44,38,0.5); border:1px solid rgba(142,182,155,0.25); border-radius:14px; padding:14px 18px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <span style="font-size:11px; font-weight:800; color:#8EB69B; text-transform:uppercase; letter-spacing:0.05em; display:block;">Current Email</span>
+                                    <span style="font-size:14px; font-weight:700; color:inherit; display:block; margin-top:2px;">{{ $user->email }}</span>
+                                </div>
+                                <span style="font-size:11.5px; font-weight:700; color:#22c55e; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); border-radius:9999px; padding:3px 10px;">
+                                    Verified
                                 </span>
+                            </div>
+
+                            {{-- Inline Alerts --}}
+                            <template x-if="emailChangeError">
+                                <div style="background:rgba(239,68,68,0.15); border:1px solid #F87171; border-radius:12px; padding:12px 16px; font-size:13px; color:#FCA5A5; font-weight:600; margin-bottom:14px;" x-text="emailChangeError"></div>
+                            </template>
+                            <template x-if="emailChangeMsg">
+                                <div style="background:rgba(34,197,94,0.15); border:1px solid #4ADE80; border-radius:12px; padding:12px 16px; font-size:13px; color:#86EFAC; font-weight:600; margin-bottom:14px;" x-text="emailChangeMsg"></div>
+                            </template>
+
+                            {{-- STEP 1: Enter New Email --}}
+                            <div x-show="emailStep === 1" style="display:flex; flex-direction:column; gap:16px;">
+                                <div style="position:relative;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                                    </svg>
+                                    <input
+                                        type="email"
+                                        x-model="newEmailInput"
+                                        placeholder="Enter your new email address"
+                                        class="floating-input"
+                                        style="width:100%; height:46px; padding:10px 16px 10px 42px; font-size:0.9rem; outline:none; box-sizing:border-box; border-radius:12px;"
+                                        @keydown.enter.prevent="sendEmailCode()"
+                                    >
+                                </div>
 
                                 <button
-                                    type="submit"
+                                    type="button"
+                                    @click="sendEmailCode()"
+                                    :disabled="sendingEmailCode || !newEmailInput"
                                     class="profile-modal-save-btn"
+                                    style="height:44px; justify-content:center; border-radius:12px; font-size:13.5px;"
+                                    :style="(sendingEmailCode || !newEmailInput) ? 'opacity:0.6; cursor:not-allowed;' : ''"
                                 >
-                                    Save changes
+                                    <template x-if="sendingEmailCode">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                                    </template>
+                                    <span x-text="sendingEmailCode ? 'Sending verification code...' : 'Send 6-digit Verification Code'"></span>
                                 </button>
                             </div>
-                        </form>
+
+                            {{-- STEP 2: Enter 6-digit Code --}}
+                            <div x-show="emailStep === 2" style="display:flex; flex-direction:column; gap:16px;">
+                                <div style="text-align:center; padding:10px 0;">
+                                    <span style="font-size:13px; opacity:0.85;">Enter the 6-digit verification code sent to</span>
+                                    <div style="font-size:14.5px; font-weight:800; color:#4ADE80; margin-top:2px;" x-text="newEmailInput"></div>
+                                </div>
+
+                                <div style="display:flex; justify-content:center;">
+                                    <input
+                                        type="text"
+                                        x-model="emailCode"
+                                        maxlength="6"
+                                        placeholder="------"
+                                        class="floating-input email-code-box"
+                                        style="width:220px; height:50px; border-radius:14px; outline:none;"
+                                        @keydown.enter.prevent="verifyEmailCode()"
+                                        autocomplete="one-time-code"
+                                    >
+                                </div>
+
+                                <div style="display:flex; gap:10px; margin-top:8px;">
+                                    <button
+                                        type="button"
+                                        @click="emailStep = 1; emailCode = '';"
+                                        class="profile-cancel-req-btn"
+                                        style="flex:1; border-radius:12px; font-size:13px;"
+                                    >
+                                        Change Email
+                                    </button>
+                                    <button
+                                        type="button"
+                                        @click="verifyEmailCode()"
+                                        :disabled="verifyingEmailCode || emailCode.length !== 6"
+                                        class="profile-modal-save-btn"
+                                        style="flex:2; height:44px; justify-content:center; border-radius:12px; font-size:13.5px;"
+                                        :style="(verifyingEmailCode || emailCode.length !== 6) ? 'opacity:0.6; cursor:not-allowed;' : ''"
+                                    >
+                                        <template x-if="verifyingEmailCode">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                                        </template>
+                                        <span x-text="verifyingEmailCode ? 'Verifying...' : 'Verify & Change Email'"></span>
+                                    </button>
+                                </div>
+
+                                <div style="text-align:center; margin-top:6px;">
+                                    <template x-if="resendCountdown > 0">
+                                        <span style="font-size:12px; opacity:0.75;">Resend code in <strong x-text="resendCountdown + 's'"></strong></span>
+                                    </template>
+                                    <template x-if="resendCountdown === 0">
+                                        <button type="button" @click="sendEmailCode()" style="background:none; border:none; color:#4ADE80; font-size:12.5px; font-weight:700; cursor:pointer; text-decoration:underline;">
+                                            Didn't receive code? Resend
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- TAB 3: PASSWORD & SECURITY --}}
+                        <div x-show="editTab === 'password'" style="display:flex; flex-direction:column; flex:1; min-height:0;">
+                            <form method="POST" action="{{ route('website.profile.password.update') }}" autocomplete="off" style="display:flex; flex-direction:column; flex:1; min-height:0; margin:0;">
+                                @csrf
+
+                                <div class="profile-modal-body" style="grid-template-columns:1fr; max-width:560px; margin:0 auto; width:100%; box-sizing:border-box;">
+                                    <div class="profile-modal-inputs" style="gap:16px;">
+                                        {{-- Current Password --}}
+                                        <div>
+                                            <div style="position:relative;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                                </svg>
+                                                <input
+                                                    id="tab_current_password"
+                                                    :type="showCurrentPass ? 'text' : 'password'"
+                                                    name="current_password"
+                                                    x-model="currentPassword"
+                                                    @input.debounce.300ms="verifyCurrentPassword()"
+                                                    autocomplete="new-password"
+                                                    placeholder=" "
+                                                    class="floating-input"
+                                                    :class="{
+                                                        'border-correct': currentPassword.length > 0 && isCurrentPassCorrect,
+                                                        'border-incorrect': currentPassword.length > 0 && !checkingCurrentPass && !isCurrentPassCorrect
+                                                    }"
+                                                    style="width:100%; height:44px; padding:10px 40px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
+                                                >
+                                                <label for="tab_current_password" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Current Password</label>
+                                                <button
+                                                    type="button"
+                                                    @click="showCurrentPass = !showCurrentPass"
+                                                    class="input-eye-btn"
+                                                >
+                                                    <template x-if="!showCurrentPass">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:16px; height:16px;">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                                        </svg>
+                                                    </template>
+                                                    <template x-if="showCurrentPass">
+                                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                    </template>
+                                                </button>
+                                            </div>
+
+                                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; min-height:18px;">
+                                                <div>
+                                                    <div x-show="currentPassword.length > 0" style="font-size:11.5px; font-weight:600;">
+                                                        <template x-if="checkingCurrentPass">
+                                                            <span class="pass-status-checking">
+                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                                                                Verifying password...
+                                                            </span>
+                                                        </template>
+                                                        <template x-if="!checkingCurrentPass && isCurrentPassCorrect">
+                                                            <span class="pass-status-correct">
+                                                                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                                                Current password correct
+                                                            </span>
+                                                        </template>
+                                                        <template x-if="!checkingCurrentPass && !isCurrentPassCorrect">
+                                                            <span class="pass-status-error">
+                                                                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                                Incorrect current password
+                                                            </span>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                                <div style="margin-left:auto;">
+                                                    <a href="{{ route('password.request') }}" class="profile-forgot-link">Forgot password?</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- New Password --}}
+                                        <div>
+                                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; gap:6px;">
+                                                <span class="pass-helper-label" x-show="!isCurrentPassCorrect">(Enter current password first)</span>
+                                                <div style="display:flex; align-items:center; gap:4px; margin-left:auto;">
+                                                    <span class="pass-helper-label">Security level</span>
+                                                    <div style="display:flex; align-items:center; gap:2px;">
+                                                        <div class="meter-bar" :style="{ background: strengthScore >= 1 ? (strengthScore <= 2 ? '#F87171' : (strengthScore <= 4 ? '#FBBF24' : '#4ADE80')) : '' }"></div>
+                                                        <div class="meter-bar" :style="{ background: strengthScore >= 2 ? (strengthScore <= 2 ? '#F87171' : (strengthScore <= 4 ? '#FBBF24' : '#4ADE80')) : '' }"></div>
+                                                        <div class="meter-bar" :style="{ background: strengthScore >= 3 ? (strengthScore <= 4 ? '#FBBF24' : '#4ADE80') : '' }"></div>
+                                                        <div class="meter-bar" :style="{ background: strengthScore >= 4 ? (strengthScore <= 4 ? '#FBBF24' : '#4ADE80') : '' }"></div>
+                                                        <div class="meter-bar" :style="{ background: strengthScore >= 5 ? '#4ADE80' : '' }"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="position:relative;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                                </svg>
+                                                <input
+                                                    id="tab_new_password"
+                                                    :type="showNewPass ? 'text' : 'password'"
+                                                    name="password"
+                                                    x-model="newPassword"
+                                                    :disabled="!isCurrentPassCorrect"
+                                                    autocomplete="new-password"
+                                                    placeholder=" "
+                                                    class="floating-input"
+                                                    :class="!isCurrentPassCorrect ? 'input-locked' : 'input-unlocked'"
+                                                    style="width:100%; height:44px; padding:10px 40px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
+                                                >
+                                                <label for="tab_new_password" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">New Password</label>
+                                                <button
+                                                    type="button"
+                                                    @click="showNewPass = !showNewPass"
+                                                    class="input-eye-btn"
+                                                >
+                                                    <template x-if="!showNewPass">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:16px; height:16px;">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                                        </svg>
+                                                    </template>
+                                                    <template x-if="showNewPass">
+                                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                    </template>
+                                                </button>
+                                            </div>
+
+                                            <div class="pass-req-badges">
+                                                <div class="pass-req-badge" :class="{ 'active': hasMinLen }">
+                                                    <span class="pass-req-icon" x-text="hasMinLen ? '✓' : '✕'">✕</span>
+                                                    <span>8+ characters</span>
+                                                </div>
+                                                <div class="pass-req-badge" :class="{ 'active': hasNumber }">
+                                                    <span class="pass-req-icon" x-text="hasNumber ? '✓' : '✕'">✕</span>
+                                                    <span>Number</span>
+                                                </div>
+                                                <div class="pass-req-badge" :class="{ 'active': hasUppercase }">
+                                                    <span class="pass-req-icon" x-text="hasUppercase ? '✓' : '✕'">✕</span>
+                                                    <span>Uppercase letter</span>
+                                                </div>
+                                                <div class="pass-req-badge" :class="{ 'active': hasLowercase }">
+                                                    <span class="pass-req-icon" x-text="hasLowercase ? '✓' : '✕'">✕</span>
+                                                    <span>Lowercase letter</span>
+                                                </div>
+                                                <div class="pass-req-badge" :class="{ 'active': hasSpecial }">
+                                                    <span class="pass-req-icon" x-text="hasSpecial ? '✓' : '✕'">✕</span>
+                                                    <span>Special character</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Confirm Password --}}
+                                        <div>
+                                            <div style="display:flex; justify-content:flex-end; margin-bottom:2px;">
+                                                <button
+                                                    type="button"
+                                                    @click="clearPasswords()"
+                                                    x-show="currentPassword || newPassword || confirmPassword"
+                                                    class="pass-clear-btn"
+                                                >
+                                                    Clear
+                                                </button>
+                                            </div>
+                                            <div style="position:relative;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                                                </svg>
+                                                <input
+                                                    id="tab_password_confirmation"
+                                                    :type="showConfirmPass ? 'text' : 'password'"
+                                                    name="password_confirmation"
+                                                    x-model="confirmPassword"
+                                                    :disabled="!isCurrentPassCorrect"
+                                                    autocomplete="new-password"
+                                                    placeholder=" "
+                                                    class="floating-input"
+                                                    :class="!isCurrentPassCorrect ? 'input-locked' : 'input-unlocked'"
+                                                    style="width:100%; height:44px; padding:10px 40px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
+                                                >
+                                                <label for="tab_password_confirmation" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Confirm Password</label>
+                                                <button
+                                                    type="button"
+                                                    @click="showConfirmPass = !showConfirmPass"
+                                                    class="input-eye-btn"
+                                                >
+                                                    <template x-if="!showConfirmPass">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:16px; height:16px;">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                                        </svg>
+                                                    </template>
+                                                    <template x-if="showConfirmPass">
+                                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                    </template>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="profile-modal-footer">
+                                    <span class="profile-modal-last-updated">
+                                        Signs out other active device sessions
+                                    </span>
+                                    <button
+                                        type="submit"
+                                        :disabled="!isCurrentPassCorrect || strengthScore < 5 || newPassword !== confirmPassword"
+                                        class="profile-modal-save-btn"
+                                        :style="(!isCurrentPassCorrect || strengthScore < 5 || newPassword !== confirmPassword) ? 'opacity:0.6; cursor:not-allowed;' : ''"
+                                    >
+                                        Update password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            {{-- DELETE ACCOUNT REQUEST MODAL (With Full Data Privacy) --}}
+            <template x-teleport="body">
+                <div
+                    x-show="showDeleteModal"
+                    x-cloak
+                    @click.self="showDeleteModal = false"
+                    class="profile-modal-overlay"
+                >
+                    <div class="profile-modal-card" style="max-width:540px; width:92%; max-height:90vh; display:flex; flex-direction:column;">
+                        {{-- Header --}}
+                        <div class="profile-modal-header" style="justify-content:space-between; align-items:center; border-bottom:1px solid rgba(248,113,113,0.25);">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div class="profile-setting-icon danger" style="width:38px; height:38px; border-radius:12px;">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                        <line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="profile-modal-title" style="margin:0; font-size:18px; font-weight:800; color:#F87171;">Delete Account Request</h3>
+                                    <p class="profile-modal-last-updated" style="margin:2px 0 0; font-size:12px;">Permanent account removal & data privacy</p>
+                                </div>
+                            </div>
+                            <button type="button" @click="showDeleteModal = false" class="profile-modal-close-btn" aria-label="Close">&times;</button>
+                        </div>
+
+                        {{-- Scrollable Body --}}
+                        <div class="profile-modal-body" style="padding:20px 24px; flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:16px;">
+                            {{-- Privacy & Deletion Warning Banner --}}
+                            <div style="background:rgba(239,68,68,0.1); border:1.5px solid rgba(248,113,113,0.35); border-radius:14px; padding:14px 16px; font-size:13px; color:#FCA5A5; line-height:1.5;">
+                                <div style="display:flex; align-items:flex-start; gap:10px;">
+                                    <svg width="18" height="18" fill="none" stroke="#F87171" stroke-width="2.2" viewBox="0 0 24 24" style="flex-shrink:0; margin-top:2px;">
+                                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                    <div>
+                                        <strong style="color:#ffffff; display:block; margin-bottom:4px; font-weight:800;">What happens when you request deletion:</strong>
+                                        <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:4px;">
+                                            <li><strong>Complete Privacy:</strong> All your personal information (name, email, profile photo, student details, credentials) will be permanently expunged.</li>
+                                            <li><strong>Anonymous Telemetry:</strong> Soil scans & map pins are unlinked (<code style="font-size:11px; padding:1px 4px; background:rgba(0,0,0,0.25); border-radius:4px;">user_id = null</code>) so municipal agricultural data remains anonymous with zero connection to you.</li>
+                                            <li><strong>Email Confirmation:</strong> We'll email your Gmail (<span style="color:#ffffff;">{{ $user->email }}</span>) with request details and a secure link to cancel if you change your mind.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Error and Success messages --}}
+                            <template x-if="deleteError">
+                                <div style="background:rgba(239,68,68,0.15); border:1px solid #F87171; border-radius:10px; padding:10px 14px; font-size:12.5px; color:#FCA5A5; font-weight:600;" x-text="deleteError"></div>
+                            </template>
+                            <template x-if="deleteSuccessMsg">
+                                <div style="background:rgba(34,197,94,0.15); border:1px solid #4ADE80; border-radius:10px; padding:10px 14px; font-size:12.5px; color:#86EFAC; font-weight:600;" x-text="deleteSuccessMsg"></div>
+                            </template>
+
+                            {{-- Reason Dropdown --}}
+                            <div>
+                                <label style="display:block; font-size:12px; font-weight:700; color:#8EB69B; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;">Reason for deletion (Optional)</label>
+                                <select x-model="deleteReason" class="floating-input" style="width:100%; height:42px; padding:8px 14px; font-size:13.5px; border-radius:12px; outline:none; cursor:pointer;">
+                                    <option value="I no longer need the account">I no longer need the account</option>
+                                    <option value="Privacy concerns">Privacy concerns</option>
+                                    <option value="Creating a new account">Creating a new account</option>
+                                    <option value="Too many emails or notifications">Too many emails or notifications</option>
+                                    <option value="Temporary break">Temporary break</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            {{-- Additional notes --}}
+                            <div>
+                                <label style="display:block; font-size:12px; font-weight:700; color:#8EB69B; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;">Additional feedback / notes (Optional)</label>
+                                <textarea x-model="deleteNotes" rows="2" placeholder="Let us know if there is anything we could improve..." class="floating-input" style="width:100%; padding:10px 14px; font-size:13px; border-radius:12px; outline:none; resize:vertical; box-sizing:border-box;"></textarea>
+                            </div>
+
+                            {{-- Current Password --}}
+                            <div>
+                                <label style="display:block; font-size:12px; font-weight:700; color:#8EB69B; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;">Confirm your password <span style="color:#F87171;">*</span></label>
+                                <div style="position:relative;">
+                                    <input
+                                        :type="showDeletePass ? 'text' : 'password'"
+                                        x-model="deletePassword"
+                                        placeholder="Enter your current password"
+                                        class="floating-input"
+                                        style="width:100%; height:44px; padding:10px 42px 10px 14px; font-size:13.5px; border-radius:12px; outline:none; box-sizing:border-box;"
+                                    >
+                                    <button type="button" @click="showDeletePass = !showDeletePass" class="input-eye-btn" style="right:12px;">
+                                        <template x-if="!showDeletePass">
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
+                                        </template>
+                                        <template x-if="showDeletePass">
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        </template>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- Checkbox confirmation --}}
+                            <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; user-select:none; font-size:12.5px; color:#8EB69B; line-height:1.4;">
+                                <input type="checkbox" x-model="deleteConfirmed" style="margin-top:3px; accent-color:#ef4444; width:16px; height:16px; cursor:pointer;">
+                                <span>I understand that this action is irreversible once approved by administrators and all my personal data will be wiped private.</span>
+                            </label>
+                        </div>
+
+                        {{-- Footer --}}
+                        <div class="profile-modal-footer" style="justify-content:space-between; align-items:center; border-top:1px solid rgba(248,113,113,0.25);">
+                            <button type="button" @click="showDeleteModal = false" class="profile-cancel-req-btn" style="border-radius:12px; padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer;">
+                                Keep My Account
+                            </button>
+                            <button
+                                type="button"
+                                @click="submitDeletion()"
+                                :disabled="submittingDeletion || !deleteConfirmed || !deletePassword"
+                                style="background:#dc2626; color:#ffffff; border:none; border-radius:12px; padding:10px 22px; font-size:13.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(220,38,38,0.4); transition:all 0.2s ease;"
+                                :style="(submittingDeletion || !deleteConfirmed || !deletePassword) ? 'opacity:0.55; cursor:not-allowed;' : ''"
+                            >
+                                <template x-if="submittingDeletion">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                                </template>
+                                <span x-text="submittingDeletion ? 'Submitting...' : 'Confirm Account Deletion'"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            {{-- CANCEL DELETION REQUEST MODAL --}}
+            <template x-teleport="body">
+                <div
+                    x-show="showCancelDeleteModal"
+                    x-cloak
+                    @click.self="showCancelDeleteModal = false"
+                    class="profile-modal-overlay"
+                >
+                    <div class="profile-modal-card" style="max-width:480px; width:92%; display:flex; flex-direction:column;">
+                        <div class="profile-modal-header" style="justify-content:space-between; align-items:center;">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div class="profile-setting-icon notif" style="width:38px; height:38px; border-radius:12px;">
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="profile-modal-title" style="margin:0; font-size:17px; font-weight:800;">Cancel Deletion Request</h3>
+                                    <p class="profile-modal-last-updated" style="margin:2px 0 0; font-size:12px;">Keep your AgriCo account active</p>
+                                </div>
+                            </div>
+                            <button type="button" @click="showCancelDeleteModal = false" class="profile-modal-close-btn" aria-label="Close">&times;</button>
+                        </div>
+
+                        <div class="profile-modal-body" style="padding:20px 24px; display:flex; flex-direction:column; gap:14px;">
+                            <p style="margin:0; font-size:13.5px; line-height:1.5; color:inherit;">
+                                You currently have an active account deletion request pending administrator review
+                                @if($pendingDeletionRequest)
+                                    (<strong style="font-family:monospace;">{{ $pendingDeletionRequest->request_code }}</strong> submitted on {{ $pendingDeletionRequest->submitted_at ? $pendingDeletionRequest->submitted_at->format('M d, Y') : $pendingDeletionRequest->created_at->format('M d, Y') }})
+                                @endif.
+                            </p>
+                            <p style="margin:0; font-size:13px; opacity:0.85;">
+                                If you cancel now, your account will remain fully active with all your scans, history, and records preserved.
+                            </p>
+
+                            <template x-if="cancelDeletionError">
+                                <div style="background:rgba(239,68,68,0.15); border:1px solid #F87171; border-radius:10px; padding:10px 14px; font-size:12.5px; color:#FCA5A5; font-weight:600;" x-text="cancelDeletionError"></div>
+                            </template>
+                            <template x-if="cancelDeletionSuccess">
+                                <div style="background:rgba(34,197,94,0.15); border:1px solid #4ADE80; border-radius:10px; padding:10px 14px; font-size:12.5px; color:#86EFAC; font-weight:600;" x-text="cancelDeletionSuccess"></div>
+                            </template>
+                        </div>
+
+                        <div class="profile-modal-footer" style="justify-content:flex-end; gap:10px;">
+                            <button type="button" @click="showCancelDeleteModal = false" class="profile-cancel-req-btn" style="border-radius:12px; padding:9px 18px; font-size:13px; font-weight:700; cursor:pointer;">
+                                Keep Pending
+                            </button>
+                            <button
+                                type="button"
+                                @click="submitCancelDeletion()"
+                                :disabled="cancellingDeletion"
+                                class="profile-modal-save-btn"
+                                style="border-radius:12px; padding:9px 22px; font-size:13px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:8px;"
+                            >
+                                <template x-if="cancellingDeletion">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                                </template>
+                                <span x-text="cancellingDeletion ? 'Cancelling...' : 'Cancel Request & Keep Account'"></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </template>
