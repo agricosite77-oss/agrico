@@ -1728,6 +1728,14 @@
             var markersGroup = L.featureGroup().addTo(leafMap);
             window._agricoMarkersGroup = markersGroup;
 
+            // Render official Lal-lo municipal & barangay boundary overlay
+            if (window.LalloBoundary) {
+                window.LalloBoundary.render(leafMap, {
+                    showTooltips: true,
+                    bringMarkersToFront: markersGroup
+                }).catch(function(err) { console.log('Lal-lo boundary note:', err); });
+            }
+
             // Load initial markers from the data element
             var dataEl = document.getElementById('all-map-locations-json');
             if (dataEl && dataEl.dataset.locations) {

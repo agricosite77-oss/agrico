@@ -4,6 +4,7 @@
     {{-- Leaflet Map Assets for Pin Soil Location Modal --}}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ asset('js/lallo-boundary.js') }}"></script>
     {{-- jsPDF for Multi-Page A4 Soil Classification Reports --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -8689,6 +8690,13 @@
                             }
                         }
 
+                        if (window.LalloBoundary) {
+                            window.LalloBoundary.render(modalSoilDetailMapInstance, {
+                                showTooltips: true,
+                                bringMarkersToFront: [marker]
+                            }).catch(() => {});
+                        }
+
                         setTimeout(() => { if (modalSoilDetailMapInstance) modalSoilDetailMapInstance.invalidateSize(); }, 150);
                         setTimeout(() => { if (modalSoilDetailMapInstance) modalSoilDetailMapInstance.invalidateSize(); }, 400);
                     }, 80);
@@ -9696,53 +9704,31 @@
                 updatePinCoverageShape();
 
                 // Load official NAMRIA / PSA Lal-lo municipal boundary & 35 barangay polygons
-                if (!pinBarangayGeoJsonLayer) {
-                    fetch("{{ asset('geojson/lal-lo-with-barangays.geojson') }}")
-                        .then(res => res.json())
-                        .then(data => {
-                            if (pinLeafletMapInstance && !pinBarangayGeoJsonLayer) {
-                                pinBarangayGeoJsonLayer = L.geoJSON(data, {
-                                    style: (feature) => {
-                                        const isMunicipality = feature.properties.isMunicipality || feature.properties.admin_level === '6';
-                                        return {
-                                            color: isMunicipality ? '#22c55e' : '#8EB69B',
-                                            weight: isMunicipality ? 2.5 : 1.2,
-                                            dashArray: isMunicipality ? null : '3, 4',
-                                            fillColor: isMunicipality ? 'transparent' : '#163832',
-                                            fillOpacity: isMunicipality ? 0 : 0.12
-                                        };
-                                    },
-                                    onEachFeature: (feature, layer) => {
-                                        const name = feature.properties.name || feature.properties.adm4_name;
-                                        const isMuni = feature.properties.isMunicipality || feature.properties.admin_level === '6';
-                                        if (name) {
-                                            layer.bindTooltip(`<strong>${name}</strong>${isMuni ? ' (Municipality)' : ' (Barangay)'}`, { sticky: true });
-                                        }
-                                        if (!isMuni) {
-                                            layer.on('click', function(e) {
-                                                L.DomEvent.stopPropagation(e); // prevent map-level click from also firing
-                                                const matchBrgy = LALLO_35_BARANGAYS.find(b => b.name.toLowerCase() === name.toLowerCase());
-                                                if (matchBrgy) {
-                                                    selectPinBarangay(matchBrgy, false); // update UI dropdown without flying to centroid
-                                                } else {
-                                                    console.warn(`[PinMap] GeoJSON polygon "${name}" has no match in LALLO_35_BARANGAYS — pin placed at click coords but barangay selector not updated.`);
-                                                }
-                                                updatePinCoords(e.latlng.lat, e.latlng.lng, true);
-                                                if (pinLeafletMapInstance) {
-                                                    pinLeafletMapInstance.invalidateSize();
-                                                    const targetZoom = Math.max(pinLeafletMapInstance.getZoom(), 15);
-                                                    pinLeafletMapInstance.flyTo([e.latlng.lat, e.latlng.lng], targetZoom, { duration: 0.5 });
-                                                }
-                                            });
-                                        }
-                                    }
-                                }).addTo(pinLeafletMapInstance);
-
-                                if (pinLeafletCoverageCircle) pinLeafletCoverageCircle.bringToFront();
-                                if (pinLeafletMarker) pinLeafletMarker.bringToFront();
+                if (!pinBarangayGeoJsonLayer && window.LalloBoundary) {
+                    window.LalloBoundary.render(pinLeafletMapInstance, {
+                        showTooltips: true,
+                        onBarangayClick: function(e, feature, layer) {
+                            L.DomEvent.stopPropagation(e);
+                            const name = feature.properties && (feature.properties.name || feature.properties.adm4_name);
+                            if (name) {
+                                const matchBrgy = LALLO_35_BARANGAYS.find(b => b.name.toLowerCase() === name.toLowerCase());
+                                if (matchBrgy) {
+                                    selectPinBarangay(matchBrgy, false);
+                                }
                             }
-                        })
-                        .catch(err => console.log('Barangay boundary GeoJSON load note:', err));
+                            updatePinCoords(e.latlng.lat, e.latlng.lng, true);
+                            if (pinLeafletMapInstance) {
+                                pinLeafletMapInstance.invalidateSize();
+                                const targetZoom = Math.max(pinLeafletMapInstance.getZoom(), 15);
+                                pinLeafletMapInstance.flyTo([e.latlng.lat, e.latlng.lng], targetZoom, { duration: 0.5 });
+                            }
+                        },
+                        bringMarkersToFront: [pinLeafletCoverageCircle, pinLeafletMarker]
+                    }).then(layer => {
+                        pinBarangayGeoJsonLayer = layer;
+                        if (pinLeafletCoverageCircle) pinLeafletCoverageCircle.bringToFront();
+                        if (pinLeafletMarker) pinLeafletMarker.bringToFront();
+                    }).catch(err => console.log('Barangay boundary GeoJSON load note:', err));
                 }
             } else {
                 pinLeafletMapInstance.invalidateSize();

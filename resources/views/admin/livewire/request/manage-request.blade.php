@@ -674,6 +674,7 @@
                                             {{ $selectedRequestLocation['coverage'] }}
                                         </span>
                                     @endif
+                                    <span id="reqMapGeoStatus-{{ $selectedRequest->user_request_id }}" style="font-size: 11px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 6px; display: none;"></span>
                                 </div>
                             </div>
 
@@ -1177,6 +1178,31 @@
 
                     if (covStr) {
                         poly.bindTooltip(`${isApproved ? 'Covered Area' : 'Pending Covered Area'} (Sakop): ${covStr}`, { sticky: true });
+                    }
+
+                    // Render official Lal-lo municipal & barangay boundary overlay
+                    if (window.LalloBoundary) {
+                        window.LalloBoundary.render(reqMap, {
+                            showTooltips: true,
+                            bringMarkersToFront: [marker, poly]
+                        }).catch(function(err) { console.log('Lal-lo boundary note:', err); });
+
+                        window.LalloBoundary.findBarangayAt(lat, lng).then(function(res) {
+                            const badge = document.getElementById('reqMapGeoStatus-' + containerId.replace('review-request-map-', ''));
+                            if (badge) {
+                                if (res.inside) {
+                                    badge.style.display = 'inline-block';
+                                    badge.style.color = '#065f46';
+                                    badge.style.background = '#d1fae5';
+                                    badge.textContent = '✓ Inside Lal-lo' + (res.barangay ? ' (' + res.barangay + ')' : '');
+                                } else {
+                                    badge.style.display = 'inline-block';
+                                    badge.style.color = '#b91c1c';
+                                    badge.style.background = '#fee2e2';
+                                    badge.textContent = '⚠️ Outside Lal-lo Coverage';
+                                }
+                            }
+                        }).catch(function() {});
                     }
 
                     setTimeout(() => { reqMap.invalidateSize(); }, 150);

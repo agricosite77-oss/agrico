@@ -1423,6 +1423,14 @@
                         poly.bindTooltip(`${isApproved ? 'Covered Area' : 'Pending Covered Area'} (Sakop): ${covStr}`, { sticky: true });
                     }
 
+                    // Render official Lal-lo municipal & barangay boundary overlay
+                    if (window.LalloBoundary) {
+                        window.LalloBoundary.render(dMap, {
+                            showTooltips: true,
+                            bringMarkersToFront: [marker, poly]
+                        }).catch(function(err) { console.log('Lal-lo boundary note:', err); });
+                    }
+
                     setTimeout(() => { dMap.invalidateSize(); }, 150);
                     setTimeout(() => { dMap.invalidateSize(); }, 350);
                     setTimeout(() => { dMap.invalidateSize(); }, 600);

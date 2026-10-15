@@ -1107,6 +1107,7 @@
     </div>
     {{-- Leaflet JS --}}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ asset('js/lallo-boundary.js') }}"></script>
 
     <script>
         const mappingsData = @json($mappings);
@@ -1312,10 +1313,37 @@
             boundsGroup.push([lt, ln]);
         });
 
-        if (boundsGroup.length > 0) {
-            map.fitBounds(boundsGroup, { padding: [40, 40] });
+        // Render official Lal-lo municipal & barangay boundary overlay with maxBounds enabled
+        if (window.LalloBoundary) {
+            window.LalloBoundary.render(map, {
+                fitBounds: boundsGroup.length === 0,
+                maxBounds: true,
+                maxBoundsPadding: 0.08,
+                minZoom: 11,
+                showTooltips: true,
+                bringMarkersToFront: markersMap.map(m => m.marker),
+                onBarangayClick: function(e, feature, layer) {
+                    const name = feature.properties && (feature.properties.name || feature.properties.adm4_name);
+                    if (name) {
+                        const input = document.getElementById('mapSearchInput');
+                        if (input) {
+                            input.value = name;
+                            handleMapSearch(name);
+                        }
+                    }
+                }
+            }).then(() => {
+                // If pins exist, fit bounds to the pins comfortably inside Lal-lo
+                if (boundsGroup.length > 0) {
+                    map.fitBounds(boundsGroup, { padding: [40, 40] });
+                }
+            }).catch(err => console.log('Lal-lo boundary note:', err));
         } else {
-            map.setView([defaultLat, defaultLng], defaultZoom);
+            if (boundsGroup.length > 0) {
+                map.fitBounds(boundsGroup, { padding: [40, 40] });
+            } else {
+                map.setView([defaultLat, defaultLng], defaultZoom);
+            }
         }
 
         // Map Search Logic (FAQ Design & Positioning)
