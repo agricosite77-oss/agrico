@@ -1547,29 +1547,27 @@
             }
         }
         html.light-mode .scanner-btn-primary {
-            background: linear-gradient(135deg, #235347, #163832) !important;
-            border: 1.5px solid #8EB69B !important;
-            color: #DAF1DE !important;
-            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.28) !important;
+            background: #22c55e !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
         }
         html.light-mode .scanner-btn-primary:hover {
-            background: linear-gradient(135deg, #2e695a, #1c453d) !important;
-            border-color: #DAF1DE !important;
+            background: #16a34a !important;
+            box-shadow: 0 6px 18px rgba(34, 197, 94, 0.45) !important;
+            transform: translateY(-1px) !important;
             color: #ffffff !important;
-            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.45) !important;
-            transform: translateY(-2px) !important;
         }
         html.light-mode .scanner-btn-secondary {
-            background: #ffffff !important;
-            color: #334155 !important;
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
             border: 1.5px solid #cbd5e1 !important;
         }
         html.light-mode .scanner-btn-secondary:hover {
-            background: #f0fdf4 !important;
-            border-color: #22c55e !important;
-            color: #16a34a !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
+            background: #e2e8f0 !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+            transform: translateY(-1px) !important;
         }
         html.light-mode .result-empty {
             color: #475569 !important;
@@ -3528,33 +3526,33 @@
             outline: none;
         }
         .btn-res-save-copy {
-            background: rgba(11, 43, 38, 0.8) !important;
-            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
-            color: #DAF1DE !important;
+            background: rgba(11, 43, 38, 0.65);
+            border: 1.5px solid rgba(142, 182, 155, 0.35);
+            color: #8EB69B;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         .btn-res-save-copy:hover {
-            background: #163832 !important;
-            border-color: #22c55e !important;
-            color: #4ade80 !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
+            background: rgba(35, 83, 71, 0.45);
+            border-color: #DAF1DE;
+            color: #DAF1DE;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.35);
         }
         .btn-res-save-copy:active {
             transform: translateY(0);
         }
         .btn-res-pin-location {
-            background: linear-gradient(135deg, #235347, #163832) !important;
-            border: 1.5px solid #8EB69B !important;
-            color: #DAF1DE !important;
-            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.4) !important;
+            background: linear-gradient(135deg, #235347, #163832);
+            border: 1.5px solid #8EB69B;
+            color: #DAF1DE;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
         }
         .btn-res-pin-location:hover {
-            background: linear-gradient(135deg, #2e695a, #1c453d) !important;
-            border-color: #DAF1DE !important;
-            color: #ffffff !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.55) !important;
+            background: linear-gradient(135deg, #2e695a, #1c453d);
+            border-color: #DAF1DE;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(35, 83, 71, 0.45);
         }
         .btn-res-pin-location:active {
             transform: translateY(0);
@@ -3564,28 +3562,27 @@
         html.light-mode .btn-res-save-copy {
             background: #ffffff !important;
             border: 1.5px solid #cbd5e1 !important;
-            color: #334155 !important;
+            color: #475569 !important;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
         }
         html.light-mode .btn-res-save-copy:hover {
-            background: #f0fdf4 !important;
-            border-color: #22c55e !important;
-            color: #16a34a !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
-            transform: translateY(-2px) !important;
+            background: #f8fafc !important;
+            border-color: #94a3b8 !important;
+            color: #0f172a !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+            transform: translateY(-1px) !important;
         }
         html.light-mode .btn-res-pin-location {
-            background: linear-gradient(135deg, #235347, #163832) !important;
-            border: 1.5px solid #8EB69B !important;
-            color: #DAF1DE !important;
-            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.28) !important;
+            background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+            border: 1.5px solid #16a34a !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.28) !important;
         }
         html.light-mode .btn-res-pin-location:hover {
-            background: linear-gradient(135deg, #2e695a, #1c453d) !important;
-            border-color: #DAF1DE !important;
-            color: #ffffff !important;
-            box-shadow: 0 6px 18px rgba(35, 83, 71, 0.38) !important;
-            transform: translateY(-2px) !important;
+            background: linear-gradient(135deg, #16a34a, #15803d) !important;
+            border-color: #15803d !important;
+            box-shadow: 0 6px 18px rgba(22, 163, 74, 0.38) !important;
+            transform: translateY(-1px) !important;
         }
 
         /* ── PIN SOIL LOCATION MODAL (DARK MODE DEFAULT) ── */
@@ -4726,7 +4723,7 @@
 
                     {{-- Action Buttons Row: Save Copy (Left) & Pin All Detected (Right) --}}
                     <div id="resActionButtonsRow" class="res-action-buttons-row">
-                        <button type="button" id="btnSaveCopyScan" class="btn-res-action btn-res-save-copy agri-btn agri-btn--secondary" onclick="saveCurrentScanCopy()" title="Save Copy of Soil Record">
+                        <button type="button" id="btnSaveCopyScan" class="btn-res-action btn-res-save-copy" onclick="saveCurrentScanCopy()" title="Save Copy of Soil Record">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
                             </svg>

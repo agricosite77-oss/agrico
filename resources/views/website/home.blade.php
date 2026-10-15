@@ -103,21 +103,21 @@
             align-items: center;
             gap: 8px;
             padding: 15px 34px;
-            background: #22c55e !important;
-            color: #ffffff !important;
+            background: linear-gradient(135deg, #235347, #163832);
+            color: #DAF1DE;
             font-size: 15px;
             font-weight: 700;
             border-radius: 14px;
-            border: none !important;
+            border: 1px solid #8EB69B;
             text-decoration: none;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(35, 83, 71, 0.6);
+            transition: all 0.25s ease;
         }
         .hero-btn-primary:hover {
             transform: translateY(-2px);
-            background: #16a34a !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            color: #ffffff !important;
+            background: linear-gradient(135deg, #163832, #0B2B26);
+            box-shadow: 0 14px 38px rgba(35, 83, 71, 0.8);
+            border-color: #DAF1DE;
         }
         .hero-btn-outline {
             display: inline-flex;
@@ -137,11 +137,10 @@
             transition: all 0.25s ease;
         }
         .hero-btn-outline:hover {
-            background: #163832 !important;
-            border-color: #22c55e !important;
-            color: #4ade80 !important;
+            background: rgba(35, 83, 71, 0.8);
+            border-color: #4ade80;
+            color: #ffffff;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
         }
 
         /* Stats strip */
@@ -450,22 +449,20 @@
             align-items: center;
             gap: 8px;
             padding: 15px 38px;
-            background: #22c55e !important;
-            color: #ffffff !important;
+            background: #DAF1DE;
+            color: #051F20;
             font-size: 15px;
             font-weight: 800;
             border-radius: 14px;
-            border: none !important;
             text-decoration: none;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(218, 241, 222, 0.3);
+            transition: all 0.25s ease;
             position: relative;
         }
         .cta-banner-btn:hover {
-            background: #16a34a !important;
-            color: #ffffff !important;
+            background: #ffffff;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
+            box-shadow: 0 14px 40px rgba(218, 241, 222, 0.45);
         }
 
         /* ── LIGHT MODE: Ultra-Luxurious State-of-the-Art Design ── */
@@ -631,16 +628,15 @@
         html.light-mode .cta-banner h2,
         html.light-mode .cta-banner p { color: #FFFFFF !important; }
         html.light-mode .cta-banner-btn {
-            background: #22c55e !important;
-            color: #ffffff !important;
-            border: none !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            background: #FFFFFF;
+            color: #15803d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
         }
         html.light-mode .cta-banner-btn:hover {
-            background: #16a34a !important;
-            color: #ffffff !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            transform: translateY(-2px);
+            background: #f0fdf4;
+            color: #16a34a;
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+            transform: translateY(-3px);
         }
     </style>
 
@@ -681,7 +677,7 @@
                 <a href="{{ route('website.scan') }}"
                    @if($isHPending) onclick="event.preventDefault(); showAccountPendingModal('Account Pending Approval', 'Your account is awaiting admin approval. Scanning and Map access will be enabled once approved.');"
                    @elseif(!$isHAuth) onclick="event.preventDefault(); showGlobalLoginModal('scan');" @endif
-                   class="hero-btn-primary agri-btn agri-btn--primary" style="padding: 14px 34px; border-radius: 999px;">
+                   class="hero-btn-primary" style="padding: 14px 34px; border-radius: 999px;">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"
                          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
@@ -691,7 +687,7 @@
                 </a>
                 <a href="{{ route('website.download') }}"
                    @if(\App\Models\Application::isMaintenanceMode()) onclick="event.preventDefault(); showSystemMaintenanceModal();" @endif
-                   class="hero-btn-outline agri-btn agri-btn--secondary" style="padding: 13px 30px; border-radius: 999px;">
+                   class="hero-btn-outline" style="padding: 13px 30px; border-radius: 999px;">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"
                          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -844,7 +840,7 @@
         <div class="cta-banner ui-scroll-reveal" style="max-width:1200px; margin:0 auto;">
             <h2>Ready to Understand Your Soil?</h2>
             <p style="opacity: 0.95;">Start exploring soil scan data, Munsell color charts, and interactive maps — all free.</p>
-            <a href="{{ route('website.munsell') }}" class="cta-banner-btn agri-btn agri-btn--primary">
+            <a href="{{ route('website.munsell') }}" class="cta-banner-btn">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"
                      stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <rect x="3" y="3" width="18" height="18" rx="3"/>

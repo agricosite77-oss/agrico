@@ -345,8 +345,8 @@
                 @enderror
             </div>
 
-            <!-- Submit Button (Matches AgriCo Unified Design System) -->
-            <button type="submit" class="auth-submit-btn agri-btn agri-btn--primary agri-btn--block" style="height: 44px; font-size: 0.95rem;">
+            <!-- Submit Button (Matches + Add Munsell Color design) -->
+            <button type="submit" class="auth-submit-btn" style="width: 100%; height: 44px; background: #22c55e !important; color: #ffffff !important; border: none; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); transition: all 0.2s ease;" onmouseover="this.style.background='#16a34a'" onmouseout="this.style.background='#22c55e'">
                 Send 6-Digit Code
             </button>
         </form>

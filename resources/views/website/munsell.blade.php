@@ -186,28 +186,26 @@
         }
         .hue-pill {
             padding: 8px 16px;
-            border-radius: 9999px;
-            border: 1.5px solid rgba(142, 182, 155, 0.28);
-            background: #0B2B26;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            background: rgba(11, 43, 38, 0.5);
             font-size: 14px;
             font-weight: 600;
             color: #8EB69B;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.25s ease;
         }
         .hue-pill:hover {
-            border-color: #22c55e !important;
-            color: #4ade80 !important;
-            background: #163832 !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            background: rgba(35, 83, 71, 0.4);
+            color: #DAF1DE;
+            border-color: rgba(142, 182, 155, 0.3);
         }
         .hue-pill.active {
-            background: #22c55e !important;
-            border-color: #22c55e !important;
-            color: #ffffff !important;
+            background: linear-gradient(135deg, #235347, #163832) !important;
+            border-color: #8EB69B !important;
+            color: #DAF1DE !important;
             font-weight: 700 !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.4) !important;
         }
 
         /* Color stats */
@@ -435,18 +433,18 @@
             color: #334155 !important;
             box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03) !important;
             font-weight: 600 !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
         html.light-mode .hue-pill:hover {
             background: #f0fdf4 !important;
-            border-color: #22c55e !important;
+            border-color: #86efac !important;
             color: #16a34a !important;
             transform: translateY(-2px) !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15) !important;
         }
         html.light-mode .hue-pill.active {
             background: #22c55e !important;
-            border: 1.5px solid #22c55e !important;
+            border: none !important;
             color: #FFFFFF !important;
             font-weight: 800 !important;
             box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;

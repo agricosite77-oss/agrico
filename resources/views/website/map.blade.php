@@ -802,11 +802,11 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         .modal-cancel-btn:hover {
-            background: #163832 !important;
-            border-color: #22c55e !important;
-            color: #4ade80 !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
+            background: rgba(35, 83, 71, 0.5) !important;
+            border-color: #DAF1DE !important;
+            color: #DAF1DE !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.35);
         }
         .modal-cancel-btn:active {
             transform: translateY(0);
@@ -1000,20 +1000,20 @@
             border-top: 1px solid #f1f5f9;
         }
         html.light-mode .modal-cancel-btn {
-            background: #ffffff !important;
+            background: #f1f5f9 !important;
             border: 1.5px solid #cbd5e1 !important;
-            color: #334155 !important;
+            color: #1e293b !important;
             border-radius: 14px !important;
             font-weight: 800 !important;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             transition: all 0.25s ease !important;
         }
         html.light-mode .modal-cancel-btn:hover {
-            background: #f0fdf4 !important;
-            border-color: #22c55e !important;
-            color: #16a34a !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
+            background: #e2e8f0 !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         html.light-mode .modal-cancel-btn:active {
             transform: translateY(0);
@@ -1277,7 +1277,7 @@
                         </div>
                     </div>
                     <div>
-                        <button type="button" class="agri-btn agri-btn--primary agri-btn--block agri-btn--sm" onclick="viewWebsitePinDetails(${locId})">
+                        <button type="button" onclick="viewWebsitePinDetails(${locId})" style="width: 100%; padding: 8.5px 12px; background: #16a34a; color: #ffffff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease; box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
                             View Details
                         </button>
                     </div>

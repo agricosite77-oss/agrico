@@ -190,22 +190,22 @@
             justify-content: center;
             padding: 9px 24px;
             border-radius: 12px !important;
-            background: #22c55e !important;
-            border: none !important;
-            color: #ffffff !important;
+            background: linear-gradient(135deg, #235347, #163832) !important;
+            border: 1.5px solid #8EB69B !important;
+            color: #DAF1DE !important;
             font-size: 13.5px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.5) !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             font-family: inherit;
         }
         .profile-modal-save-btn:hover {
-            background: #16a34a !important;
-            border: none !important;
+            background: #235347 !important;
+            border-color: #DAF1DE !important;
             color: #ffffff !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.6) !important;
+            transform: translateY(-1px);
         }
 
         /* ── Preview Pencil Button ── */
@@ -691,23 +691,17 @@
             align-items: center;
             gap: 8px;
             padding: 10px 24px;
-            background: #22c55e !important;
-            border: none !important;
-            color: #ffffff !important;
+            background: rgba(35, 83, 71, 0.45);
+            border: 1.5px solid #8EB69B;
+            color: #DAF1DE;
             font-size: 14px;
             font-weight: 700;
             border-radius: 12px;
             text-decoration: none;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            transition: all 0.25s ease;
         }
-        .ws-btn-green:hover {
-            background: #16a34a !important;
-            border: none !important;
-            color: #ffffff !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-        }
+        .ws-btn-green:hover { background: #235347; border-color: #DAF1DE; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(35, 83, 71, 0.5); }
 
         .profile-admin-btn {
             margin-top: 18px;
@@ -719,26 +713,26 @@
             gap: 8px;
             padding: 11px 20px;
             border-radius: 999px;
-            background: rgba(11, 43, 38, 0.8);
+            background: rgba(11, 43, 38, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1.5px solid rgba(142, 182, 155, 0.35);
+            border: 1.5px solid rgba(142, 182, 155, 0.6);
             color: #DAF1DE !important;
             font-weight: 700;
             font-size: 14px;
             text-decoration: none;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.25s ease;
         }
         .profile-admin-btn svg {
             stroke: #DAF1DE !important;
         }
         .profile-admin-btn:hover {
-            background: #16a34a !important;
-            border-color: #22c55e !important;
+            background: rgba(35, 83, 71, 0.8);
+            border-color: #DAF1DE;
             color: #FFFFFF !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.5);
+            transform: translateY(-2px);
         }
         .profile-admin-btn:hover svg {
             stroke: #FFFFFF !important;
@@ -1062,25 +1056,25 @@
             gap: 7px;
             padding: 8px 18px;
             border-radius: 12px !important;
-            background: #22c55e !important;
-            border: none !important;
-            color: #ffffff !important;
+            background: linear-gradient(135deg, #235347, #163832) !important;
+            border: 1.5px solid #8EB69B !important;
+            color: #DAF1DE !important;
             font-size: 13.5px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.45) !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             font-family: inherit;
         }
-        .profile-edit-btn svg { stroke: #ffffff !important; }
+        .profile-edit-btn svg { stroke: #DAF1DE !important; }
         .profile-edit-btn:hover {
-            background: #16a34a !important;
-            border: none !important;
-            color: #ffffff !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            transform: translateY(-2px) !important;
+            background: #235347 !important;
+            border-color: #DAF1DE !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.6) !important;
+            transform: translateY(-1px);
         }
-        .profile-edit-btn:hover svg { stroke: #ffffff !important; }
+        .profile-edit-btn:hover svg { stroke: #FFFFFF !important; }
 
         .profile-logout-btn {
             margin-top: 12px;
@@ -2575,7 +2569,7 @@
 
                                 <button
                                     type="submit"
-                                    class="profile-modal-save-btn agri-btn agri-btn--primary"
+                                    class="profile-modal-save-btn"
                                 >
                                     Save changes
                                 </button>

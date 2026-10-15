@@ -490,6 +490,19 @@
         html:not(.light-mode) .legal-cross-text p {
             color: #8EB69B;
         }
+        html:not(.light-mode) .legal-cross-btn {
+            background: linear-gradient(135deg, #235347, #163832) !important;
+            border: 1.5px solid #8EB69B !important;
+            color: #DAF1DE !important;
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.4) !important;
+        }
+        html:not(.light-mode) .legal-cross-btn:hover {
+            background: linear-gradient(135deg, #2e695a, #1c453d) !important;
+            border-color: #DAF1DE !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.55) !important;
+            transform: translateY(-2px);
+        }
         html:not(.light-mode) .legal-back-to-top {
             background: #0B2B26;
             border-color: rgba(142, 182, 155, 0.35);
@@ -790,7 +803,7 @@
                         <h4>Looking for our Privacy Policy?</h4>
                         <p>Learn how we collect, store, and safeguard your soil scans, location, and account data.</p>
                     </div>
-                    <a href="{{ route('website.privacy') }}" class="legal-cross-btn agri-btn agri-btn--primary">
+                    <a href="{{ route('website.privacy') }}" class="legal-cross-btn">
                         <span>Read Privacy Policy</span>
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path d="M5 12h14M12 5l7 7-7 7"/>

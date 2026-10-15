@@ -1479,7 +1479,7 @@
 
             <!-- Submit Button (#22c55e GREEN PILL BUTTON, Disabled by default until terms are agreed) -->
             <div id="submitBtnWrapper" style="width: 100%; cursor: {{ old('terms_agreed') ? 'default' : 'not-allowed' }}; margin-top: 8px;">
-                <button type="submit" id="submitBtn" class="auth-submit-btn agri-btn agri-btn--primary agri-btn--block" style="height: 44px; font-size: 0.95rem; cursor: {{ old('terms_agreed') ? 'pointer' : 'not-allowed' }} !important; opacity: {{ old('terms_agreed') ? '1' : '0.55' }} !important; margin-top: 0 !important;" {{ old('terms_agreed') ? '' : 'disabled' }}>
+                <button type="submit" id="submitBtn" class="auth-submit-btn" style="width: 100%; height: 44px; background: #22c55e !important; color: #ffffff !important; border: none; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: {{ old('terms_agreed') ? 'pointer' : 'not-allowed' }} !important; display: flex; align-items: center; justify-content: center; box-shadow: {{ old('terms_agreed') ? '0 4px 14px rgba(34, 197, 94, 0.35)' : 'none' }} !important; opacity: {{ old('terms_agreed') ? '1' : '0.55' }} !important; transition: all 0.2s ease; margin-top: 0 !important;" {{ old('terms_agreed') ? '' : 'disabled' }}>
                     Create Account
                 </button>
             </div>
