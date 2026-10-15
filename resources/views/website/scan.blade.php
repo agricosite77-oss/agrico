@@ -719,10 +719,11 @@
         }
         .scanner-btn-primary:hover,
         .scanner-btn-cam:hover {
-            background: linear-gradient(135deg, #163832, #0B2B26) !important;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(35, 83, 71, 0.6) !important;
-            border-color: #DAF1DE !important;
+            background: #16a34a !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
+            border-color: #22c55e !important;
+            color: #ffffff !important;
         }
         .scanner-btn-secondary {
             background: rgba(11, 43, 38, 0.8) !important;
@@ -730,8 +731,11 @@
             border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
         }
         .scanner-btn-secondary:hover {
-            background: rgba(35, 83, 71, 0.5) !important;
-            border-color: #DAF1DE !important;
+            background: #163832 !important;
+            border-color: #22c55e !important;
+            color: #4ade80 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
         }
         .scanner-btn-cta {
             background: linear-gradient(135deg, #22c55e, #16a34a) !important;
@@ -740,9 +744,9 @@
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4) !important;
         }
         .scanner-btn-cta:hover {
-            background: linear-gradient(135deg, #16a34a, #15803d) !important;
-            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.55) !important;
-            transform: translateY(-1px);
+            background: #16a34a !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
+            transform: translateY(-2px) !important;
         }
 
         /* Result Display Card */
@@ -3516,27 +3520,27 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         .btn-res-save-copy:hover {
-            background: rgba(35, 83, 71, 0.45);
-            border-color: #DAF1DE;
-            color: #DAF1DE;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.35);
+            background: #163832 !important;
+            border-color: #22c55e !important;
+            color: #4ade80 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
         }
         .btn-res-save-copy:active {
             transform: translateY(0);
         }
         .btn-res-pin-location {
-            background: linear-gradient(135deg, #235347, #163832);
-            border: 1.5px solid #8EB69B;
-            color: #DAF1DE;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            background: #22c55e;
+            border: 1.5px solid #22c55e;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
         }
         .btn-res-pin-location:hover {
-            background: linear-gradient(135deg, #2e695a, #1c453d);
-            border-color: #DAF1DE;
-            color: #ffffff;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(35, 83, 71, 0.45);
+            background: #16a34a !important;
+            border-color: #22c55e !important;
+            color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
         }
         .btn-res-pin-location:active {
             transform: translateY(0);

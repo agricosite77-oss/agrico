@@ -257,8 +257,8 @@
             cursor: default;
         }
         .munsell-card:hover {
-            border-color: #DAF1DE !important;
-            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+            border-color: #22c55e !important;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.25), 0 14px 36px rgba(0, 0, 0, 0.45) !important;
             transform: translateY(-2px);
         }
         .munsell-swatch {

@@ -115,9 +115,10 @@
         }
         .hero-btn-primary:hover {
             transform: translateY(-2px);
-            background: linear-gradient(135deg, #163832, #0B2B26);
-            box-shadow: 0 14px 38px rgba(35, 83, 71, 0.8);
-            border-color: #DAF1DE;
+            background: #16a34a !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
+            border-color: #22c55e !important;
+            color: #ffffff !important;
         }
         .hero-btn-outline {
             display: inline-flex;
@@ -137,10 +138,11 @@
             transition: all 0.25s ease;
         }
         .hero-btn-outline:hover {
-            background: rgba(35, 83, 71, 0.8);
-            border-color: #4ade80;
-            color: #ffffff;
+            background: #163832 !important;
+            border-color: #22c55e !important;
+            color: #4ade80 !important;
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
         }
 
         /* Stats strip */
@@ -297,8 +299,8 @@
         }
         .feature-card:hover {
             transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(35, 83, 71, 0.45);
-            border-color: #DAF1DE !important;
+            box-shadow: 0 16px 40px rgba(34, 197, 94, 0.25), 0 20px 50px rgba(0, 0, 0, 0.45);
+            border-color: #22c55e !important;
         }
         .feature-icon {
             width: 52px; height: 52px;
@@ -460,9 +462,10 @@
             position: relative;
         }
         .cta-banner-btn:hover {
-            background: #ffffff;
+            background: #22c55e !important;
+            color: #ffffff !important;
             transform: translateY(-2px);
-            box-shadow: 0 14px 40px rgba(218, 241, 222, 0.45);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
         }
 
         /* ── LIGHT MODE: Ultra-Luxurious State-of-the-Art Design ── */
@@ -523,9 +526,11 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
         }
         html.light-mode .hero-btn-outline:hover {
-            background: #f0fdf4;
-            border-color: #22c55e;
-            color: #16a34a;
+            background: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #16a34a !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
         }
         html.light-mode .hero-stat {
             background: rgba(255, 255, 255, 0.95);

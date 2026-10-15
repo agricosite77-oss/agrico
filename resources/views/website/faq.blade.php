@@ -197,9 +197,11 @@
             user-select: none;
         }
         .faq-cat-btn:hover {
-            border-color: #86efac;
+            border-color: #22c55e;
             color: #166534;
             background: #f0fdf4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
         }
         .faq-cat-btn.active {
             background: #22c55e;
@@ -265,9 +267,9 @@
             transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
         }
         .faq-item:hover {
-            border-color: #86efac;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.08);
-            transform: translateY(-1px);
+            border-color: #22c55e;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.2);
+            transform: translateY(-2px);
         }
         .faq-item.is-open {
             border-color: #22c55e;
@@ -526,8 +528,9 @@
         .faq-btn-secondary:hover {
             border-color: #22c55e;
             color: #16a34a !important;
-            background: #f8fafc;
-            transform: translateY(-1px);
+            background: #f0fdf4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
         }
 
         /* ── RESPONSIVE DESIGN ── */
@@ -635,8 +638,10 @@
         }
         html:not(.light-mode) .faq-cat-btn:hover {
             border-color: #4ADE80;
-            color: #DAF1DE;
+            color: #4ADE80;
             background: #163832;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
         }
         html:not(.light-mode) .faq-cat-btn.active {
             background: #22c55e;
@@ -668,8 +673,9 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
         html:not(.light-mode) .faq-item:hover {
-            border-color: rgba(74, 222, 128, 0.45);
-            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.4);
+            border-color: #4ADE80;
+            box-shadow: 0 6px 24px rgba(34, 197, 94, 0.25), 0 8px 24px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
         }
         html:not(.light-mode) .faq-item.is-open {
             border-color: #22c55e;
@@ -773,6 +779,8 @@
             background: #163832;
             border-color: #4ADE80;
             color: #4ADE80 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
         }
     </style>
 
