@@ -9674,31 +9674,55 @@
 
                 pinLeafletMarker.on('dragend', function() {
                     const pos = pinLeafletMarker.getLatLng();
-                    updatePinCoords(pos.lat, pos.lng, false);
-                    if (!checkIfLocationIsInsideLalloBarangays(pos.lat, pos.lng)) {
-                        setPinCoverageStatus(false);
-                    } else {
-                        let matched = null;
-                        if (pinBarangayGeoJsonLayer) {
-                            pinBarangayGeoJsonLayer.eachLayer(layer => {
-                                if (layer.feature && layer.feature.properties) {
-                                    const isMuni = layer.feature.properties.isMunicipality || layer.feature.properties.admin_level === '6';
-                                    if (!isMuni && pointInGeoJsonPolygon(pos.lat, pos.lng, layer)) {
-                                        const name = layer.feature.properties.name || layer.feature.properties.adm4_name;
-                                        matched = LALLO_35_BARANGAYS.find(b => b.name.toLowerCase() === name.toLowerCase());
-                                    }
-                                }
-                            });
-                        }
-                        if (matched) {
-                            selectPinBarangay(matched, false);
+                    const isInside = (window.LalloBoundary && typeof window.LalloBoundary.isInsideLallo === 'function')
+                        ? window.LalloBoundary.isInsideLallo(pos.lat, pos.lng)
+                        : checkIfLocationIsInsideLalloBarangays(pos.lat, pos.lng);
+
+                    if (!isInside) {
+                        pinLeafletMarker.setLatLng([currentPinLat, currentPinLng]);
+                        updatePinCoverageShape();
+                        if (typeof showScanNotice === 'function') {
+                            showScanNotice('⚠️ Pin placement outside Lal-lo is restricted. Please position the pin within Lal-lo municipal boundaries.');
                         } else {
-                            setPinCoverageStatus(true, null);
+                            alert('⚠️ Pin placement outside Lal-lo is restricted. Please position the pin within Lal-lo municipal boundaries.');
                         }
+                        return;
+                    }
+
+                    updatePinCoords(pos.lat, pos.lng, false);
+                    let matched = null;
+                    if (pinBarangayGeoJsonLayer) {
+                        pinBarangayGeoJsonLayer.eachLayer(layer => {
+                            if (layer.feature && layer.feature.properties) {
+                                const isMuni = layer.feature.properties.isMunicipality || layer.feature.properties.admin_level === '6';
+                                if (!isMuni && pointInGeoJsonPolygon(pos.lat, pos.lng, layer)) {
+                                    const name = layer.feature.properties.name || layer.feature.properties.adm4_name;
+                                    matched = LALLO_35_BARANGAYS.find(b => b.name.toLowerCase() === name.toLowerCase());
+                                }
+                            }
+                        });
+                    }
+                    if (matched) {
+                        selectPinBarangay(matched, false);
+                    } else {
+                        setPinCoverageStatus(true, null);
                     }
                 });
 
                 pinLeafletMapInstance.on('click', function(e) {
+                    const isInside = (window.LalloBoundary && typeof window.LalloBoundary.isInsideLallo === 'function')
+                        ? window.LalloBoundary.isInsideLallo(e.latlng.lat, e.latlng.lng)
+                        : checkIfLocationIsInsideLalloBarangays(e.latlng.lat, e.latlng.lng);
+
+                    if (!isInside) {
+                        if (typeof showScanNotice === 'function') {
+                            showScanNotice('⚠️ Pin placement outside Lal-lo is restricted. Please click within the Lal-lo municipal boundary.');
+                        } else {
+                            alert('⚠️ Pin placement outside Lal-lo is restricted. Please click within the Lal-lo municipal boundary.');
+                        }
+                        return;
+                    }
+
                     updatePinCoords(e.latlng.lat, e.latlng.lng, true);
                     setPinCoverageStatus(false);
 
@@ -9765,6 +9789,15 @@
         }
 
         function submitPinLocation() {
+            const isInside = (window.LalloBoundary && typeof window.LalloBoundary.isInsideLallo === 'function')
+                ? window.LalloBoundary.isInsideLallo(currentPinLat, currentPinLng)
+                : checkIfLocationIsInsideLalloBarangays(currentPinLat, currentPinLng);
+
+            if (!isInside) {
+                alert('⚠️ Pinning outside Lal-lo is restricted. Please select coordinates within the Lal-lo municipal boundary before submitting.');
+                return;
+            }
+
             const btn = document.getElementById('btnSubmitPinLocation');
             const spinner = document.getElementById('btnSubmitPinSpinner');
             const btnText = document.getElementById('btnSubmitPinText');

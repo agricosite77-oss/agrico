@@ -2,10 +2,15 @@
  * AgriCo GIS - Lal-lo Boundary Module (Single Source of Truth)
  * 
  * Manages the official NAMRIA / PSA boundary dataset for Lal-lo, Cagayan:
+ * - Spotlight Mask (Inverted World Polygon: Dark outside, light & untinted inside Lal-lo)
  * - Singleton in-memory GeoJSON cache across maps and modals
  * - Consistent styling for Municipality (#22c55e) & 35 Barangays (#8EB69B)
- * - Custom Leaflet pane (zIndex 350) ensuring pins and popups remain on top
+ * - Custom Leaflet panes:
+ *     lalloMaskPane (zIndex 250): Spotlight dark overlay (non-interactive, pointer-events: none)
+ *     lalloBoundaryPane (zIndex 350): Green municipal outline & dashed barangay borders
+ *     Pins remain in markerPane (zIndex 600) and popups in popupPane (zIndex 700)
  * - High-speed zero-dependency Point-in-Polygon check (Ray-Casting)
+ * - Synchronous isInsideLallo(lat, lng) verification
  * - Calibrated centroids for all 35 official barangays
  */
 
@@ -20,6 +25,18 @@
         _cache: null,
         _fetchPromise: null,
         geoJsonUrl: '/geojson/lal-lo-with-barangays.geojson',
+
+        // Spotlight Mask Configuration (Outside Dark Overlay)
+        maskConfig: {
+            color: '#051F20', // AgriCo signature deep forest tone
+            opacity: 0.65,    // Balanced default (65% opacity: clear difference, map still faintly visible)
+            // Available presets for custom tuning:
+            presets: {
+                subtle: 0.45,   // Light dimming, outside topography clearly visible
+                balanced: 0.65, // Standard spotlight contrast (Recommended)
+                dramatic: 0.82  // Deep dark contrast, intense focus on Lal-lo
+            }
+        },
 
         // 35 Official Barangays of Lal-lo, Cagayan with calibrated centroids
         BARANGAYS_35: [
@@ -60,30 +77,61 @@
             { name: 'Tucalana',                  lat: 18.1805, lng: 121.6674 }
         ],
 
-        // Unified Style Tokens
+        // Unified Style Tokens (Inside Lal-lo is 100% untinted and bright)
         styles: {
             municipality: {
                 color: '#22c55e',
                 weight: 2.5,
                 opacity: 1,
                 dashArray: null,
+                fill: false,
                 fillColor: 'transparent',
                 fillOpacity: 0
             },
             barangay: {
                 color: '#8EB69B',
                 weight: 1.2,
-                opacity: 0.9,
+                opacity: 0.85,
                 dashArray: '3, 4',
-                fillColor: '#163832',
-                fillOpacity: 0.12
+                fill: false,
+                fillColor: 'transparent',
+                fillOpacity: 0
             },
             barangayHover: {
                 color: '#4ade80',
                 weight: 2.0,
                 opacity: 1,
-                fillColor: '#163832',
-                fillOpacity: 0.25
+                fill: true,
+                fillColor: '#ffffff',
+                fillOpacity: 0.16 // Subtle luminous brightening inside on hover
+            }
+        },
+
+        /**
+         * Set mask opacity dynamically across all map instances
+         */
+        setMaskOpacity: function (opacity) {
+            this.maskConfig.opacity = parseFloat(opacity);
+            if (typeof document !== 'undefined') {
+                document.documentElement.style.setProperty('--lallo-mask-opacity', String(opacity));
+                const els = document.querySelectorAll('.lallo-spotlight-mask');
+                els.forEach(function (el) {
+                    el.setAttribute('fill-opacity', String(opacity));
+                });
+            }
+        },
+
+        /**
+         * Set mask color dynamically across all map instances
+         */
+        setMaskColor: function (color) {
+            this.maskConfig.color = color;
+            if (typeof document !== 'undefined') {
+                document.documentElement.style.setProperty('--lallo-mask-color', color);
+                const els = document.querySelectorAll('.lallo-spotlight-mask');
+                els.forEach(function (el) {
+                    el.setAttribute('fill', color);
+                });
             }
         },
 
@@ -146,6 +194,52 @@
         },
 
         /**
+         * Synchronous Point-In-Polygon check against official Lal-lo municipal boundary
+         */
+        isInsideLallo: function (lat, lng) {
+            if (!this._cache || !this._cache.features) return true;
+            for (let i = 0; i < this._cache.features.length; i++) {
+                const f = this._cache.features[i];
+                const isMuni = f.properties && (f.properties.isMunicipality || f.properties.admin_level === '6');
+                if (isMuni && this.pointInPolygon(lat, lng, f.geometry)) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        /**
+         * Helper to extract LatLng rings from Polygon or MultiPolygon geometry
+         */
+        _extractLatLngRings: function (geometry) {
+            const rings = [];
+            if (!geometry || !geometry.coordinates) return rings;
+
+            if (geometry.type === 'Polygon') {
+                geometry.coordinates.forEach(function (ring) {
+                    const latLngRing = ring.map(function (pt) {
+                        return [pt[1], pt[0]];
+                    });
+                    if (latLngRing.length > 2) {
+                        rings.push(latLngRing);
+                    }
+                });
+            } else if (geometry.type === 'MultiPolygon') {
+                geometry.coordinates.forEach(function (polyCoords) {
+                    polyCoords.forEach(function (ring) {
+                        const latLngRing = ring.map(function (pt) {
+                            return [pt[1], pt[0]];
+                        });
+                        if (latLngRing.length > 2) {
+                            rings.push(latLngRing);
+                        }
+                    });
+                });
+            }
+            return rings;
+        },
+
+        /**
          * Check if a given (lat, lng) is inside Lal-lo, and if so, which barangay it belongs to.
          * Returns a Promise resolving to { inside: boolean, barangay: string|null, feature: object|null }
          */
@@ -182,17 +276,21 @@
         },
 
         /**
-         * Render the Lal-lo boundary on any Leaflet map instance.
+         * Render the Lal-lo boundary and spotlight mask on any Leaflet map instance.
          * 
          * @param {L.Map} map - Leaflet map instance
          * @param {Object} options - Configuration options:
+         *   - enableMask: boolean (default: true)
+         *   - maskOpacity: number (default: 0.65)
+         *   - maskColor: string (default: '#051F20')
          *   - fitBounds: boolean (default: false)
-         *   - maxBounds: boolean (default: false)
+         *   - maxBounds: boolean (default: true)
+         *   - maxBoundsPadding: number (default: 0.12)
          *   - interactiveBarangays: boolean (default: true)
          *   - showTooltips: boolean (default: true)
          *   - onBarangayClick: function(e, feature, layer)
          *   - onReady: function(geoJsonLayer, data)
-         *   - bringMarkersToFront: L.LayerGroup | L.Marker | null
+         *   - bringMarkersToFront: L.LayerGroup | L.Marker | Array | null
          */
         render: function (map, options) {
             if (!map || typeof L === 'undefined') {
@@ -202,11 +300,19 @@
             options = options || {};
             const self = this;
 
-            // Ensure custom pane at zIndex 350 so vector boundaries sit between tiles and pins
+            // 1. Ensure custom pane for spotlight mask at zIndex 250 (above tiles 200, below vector boundaries 350)
+            const maskPaneName = options.maskPaneName || 'lalloMaskPane';
+            if (!map.getPane(maskPaneName)) {
+                const mPane = map.createPane(maskPaneName);
+                mPane.style.zIndex = '250';
+                mPane.style.pointerEvents = 'none';
+            }
+
+            // 2. Ensure custom pane for vector boundaries at zIndex 350
             const paneName = options.paneName || 'lalloBoundaryPane';
             if (!map.getPane(paneName)) {
-                const pane = map.createPane(paneName);
-                pane.style.zIndex = '350';
+                const bPane = map.createPane(paneName);
+                bPane.style.zIndex = '350';
             }
 
             // Legal Attribution update: add official data source attribution
@@ -215,6 +321,49 @@
             }
 
             return this.fetchData().then(function (data) {
+                // 1. Draw Spotlight Mask (Dark outside, transparent inside Lal-lo)
+                if (options.enableMask !== false && !map._lalloSpotlightMask) {
+                    let muniFeature = null;
+                    for (let i = 0; i < data.features.length; i++) {
+                        const f = data.features[i];
+                        if (f.properties && (f.properties.isMunicipality || f.properties.admin_level === '6')) {
+                            muniFeature = f;
+                            break;
+                        }
+                    }
+
+                    if (muniFeature) {
+                        const muniRings = self._extractLatLngRings(muniFeature.geometry);
+                        if (muniRings.length > 0) {
+                            // Massive world outer ring in Web Mercator latitude limits with dual-world longitude wrap
+                            const WORLD_RING = [
+                                [-85.051128, -360],
+                                [-85.051128, 360],
+                                [85.051128, 360],
+                                [85.051128, -360]
+                            ];
+
+                            const maskColor = options.maskColor || self.maskConfig.color;
+                            const maskOpacity = options.maskOpacity !== undefined ? options.maskOpacity : self.maskConfig.opacity;
+
+                            const maskPolygon = L.polygon([WORLD_RING, ...muniRings], {
+                                pane: maskPaneName,
+                                stroke: false,
+                                color: 'transparent',
+                                weight: 0,
+                                fillColor: maskColor,
+                                fillOpacity: maskOpacity,
+                                fillRule: 'evenodd',
+                                interactive: false,
+                                className: 'lallo-spotlight-mask'
+                            }).addTo(map);
+
+                            map._lalloSpotlightMask = maskPolygon;
+                        }
+                    }
+                }
+
+                // 2. Render GeoJSON Boundaries (Green outline & dashed barangays)
                 const geoJsonLayer = L.geoJSON(data, {
                     pane: paneName,
                     style: function (feature) {
@@ -271,12 +420,15 @@
                     map.fitBounds(geoJsonLayer.getBounds(), { padding: [24, 24] });
                 }
 
-                // Lock pan within Lal-lo bounds if maxBounds is enabled
-                if (options.maxBounds) {
+                // Constrain panning around Lal-lo with comfortable padding (Question 2: Recommended)
+                if (options.maxBounds !== false) {
                     const bounds = geoJsonLayer.getBounds();
-                    const paddedBounds = bounds.pad(options.maxBoundsPadding !== undefined ? options.maxBoundsPadding : 0.08);
+                    const padFactor = options.maxBoundsPadding !== undefined ? options.maxBoundsPadding : 0.12;
+                    const paddedBounds = bounds.pad(padFactor);
                     map.setMaxBounds(paddedBounds);
-                    map.options.minZoom = options.minZoom || 10;
+                    if (!map.options.minZoom || map.options.minZoom < 10) {
+                        map.options.minZoom = options.minZoom || 10;
+                    }
                 }
 
                 // Bring pin/markers groups to front if supplied
@@ -299,13 +451,26 @@
         }
     };
 
-    // Inject unified tooltip styling
+    // Inject unified tooltip & spotlight mask styling
     if (typeof document !== 'undefined') {
         const styleId = 'lallo-boundary-tooltip-style';
         if (!document.getElementById(styleId)) {
             const style = document.createElement('style');
             style.id = styleId;
             style.textContent = `
+                :root {
+                    --lallo-mask-color: #051F20;
+                    --lallo-mask-opacity: 0.65;
+                }
+                .lallo-spotlight-mask {
+                    pointer-events: none !important;
+                    transition: fill-opacity 0.4s ease-out;
+                    animation: lalloMaskFadeIn 0.35s ease-out forwards;
+                }
+                @keyframes lalloMaskFadeIn {
+                    0% { fill-opacity: 0; opacity: 0; }
+                    100% { opacity: 1; }
+                }
                 .lallo-brgy-tooltip {
                     background: rgba(11, 43, 38, 0.94) !important;
                     color: #DAF1DE !important;
