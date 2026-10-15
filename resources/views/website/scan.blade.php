@@ -7322,6 +7322,12 @@
                 const resMetaLayers = document.getElementById('resMetaLayers');
 
                 const regions = Array.isArray(data.regions) ? data.regions : [];
+                regions.forEach((r, idx) => {
+                    r.pinned_index = idx;
+                    r.index = idx;
+                });
+                window.currentScanPinnedIndices = [];
+                window.currentActiveSelectedSoilIndex = 0;
                 const isMultiLayer = regions.length > 1;
 
                 if (resHeaderTitle) {
@@ -7581,9 +7587,13 @@
                     if (resDesc) resDesc.textContent = rDesc;
 
                     // Update Pin Location button to pin THIS specific selected soil
+                    window.currentActiveSelectedSoilIndex = layerIdx;
                     const btnPin = document.getElementById('btnPinLocationScan');
                     if (btnPin) {
                         btnPin.onclick = () => openPinLocationModal(r, false);
+                    }
+                    if (typeof updatePinButtonStates === 'function') {
+                        updatePinButtonStates();
                     }
 
                     // Update selection highlight in dropdown
@@ -7663,6 +7673,9 @@
                     resMultiLayerItems.innerHTML = '';
                     regions.slice(1).forEach((r, idx) => {
                         try {
+                            const actualIdx = idx + 1;
+                            r.pinned_index = actualIdx;
+                            r.index = actualIdx;
                             const rPct = r.percent || Math.round((r.proportion || 0.2) * 100);
                             const rMunsell = r.munsell || r.munsell_code || 'Soil Color';
                             const rHex = r.hex || getMunsellColorHex(rMunsell, '') || '#8F694E';
@@ -7861,6 +7874,16 @@
                     if (resContent) resContent.style.display = 'block';
                     if (resCardContainer) resCardContainer.style.height = 'auto';
                     syncScannerCardHeights();
+                }
+
+                // Bind primary Pin Location button and sync states
+                const initialDomSoil = (regions && regions[0]) ? regions[0] : null;
+                const btnPinInit = document.getElementById('btnPinLocationScan');
+                if (btnPinInit) {
+                    btnPinInit.onclick = () => openPinLocationModal(initialDomSoil, false);
+                }
+                if (typeof updatePinButtonStates === 'function') {
+                    updatePinButtonStates();
                 }
 
                 // Automatically recalculate height so all detected layers, before-after, and action buttons are fully displayed
@@ -9224,6 +9247,103 @@
         let currentPinBarangay = 'Lal-lo Overall';
         let currentPinTargetSoil = null;
         let isPinningAllSoils = false;
+        window.currentScanPinnedIndices = window.currentScanPinnedIndices || [];
+        window.currentActiveSelectedSoilIndex = window.currentActiveSelectedSoilIndex || 0;
+
+        function updatePinButtonStates() {
+            const scanData = window.currentScanResult || (typeof currentScanResponseData !== 'undefined' ? currentScanResponseData : lastScanMatch);
+            const activeRegions = window.currentActiveScanRegions || (scanData && scanData.regions) || [];
+            const pinned = window.currentScanPinnedIndices || [];
+            const activeIdx = window.currentActiveSelectedSoilIndex || 0;
+
+            // 1. Primary Card Pin Location Button
+            const btnPin = document.getElementById('btnPinLocationScan');
+            if (btnPin) {
+                const isCurrentPinned = pinned.includes(activeIdx);
+                if (isCurrentPinned) {
+                    btnPin.disabled = true;
+                    btnPin.style.opacity = '0.75';
+                    btnPin.style.cursor = 'default';
+                    btnPin.innerHTML = `
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span>Pinned (Pending Review)</span>
+                    `;
+                } else {
+                    btnPin.disabled = false;
+                    btnPin.style.opacity = '1';
+                    btnPin.style.cursor = 'pointer';
+                    btnPin.innerHTML = `
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Pin Location</span>
+                    `;
+                }
+            }
+
+            // 2. Accordion sub-layer pin buttons
+            if (activeRegions.length > 1) {
+                const accordionBtns = document.querySelectorAll('.btn-layer-pin-btn');
+                accordionBtns.forEach((b, i) => {
+                    const regIdx = i + 1;
+                    const isRegPinned = pinned.includes(regIdx);
+                    if (isRegPinned) {
+                        b.disabled = true;
+                        b.style.opacity = '0.75';
+                        b.style.cursor = 'default';
+                        b.innerHTML = `
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Pinned (Pending Review)</span>
+                        `;
+                    } else {
+                        b.disabled = false;
+                        b.style.opacity = '1';
+                        b.style.cursor = 'pointer';
+                        b.innerHTML = `
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span>Pin Location</span>
+                        `;
+                    }
+                });
+            }
+
+            // 3. Pin All Button
+            const btnPinAll = document.getElementById('btnPinAllLocationScan');
+            if (btnPinAll && activeRegions.length > 1) {
+                const total = activeRegions.length;
+                const remaining = total - pinned.length;
+                if (remaining <= 0) {
+                    btnPinAll.disabled = true;
+                    btnPinAll.style.opacity = '0.75';
+                    btnPinAll.style.cursor = 'default';
+                    btnPinAll.innerHTML = `
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span>All Pinned</span>
+                    `;
+                } else {
+                    btnPinAll.disabled = false;
+                    btnPinAll.style.opacity = '1';
+                    btnPinAll.style.cursor = 'pointer';
+                    btnPinAll.innerHTML = `
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Pin All (${remaining})</span>
+                    `;
+                }
+            }
+        }
 
         function openPinAllLocationModal() {
             openPinLocationModal(null, true);
@@ -9231,7 +9351,6 @@
 
         function openPinLocationModal(layerData = null, isAll = false) {
             isPinningAllSoils = Boolean(isAll);
-            currentPinTargetSoil = isAll ? null : layerData;
             const modal = document.getElementById('pinSoilLocationModal');
             if (!modal) return;
 
@@ -9242,6 +9361,11 @@
             const activeRegions = window.currentActiveScanRegions || (scanData && scanData.regions) || [];
 
             if (isPinningAllSoils) {
+                currentPinTargetSoil = null;
+                if (activeRegions.length > 0 && window.currentScanPinnedIndices && window.currentScanPinnedIndices.length >= activeRegions.length) {
+                    alert('⚠️ All detected soil layers for this scan have already been pinned.');
+                    return;
+                }
                 if (modalTitleEl) modalTitleEl.textContent = 'Pin All Soil Locations';
                 if (modalSubtitleEl) modalSubtitleEl.textContent = activeRegions.length > 1
                     ? `Pin all ${activeRegions.length} detected soil layers from this scan to Lal-lo coordinates`
@@ -9258,12 +9382,29 @@
                     }
                 }
             } else {
+                if (!layerData) {
+                    const activeIdx = window.currentActiveSelectedSoilIndex || 0;
+                    currentPinTargetSoil = (activeRegions && activeRegions[activeIdx]) ? activeRegions[activeIdx] : null;
+                } else {
+                    currentPinTargetSoil = layerData;
+                }
+
+                if (currentPinTargetSoil && currentPinTargetSoil.pinned_index === undefined) {
+                    currentPinTargetSoil.pinned_index = window.currentActiveSelectedSoilIndex || 0;
+                }
+
+                const targetIdx = currentPinTargetSoil ? (currentPinTargetSoil.pinned_index ?? 0) : 0;
+                if (window.currentScanPinnedIndices && window.currentScanPinnedIndices.includes(targetIdx)) {
+                    alert('⚠️ This soil specimen layer has already been pinned to the map.');
+                    return;
+                }
+
                 if (modalTitleEl) modalTitleEl.textContent = 'Pin Soil Location';
                 if (modalSubtitleEl) modalSubtitleEl.textContent = 'Select Barangay & Pin Coordinates in Lal-lo, Cagayan for Admin Review';
 
                 // Populate soil specimen details from layerData or current primary scan
-                const soilName = layerData?.label || layerData?.color_name || layerData?.soil_name || document.getElementById('resName')?.textContent || (lastScanMatch?.name) || 'Determined Soil Specimen';
-                const fullCode = layerData?.munsell || layerData?.munsell_code || layerData?.full_code || document.getElementById('resFullCode')?.textContent || (lastScanMatch?.code) || '10YR 4/3';
+                const soilName = currentPinTargetSoil?.label || currentPinTargetSoil?.color_name || currentPinTargetSoil?.soil_name || document.getElementById('resName')?.textContent || (lastScanMatch?.name) || 'Determined Soil Specimen';
+                const fullCode = currentPinTargetSoil?.munsell || currentPinTargetSoil?.munsell_code || currentPinTargetSoil?.full_code || document.getElementById('resFullCode')?.textContent || (lastScanMatch?.code) || '10YR 4/3';
 
                 if (noteEl && (!noteEl.value || noteEl.value.includes('Soil sample classified as') || noteEl.value.includes('detected soil layers') || noteEl.value.includes('All detected soil specimens'))) {
                     noteEl.value = `Soil sample classified as ${soilName} (${fullCode}).`;
@@ -9788,6 +9929,21 @@
             if (btnText) btnText.textContent = 'Submitting...';
 
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const scanData = window.currentScanResult || (typeof currentScanResponseData !== 'undefined' ? currentScanResponseData : lastScanMatch);
+            const activeRegions = window.currentActiveScanRegions || (scanData && scanData.regions) || [];
+
+            const pinnedIndex = (!isPinningAllSoils && currentPinTargetSoil && currentPinTargetSoil.pinned_index !== undefined)
+                ? currentPinTargetSoil.pinned_index
+                : (!isPinningAllSoils ? (window.currentActiveSelectedSoilIndex || 0) : null);
+
+            const soilPercentage = (!isPinningAllSoils && currentPinTargetSoil)
+                ? (currentPinTargetSoil.percent !== undefined ? (currentPinTargetSoil.percent + '%') : (currentPinTargetSoil.percentage || null))
+                : null;
+
+            const soilConfidence = (!isPinningAllSoils && currentPinTargetSoil)
+                ? (currentPinTargetSoil.confidence || null)
+                : null;
+
             const soilId = (!isPinningAllSoils && currentPinTargetSoil && (currentPinTargetSoil.soil_id || currentPinTargetSoil.id)) 
                 || (lastScanMatch && lastScanMatch.soil_id) 
                 || null;
@@ -9795,9 +9951,6 @@
                 || (currentScanResponseData && currentScanResponseData.scan_id) 
                 || (window.currentScanResult && window.currentScanResult.scan_id)
                 || null;
-
-            const scanData = window.currentScanResult || (typeof currentScanResponseData !== 'undefined' ? currentScanResponseData : lastScanMatch);
-            const activeRegions = window.currentActiveScanRegions || (scanData && scanData.regions) || [];
 
             fetch("{{ route('website.scan.pin') }}", {
                 method: 'POST',
@@ -9816,6 +9969,10 @@
                     scan_note: noteInput ? noteInput.value.trim() : null,
                     pin_all: isPinningAllSoils,
                     pin_mode: isPinningAllSoils ? 'all' : 'single',
+                    pinned_soil_index: pinnedIndex,
+                    soil_percentage: soilPercentage,
+                    soil_confidence: soilConfidence,
+                    soil_layer_meta: currentPinTargetSoil,
                     regions: isPinningAllSoils ? activeRegions : (currentPinTargetSoil ? [currentPinTargetSoil] : null)
                 })
             })
@@ -9829,10 +9986,37 @@
                         lastScanMatch.barangay = data.location.barangay;
                         lastScanMatch.coverage = currentPinCoverageLabel;
                     }
+                    if (!window.currentScanPinnedIndices) window.currentScanPinnedIndices = [];
+                    if (data.pinned_indices && Array.isArray(data.pinned_indices)) {
+                        data.pinned_indices.forEach(idx => {
+                            if (!window.currentScanPinnedIndices.includes(idx)) window.currentScanPinnedIndices.push(idx);
+                        });
+                    } else if (isPinningAllSoils) {
+                        for (let i = 0; i < (activeRegions.length || 1); i++) {
+                            if (!window.currentScanPinnedIndices.includes(i)) window.currentScanPinnedIndices.push(i);
+                        }
+                    } else {
+                        const pIdx = (currentPinTargetSoil && currentPinTargetSoil.pinned_index !== undefined)
+                            ? currentPinTargetSoil.pinned_index
+                            : (window.currentActiveSelectedSoilIndex || 0);
+                        if (!window.currentScanPinnedIndices.includes(pIdx)) window.currentScanPinnedIndices.push(pIdx);
+                    }
+                    if (typeof updatePinButtonStates === 'function') {
+                        updatePinButtonStates();
+                    }
                     if (typeof showScanNotice === 'function') {
                         showScanNotice(data.message || '📍 Soil sample pinned and submitted for Admin approval!');
                     }
                 } else {
+                    if (data.already_pinned) {
+                        const pIdx = (currentPinTargetSoil && currentPinTargetSoil.pinned_index !== undefined)
+                            ? currentPinTargetSoil.pinned_index
+                            : (window.currentActiveSelectedSoilIndex || 0);
+                        if (!window.currentScanPinnedIndices.includes(pIdx)) window.currentScanPinnedIndices.push(pIdx);
+                        if (typeof updatePinButtonStates === 'function') {
+                            updatePinButtonStates();
+                        }
+                    }
                     alert(data.message || 'Unable to submit pin location.');
                 }
             })

@@ -1486,12 +1486,24 @@
                 popupAnchor: [0, -50]
             });
 
+            // Group pins by coordinate cluster (~1m precision)
+            const coordClusters = {};
             mapLocations.forEach(function(loc) {
                 if (!loc.latitude || !loc.longitude) return;
-
                 const lat = parseFloat(loc.latitude);
                 const lng = parseFloat(loc.longitude);
                 if (isNaN(lat) || isNaN(lng)) return;
+                const key = `${lat.toFixed(5)},${lng.toFixed(5)}`;
+                if (!coordClusters[key]) coordClusters[key] = [];
+                coordClusters[key].push(loc);
+            });
+
+            Object.keys(coordClusters).forEach(function(coordKey) {
+                const pins = coordClusters[coordKey];
+                const loc = pins[0];
+                const lat = parseFloat(loc.latitude);
+                const lng = parseFloat(loc.longitude);
+                const isCluster = pins.length > 1;
 
                 const soil = loc.soil || {};
                 const munsell = soil.munsell_color || {};
@@ -1505,7 +1517,10 @@
                 const pinMeta = typeof window.getAgricoPinStatusMeta === 'function'
                     ? window.getAgricoPinStatusMeta(loc.status)
                     : { isApproved: (loc.status || '').toLowerCase() === 'active' || (loc.status || '').toLowerCase() === 'approved' };
-                const isActive = pinMeta.isApproved;
+                const isActive = pins.some(p => {
+                    const st = (p.status || '').toLowerCase();
+                    return st === 'active' || st === 'approved';
+                });
                 const covStr = loc.coverage || (loc.soil_scan && loc.soil_scan.scan_note && loc.soil_scan.scan_note.match(/\[Covered Area:\s*([^\]]+)\]/i) ? loc.soil_scan.scan_note.match(/\[Covered Area:\s*([^\]]+)\]/i)[1].trim() : '500 m²');
 
                 let regions = [];
@@ -1534,7 +1549,14 @@
                 if (displayHex && !displayHex.startsWith('#')) displayHex = '#' + displayHex;
 
                 let typeRowHtml = '';
-                if (isMulti) {
+                if (isCluster) {
+                    typeRowHtml = `
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #64748b; font-weight: 600; font-size: 11px;">Detected Soil:</span>
+                            <span style="font-weight: 800; color: #0f172a; font-size: 11.5px;">${pins.length} Pinned</span>
+                        </div>
+                    `;
+                } else if (isMulti) {
                     typeRowHtml = `
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="color: #64748b; font-weight: 600; font-size: 11px;">Detected Soil:</span>
@@ -1550,26 +1572,51 @@
                     `;
                 }
 
-                const codeRowHtml = !isMulti ? `
+                const codeRowHtml = (!isMulti || isCluster) ? `
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="color: #64748b; font-weight: 600; font-size: 11px;">Code:</span>
                         <span style="font-weight: 800; color: #0f172a; font-size: 11.5px;">${displayCode}</span>
                     </div>
                 ` : '';
 
-                const titleHtml = !isMulti ? `
+                const titleHtml = isCluster ? `
+                    <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 2px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${displayTitle}">
+                        ${displayTitle} <span style="font-size: 11.5px; font-weight: 700; color: #16a34a;">(+${pins.length - 1} soils)</span>
+                    </div>
+                ` : (!isMulti ? `
                     <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 2px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${displayTitle}">
                         ${displayTitle}
                     </div>
-                ` : '';
+                ` : '');
+
+                const locHeader = isCluster
+                    ? `LOCATION #${pins.map(p => p.location_mapping_id || p.id).join(', #')} (${pins.length} PINNED)`
+                    : `LOCATION #${loc.location_mapping_id}`;
+
+                const actionButtonsHtml = isCluster ? `
+                    <div style="display: flex; flex-direction: column; gap: 5px; max-height: 140px; overflow-y: auto;">
+                        ${pins.map(p => `
+                            <button type="button" onclick="viewPinDetails(${p.location_mapping_id || p.id})" style="width: 100%; padding: 6.5px 10px; background: #16a34a; color: #ffffff; border: none; border-radius: 8px; font-size: 11.5px; font-weight: 700; cursor: pointer; transition: background 0.15s ease; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+                                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px;">View #${p.location_mapping_id || p.id}: ${p.soil?.soil_name || 'Soil'}</span>
+                                <span style="font-size: 10px; opacity: 0.9; font-family: monospace;">${p.soil?.full_code || ''}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                ` : `
+                    <div>
+                        <button type="button" onclick="viewPinDetails(${loc.location_mapping_id})" style="width: 100%; padding: 8.5px 12px; background: #16a34a; color: #ffffff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease; box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+                            View Details
+                        </button>
+                    </div>
+                `;
 
                 const popupContent = `
                     <div style="padding: 12px 14px; font-family: inherit; width: 100%; box-sizing: border-box;">
                         <div style="margin-bottom: 3px; padding-right: 28px;">
-                            <span style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">LOCATION #${loc.location_mapping_id}</span>
+                            <span style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">${locHeader}</span>
                         </div>
                         ${titleHtml}
-                        <div style="font-size: 11.5px; color: #15803d; font-weight: 700; display: flex; align-items: center; gap: 4px;${isMulti ? ' margin-top: 4px;' : ''} margin-bottom: 9px;">
+                        <div style="font-size: 11.5px; color: #15803d; font-weight: 700; display: flex; align-items: center; gap: 4px;${(isMulti || isCluster) ? ' margin-top: 4px;' : ''} margin-bottom: 9px;">
                             <svg width="12" height="12" fill="#16a34a" viewBox="0 0 20 20" style="flex-shrink:0;"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
                             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${brgy}</span>
                         </div>
@@ -1585,11 +1632,7 @@
                                 <span style="font-family: ui-monospace, monospace; font-size: 10.5px; font-weight: 500;">${lat.toFixed(4)}, ${lng.toFixed(4)}</span>
                             </div>
                         </div>
-                        <div>
-                            <button type="button" onclick="viewPinDetails(${loc.location_mapping_id})" style="width: 100%; padding: 8.5px 12px; background: #16a34a; color: #ffffff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease; box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
-                                View Details
-                            </button>
-                        </div>
+                        ${actionButtonsHtml}
                     </div>
                 `;
 
@@ -1619,6 +1662,7 @@
                     }
                 });
                 marker._agricoLocationId = loc.location_mapping_id;
+                marker._agricoLocationIds = pins.map(p => String(p.location_mapping_id || p.id));
                 marker._agricoIsActive = isActive;
 
                 const dims = getParcelDimensions(covStr);
@@ -1790,7 +1834,8 @@
             var targetMarker = null;
             if (id && window._agricoMarkersGroup) {
                 window._agricoMarkersGroup.eachLayer(function(layer) {
-                    if (layer._agricoLocationId == id && layer._agricoIsActive && typeof layer.openPopup === 'function' && layer.getPopup()) {
+                    const matchesId = layer._agricoLocationId == id || (Array.isArray(layer._agricoLocationIds) && layer._agricoLocationIds.includes(String(id)));
+                    if (matchesId && layer._agricoIsActive && typeof layer.openPopup === 'function' && layer.getPopup()) {
                         targetMarker = layer;
                     }
                 });

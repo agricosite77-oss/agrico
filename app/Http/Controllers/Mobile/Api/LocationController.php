@@ -38,13 +38,17 @@ class LocationController extends Controller
     public function storePin(Request $request)
     {
         $validated = $request->validate([
-            'latitude'      => ['required', 'numeric', 'between:-90,90'],
-            'longitude'     => ['required', 'numeric', 'between:-180,180'],
-            'barangay'      => ['required', 'string', 'max:255'],
-            'soil_id'       => ['nullable', 'integer'],
-            'soil_scan_id'  => ['nullable', 'integer'],
-            'scan_note'     => ['nullable', 'string', 'max:1000'],
-            'coverage_area' => ['nullable', 'string', 'max:100'],
+            'latitude'          => ['required', 'numeric', 'between:-90,90'],
+            'longitude'         => ['required', 'numeric', 'between:-180,180'],
+            'barangay'          => ['required', 'string', 'max:255'],
+            'soil_id'           => ['nullable', 'integer'],
+            'soil_scan_id'      => ['nullable', 'integer'],
+            'scan_note'         => ['nullable', 'string', 'max:1000'],
+            'coverage_area'     => ['nullable', 'string', 'max:100'],
+            'pinned_soil_index' => ['nullable', 'integer', 'min:0'],
+            'soil_percentage'   => ['nullable', 'string', 'max:20'],
+            'soil_confidence'   => ['nullable', 'string', 'max:20'],
+            'soil_layer_meta'   => ['nullable'],
         ]);
 
         $userId = Auth::guard('sanctum')->id() ?? Auth::id() ?? User::where('role', 'admin')->value('user_id') ?? 'ADM-001';
@@ -80,6 +84,22 @@ class LocationController extends Controller
             }
         }
 
+        $pinnedIndex = isset($validated['pinned_soil_index']) ? (int) $validated['pinned_soil_index'] : 0;
+
+        // Prevent duplicate pinning of the same layer
+        if ($soilScanId !== null) {
+            $existing = LocationMapping::where('soil_scan_id', $soilScanId)
+                ->where('pinned_soil_index', $pinnedIndex)
+                ->first();
+            if ($existing) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'This soil layer has already been pinned for this scan.',
+                    'data'    => $existing,
+                ], 422);
+            }
+        }
+
         // Resolve barangay to exact authentic Lal-lo barangay name
         $barangay = trim($validated['barangay']);
         if (empty($barangay) || $barangay === 'Lal-lo Overall') {
@@ -88,13 +108,19 @@ class LocationController extends Controller
 
         // Create LocationMapping record with Pending status awaiting Admin approval
         $location = LocationMapping::create([
-            'soil_scan_id' => $soilScanId,
-            'soil_id'      => $soilId,
-            'latitude'     => $validated['latitude'],
-            'longitude'    => $validated['longitude'],
-            'barangay'     => $barangay,
-            'timestamp'    => now(),
-            'status'       => 'Pending',
+            'soil_scan_id'      => $soilScanId,
+            'soil_id'           => $soilId,
+            'latitude'          => $validated['latitude'],
+            'longitude'         => $validated['longitude'],
+            'barangay'          => $barangay,
+            'timestamp'         => now(),
+            'status'            => 'Pending',
+            'pinned_soil_index' => $pinnedIndex,
+            'soil_percentage'   => $validated['soil_percentage'] ?? null,
+            'soil_confidence'   => $validated['soil_confidence'] ?? null,
+            'soil_layer_meta'   => is_array($validated['soil_layer_meta'] ?? null)
+                ? $validated['soil_layer_meta']
+                : (is_string($validated['soil_layer_meta'] ?? null) ? json_decode($validated['soil_layer_meta'], true) : null),
         ]);
 
         // Create UserRequest entry for Admin Approval tracking

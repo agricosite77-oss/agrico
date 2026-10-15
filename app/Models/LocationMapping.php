@@ -21,6 +21,17 @@ class LocationMapping extends Model
         'status',
         'soil_scan_id',
         'soil_id',
+        'pinned_soil_index',
+        'soil_percentage',
+        'soil_confidence',
+        'soil_layer_meta',
+    ];
+
+    protected $casts = [
+        'pinned_soil_index' => 'integer',
+        'soil_layer_meta'   => 'array',
+        'latitude'          => 'float',
+        'longitude'         => 'float',
     ];
 
     protected $appends = [
@@ -33,6 +44,7 @@ class LocationMapping extends Model
         'scanned_by',
         'scan_platform',
         'scan_note_text',
+        'is_single_soil_pin',
     ];
 
     public static function resolveNearestBarangay(float $lat, float $lng): string
@@ -123,6 +135,35 @@ class LocationMapping extends Model
 
     public function getDetectedSoilsAttribute(): array
     {
+        // If this pin is explicitly pinned to a single soil layer:
+        if ($this->pinned_soil_index !== null) {
+            $meta = is_array($this->soil_layer_meta) ? $this->soil_layer_meta : json_decode($this->soil_layer_meta ?? '[]', true);
+            $sSoil = $this->soil;
+            $sMColor = $sSoil?->munsellColor;
+            $sHex = $meta['hex'] ?? ($sSoil?->effective_hex_color ?: ($sSoil?->hex_color ?: ($sMColor?->hex_code ?: '#8F694E')));
+            if ($sHex && !str_starts_with($sHex, '#')) $sHex = '#' . $sHex;
+
+            $pct = $this->soil_percentage ?? (!empty($meta['percent']) ? ($meta['percent'] . '%') : '100%');
+            if (is_numeric($pct)) $pct = $pct . '%';
+            $conf = $this->soil_confidence ?? ($meta['confidence'] ?? '95%');
+
+            return [[
+                'scan_id'        => $this->soil_scan_id,
+                'is_primary'     => true,
+                'soil_name'      => $meta['label'] ?? ($meta['color_name'] ?? ($sSoil?->soil_name ?: ($sMColor?->color_name ?: 'Soil Color'))),
+                'full_code'      => $meta['munsell_code'] ?? ($meta['munsell'] ?? ($sSoil?->full_code ?: ($sMColor?->full_code ?: '—'))),
+                'hex_color'      => $sHex,
+                'soil_type'      => $meta['soil_name'] ?? ($sSoil?->effective_soil_type ?: ($sSoil?->soil_type ?: ($sMColor?->soil_type ?: 'Leached grayish brown'))),
+                'organic_matter' => $meta['organic_matter'] ?? ($sSoil?->effective_organic_matter ?: ($sMColor?->organic_matter ?: 'Moderate (2.2% – 3.7%)')),
+                'drainage'       => $sSoil?->drainage ?: ($sMColor?->drainage_profile ?: 'Well Drained'),
+                'percentage'     => $pct,
+                'confidence'     => $conf,
+                'image_url'      => $this->soilScan ? \App\Helpers\SoilImageHelper::scanImageUrl($this->soilScan) : null,
+                'description'    => $sSoil?->description ?: ($meta['description'] ?? ($this->soilScan?->scan_note ?: '')),
+                'pinned_index'   => $this->pinned_soil_index,
+            ]];
+        }
+
         $scan = $this->soilScan;
         $detectedSoils = [];
 
@@ -263,6 +304,43 @@ class LocationMapping extends Model
 
     public function getRegionsAttribute(): array
     {
+        // If this pin is explicitly pinned to a single soil layer:
+        if ($this->pinned_soil_index !== null) {
+            $meta = is_array($this->soil_layer_meta) ? $this->soil_layer_meta : json_decode($this->soil_layer_meta ?? '[]', true);
+            $sSoil = $this->soil;
+            $sMColor = $sSoil?->munsellColor;
+            $sHex = $meta['hex'] ?? ($sSoil?->effective_hex_color ?: ($sSoil?->hex_color ?: ($sMColor?->hex_code ?: '#8F694E')));
+            if ($sHex && !str_starts_with($sHex, '#')) $sHex = '#' . $sHex;
+
+            $pctVal = (float) filter_var($this->soil_percentage ?? ($meta['percent'] ?? 100), FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+            if (!$pctVal) $pctVal = 100.0;
+
+            $mCode = $meta['munsell_code'] ?? ($meta['munsell'] ?? ($sSoil?->full_code ?: ($sMColor?->full_code ?: '—')));
+            $label = $meta['label'] ?? ($meta['color_name'] ?? ($sSoil?->soil_name ?: ($sMColor?->color_name ?: 'Soil Color')));
+            $conf = $this->soil_confidence ?? ($meta['confidence'] ?? '95%');
+
+            return [[
+                'scan_id'        => $this->soil_scan_id,
+                'is_primary'     => true,
+                'munsell'        => $mCode,
+                'munsell_code'   => $mCode,
+                'label'          => $label,
+                'color_name'     => $label,
+                'hex'            => $sHex,
+                'percent'        => $pctVal,
+                'proportion'     => $pctVal / 100,
+                'confidence'     => $conf,
+                'near_match'     => $meta['near_match'] ?? $conf,
+                'organic_matter' => $meta['organic_matter'] ?? ($sSoil?->effective_organic_matter ?: 'Moderate (2.2% – 3.7%)'),
+                'soil_name'      => $meta['soil_name'] ?? ($sSoil?->soil_type_label ?: ($sSoil?->soil_type ?: 'Unspecified')),
+                'description'    => $sSoil?->description ?: ($meta['description'] ?? ($this->soilScan?->scan_note ?: '')),
+                'box'            => $meta['box'] ?? ($meta['bounding_box'] ?? null),
+                'bounding_box'   => $meta['box'] ?? ($meta['bounding_box'] ?? null),
+                'image'          => $this->soilScan?->scan_image ? (str_starts_with($this->soilScan->scan_image, 'http') ? $this->soilScan->scan_image : asset($this->soilScan->scan_image)) : null,
+                'pinned_index'   => $this->pinned_soil_index,
+            ]];
+        }
+
         $scan = $this->soilScan;
         $allRegions = [];
 
@@ -383,5 +461,10 @@ class LocationMapping extends Model
     public function getScanNoteTextAttribute(): string
     {
         return $this->soilScan?->scan_note ?? 'Standard municipal soil classification sampling.';
+    }
+
+    public function getIsSingleSoilPinAttribute(): bool
+    {
+        return $this->pinned_soil_index !== null;
     }
 }

@@ -1228,12 +1228,29 @@
         const boundsGroup = [];
         const markersMap = [];
         const allPolygons = [];
+        window._agricoPinClusters = {};
 
-        mappingsData.forEach((m, index) => {
+        // Group mappings by coordinate cluster (~1m precision)
+        const coordClusters = {};
+        mappingsData.forEach((m) => {
             if (!m.latitude || !m.longitude) return;
-
             const lt = parseFloat(m.latitude);
             const ln = parseFloat(m.longitude);
+            const key = `${lt.toFixed(5)},${ln.toFixed(5)}`;
+            if (!coordClusters[key]) coordClusters[key] = [];
+            coordClusters[key].push(m);
+        });
+
+        Object.keys(coordClusters).forEach((coordKey) => {
+            const pins = coordClusters[coordKey];
+            const m = pins[0];
+            const lt = parseFloat(m.latitude);
+            const ln = parseFloat(m.longitude);
+            const locId = m.location_mapping_id || m.id;
+            window._agricoPinClusters[locId] = pins;
+            window._agricoPinClusters[coordKey] = pins;
+
+            const isCluster = pins.length > 1;
 
             const soil   = m.soil;
             const munsell = soil?.munsell_color;
@@ -1251,37 +1268,58 @@
             const brgyLabel = `Brgy. ${brgyClean}, Lal-lo`;
             const soilType = m.munsell_soil_type || soil?.effective_soil_type || soil?.soil_type || mColor?.soil_type || 'Leached grayish brown';
             const covStr   = m.coverage || '500 m²';
-            const locId    = m.location_mapping_id || m.id || (index + 1);
 
             let regions = [];
-            if (Array.isArray(m.regions) && m.regions.length > 0) {
-                regions = m.regions;
-            } else if (typeof m.regions === 'string') {
-                try {
-                    const parsedR = JSON.parse(m.regions);
-                    if (Array.isArray(parsedR)) regions = parsedR;
-                } catch(e) {}
-            }
-            if (regions.length <= 1 && Array.isArray(m.detected_soils) && m.detected_soils.length > regions.length) {
-                regions = m.detected_soils;
-            } else if (regions.length <= 1 && typeof m.detected_soils === 'string') {
-                try {
-                    const parsedDs = JSON.parse(m.detected_soils);
-                    if (Array.isArray(parsedDs) && parsedDs.length > regions.length) regions = parsedDs;
-                } catch(e) {}
+            if (isCluster) {
+                // Collect all pinned soils in this cluster
+                pins.forEach(p => {
+                    const pSoil = p.soil || {};
+                    const pMColor = pSoil.munsell_color || {};
+                    const pMeta = p.soil_layer_meta || {};
+                    const pCode = pMeta.munsell || pMeta.munsell_code || pSoil.full_code || pMColor.full_code || '—';
+                    let pHex = pMeta.hex || pSoil.hex_color || pMColor.hex_code || '#8F694E';
+                    if (pHex && !pHex.startsWith('#')) pHex = '#' + pHex;
+                    const pLabel = pMeta.label || pMeta.color_name || pSoil.soil_name || pMColor.color_name || 'Soil Specimen';
+                    regions.push({
+                        label: pLabel,
+                        color_name: pLabel,
+                        munsell: pCode,
+                        munsell_code: pCode,
+                        hex: pHex
+                    });
+                });
+            } else {
+                if (Array.isArray(m.regions) && m.regions.length > 0) {
+                    regions = m.regions;
+                } else if (typeof m.regions === 'string') {
+                    try {
+                        const parsedR = JSON.parse(m.regions);
+                        if (Array.isArray(parsedR)) regions = parsedR;
+                    } catch(e) {}
+                }
+                if (regions.length <= 1 && Array.isArray(m.detected_soils) && m.detected_soils.length > regions.length) {
+                    regions = m.detected_soils;
+                }
             }
 
             const isMulti = regions.length > 1;
             const domSoil = regions[0] || {};
-            const displayTitle = (isMulti && (domSoil.label || domSoil.color_name || domSoil.soil_name)) ? (domSoil.label || domSoil.color_name || domSoil.soil_name) : soilName;
+            const displayTitle = isCluster
+                ? `${domSoil.label || soilName} (+${pins.length - 1} soils)`
+                : ((isMulti && (domSoil.label || domSoil.color_name || domSoil.soil_name)) ? (domSoil.label || domSoil.color_name || domSoil.soil_name) : soilName);
             const displayCode = (isMulti && (domSoil.munsell || domSoil.munsell_code || domSoil.full_code)) ? (domSoil.munsell || domSoil.munsell_code || domSoil.full_code) : fullCode;
             let displayHex = (isMulti && (domSoil.hex || domSoil.hex_color)) ? (domSoil.hex || domSoil.hex_color) : hexColor;
             if (displayHex && !displayHex.startsWith('#')) displayHex = '#' + displayHex;
 
-
-
             let typeRowHtml = '';
-            if (isMulti) {
+            if (isCluster) {
+                typeRowHtml = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #64748b; font-weight: 600; font-size: 11px;">Detected Soil:</span>
+                        <span style="font-weight: 800; color: #0f172a; font-size: 11.5px;">${pins.length} Pinned</span>
+                    </div>
+                `;
+            } else if (isMulti) {
                 typeRowHtml = `
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="color: #64748b; font-weight: 600; font-size: 11px;">Detected Soil:</span>
@@ -1297,7 +1335,7 @@
                 `;
             }
 
-            const codeRowHtml = !isMulti ? `
+            const codeRowHtml = (!isMulti || isCluster) ? `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="color: #64748b; font-weight: 600; font-size: 11px;">Code:</span>
                     <span style="font-weight: 800; color: #0f172a; font-size: 11.5px;">${displayCode}</span>
@@ -1308,12 +1346,20 @@
                 <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 2px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${displayTitle}">
                     ${displayTitle}
                 </div>
-            ` : '';
+            ` : `
+                <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 2px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${displayTitle}">
+                    ${displayTitle}
+                </div>
+            `;
+
+            const locHeader = isCluster
+                ? `LOCATION #${pins.map(p => p.location_mapping_id || p.id).join(', #')} (${pins.length} PINNED)`
+                : `LOCATION #${locId}`;
 
             const popupHtml = `
                 <div style="padding: 12px 14px; font-family: inherit; width: 100%; box-sizing: border-box;">
                     <div style="margin-bottom: 3px; padding-right: 28px;">
-                        <span style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">LOCATION #${locId}</span>
+                        <span style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">${locHeader}</span>
                     </div>
                     ${titleHtml}
                     <div style="font-size: 11.5px; color: #15803d; font-weight: 700; display: flex; align-items: center; gap: 4px;${isMulti ? ' margin-top: 4px;' : ''} margin-bottom: 9px;">
@@ -1333,7 +1379,7 @@
                         </div>
                     </div>
                     <div>
-                        <button type="button" onclick="viewWebsitePinDetails(${locId})" style="width: 100%; padding: 8.5px 12px; background: #16a34a; color: #ffffff; border: none; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease; box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+                        <button type="button" onclick="viewWebsitePinDetails(${locId}, '${coordKey}')" style="width: 100%; padding: 8.5px 12px; background: #16a34a; color: #ffffff; border: none; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease; box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
                             View Details
                         </button>
                     </div>
@@ -1630,12 +1676,17 @@
         };
 
         // View Details Modal Handler (Matching Screenshots 1, 2, 3, 4 without Save Copy / Pin Location buttons)
-        window.viewWebsitePinDetails = function(locId) {
+        window.viewWebsitePinDetails = function(locId, clusterKey = null) {
             const m = mappingsData.find(item => (item.location_mapping_id || item.id) == locId);
             if (!m) return;
 
             const modal = document.getElementById('websiteSoilDetailModal');
             if (!modal) return;
+
+            let clusterPins = (clusterKey && window._agricoPinClusters && window._agricoPinClusters[clusterKey])
+                ? window._agricoPinClusters[clusterKey]
+                : (window._agricoPinClusters && window._agricoPinClusters[locId] ? window._agricoPinClusters[locId] : [m]);
+            const isCluster = clusterPins && clusterPins.length > 1;
 
             const soil = m.soil || {};
             const mColor = soil.munsell_color || {};
@@ -1654,41 +1705,76 @@
             const desc = soil.description || (m.soil_scan && m.soil_scan.scan_note ? m.soil_scan.scan_note : `${fullCode} - ${soilName}`);
 
             // Build regions array
-            let regions = Array.isArray(m.regions) && m.regions.length > 0 ? m.regions : [];
-            if (regions.length <= 1 && Array.isArray(m.detected_soils) && m.detected_soils.length > regions.length) {
-                regions = m.detected_soils.map((ds, idx) => {
-                    const rawPct = parseFloat(String(ds.percentage || '25').replace('%', '')) || 25;
-                    return {
-                        munsell: ds.full_code || '—',
-                        munsell_code: ds.full_code || '—',
-                        hex: ds.hex_color || '#8F694E',
-                        label: ds.soil_name || 'Soil Layer',
-                        color_name: ds.soil_name || 'Soil Layer',
-                        percent: rawPct,
-                        proportion: rawPct / 100,
-                        confidence: ds.confidence || '96.8%',
-                        organic_matter: ds.organic_matter || organic,
-                        soil_name: ds.soil_type || drainage,
-                        description: ds.description || '',
-                        box: { x: 0.15 + ((idx % 2) * 0.4), y: 0.2 + (Math.floor(idx / 2) * 0.35), w: 0.3, h: 0.3 }
-                    };
+            let regions = [];
+            if (isCluster) {
+                clusterPins.forEach((p) => {
+                    const pSoil = p.soil || {};
+                    const pMColor = pSoil.munsell_color || {};
+                    const pMeta = p.soil_layer_meta || {};
+                    const pCode = pMeta.munsell || pMeta.munsell_code || pSoil.full_code || pMColor.full_code || '—';
+                    let pHex = pMeta.hex || pSoil.hex_color || pMColor.hex_code || '#8F694E';
+                    if (pHex && !pHex.startsWith('#')) pHex = '#' + pHex;
+                    const pLabel = pMeta.label || pMeta.color_name || pSoil.soil_name || pMColor.color_name || 'Soil Specimen';
+                    const pPct = p.soil_percentage ? parseFloat(String(p.soil_percentage).replace('%','')) : (pMeta.percent !== undefined ? parseFloat(pMeta.percent) : 100);
+                    const pConf = p.soil_confidence || pMeta.confidence || calcNearMatchRating(pMeta);
+                    const pOrg = pMeta.organic_matter || pSoil.effective_organic_matter || pMColor.organic_matter || 'Moderate (2.2% – 3.7%)';
+                    const pDrain = pMeta.soil_name || pSoil.soil_type || 'Well-Drained Clay / Latosol';
+                    const pDesc = pMeta.description || pSoil.description || `${pCode} - ${pLabel}`;
+                    const pBox = normalizeBox(pMeta.box || pMeta);
+
+                    regions.push({
+                        munsell: pCode,
+                        munsell_code: pCode,
+                        hex: pHex,
+                        label: pLabel,
+                        color_name: pLabel,
+                        percent: pPct,
+                        proportion: pPct / 100,
+                        confidence: pConf,
+                        organic_matter: pOrg,
+                        soil_name: pDrain,
+                        soil_type: pDrain,
+                        description: pDesc,
+                        box: pBox
+                    });
                 });
-            }
-            if (regions.length === 0) {
-                regions = [{
-                    munsell: fullCode,
-                    munsell_code: fullCode,
-                    hex: hexColor,
-                    label: soilName,
-                    color_name: soilName,
-                    percent: 100,
-                    proportion: 1.0,
-                    confidence: '98.7%',
-                    organic_matter: organic,
-                    soil_name: drainage,
-                    description: desc,
-                    box: { x: 0.25, y: 0.25, w: 0.5, h: 0.5 }
-                }];
+            } else {
+                regions = Array.isArray(m.regions) && m.regions.length > 0 ? m.regions : [];
+                if (regions.length <= 1 && Array.isArray(m.detected_soils) && m.detected_soils.length > regions.length) {
+                    regions = m.detected_soils.map((ds, idx) => {
+                        const rawPct = parseFloat(String(ds.percentage || '25').replace('%', '')) || 25;
+                        return {
+                            munsell: ds.full_code || '—',
+                            munsell_code: ds.full_code || '—',
+                            hex: ds.hex_color || '#8F694E',
+                            label: ds.soil_name || 'Soil Layer',
+                            color_name: ds.soil_name || 'Soil Layer',
+                            percent: rawPct,
+                            proportion: rawPct / 100,
+                            confidence: ds.confidence || '96.8%',
+                            organic_matter: ds.organic_matter || organic,
+                            soil_name: ds.soil_type || drainage,
+                            description: ds.description || '',
+                            box: { x: 0.15 + ((idx % 2) * 0.4), y: 0.2 + (Math.floor(idx / 2) * 0.35), w: 0.3, h: 0.3 }
+                        };
+                    });
+                }
+                if (regions.length === 0) {
+                    regions = [{
+                        munsell: fullCode,
+                        munsell_code: fullCode,
+                        hex: hexColor,
+                        label: soilName,
+                        color_name: soilName,
+                        percent: 100,
+                        proportion: 1.0,
+                        confidence: '98.7%',
+                        organic_matter: organic,
+                        soil_name: drainage,
+                        description: desc,
+                        box: { x: 0.25, y: 0.25, w: 0.5, h: 0.5 }
+                    }];
+                }
             }
 
             const isMulti = regions.length > 1;
@@ -1713,7 +1799,13 @@
             const noteText = m.scan_note_text || (m.soil_scan && m.soil_scan.scan_note ? m.soil_scan.scan_note : 'No scan note available for this record.');
 
             // Update Header Title
-            document.getElementById('wsModalHeaderTitle').textContent = `Soil Record Details${isMulti ? ` (${regions.length} DETECTED)` : ''}`;
+            if (isCluster) {
+                document.getElementById('wsModalHeaderTitle').textContent = `Soil Record Details (${regions.length} PINNED SOILS)`;
+            } else if (isMulti) {
+                document.getElementById('wsModalHeaderTitle').textContent = `Soil Record Details (${regions.length} DETECTED)`;
+            } else {
+                document.getElementById('wsModalHeaderTitle').textContent = 'Soil Record Details';
+            }
 
             let bodyHtml = '';
 
