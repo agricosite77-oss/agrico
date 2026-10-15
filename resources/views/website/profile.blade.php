@@ -202,22 +202,23 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Consistent Responsive Card (Equal across all 3 tabs) */
+        /* Consistent Responsive Card (Matching Soil Record Details exact dimensions) */
         .profile-modal-card {
             position: relative;
             z-index: 100000;
-            width: 100%;
-            max-width: 640px;
-            height: min(90vh, 670px);
-            max-height: 90dvh;
+            width: 100% !important;
+            max-width: 680px !important;
+            height: 75vh !important;
+            max-height: 75vh !important;
             background: var(--pm-bg);
-            border-radius: 24px;
-            box-shadow: var(--pm-shadow);
+            border-radius: 28px !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
             border: 1px solid var(--pm-border);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             margin: auto;
+            box-sizing: border-box !important;
             transition: background-color 0.25s ease, border-color 0.25s ease;
         }
 
@@ -730,15 +731,16 @@
         /* Mobile Breakpoint (< 640px) */
         @media (max-width: 640px) {
             .profile-modal-overlay {
-                padding: 12px;
-                align-items: flex-end; /* Bottom sheet on phone */
+                padding: 10px !important;
+                align-items: center !important;
+                justify-content: center !important;
             }
             .profile-modal-card {
+                border-radius: 24px !important;
                 max-width: 100% !important;
-                height: auto !important;
-                max-height: 88dvh !important;
-                border-radius: 20px 20px 16px 16px !important;
-                padding-bottom: env(safe-area-inset-bottom, 0px);
+                height: 80vh !important;
+                max-height: 80vh !important;
+                margin: auto !important;
             }
             .profile-modal-header {
                 padding: 14px 16px !important;
@@ -3564,7 +3566,7 @@
                     @click.self="showDeleteModal = false"
                     class="profile-modal-overlay"
                 >
-                    <div class="profile-modal-card" style="max-width:540px; width:92%; max-height:90vh; display:flex; flex-direction:column;">
+                    <div class="profile-modal-card">
                         {{-- Header --}}
                         <div class="profile-modal-header" style="justify-content:space-between; align-items:center; border-bottom:1px solid rgba(248,113,113,0.25);">
                             <div style="display:flex; align-items:center; gap:12px;">
@@ -3687,7 +3689,7 @@
                     @click.self="showCancelDeleteModal = false"
                     class="profile-modal-overlay"
                 >
-                    <div class="profile-modal-card" style="max-width:480px; width:92%; display:flex; flex-direction:column;">
+                    <div class="profile-modal-card">
                         <div class="profile-modal-header" style="justify-content:space-between; align-items:center;">
                             <div style="display:flex; align-items:center; gap:12px;">
                                 <div class="profile-setting-icon notif" style="width:38px; height:38px; border-radius:12px;">
@@ -3751,7 +3753,7 @@
                     @click.self="showNotificationsModal = false"
                     class="profile-modal-overlay"
                 >
-                    <div class="profile-modal-card" style="max-width: 540px; width: 92%; max-height: 85vh; display: flex; flex-direction: column;">
+                    <div class="profile-modal-card">
                         {{-- Modal Header --}}
                         <div class="profile-modal-header" style="justify-content: space-between; align-items: center; padding-bottom: 16px;">
                             <div style="display: flex; align-items: center; gap: 12px;">
