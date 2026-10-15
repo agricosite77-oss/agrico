@@ -429,29 +429,27 @@ class SoilMLAnalysisService
             $publicScanRelativePath = 'storage/' . $scanJpgName;
         }
 
-        $disk = env('FILESYSTEM_DISK', 'public');
-        if ($disk === 's3') {
-            try {
-                if (file_exists($fullBaJpg)) {
-                    Storage::disk('s3')->put($baJpgName, file_get_contents($fullBaJpg), 'public');
-                }
-                if (file_exists($fullNormJpg)) {
-                    $uploadedNorm = Storage::disk('s3')->put($normJpgName, file_get_contents($fullNormJpg), 'public');
-                    if ($uploadedNorm) {
-                        $publicScanRelativePath = Storage::disk('s3')->url($normJpgName);
-                    }
-                } elseif (file_exists($fullPublicJpg)) {
-                    $uploadedScan = Storage::disk('s3')->put($scanJpgName, file_get_contents($fullPublicJpg), 'public');
-                    if ($uploadedScan) {
-                        $publicScanRelativePath = Storage::disk('s3')->url($scanJpgName);
-                    }
-                }
-            } catch (\Throwable $e) {
-                Log::warning('[SoilMLAnalysisService] S3 scan upload failed: ' . $e->getMessage());
+        $supabaseStorage = app(\App\Services\SupabaseStorageService::class);
+        try {
+            if (file_exists($fullBaJpg)) {
+                $supabaseStorage->uploadFile($fullBaJpg, $baJpgName);
             }
+            if (file_exists($fullNormJpg)) {
+                $uploadedUrl = $supabaseStorage->uploadFile($fullNormJpg, $normJpgName);
+                if ($uploadedUrl) {
+                    $publicScanRelativePath = $uploadedUrl;
+                }
+            } elseif (file_exists($fullPublicJpg)) {
+                $uploadedUrl = $supabaseStorage->uploadFile($fullPublicJpg, $scanJpgName);
+                if ($uploadedUrl) {
+                    $publicScanRelativePath = $uploadedUrl;
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('[SoilMLAnalysisService] Supabase scan upload failed: ' . $e->getMessage());
         }
 
-        $saveRegionImage = function ($thumbBase64, $idx) use ($scanId, $publicScanRelativePath, $disk) {
+        $saveRegionImage = function ($thumbBase64, $idx) use ($scanId, $publicScanRelativePath, $supabaseStorage) {
             if (empty($thumbBase64)) {
                 return $publicScanRelativePath;
             }
@@ -470,7 +468,7 @@ class SoilMLAnalysisService
                     $ext = str_starts_with($cleaned, 'iVBOR') ? 'png' : 'jpg';
                     $rFileName = "scans/region_{$scanId}_{$idx}.{$ext}";
 
-                    // Always save locally to ensure fast, reliable local asset serving
+                    // Save locally for immediate cache
                     $destPath = storage_path('app/public/' . $rFileName);
                     $destDir = dirname($destPath);
                     if (!is_dir($destDir)) {
@@ -478,12 +476,10 @@ class SoilMLAnalysisService
                     }
                     @file_put_contents($destPath, $rawBin);
 
-                    if ($disk === 's3') {
-                        try {
-                            Storage::disk('s3')->put($rFileName, $rawBin, 'public');
-                        } catch (\Throwable $e) {
-                            Log::warning('[SoilMLAnalysisService] S3 region upload failed: ' . $e->getMessage());
-                        }
+                    // Persist to Supabase Storage
+                    $uploadedUrl = $supabaseStorage->upload($rFileName, $rawBin, $ext === 'png' ? 'image/png' : 'image/jpeg');
+                    if ($uploadedUrl) {
+                        return $uploadedUrl;
                     }
 
                     return 'storage/' . $rFileName;

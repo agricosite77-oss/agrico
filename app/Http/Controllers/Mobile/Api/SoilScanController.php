@@ -96,7 +96,8 @@ class SoilScanController extends Controller
                     $data = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $imgData));
                     $filename = 'scans/scan_' . time() . '_' . uniqid() . '.' . $ext;
                     Storage::disk($disk)->put($filename, $data, 'public');
-                    $savedImagePath = $disk === 's3' ? Storage::disk('s3')->url($filename) : $filename;
+                    $supabaseUrl = app(\App\Services\SupabaseStorageService::class)->upload($filename, $data, $ext === 'png' ? 'image/png' : 'image/jpeg');
+                    $savedImagePath = $supabaseUrl ?: ($disk === 's3' ? Storage::disk('s3')->url($filename) : $filename);
                 }
             } elseif ($request->filled('scan_image_url')) {
                 $savedImagePath = $request->input('scan_image_url');

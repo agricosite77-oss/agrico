@@ -217,7 +217,7 @@ class LocationMapping extends Model
                 'drainage'      => $this->soil?->drainage ?? 'Well Drained',
                 'percentage'    => '100%',
                 'confidence'    => '95%',
-                'image_url'     => $scan?->scan_image ? (str_starts_with($scan->scan_image, 'http') ? $scan->scan_image : asset($scan->scan_image)) : null,
+                'image_url'     => $scan ? \App\Helpers\SoilImageHelper::scanImageUrl($scan) : \App\Helpers\SoilImageHelper::scanImageUrl($this),
                 'description'   => $this->soil?->description ?? '',
             ];
         }
@@ -232,12 +232,7 @@ class LocationMapping extends Model
 
     public function getScanImageUrlAttribute(): ?string
     {
-        if ($this->soilScan?->scan_image) {
-            return str_starts_with($this->soilScan->scan_image, 'http')
-                ? $this->soilScan->scan_image
-                : asset($this->soilScan->scan_image);
-        }
-        return null;
+        return \App\Helpers\SoilImageHelper::scanImageUrl($this);
     }
 
     public function getScanDateFormattedAttribute(): string
@@ -263,18 +258,7 @@ class LocationMapping extends Model
 
     public function getBeforeAfterImageUrlAttribute(): ?string
     {
-        if ($this->soilScan?->before_after_image_url) {
-            return $this->soilScan->before_after_image_url;
-        }
-        $rawImg = $this->soilScan?->scan_image ?? ($this->soil?->image ?? $this->soilScan?->scan_note);
-        if (!empty($rawImg) && preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
-            $scanUuid = $m[1];
-            return asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
-        }
-        if ($this->soil_scan_id) {
-            return asset("storage/scans/scan_{$this->soil_scan_id}_before_after.jpg");
-        }
-        return null;
+        return \App\Helpers\SoilImageHelper::beforeAfterImageUrl($this);
     }
 
     public function getRegionsAttribute(): array

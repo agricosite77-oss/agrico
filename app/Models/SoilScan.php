@@ -240,126 +240,12 @@ class SoilScan extends Model
 
     public function getScanImageUrlAttribute(): ?string
     {
-        $raw = $this->scan_image;
-        $isBrokenSupabase = !empty($raw) && (str_contains($raw, 'supabase.co') || str_contains($raw, 'agrico-scans'));
-
-        if (!$isBrokenSupabase && !empty($raw)) {
-            if (str_starts_with($raw, 'data:')) {
-                return $raw;
-            }
-            if (str_starts_with($raw, 'http://') || str_starts_with($raw, 'https://')) {
-                if (preg_match('#^https?://(?:localhost|127\.0\.0\.1|10\.0\.2\.2)(?::\d+)?/(.*)$#i', $raw, $matches)) {
-                    $clean = ltrim($matches[1], '/');
-                    return asset($clean);
-                }
-                return $raw;
-            }
-            $clean = ltrim($raw, '/');
-            if (!str_starts_with($clean, 'storage/')) {
-                $clean = 'storage/' . $clean;
-            }
-            $rel = str_replace('storage/', '', $clean);
-            if (file_exists(public_path($clean)) || file_exists(storage_path('app/public/' . $rel))) {
-                return asset($clean);
-            }
-        }
-
-        // Fallback sequence when file is missing from disk or broken:
-        // 1. Fallback to embedded region_thumbnail in regions_data (Instant, reliable, cannot 404)
-        $regs = $this->regions ?? [];
-        if (!empty($regs[0]['region_thumbnail'])) {
-            $thumb = $regs[0]['region_thumbnail'];
-            return str_starts_with($thumb, 'data:') ? $thumb : ('data:image/png;base64,' . $thumb);
-        }
-        foreach ($regs as $r) {
-            if (!empty($r['region_thumbnail'])) {
-                $thumb = $r['region_thumbnail'];
-                return str_starts_with($thumb, 'data:') ? $thumb : ('data:image/png;base64,' . $thumb);
-            }
-        }
-
-        // 2. Resolve session normalized scan image (sibling dominant scan)
-        $lookupText = ($raw ?? '') . ' ' . ($this->scan_note ?? '');
-        if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $lookupText, $m)) {
-            $uuid = $m[1];
-            $sibling = self::where('scan_image', 'LIKE', "%{$uuid}%")
-                ->where('scan_image', 'NOT LIKE', '%supabase.co%')
-                ->where('scan_image', 'NOT LIKE', '%agrico-scans%')
-                ->where('scan_image', 'NOT LIKE', '%region_%')
-                ->where('soil_scan_id', '!=', $this->soil_scan_id)
-                ->first();
-            if ($sibling && $sibling->scan_image) {
-                $sClean = ltrim($sibling->scan_image, '/');
-                if (!str_starts_with($sClean, 'storage/')) $sClean = 'storage/' . $sClean;
-                $sRel = str_replace('storage/', '', $sClean);
-                if (file_exists(public_path($sClean)) || file_exists(storage_path('app/public/' . $sRel))) {
-                    return asset($sClean);
-                }
-            }
-        }
-
-        // 3. Sibling scan for that soil_id with existing file
-        if ($this->soil_id) {
-            $siblingSoil = self::where('soil_id', $this->soil_id)
-                ->where('soil_scan_id', '!=', $this->soil_scan_id)
-                ->whereNotNull('scan_image')
-                ->where('scan_image', '!=', '')
-                ->latest('soil_scan_id')
-                ->first();
-            if ($siblingSoil) {
-                $sClean = ltrim($siblingSoil->scan_image, '/');
-                if (!str_starts_with($sClean, 'storage/')) $sClean = 'storage/' . $sClean;
-                $sRel = str_replace('storage/', '', $sClean);
-                if (file_exists(public_path($sClean)) || file_exists(storage_path('app/public/' . $sRel))) {
-                    return asset($sClean);
-                }
-                $sRegs = $siblingSoil->regions ?? [];
-                if (!empty($sRegs[0]['region_thumbnail'])) {
-                    $sThumb = $sRegs[0]['region_thumbnail'];
-                    return str_starts_with($sThumb, 'data:') ? $sThumb : ('data:image/png;base64,' . $sThumb);
-                }
-            }
-        }
-
-        // 4. Munsell color reference image
-        if ($this->munsell_color?->image) {
-            $mImg = $this->munsell_color->image;
-            $cleanM = ltrim($mImg, '/');
-            if (!str_starts_with($cleanM, 'storage/')) $cleanM = 'storage/' . $cleanM;
-            return asset($cleanM);
-        }
-
-        // 5. Soil reference image
-        if ($this->soil?->image) {
-            $sImg = $this->soil->image;
-            $cleanS = ltrim($sImg, '/');
-            if (!str_starts_with($cleanS, 'storage/')) $cleanS = 'storage/' . $cleanS;
-            return asset($cleanS);
-        }
-
-        // 6. Return asset path as last resort if raw path existed
-        if (!empty($raw) && !$isBrokenSupabase) {
-            $clean = ltrim($raw, '/');
-            if (!str_starts_with($clean, 'storage/')) {
-                $clean = 'storage/' . $clean;
-            }
-            return asset($clean);
-        }
-
-        return null;
+        return \App\Helpers\SoilImageHelper::scanImageUrl($this);
     }
 
     public function getBeforeAfterImageUrlAttribute(): ?string
     {
-        $rawImg = $this->scan_image ?? $this->scan_note;
-        if (!empty($rawImg) && preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
-            $scanUuid = $m[1];
-            return asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
-        }
-        if ($this->soil_scan_id) {
-            return asset("storage/scans/scan_{$this->soil_scan_id}_before_after.jpg");
-        }
-        return null;
+        return \App\Helpers\SoilImageHelper::beforeAfterImageUrl($this);
     }
 
     public function location()

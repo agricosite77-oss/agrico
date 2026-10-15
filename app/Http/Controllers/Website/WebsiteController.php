@@ -92,12 +92,13 @@ class WebsiteController extends Controller
                 }
             }
 
-            if (env('FILESYSTEM_DISK') === 's3' && file_exists($targetPublicJpg)) {
-                try {
-                    Storage::disk('s3')->put('scans/scan_' . $scanId . '.jpg', file_get_contents($targetPublicJpg), 'public');
-                } catch (\Throwable $e_s3) {
-                    \Illuminate\Support\Facades\Log::warning('[WebsiteController] S3 scan upload failed: ' . $e_s3->getMessage());
+            try {
+                if (file_exists($targetPublicJpg)) {
+                    $supabaseStorage = app(\App\Services\SupabaseStorageService::class);
+                    $supabaseStorage->uploadFile($targetPublicJpg, 'scans/scan_' . $scanId . '.jpg');
                 }
+            } catch (\Throwable $e_supa) {
+                \Illuminate\Support\Facades\Log::warning('[WebsiteController] Supabase scan upload failed: ' . $e_supa->getMessage());
             }
         } catch (\Throwable $e) {
             Log::warning('[WebsiteController] Could not pre-save public scan photo: ' . $e->getMessage());
