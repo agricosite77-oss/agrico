@@ -181,9 +181,10 @@ def filter_real_regions(
         is_soil, gate_conf = predict_is_soil(cropped)
         if not is_soil:
             sys.stderr.write(
-                f"[Stage4] Region {region['color_index']} rejected by soil gate "
-                f"(conf={gate_conf:.3f})\n"
+                f"[DEBUG Stage 4] Region {region.get('color_index')} DROPPED by soil gate: "
+                f"gate_prob={gate_conf:.3f} < 0.50\n"
             )
+            sys.stderr.flush()
             continue
 
         # B. Fake_Soil similarity check
@@ -192,13 +193,24 @@ def filter_real_regions(
 
         if max_fake_ssim >= FAKE_SOIL_SSIM_THRESHOLD:
             sys.stderr.write(
-                f"[Stage4] Region {region['color_index']} rejected: "
-                f"SSIM={max_fake_ssim:.3f} >= fake threshold {FAKE_SOIL_SSIM_THRESHOLD}\n"
+                f"[DEBUG Stage 4] Region {region.get('color_index')} DROPPED by Fake_Soil SSIM: "
+                f"SSIM={max_fake_ssim:.3f} >= threshold {FAKE_SOIL_SSIM_THRESHOLD}\n"
             )
+            sys.stderr.flush()
             continue
+
+        sys.stderr.write(
+            f"[DEBUG Stage 4] Region {region.get('color_index')} PASSED: "
+            f"gate_prob={gate_conf:.3f}, fake_SSIM={max_fake_ssim:.3f}\n"
+        )
+        sys.stderr.flush()
 
         region["gate_confidence"] = round(gate_conf, 3)
         region["is_real_region"] = True
         real_regions.append(region)
 
+    sys.stderr.write(
+        f"[DEBUG Stage 4] region_checker summary: {len(real_regions)}/{len(regions)} regions passed\n"
+    )
+    sys.stderr.flush()
     return real_regions

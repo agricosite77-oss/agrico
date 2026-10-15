@@ -144,13 +144,18 @@ def classify_soil(
 
     if is_soil_full:
         is_soil, gate_conf = True, conf_full
+        roi_used = "full_image"
     elif is_soil_roi:
         is_soil, gate_conf = True, conf_roi
+        roi_used = "center_roi"
     else:
         is_soil, gate_conf = False, max(conf_full, conf_roi)
+        roi_used = "none"
 
     stage1_elapsed = time.perf_counter() - t_stage1
+    sys.stderr.write(f"[DEBUG Stage 1] soil_gate: is_soil={is_soil}, probability={gate_conf:.3f}, ROI_used={roi_used} (full_prob={conf_full:.3f}, roi_prob={conf_roi:.3f})\n")
     sys.stderr.write(f"[TIMING] Stage 1 (Soil Gate): {stage1_elapsed:.3f}s (is_soil={is_soil}, conf={gate_conf:.3f}, full={is_soil_full}:{conf_full:.3f}, roi={is_soil_roi}:{conf_roi:.3f})\n")
+    sys.stderr.flush()
 
     # Stage 1 live dataset comparison (precomputed cache; never reads raw dataset images).
     # STAGE1_LIVE_MODE: off | shadow (log only, default) | veto (may reject)
@@ -265,7 +270,10 @@ def classify_soil(
             "color_index": 0,
         }]
     stage3_elapsed = time.perf_counter() - t_stage3
+    proportions_summary = ", ".join([f"R{idx}: {r.get('proportion', 0):.1%}" for idx, r in enumerate(color_regions)])
+    sys.stderr.write(f"[DEBUG Stage 3] color_detector: palette_regions={len(color_regions)}, proportions=[{proportions_summary}]\n")
     sys.stderr.write(f"[TIMING] Stage 3 (Color Detection): {stage3_elapsed:.3f}s (regions={len(color_regions)})\n")
+    sys.stderr.flush()
     if _prog: _prog(3, "Multi-Color Detection", "done", {"region_count": len(color_regions)})
 
     # ── Stage 4: Per-region real-vs-fake re-check ─────────────────────────────
@@ -321,7 +329,10 @@ def classify_soil(
         sys.stderr.write(f"[Stage5] Munsell matching failed: {exc}\n")
         matched_regions = []
     stage5_elapsed = time.perf_counter() - t_stage5
+    matches_summary = ", ".join([f"R{idx}: {r.get('munsell')} ({r.get('label')})" for idx, r in enumerate(matched_regions)])
+    sys.stderr.write(f"[DEBUG Stage 5] munsell_region_matcher: matched_count={len(matched_regions)}, matches=[{matches_summary}]\n")
     sys.stderr.write(f"[TIMING] Stage 5 (Munsell Match): {stage5_elapsed:.3f}s (matched={len(matched_regions)})\n")
+    sys.stderr.flush()
     if _prog: _prog(5, "Munsell Spectral Match", "done", None)
     time.sleep(0.08)
 
@@ -339,7 +350,10 @@ def classify_soil(
         final_regions = matched_regions
     stage6_elapsed = time.perf_counter() - t_stage6
     total_elapsed = time.perf_counter() - pipeline_start
+    verif_summary = ", ".join([f"R{idx}: conf={r.get('verification_confidence', 0):.2f}, status={r.get('status')}" for idx, r in enumerate(final_regions)])
+    sys.stderr.write(f"[DEBUG Stage 6] real_soil_verifier: verified_count={len(final_regions)}, results=[{verif_summary}]\n")
     sys.stderr.write(f"[TIMING] Stage 6 (ML Cross-Check): {stage6_elapsed:.3f}s | TOTAL: {total_elapsed:.3f}s\n")
+    sys.stderr.flush()
 
     # ── Build top-level summary from dominant region ───────────────────────
     dominant = final_regions[0] if final_regions else None

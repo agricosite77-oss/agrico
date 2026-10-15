@@ -4583,18 +4583,21 @@
                     <div id="soilDualPreviewBadge" style="position: relative; margin-top: 10px; margin-bottom: 16px; width: 100%; display: flex; align-items: center;">
                         <!-- Rectangular Color Swatch Block -->
                         <div id="resSwatchBlock" style="width: 100%; height: 78px; border-radius: 14px; background: #594433; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); transition: background-color 0.4s ease; display: flex; align-items: center; justify-content: space-between; padding: 0 20px 0 126px; position: relative; box-sizing: border-box; cursor: pointer;" title="Click to view or switch detected soil layers">
-                            <div style="cursor: pointer; user-select: none;">
+                            <div style="cursor: pointer; user-select: none; min-width: 0;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span id="resDominantChevron" style="display: none; font-size: 13px; color: #ffffff; opacity: 0.95; transition: transform 0.2s ease;">▼</span>
-                                    <span id="resCodeDisplay" style="font-size: 26px; font-weight: 900; color: #ffffff; text-shadow: none; letter-spacing: -0.01em; line-height: 1;">
+                                    <span id="resCodeDisplay" style="font-size: 23px; font-weight: 900; color: #ffffff; text-shadow: none; letter-spacing: -0.01em; line-height: 1;">
                                         10YR 4/3
                                     </span>
                                 </div>
-                                <div id="resSoilPercentageDisplay" style="display: none; font-size: 11.5px; font-weight: 700; color: rgba(255, 255, 255, 0.95); margin-top: 4px; letter-spacing: 0.02em;">
+                                <div id="resBannerColorName" style="font-size: 12.5px; font-weight: 700; color: rgba(255, 255, 255, 0.92); margin-top: 3px; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;">
+                                    Dark Brown
+                                </div>
+                                <div id="resSoilPercentageDisplay" style="display: none; font-size: 11px; font-weight: 700; color: rgba(255, 255, 255, 0.85); margin-top: 2px; letter-spacing: 0.02em;">
                                     Soil Percentage (60%)
                                 </div>
                             </div>
-                            <span id="resHexPill" style="font-size: 11.5px; font-weight: 800; color: #ffffff; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 5px 12px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; border: 1px solid rgba(255, 255, 255, 0.2); user-select: none; -webkit-user-select: none; line-height: 1;">
+                            <span id="resHexPill" style="font-size: 11.5px; font-weight: 800; color: #ffffff; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 5px 12px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; border: 1px solid rgba(255, 255, 255, 0.2); user-select: none; -webkit-user-select: none; line-height: 1; flex-shrink: 0;">
                                 #594433
                             </span>
                         </div>
@@ -7261,23 +7264,100 @@
                     return fallback;
                 };
 
+                window.getContrastColor = function(hex) {
+                    if (!hex || typeof hex !== 'string') {
+                        return {
+                            isLight: false,
+                            text: '#ffffff',
+                            subtext: 'rgba(255, 255, 255, 0.92)',
+                            chevron: '#ffffff',
+                            pillBg: 'rgba(0, 0, 0, 0.6)',
+                            pillBorder: 'rgba(255, 255, 255, 0.2)',
+                            pillText: '#ffffff'
+                        };
+                    }
+                    let c = hex.replace('#', '').trim();
+                    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+                    if (c.length !== 6) {
+                        return {
+                            isLight: false,
+                            text: '#ffffff',
+                            subtext: 'rgba(255, 255, 255, 0.92)',
+                            chevron: '#ffffff',
+                            pillBg: 'rgba(0, 0, 0, 0.6)',
+                            pillBorder: 'rgba(255, 255, 255, 0.2)',
+                            pillText: '#ffffff'
+                        };
+                    }
+                    const r = parseInt(c.substring(0, 2), 16) || 0;
+                    const g = parseInt(c.substring(2, 4), 16) || 0;
+                    const b = parseInt(c.substring(4, 6), 16) || 0;
+                    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+                    const isLight = yiq >= 145;
+                    return {
+                        isLight: isLight,
+                        text: isLight ? '#111827' : '#ffffff',
+                        subtext: isLight ? 'rgba(17, 24, 39, 0.88)' : 'rgba(255, 255, 255, 0.92)',
+                        chevron: isLight ? '#111827' : '#ffffff',
+                        pillBg: isLight ? 'rgba(255, 255, 255, 0.88)' : 'rgba(0, 0, 0, 0.6)',
+                        pillBorder: isLight ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)',
+                        pillText: isLight ? '#111827' : '#ffffff'
+                    };
+                };
+
+                window.updateLiveBannerTheme = function(hex, code, colorName, pct) {
+                    const swatchBlock = document.getElementById('resSwatchBlock');
+                    const codeDisplay = document.getElementById('resCodeDisplay');
+                    const bannerColorName = document.getElementById('resBannerColorName');
+                    const hexPill = document.getElementById('resHexPill');
+                    const pctDisplay = document.getElementById('resSoilPercentageDisplay');
+                    const chevron = document.getElementById('resDominantChevron');
+
+                    const effectiveHex = hex || '#594433';
+                    const theme = window.getContrastColor(effectiveHex);
+
+                    if (swatchBlock) swatchBlock.style.backgroundColor = effectiveHex;
+                    if (codeDisplay) {
+                        codeDisplay.textContent = code || '—';
+                        codeDisplay.style.color = theme.text;
+                    }
+                    if (bannerColorName) {
+                        bannerColorName.textContent = colorName || 'Determined Soil Specimen';
+                        bannerColorName.style.color = theme.subtext;
+                    }
+                    if (chevron) chevron.style.color = theme.chevron;
+                    if (pctDisplay) {
+                        pctDisplay.style.color = theme.subtext;
+                        if (pct !== undefined && pct !== null) {
+                            pctDisplay.textContent = `Soil Percentage (${pct}%)`;
+                            pctDisplay.style.display = 'block';
+                        }
+                    }
+                    if (hexPill) {
+                        hexPill.textContent = effectiveHex.toUpperCase();
+                        hexPill.style.backgroundColor = theme.pillBg;
+                        hexPill.style.borderColor = theme.pillBorder;
+                        hexPill.style.color = theme.pillText;
+                    }
+                };
+
                 // Match format expected by UI rendering
                 const match = {
                     scan_id:    data.scan_id,
                     soil_scan_id: data.scan_id,
                     soil_id:    data.soil_id || (data.soil_model ? data.soil_model.soil_id : null),
-                    code:       data.munsell_code,
-                    color_name: data.color_name || 'Determined Soil Specimen',
-                    soil_type:  data.soil_name  || 'Agricultural Loam',
-                    name:       data.color_name || 'Determined Soil Specimen',
+                    code:       data.munsell_code || data.munsell || (data.regions && data.regions[0] ? (data.regions[0].munsell_code || data.regions[0].munsell) : '—'),
+                    color_name: data.color_name || (data.regions && data.regions[0] ? (data.regions[0].color_name || data.regions[0].label) : 'Determined Soil Specimen'),
+                    soil_type:  data.soil_type || data.soil_name || (data.regions && data.regions[0] ? (data.regions[0].soil_type || data.regions[0].soil_name) : 'Agricultural Loam'),
+                    name:       data.color_name || (data.regions && data.regions[0] ? (data.regions[0].color_name || data.regions[0].label) : 'Determined Soil Specimen'),
                     hue:        data.hue,
                     val:        data.value,
                     chroma:     data.chroma,
                     confidence: window.getNearMatchScore(data, (data.confidence_formatted && data.confidence_formatted !== '100%' && data.confidence_formatted !== '100.0%') ? data.confidence_formatted : '98.2%'),
-                    hex:        data.hex,
-                    desc:       data.description,
-                    organic:    data.organic_matter,
-                    drainage:   data.drainage_profile,
+                    hex:        data.hex || (data.regions && data.regions[0] ? data.regions[0].hex : '#594433'),
+                    desc:       data.description || (data.regions && data.regions[0] ? data.regions[0].description : ''),
+                    organic:    data.organic_matter || (data.regions && data.regions[0] ? data.regions[0].organic_matter : '—'),
+                    drainage:   data.drainage_profile || (data.regions && data.regions[0] ? (data.regions[0].soil_type || data.regions[0].soil_name) : '—'),
                     crops:      data.recommended_crops,
                     engine:     data.engine,
                     regions:    data.regions || []
@@ -7285,9 +7365,13 @@
 
                 // Async-enrich match.name from Open Colors API (non-blocking)
                 fetchOpenColorName(match.hex, match.color_name).then(openName => {
+                    if (!openName) return;
                     match.name = openName;
+                    match.color_name = openName;
                     if (lastScanMatch === match) {
                         if (resName) resName.textContent = openName;
+                        const bannerColorName = document.getElementById('resBannerColorName');
+                        if (bannerColorName) bannerColorName.textContent = openName;
                         const tbody = document.getElementById('savedScansTbody');
                         const firstNameCell = tbody?.querySelector('tr.is-new-scan-row .col-soil-name');
                         if (firstNameCell) firstNameCell.childNodes[0].textContent = openName;
@@ -7340,6 +7424,10 @@
                     if (resSoilPercentageDisplay) resSoilPercentageDisplay.style.display = 'none';
                 }
 
+                // Update Hero Swatch Banner with dynamic contrast
+                const domInitialPct = isMultiLayer ? (regions[0].percent || Math.round((regions[0].proportion || 0.6) * 100)) : null;
+                window.updateLiveBannerTheme(match.hex, match.code, match.color_name, domInitialPct);
+
                 // Row 1: Code Details
                 if (resName) resName.textContent = match.color_name;
                 if (resFullCode) resFullCode.textContent = match.code;
@@ -7360,7 +7448,10 @@
                     if (cleanLiveNote && !cleanLiveNote.startsWith('Determined Soil:') && cleanLiveNote !== '—' && cleanLiveNote !== '-') {
                         resCardScanNote.textContent = cleanLiveNote;
                     } else {
-                        resCardScanNote.textContent = 'No scan note available for this record.';
+                        const safeName = (match.color_name && match.color_name !== 'undefined') ? match.color_name : 'Determined Soil Specimen';
+                        const safeCode = (match.code && match.code !== 'undefined') ? ` (${match.code})` : '';
+                        const safeConf = match.confidence ? ` with ${match.confidence} confidence.` : '.';
+                        resCardScanNote.textContent = `Determined ${safeName}${safeCode}${safeConf}`;
                     }
                 }
 
@@ -7368,12 +7459,18 @@
                 if (resDesc) {
                     let singleDesc = match.desc;
                     if (!singleDesc || singleDesc.includes('Sample processed')) {
-                        singleDesc = `${match.code} - ${match.color_name}`;
+                        const safeCode = (match.code && match.code !== 'undefined' && match.code !== 'null') ? match.code : '';
+                        const safeName = (match.color_name && match.color_name !== 'undefined' && match.color_name !== 'null') ? match.color_name : 'Determined Soil Specimen';
+                        singleDesc = safeCode ? `${safeCode} - ${safeName}` : safeName;
                     } else {
                         singleDesc = singleDesc.replace(/\.{2,}\s*[a-zA-Z]*$/g, '.').replace(/\.{2,}/g, '.').trim();
                     }
                     if (singleDesc.includes('\n')) {
                         singleDesc = singleDesc.split('\n')[0].trim();
+                    }
+                    singleDesc = singleDesc.replace(/\bundefined\b/gi, '').replace(/\bnull\b/gi, '').replace(/\s*-\s*$/, '').trim();
+                    if (!singleDesc) {
+                        singleDesc = match.color_name || 'Determined Soil Specimen';
                     }
                     resDesc.textContent = singleDesc;
                 }
@@ -7538,27 +7635,19 @@
                     if (!regions || !regions[layerIdx]) return;
                     const r = regions[layerIdx];
                     const rPct = r.percent !== undefined ? r.percent : Math.round((r.proportion || 0.2) * 100);
-                    const rCode = r.munsell || r.munsell_code || match.code;
+                    const rCode = r.munsell || r.munsell_code || match.code || '—';
                     const rHex = r.hex || getMunsellColorHex(rCode, '') || match.hex || '#594433';
-                    const rLabel = r.label || r.color_name || match.color_name;
-                    const rOrganic = r.organic_matter || match.organic;
-                    const rDrainage = r.soil_name || r.soil_type || match.soil_type;
-                    const rConf = window.getNearMatchScore(r, match.confidence);
-                    const rNote = (r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') ? r.scan_note : (data.scan_note || 'No scan note available for this record.');
+                    const rLabel = r.label || r.color_name || match.color_name || 'Determined Soil';
+                    const rOrganic = r.organic_matter || match.organic || '—';
+                    const rDrainage = r.soil_name || r.soil_type || match.soil_type || '—';
+                    const rConf = window.getNearMatchScore(r, match.confidence || '96.8%');
+                    const rNote = (r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
+                        ? r.scan_note 
+                        : (data.scan_note || `Determined ${rLabel} (${rCode}) with ${rConf} confidence.`);
                     const rDesc = r.description || `${rCode} - ${rLabel}`;
 
-                    // Update hero banner
-                    const swatchBlock = document.getElementById('resSwatchBlock');
-                    const codeDisplay = document.getElementById('resCodeDisplay');
-                    const hexPill = document.getElementById('resHexPill');
-                    const pctDisplay = document.getElementById('resSoilPercentageDisplay');
-                    if (swatchBlock) swatchBlock.style.backgroundColor = rHex;
-                    if (codeDisplay) codeDisplay.textContent = rCode;
-                    if (hexPill) hexPill.textContent = rHex.toUpperCase();
-                    if (pctDisplay) {
-                        pctDisplay.style.display = 'block';
-                        pctDisplay.textContent = `Soil Percentage (${rPct}%)`;
-                    }
+                    // Update hero banner with dynamic contrast
+                    window.updateLiveBannerTheme(rHex, rCode, rLabel, rPct);
 
                     // Update snippet avatar with ROI box for this chosen region
                     const snippetImg = document.getElementById('resSoilCircleSnippet');
@@ -7674,7 +7763,11 @@
                             const rOrganic = r.organic_matter || match.organic || 'Moderate (2.2% – 3.7%)';
                             const rDrainage = r.soil_name || match.drainage || 'Well-Drained Clay / Latosol';
                             const rDesc = r.description || `${rMunsell} - ${rLabel}`;
+                            const rItemNote = (r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
+                                ? r.scan_note 
+                                : `Determined ${rLabel} (${rMunsell}) with ${rConf} confidence.`;
 
+                            const itemTheme = window.getContrastColor(rHex);
                             const itemDiv = document.createElement('div');
                             itemDiv.className = 'layer-accordion-item';
 
@@ -7698,8 +7791,11 @@
                                             <img class="layer-zoom-img" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;border-radius:0;border:none;outline:none;" />
                                             <span class="layer-zoom-fallback" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:0;"></span>
                                         </span>
-                                        <span style="font-size: 17px; font-weight: 800; color: #ffffff; text-shadow: none; flex: 1; min-width: 0;">${rMunsell}</span>
-                                        <span style="font-size: 10.5px; font-weight: 800; color: #ffffff; background: rgba(0,0,0,0.5); padding: 3px 9px; border-radius: 9999px; font-family: monospace; flex-shrink: 0;">${rHex.toUpperCase()}</span>
+                                        <div style="flex: 1; min-width: 0; line-height: 1.25;">
+                                            <div style="font-size: 16px; font-weight: 800; color: ${itemTheme.text}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell}</div>
+                                            <div style="font-size: 12px; font-weight: 700; color: ${itemTheme.subtext}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rLabel}</div>
+                                        </div>
+                                        <span style="font-size: 10.5px; font-weight: 800; color: ${itemTheme.pillText}; background: ${itemTheme.pillBg}; border: 1px solid ${itemTheme.pillBorder}; padding: 3px 9px; border-radius: 9999px; font-family: monospace; flex-shrink: 0;">${rHex.toUpperCase()}</span>
                                     </div>
 
                                     <!-- Row 1: Color Name, Full Code, Proportion -->
@@ -7737,7 +7833,7 @@
                                     <!-- Scan Note -->
                                     <div class="soil-modal-grid-card" style="margin-bottom: 8px;">
                                         <div class="soil-modal-label">Scan Note</div>
-                                        <div class="soil-modal-value layer-accordion-desc" style="font-size: 13px; font-weight: 700; line-height: 1.5; white-space: pre-line;">${(r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') ? r.scan_note : 'No scan note available for this record.'}</div>
+                                        <div class="soil-modal-value layer-accordion-desc" style="font-size: 13px; font-weight: 700; line-height: 1.5; white-space: pre-line;">${rItemNote}</div>
                                     </div>
 
                                     <!-- Description -->
@@ -8183,23 +8279,35 @@
 
                 // Apply the soil color to the banner (outer hero div), not the text container
                 const heroBadge = document.getElementById('modalSoilDualPreviewBadge');
+                const mTheme = window.getContrastColor ? window.getContrastColor(hex) : { text: '#ffffff', subtext: '#ffffff', chevron: '#ffffff', pillBg: 'rgba(0,0,0,0.6)', pillBorder: 'rgba(255,255,255,0.2)', pillText: '#ffffff' };
                 if (heroBadge) {
                     heroBadge.style.setProperty('background', hex, 'important');
                     heroBadge.style.setProperty('background-color', hex, 'important');
                 }
-                if (modalCodeDisplay) modalCodeDisplay.textContent = code;
-                if (modalHexPill) modalHexPill.textContent = hex.toUpperCase();
+                if (modalCodeDisplay) {
+                    modalCodeDisplay.textContent = code;
+                    modalCodeDisplay.style.color = mTheme.text;
+                }
+                if (modalHexPill) {
+                    modalHexPill.textContent = hex.toUpperCase();
+                    modalHexPill.style.backgroundColor = mTheme.pillBg;
+                    modalHexPill.style.borderColor = mTheme.pillBorder;
+                    modalHexPill.style.color = mTheme.pillText;
+                }
+                if (modalDominantChevron) modalDominantChevron.style.color = mTheme.chevron;
 
                 if (isMulti) {
                     if (modalDominantChevron) modalDominantChevron.style.display = 'inline';
                     if (modalSoilPercentageDisplay) {
                         modalSoilPercentageDisplay.style.display = 'block';
+                        modalSoilPercentageDisplay.style.color = mTheme.subtext;
                         modalSoilPercentageDisplay.textContent = `Soil Percentage (${percent}%)`;
                     }
                 } else {
                     if (modalDominantChevron) modalDominantChevron.style.display = 'none';
                     if (modalSoilPercentageDisplay && percent) {
                         modalSoilPercentageDisplay.style.display = 'block';
+                        modalSoilPercentageDisplay.style.color = mTheme.subtext;
                         modalSoilPercentageDisplay.textContent = `Soil Percentage (${percent}%)`;
                     } else if (modalSoilPercentageDisplay) {
                         modalSoilPercentageDisplay.style.display = 'none';
@@ -8249,18 +8357,33 @@
                     const rOrganic = r.organic_matter || data.organic;
                     const rDrainage = r.soil_name || r.soil_type || data.drainage;
                     const rConf = window.getNearMatchScore ? window.getNearMatchScore(r, data.confidence || '97.4%') : (data.confidence || '97.4%');
-                    const rNote = (r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') ? r.scan_note : (data.scan_note || 'No scan note available for this record.');
-                    const rDesc = r.description || `${rCode} - ${rLabel}`;
+                    const rNote = (r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
+                        ? r.scan_note 
+                        : (data.scan_note || `Determined ${rLabel} (${rCode}) with ${rConf} confidence.`);
+                    let rDesc = r.description || `${rCode} - ${rLabel}`;
+                    rDesc = rDesc.replace(/\bundefined\b/gi, '').replace(/\bnull\b/gi, '').replace(/\s*-\s*$/, '').trim();
+                    if (!rDesc) rDesc = rLabel;
 
-                    // Update banner
+                    // Update banner with contrast
+                    const rTheme = window.getContrastColor ? window.getContrastColor(rHex) : { text: '#ffffff', subtext: '#ffffff', chevron: '#ffffff', pillBg: 'rgba(0,0,0,0.6)', pillBorder: 'rgba(255,255,255,0.2)', pillText: '#ffffff' };
                     if (heroBadge) {
                         heroBadge.style.setProperty('background', rHex, 'important');
                         heroBadge.style.setProperty('background-color', rHex, 'important');
                     }
-                    if (modalCodeDisplay) modalCodeDisplay.textContent = rCode;
-                    if (modalHexPill) modalHexPill.textContent = rHex.toUpperCase();
+                    if (modalCodeDisplay) {
+                        modalCodeDisplay.textContent = rCode;
+                        modalCodeDisplay.style.color = rTheme.text;
+                    }
+                    if (modalHexPill) {
+                        modalHexPill.textContent = rHex.toUpperCase();
+                        modalHexPill.style.backgroundColor = rTheme.pillBg;
+                        modalHexPill.style.borderColor = rTheme.pillBorder;
+                        modalHexPill.style.color = rTheme.pillText;
+                    }
+                    if (modalDominantChevron) modalDominantChevron.style.color = rTheme.chevron;
                     if (modalSoilPercentageDisplay) {
                         modalSoilPercentageDisplay.style.display = 'block';
+                        modalSoilPercentageDisplay.style.color = rTheme.subtext;
                         modalSoilPercentageDisplay.textContent = `Soil Percentage (${rPct}%)`;
                     }
 

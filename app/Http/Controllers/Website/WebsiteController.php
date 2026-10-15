@@ -229,13 +229,22 @@ class WebsiteController extends Controller
                             $payload['status'] = 'rejected';
                             $payload['rejected'] = true;
                         }
+                    } else {
+                        $payload['status'] = 'error';
+                        $payload['error'] = $rawResult['error'] ?? 'Unknown scan analysis failure';
+                        $payload['events'][] = ['stage' => 0, 'status' => 'error', 'error' => $payload['error']];
                     }
                 } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::error('[WebsiteController] Error finalizing scan: ' . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error('[WebsiteController] Error finalizing scan: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+                    $payload['status'] = 'error';
+                    $payload['error'] = 'Error finalizing scan result: ' . $e->getMessage();
+                    $payload['events'][] = ['stage' => 0, 'status' => 'error', 'error' => $e->getMessage()];
                 } finally {
                     @unlink($progressFile);
                     @unlink($resultFile);
-                    \Illuminate\Support\Facades\Cache::put("scan_result_payload_{$scanId}", $payload, 180);
+                    if (!empty($payload['result'])) {
+                        \Illuminate\Support\Facades\Cache::put("scan_result_payload_{$scanId}", $payload, 180);
+                    }
                     \Illuminate\Support\Facades\Cache::forget($lockKey);
                 }
             } elseif (\Illuminate\Support\Facades\Cache::has($lockKey)) {
@@ -243,6 +252,12 @@ class WebsiteController extends Controller
                 $payload['stage'] = 6;
                 $payload['status'] = 'finalizing';
             }
+        }
+
+        $scanIdSafe = preg_replace('/[^a-zA-Z0-9_\-]/', '', $scanId);
+        $pyLogFile = $tmpDir . DIRECTORY_SEPARATOR . "scan_python_{$scanIdSafe}.log";
+        if (file_exists($pyLogFile) && ($request->boolean('debug') || config('app.debug') || in_array($payload['status'] ?? '', ['done', 'error', 'rejected']))) {
+            $payload['debug_log'] = (string) file_get_contents($pyLogFile);
         }
 
         return response()->json($payload);

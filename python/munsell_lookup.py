@@ -184,11 +184,13 @@ class MunsellTable:
             for k, v in self.reference_chips.items()
         }
 
-        if not self.scan_root:
-            return
+        cache_path = os.path.join(self.scan_root, "empirical_centroids.json") if self.scan_root else None
+        if not cache_path or not os.path.isfile(cache_path):
+            py_cache = os.path.join(os.path.dirname(os.path.abspath(__file__)), "empirical_centroids.json")
+            if os.path.isfile(py_cache):
+                cache_path = py_cache
 
-        cache_path = os.path.join(self.scan_root, "empirical_centroids.json")
-        if not force and os.path.isfile(cache_path):
+        if not force and cache_path and os.path.isfile(cache_path):
             try:
                 import json
                 with open(cache_path, "r", encoding="utf-8") as f:

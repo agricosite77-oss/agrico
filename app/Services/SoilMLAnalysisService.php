@@ -144,6 +144,21 @@ class SoilMLAnalysisService
                 $proportion = (float)($r['proportion'] ?? 1.0);
                 $r['percent'] = round($proportion * 100, 1);
 
+                $cleanMunsell = trim($munsell);
+                $mc = !empty($cleanMunsell) ? \App\Models\MunsellColor::whereRaw('UPPER(TRIM(full_code)) = ?', [strtoupper($cleanMunsell)])->first() : null;
+                $soil = !empty($cleanMunsell) ? \App\Models\Soil::whereRaw('UPPER(TRIM(full_code)) = ?', [strtoupper($cleanMunsell)])->first() : null;
+
+                $colorName = $mc?->color_name ?? $soil?->effective_soil_name ?? ($r['label'] ?? 'Determined Soil');
+                $r['munsell_code'] = $cleanMunsell;
+                $r['code'] = $cleanMunsell;
+                $r['full_code'] = $cleanMunsell;
+                $r['color_name'] = $colorName;
+                $r['name'] = $colorName;
+                $r['soil_name'] = $soil?->effective_soil_name ?? $colorName;
+                $r['organic_matter'] = $soil?->effective_organic_matter ?? ($mc?->organic_matter ?? 'Moderate (2.2% – 3.7%)');
+                $r['soil_type'] = $soil?->effective_soil_type ?? ($mc?->soil_type ?? 'Agricultural Loam');
+                $r['description'] = $soil?->effective_description ?? ($mc?->description ?? "{$cleanMunsell} - {$colorName}");
+
                 $rDeltaE = isset($r['color_delta_e']) && is_numeric($r['color_delta_e']) ? (float)$r['color_delta_e'] : 3.0;
                 $regNearScore = round(max(65.0, min(90.0, 90.0 - ($rDeltaE * 1.25))), 1);
                 $r['confidence'] = $regNearScore;
@@ -312,6 +327,32 @@ class SoilMLAnalysisService
             $pureSoilName = trim(preg_replace('/\s*\([A-Za-z0-9\/\.\s]+\)$/i', '', $analysis['color_name']));
         }
         $analysis['soil_name'] = $pureSoilName ?: 'Scanned Soil';
+
+        $munsellCode = $analysis['munsell_code'] ?? ($analysis['munsell']['notation'] ?? null);
+        if ($munsellCode) {
+            $cleanCode = strtoupper(trim($munsellCode));
+            $mc = \App\Models\MunsellColor::whereRaw('UPPER(TRIM(full_code)) = ?', [$cleanCode])->first();
+            $existingSoil = \App\Models\Soil::whereRaw('UPPER(TRIM(full_code)) = ?', [$cleanCode])->first();
+
+            $analysis['full_code'] = $munsellCode;
+            $analysis['code'] = $munsellCode;
+            if ($mc?->color_name) {
+                $analysis['color_name'] = $mc->color_name;
+            }
+            if (!empty($mc?->hex_code)) {
+                $analysis['hex'] = $mc->hex_code;
+            }
+            if ($existingSoil) {
+                $analysis['soil_name'] = $existingSoil->effective_soil_name;
+                $analysis['organic_matter'] = $existingSoil->effective_organic_matter;
+                $analysis['soil_type'] = $existingSoil->effective_soil_type;
+                $analysis['description'] = $existingSoil->effective_description;
+            } elseif ($mc) {
+                $analysis['organic_matter'] = $analysis['organic_matter'] ?? ($mc->organic_matter ?? 'Moderate (2.2% – 3.7%)');
+                $analysis['soil_type'] = $analysis['soil_type'] ?? ($mc->soil_type ?? 'Agricultural Loam');
+                $analysis['description'] = $mc->description ?? "{$munsellCode} - {$mc->color_name}";
+            }
+        }
 
         $regions     = $analysis['regions'] ?? [];
         $isMultiLayer = count($regions) > 1;
@@ -509,7 +550,7 @@ class SoilMLAnalysisService
             Log::warning('[SoilMLAnalysisService] Cloud storage scan upload failed: ' . $e->getMessage());
         }
 
-        $saveRegionImage = function ($thumbBase64, $idx) use ($scanId, $publicScanRelativePath, $supabaseStorage) {
+        $saveRegionImage = function ($thumbBase64, $idx) use ($scanId, $publicScanRelativePath, $cloudStorage) {
             if (empty($thumbBase64)) {
                 return $publicScanRelativePath;
             }
@@ -536,16 +577,18 @@ class SoilMLAnalysisService
                     }
                     @file_put_contents($destPath, $rawBin);
 
-                    // Persist to Supabase Storage
-                    $uploadedUrl = $supabaseStorage->upload($rFileName, $rawBin, $ext === 'png' ? 'image/png' : 'image/jpeg');
-                    if ($uploadedUrl) {
-                        return $uploadedUrl;
+                    // Persist to Cloud Storage
+                    if ($cloudStorage) {
+                        $uploadedUrl = $cloudStorage->upload($rFileName, $rawBin, $ext === 'png' ? 'image/png' : 'image/jpeg');
+                        if ($uploadedUrl) {
+                            return $uploadedUrl;
+                        }
                     }
 
                     return 'storage/' . $rFileName;
                 }
             } catch (\Throwable $e) {
-                // Fallback to dominant image
+                Log::warning('[SoilMLAnalysisService] Save region image failed: ' . $e->getMessage());
             }
             return $publicScanRelativePath;
         };

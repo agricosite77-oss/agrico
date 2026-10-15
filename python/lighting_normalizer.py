@@ -223,9 +223,9 @@ def normalize_lighting(image: Image.Image) -> Image.Image:
     grid_std_post = _grid_cell_std(L)   # NEW: residual gradient check
 
     sys.stderr.write(
-        f"[Stage2] mean_L={mean_L:.2f} grid_std={grid_std:.2f} "
-        f"mean_L_post={mean_L2:.2f} std_L_post={std_L2:.2f} "
-        f"grid_std_post={grid_std_post:.2f} "
+        f"[DEBUG Stage 2] lighting_normalizer: engine={LAST_STAGE2_MODE}, "
+        f"grid_std_before={grid_std:.2f}, grid_std_after={grid_std_post:.2f}, "
+        f"mean_L_before={mean_L:.2f}, mean_L_after={mean_L2:.2f}, "
         f"branch={'CLAHE' if (std_L2 > 30.0 or grid_std_post > _RESIDUAL_GRADIENT_THRESHOLD) else 'gamma'}\n"
     )
     sys.stderr.flush()
