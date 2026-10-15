@@ -123,24 +123,27 @@
             }
         }
 
-        /* Animated Floating Label & Color State Styling (Dark Mode Theme) */
+        /* Animated Floating Label & Color State Styling (Dark Mode Theme) - Neutral Gray */
         .floating-input {
             border-radius: 12px !important;
             transition: all 0.25s ease !important;
             background: rgba(5, 31, 32, 0.7) !important;
-            border: 1.5px solid rgba(142, 182, 155, 0.28) !important;
+            border: 1.5px solid #475569 !important;
             color: #DAF1DE !important;
         }
         .floating-input:focus {
-            border-color: #4ADE80 !important;
-            box-shadow: 0 0 0 3.5px rgba(74, 222, 128, 0.18) !important;
+            border-color: #94a3b8 !important;
+            box-shadow: 0 0 0 3.5px rgba(148, 163, 184, 0.22) !important;
+        }
+        .floating-input ~ .floating-label {
+            color: #94a3b8 !important;
         }
         .floating-input:focus ~ .floating-label {
             top: 0px !important;
             left: 20px !important;
             transform: translateY(-50%) scale(0.82) !important;
             background: #0B2B26 !important;
-            color: #4ADE80 !important;
+            color: #e2e8f0 !important;
             font-weight: 700 !important;
             border-radius: 4px !important;
             padding: 0 5px !important;
@@ -150,13 +153,13 @@
             left: 20px !important;
             transform: translateY(-50%) scale(0.82) !important;
             background: #0B2B26 !important;
-            color: #8EB69B !important;
+            color: #cbd5e1 !important;
             font-weight: 700 !important;
             border-radius: 4px !important;
             padding: 0 5px !important;
         }
         .floating-input:focus:not(:placeholder-shown) ~ .floating-label {
-            color: #4ADE80 !important;
+            color: #e2e8f0 !important;
         }
 
         .modal-close-circle-btn {
@@ -407,7 +410,7 @@
             text-decoration: underline;
         }
 
-        .floating-input.border-correct { border-color: #4ADE80 !important; }
+        .floating-input.border-correct { border-color: #94a3b8 !important; }
         .floating-input.border-incorrect { border-color: #F87171 !important; }
 
         .floating-input.input-locked {
@@ -1612,7 +1615,7 @@
         }
         html.light-mode .floating-input.border-correct,
         .light-mode .floating-input.border-correct,
-        body.light-mode .floating-input.border-correct { border-color: #16a34a !important; box-shadow: 0 0 0 3.5px rgba(34, 197, 94, 0.25) !important; }
+        body.light-mode .floating-input.border-correct { border-color: #64748b !important; box-shadow: 0 0 0 3.5px rgba(100, 116, 139, 0.2) !important; }
         html.light-mode .floating-input.border-incorrect,
         .light-mode .floating-input.border-incorrect,
         body.light-mode .floating-input.border-incorrect { border-color: #dc2626 !important; box-shadow: 0 0 0 3.5px rgba(220, 38, 38, 0.2) !important; }
@@ -2110,6 +2113,7 @@
 
         // Email change state
         newEmailInput: '',
+        emailReadonly: true,
         emailStep: 1,
         emailCode: '',
         sendingEmailCode: false,
@@ -2354,6 +2358,24 @@
                     this.isLightMode = e.detail.isLight;
                 } else {
                     this.isLightMode = document.documentElement.classList.contains('light-mode');
+                }
+            });
+
+            this.$watch('showEditModal', (val) => {
+                if (val) {
+                    this.newEmailInput = '';
+                    this.emailCode = '';
+                    this.emailStep = 1;
+                    this.emailChangeError = '';
+                    this.emailChangeMsg = '';
+                    this.emailReadonly = true;
+                }
+            });
+
+            this.$watch('editTab', (tab) => {
+                if (tab === 'email') {
+                    this.newEmailInput = '';
+                    this.emailReadonly = true;
                 }
             });
         },
@@ -3004,8 +3026,19 @@
                                     </svg>
                                     <input
                                         id="edit_new_email"
-                                        type="email"
+                                        type="text"
+                                        inputmode="email"
+                                        name="agrico_new_email_no_autofill"
                                         x-model="newEmailInput"
+                                        :readonly="emailReadonly"
+                                        @focus="emailReadonly = false"
+                                        @click="emailReadonly = false"
+                                        autocomplete="off"
+                                        autocorrect="off"
+                                        autocapitalize="off"
+                                        spellcheck="false"
+                                        data-lpignore="true"
+                                        data-form-type="other"
                                         placeholder=" "
                                         class="floating-input"
                                         style="width:100%; height:46px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
@@ -3105,7 +3138,8 @@
                                                     name="current_password"
                                                     x-model="currentPassword"
                                                     @input.debounce.300ms="verifyCurrentPassword()"
-                                                    autocomplete="new-password"
+                                                    autocomplete="off"
+                                                    data-lpignore="true"
                                                     placeholder=" "
                                                     class="floating-input"
                                                     :class="{
