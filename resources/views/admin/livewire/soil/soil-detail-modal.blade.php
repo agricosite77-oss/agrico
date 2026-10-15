@@ -1346,7 +1346,7 @@
                             <div class='soil-map-popup-coords' style='font-size:10.5px; color:${isLight ? '#0284c7' : '#38bdf8'}; font-family:monospace;'>${parseFloat(lat).toFixed(5)}, ${parseFloat(lng).toFixed(5)}</div>
                         </div>
                     `;
-                    marker.bindPopup(popupHtml).openPopup();
+                    marker.bindPopup(popupHtml, { closeButton: false }).openPopup();
 
                     function getRoundedBoxCoords(centerLat, centerLng, widthMeters, heightMeters) {
                         const latConversion = 111320;

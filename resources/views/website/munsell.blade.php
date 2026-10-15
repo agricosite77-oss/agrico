@@ -86,12 +86,17 @@
         }
 
         .munsell-clear-btn {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: none;
-            z-index: 3;
+            position: absolute !important;
+            right: 14px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 5 !important;
+        }
+        .munsell-clear-btn:hover {
+            transform: translateY(-50%) scale(1.06) !important;
+        }
+        .munsell-clear-btn:active {
+            transform: translateY(-50%) scale(0.95) !important;
         }
 
         /* Search Suggestions Dropdown */

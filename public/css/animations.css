@@ -1609,7 +1609,7 @@ body.light-mode,
     min-width: var(--close-btn-size) !important;
     min-height: var(--close-btn-size) !important;
     border-radius: 50% !important;
-    display: inline-flex !important;
+    display: inline-flex;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
@@ -1628,10 +1628,20 @@ body.light-mode,
     user-select: none !important;
     -webkit-user-select: none !important;
     flex-shrink: 0 !important;
-    position: relative !important;
+    position: relative;
     line-height: 1 !important;
     text-decoration: none !important;
     -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Ensure display:none inline or via helper always hides close buttons */
+.agrico-close-btn[style*="display: none"],
+.agrico-close-btn[style*="display:none"],
+.modal-close-circle-btn[style*="display: none"],
+.modal-close-circle-btn[style*="display:none"],
+.agrico-close-btn.is-hidden,
+.modal-close-circle-btn.is-hidden {
+    display: none !important;
 }
 
 .agrico-close-btn svg,
@@ -1724,15 +1734,16 @@ body.light-mode,
 
 /* Leaflet Map Popup Close Button Override */
 .leaflet-popup a.leaflet-popup-close-button,
-.agrico-custom-popup a.leaflet-popup-close-button {
+.agrico-custom-popup a.leaflet-popup-close-button,
+.leaflet-container a.leaflet-popup-close-button {
     top: 10px !important;
     right: 10px !important;
-    width: var(--close-btn-size-sm) !important;
-    height: var(--close-btn-size-sm) !important;
+    width: var(--close-btn-size-sm, 28px) !important;
+    height: var(--close-btn-size-sm, 28px) !important;
     border-radius: 50% !important;
-    background: var(--close-btn-bg) !important;
-    border: var(--close-btn-border-width-sm) solid var(--close-btn-border) !important;
-    color: var(--close-btn-color) !important;
+    background: var(--close-btn-bg, rgba(5, 31, 32, 0.70)) !important;
+    border: var(--close-btn-border-width-sm, 1.5px) solid var(--close-btn-border, rgba(142, 182, 155, 0.35)) !important;
+    color: var(--close-btn-color, #8EB69B) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -1748,19 +1759,51 @@ body.light-mode,
     overflow: hidden !important;
 }
 
+/* Light mode Leaflet popup close button (Thin gray X on white card) */
+html.light-mode .leaflet-popup a.leaflet-popup-close-button,
+html.light-mode .agrico-custom-popup a.leaflet-popup-close-button,
+html.light-mode .leaflet-container a.leaflet-popup-close-button,
+html.light .leaflet-popup a.leaflet-popup-close-button,
+[data-theme="light"] .leaflet-popup a.leaflet-popup-close-button,
+.light-mode a.leaflet-popup-close-button {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: #94a3b8 !important;
+}
+
 @media (hover: hover) and (pointer: fine) {
     .leaflet-popup a.leaflet-popup-close-button:hover,
-    .agrico-custom-popup a.leaflet-popup-close-button:hover {
-        background: var(--close-btn-bg-hover) !important;
-        border-color: var(--close-btn-border-hover) !important;
-        color: var(--close-btn-color-hover) !important;
-        transform: scale(var(--close-btn-scale-hover)) !important;
+    .agrico-custom-popup a.leaflet-popup-close-button:hover,
+    .leaflet-container a.leaflet-popup-close-button:hover {
+        background: var(--close-btn-bg-hover, rgba(35, 83, 71, 0.85)) !important;
+        border-color: var(--close-btn-border-hover, #DAF1DE) !important;
+        color: var(--close-btn-color-hover, #DAF1DE) !important;
+        transform: scale(var(--close-btn-scale-hover, 1.06)) !important;
+    }
+
+    html.light-mode .leaflet-popup a.leaflet-popup-close-button:hover,
+    html.light-mode .agrico-custom-popup a.leaflet-popup-close-button:hover,
+    html.light-mode .leaflet-container a.leaflet-popup-close-button:hover,
+    html.light .leaflet-popup a.leaflet-popup-close-button:hover,
+    [data-theme="light"] .leaflet-popup a.leaflet-popup-close-button:hover,
+    .light-mode a.leaflet-popup-close-button:hover {
+        background: #f1f5f9 !important;
+        border-color: #f1f5f9 !important;
+        color: #0f172a !important;
+        transform: scale(1.06) !important;
     }
 }
 
 .leaflet-popup a.leaflet-popup-close-button:active,
-.agrico-custom-popup a.leaflet-popup-close-button:active {
-    transform: scale(var(--close-btn-scale-active)) !important;
+.agrico-custom-popup a.leaflet-popup-close-button:active,
+.leaflet-container a.leaflet-popup-close-button:active {
+    transform: scale(var(--close-btn-scale-active, 0.95)) !important;
+}
+
+/* Modal preview map (Image 5): COMPLETELY REMOVE POPUP CLOSE BUTTON */
+#modalSoilDetailMap .leaflet-popup-close-button,
+.admin-soil-detail-map .leaflet-popup-close-button {
+    display: none !important;
 }
 
 /* Prefers-reduced-motion: disable scaling and fast transitions */

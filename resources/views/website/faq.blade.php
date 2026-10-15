@@ -103,11 +103,17 @@
             pointer-events: none;
         }
         .faq-search-clear {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: none;
+            position: absolute !important;
+            right: 14px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 5 !important;
+        }
+        .faq-search-clear:hover {
+            transform: translateY(-50%) scale(1.06) !important;
+        }
+        .faq-search-clear:active {
+            transform: translateY(-50%) scale(0.95) !important;
         }
 
         /* ── CATEGORY PILLS & NAVIGATION ARROWS ── */

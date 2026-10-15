@@ -8856,7 +8856,7 @@
                                 <div class='soil-map-popup-coords' style='font-size:10.5px; color:${isLight ? '#0284c7' : '#38bdf8'}; font-family:monospace;'>${scanLat.toFixed(5)}, ${scanLng.toFixed(5)}</div>
                             </div>
                         `;
-                        marker.bindPopup(popupHtml).openPopup();
+                        marker.bindPopup(popupHtml, { closeButton: false }).openPopup();
 
                         const covStr = data.coverage || '500 m²';
                         let boxW = 85, boxH = 85, cornerR = 20;

@@ -1149,7 +1149,7 @@
                             <div style='font-size:10.5px; color:#94a3b8;'>${parseFloat(lat).toFixed(5)}, ${parseFloat(lng).toFixed(5)}</div>
                         </div>
                     `;
-                    marker.bindPopup(popupHtml).openPopup();
+                    marker.bindPopup(popupHtml, { closeButton: false }).openPopup();
 
                     function getRoundedBoxCoords(centerLat, centerLng, widthMeters, heightMeters) {
                         const latConversion = 111320;

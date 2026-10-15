@@ -154,29 +154,17 @@
             stroke: #4ADE80 !important;
         }
         .map-search-clear {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(35, 83, 71, 0.6);
-            border: none;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            color: #DAF1DE;
-            cursor: pointer;
-            font-size: 14px;
-            line-height: 1;
-            z-index: 3;
-            transition: all 0.15s ease;
-            padding: 0;
+            position: absolute !important;
+            right: 14px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 5 !important;
         }
         .map-search-clear:hover {
-            background: #235347;
-            color: #ffffff;
+            transform: translateY(-50%) scale(1.06) !important;
+        }
+        .map-search-clear:active {
+            transform: translateY(-50%) scale(0.95) !important;
         }
 
         /* Map Search Results Dropdown */
@@ -383,10 +371,20 @@
             border-color: var(--close-btn-border-hover, #DAF1DE) !important;
             transform: scale(1.06) !important;
         }
-        .leaflet-container a.leaflet-popup-close-button:active,
-        .agrico-custom-popup a.leaflet-popup-close-button:active,
-        a.leaflet-popup-close-button:active {
-            transform: scale(0.95) !important;
+        html.light-mode .leaflet-container a.leaflet-popup-close-button,
+        html.light-mode .agrico-custom-popup a.leaflet-popup-close-button,
+        html.light-mode a.leaflet-popup-close-button {
+            background: transparent !important;
+            border-color: transparent !important;
+            color: #94a3b8 !important;
+        }
+        html.light-mode .leaflet-container a.leaflet-popup-close-button:hover,
+        html.light-mode .agrico-custom-popup a.leaflet-popup-close-button:hover,
+        html.light-mode a.leaflet-popup-close-button:hover {
+            background: #f1f5f9 !important;
+            border-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            transform: scale(1.06) !important;
         }
 
         /* ── LIGHT MODE OVERRIDES FOR SOIL MAP PAGE ── */
@@ -479,12 +477,15 @@
             stroke: #16a34a !important;
         }
         html.light-mode .map-search-clear {
-            background: #f1f5f9 !important;
-            color: #64748b !important;
+            background: transparent !important;
+            border-color: transparent !important;
+            color: #94a3b8 !important;
         }
         html.light-mode .map-search-clear:hover {
-            background: #e2e8f0 !important;
+            background: #f1f5f9 !important;
+            border-color: #f1f5f9 !important;
             color: #0f172a !important;
+            transform: translateY(-50%) scale(1.06) !important;
         }
         html.light-mode .map-search-dropdown {
             background: #ffffff !important;
@@ -1116,6 +1117,7 @@
                         onclick="clearMapSearch()"
                         title="Clear search"
                         ariaLabel="Clear search"
+                        style="display:none;"
                     />
 
                     <!-- Dropdown Search Results List -->
