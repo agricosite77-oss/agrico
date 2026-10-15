@@ -37,9 +37,8 @@
 @endphp
 
 <div
-    style="background: #ffffff; border-radius: 20px; border: 1px solid rgba(241, 245, 249, 0.9); box-shadow: 0 4px 20px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02); padding: 20px 22px; display: flex; align-items: center; gap: 16px; width: 100%; box-sizing: border-box; transition: transform 0.2s ease, box-shadow 0.2s ease;"
-    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.06)';"
-    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.03)';"
+    class="agri-hover-card"
+    style="background: #ffffff; border-radius: 20px; border: 1px solid rgba(241, 245, 249, 0.9); box-shadow: 0 4px 20px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02); padding: 20px 22px; display: flex; align-items: center; gap: 16px; width: 100%; box-sizing: border-box;"
 >
     {{-- PASTEL ROUNDED SQUARE ICON BADGE --}}
     <div class="ui-reveal-text" style="width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; {{ $styleConfig['iconBg'] }}">

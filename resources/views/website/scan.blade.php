@@ -4500,13 +4500,13 @@
 
                 {{-- Controls --}}
                 <div class="scanner-actions">
-                    <button type="button" class="scanner-btn scanner-btn-primary" id="btnToggleCamera" onclick="toggleCameraStream()">
+                    <button type="button" class="scanner-btn scanner-btn-primary agri-btn agri-btn--primary" id="btnToggleCamera" onclick="toggleCameraStream()">
                         <span>Start Camera</span>
                     </button>
-                    <button type="button" class="scanner-btn scanner-btn-secondary" id="btnUploadImage" onclick="triggerPhotoUpload()">
+                    <button type="button" class="scanner-btn scanner-btn-secondary agri-btn agri-btn--secondary" id="btnUploadImage" onclick="triggerPhotoUpload()">
                         <span>Upload Photo</span>
                     </button>
-                    <button type="button" class="scanner-btn scanner-btn-primary" id="btnCaptureScan" onclick="analyzeSoilImage()">
+                    <button type="button" class="scanner-btn scanner-btn-primary agri-btn agri-btn--primary" id="btnCaptureScan" onclick="analyzeSoilImage()">
                         <span>Scan Soil</span>
                     </button>
                 </div>
@@ -4650,7 +4650,7 @@
 
                     {{-- Primary Soil Result: Pin Location Button (Placed directly after Description - Pins active selected soil) --}}
                     <div id="resPrimaryPinLocationWrapper" style="margin-bottom: 12px;">
-                        <button type="button" id="btnPinLocationScan" class="btn-res-action btn-res-pin-location" onclick="openPinLocationModal(null, false)" style="width: 100%; justify-content: center;" title="Pin Soil Specimen to Map">
+                        <button type="button" id="btnPinLocationScan" class="btn-res-action btn-res-pin-location agri-btn agri-btn--primary" onclick="openPinLocationModal(null, false)" style="width: 100%; justify-content: center;" title="Pin Soil Specimen to Map">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -4707,13 +4707,13 @@
 
                     {{-- Action Buttons Row: Save Copy (Left) & Pin All Detected (Right) --}}
                     <div id="resActionButtonsRow" class="res-action-buttons-row">
-                        <button type="button" id="btnSaveCopyScan" class="btn-res-action btn-res-save-copy" onclick="saveCurrentScanCopy()" title="Save Copy of Soil Record">
+                        <button type="button" id="btnSaveCopyScan" class="btn-res-action btn-res-save-copy agri-btn agri-btn--secondary" onclick="saveCurrentScanCopy()" title="Save Copy of Soil Record">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
                             </svg>
                             <span>Save Copy</span>
                         </button>
-                        <button type="button" id="btnPinAllLocationScan" class="btn-res-action btn-res-pin-location" style="display: none;" onclick="openPinAllLocationModal()" title="Pin All Detected Soils to Map">
+                        <button type="button" id="btnPinAllLocationScan" class="btn-res-action btn-res-pin-location agri-btn agri-btn--primary" style="display: none;" onclick="openPinAllLocationModal()" title="Pin All Detected Soils to Map">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>

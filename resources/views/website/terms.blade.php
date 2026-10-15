@@ -790,7 +790,7 @@
                         <h4>Looking for our Privacy Policy?</h4>
                         <p>Learn how we collect, store, and safeguard your soil scans, location, and account data.</p>
                     </div>
-                    <a href="{{ route('website.privacy') }}" class="legal-cross-btn">
+                    <a href="{{ route('website.privacy') }}" class="legal-cross-btn agri-btn agri-btn--primary">
                         <span>Read Privacy Policy</span>
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path d="M5 12h14M12 5l7 7-7 7"/>

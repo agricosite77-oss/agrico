@@ -33,7 +33,8 @@
             <button
                 type="button"
                 wire:click="closeModal"
-                class="flex-1 py-3 px-3 sm:px-4 rounded-full border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition cursor-pointer text-center min-h-[44px]"
+                class="agri-btn agri-btn--secondary flex-1"
+                style="padding: 12px 16px; border-radius: 9999px; font-size: 14px; font-weight: 700; min-height: 44px;"
                 title="Cancel"
             >
                 Cancel
@@ -41,8 +42,8 @@
             <button
                 type="button"
                 wire:click="confirmSuspend"
-                class="flex-1 py-3 px-3 sm:px-4 rounded-full {{ $user->status === 'Suspended' ? 'bg-green-500 hover:bg-green-600 shadow-green-500/35' : 'bg-red-500 hover:bg-red-600 shadow-red-500/35' }} text-white font-bold text-sm shadow-md transition cursor-pointer text-center flex items-center justify-center whitespace-nowrap min-h-[44px]"
-                style="box-shadow: 0 4px 14px {{ $user->status === 'Suspended' ? 'rgba(34, 197, 94, 0.35)' : 'rgba(239, 68, 68, 0.35)' }};"
+                class="agri-btn {{ $user->status === 'Suspended' ? 'agri-btn--primary' : 'agri-btn--danger' }} flex-1"
+                style="padding: 12px 16px; border-radius: 9999px; font-size: 14px; font-weight: 700; min-height: 44px;"
                 title="{{ $user->status === 'Suspended' ? 'Unsuspend User' : 'Confirm Suspension' }}"
             >
                 {{ $user->status === 'Suspended' ? 'Unsuspend User' : 'Confirm Suspension' }}

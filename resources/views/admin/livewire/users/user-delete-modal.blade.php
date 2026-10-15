@@ -24,14 +24,15 @@
         <div class="flex gap-3 mt-5">
             <button
                 wire:click="closeModal"
-                class="flex-1 py-3 rounded-full border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition cursor-pointer"
+                class="agri-btn agri-btn--secondary flex-1"
+                style="padding: 12px 16px; border-radius: 9999px; font-size: 14px; font-weight: 700;"
             >
                 Cancel
             </button>
             <button
                 wire:click="confirmDelete"
-                class="flex-1 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white font-bold text-sm shadow-md shadow-red-500/35 transition cursor-pointer"
-                style="box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);"
+                class="agri-btn agri-btn--danger flex-1"
+                style="padding: 12px 16px; border-radius: 9999px; font-size: 14px; font-weight: 700;"
             >
                 Delete User
             </button>

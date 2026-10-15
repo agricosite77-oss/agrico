@@ -1118,7 +1118,7 @@
                         </div>
                     </div>
                     <div>
-                        <button type="button" onclick="viewWebsitePinDetails(${locId})" style="width: 100%; padding: 8.5px 12px; background: #16a34a; color: #ffffff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease; box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2);" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+                        <button type="button" class="agri-btn agri-btn--primary agri-btn--block agri-btn--sm" onclick="viewWebsitePinDetails(${locId})">
                             View Details
                         </button>
                     </div>

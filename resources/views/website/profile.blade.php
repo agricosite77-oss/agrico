@@ -2569,7 +2569,7 @@
 
                                 <button
                                     type="submit"
-                                    class="profile-modal-save-btn"
+                                    class="profile-modal-save-btn agri-btn agri-btn--primary"
                                 >
                                     Save changes
                                 </button>

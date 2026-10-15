@@ -452,15 +452,16 @@
                     <button
                         type="button"
                         wire:click="closeModal"
-                        class="flex-1 py-3 rounded-full border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition cursor-pointer text-center"
+                        class="agri-btn agri-btn--secondary flex-1"
+                        style="padding: 12px 16px; border-radius: 9999px; font-size: 14px; font-weight: 700;"
                         title="Cancel"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
-                        class="flex-1 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-sm shadow-md shadow-green-500/35 transition cursor-pointer flex items-center justify-center text-center"
-                        style="box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);"
+                        class="agri-btn agri-btn--primary flex-1"
+                        style="padding: 12px 16px; border-radius: 9999px; font-size: 14px; font-weight: 700;"
                         title="Save Changes"
                     >
                         <span wire:loading.remove wire:target="save">Save Changes</span>

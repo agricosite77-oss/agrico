@@ -24,7 +24,7 @@
     {{-- 2. STATS CARDS GRID --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         {{-- CARD 1: PENDING --}}
-        <div class="ui-reveal" style="--i:1; background:#ffffff; border-radius:18px; padding:20px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; align-items:center; gap:16px;">
+        <div class="ui-reveal agri-hover-card" style="--i:1; background:#ffffff; border-radius:18px; padding:20px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; align-items:center; gap:16px;">
             <div class="ui-reveal-text" style="--i:1; width:48px; height:48px; border-radius:14px; background:#fef3c7; color:#d97706; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                 <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"/>
@@ -38,7 +38,7 @@
         </div>
 
         {{-- CARD 2: APPROVED --}}
-        <div class="ui-reveal" style="--i:2; background:#ffffff; border-radius:18px; padding:20px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; align-items:center; gap:16px;">
+        <div class="ui-reveal agri-hover-card" style="--i:2; background:#ffffff; border-radius:18px; padding:20px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; align-items:center; gap:16px;">
             <div class="ui-reveal-text" style="--i:2; width:48px; height:48px; border-radius:14px; background:#dcfce7; color:#22c55e; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                 <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
@@ -52,7 +52,7 @@
         </div>
 
         {{-- CARD 3: DISAPPROVED --}}
-        <div class="ui-reveal" style="--i:3; background:#ffffff; border-radius:18px; padding:20px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; align-items:center; gap:16px;">
+        <div class="ui-reveal agri-hover-card" style="--i:3; background:#ffffff; border-radius:18px; padding:20px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; align-items:center; gap:16px;">
             <div class="ui-reveal-text" style="--i:3; width:48px; height:48px; border-radius:14px; background:#fee2e2; color:#dc2626; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                 <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"/>
@@ -339,18 +339,16 @@
                                             <button
                                                 @click="doApprove()"
                                                 type="button"
-                                                style="background:#22c55e; color:#ffffff; font-size:12px; font-weight:700; border-radius:8px; padding:7px 14px; border:none; cursor:pointer; transition:all 0.2s ease; box-shadow:0 1px 2px rgba(34,197,94,0.25);"
-                                                onmouseover="this.style.background='#16a34a';"
-                                                onmouseout="this.style.background='#22c55e';"
+                                                class="agri-btn agri-btn--primary agri-btn--sm"
+                                                style="font-size:12px; font-weight:700; border-radius:8px; padding:7px 14px;"
                                             >
                                                 Approve
                                             </button>
                                             <button
                                                 @click="doDisapprove()"
                                                 type="button"
-                                                style="background:#ef4444; color:#ffffff; font-size:12px; font-weight:700; border-radius:8px; padding:7px 14px; border:none; cursor:pointer; transition:all 0.2s ease; box-shadow:0 1px 2px rgba(239,68,68,0.25);"
-                                                onmouseover="this.style.background='#dc2626';"
-                                                onmouseout="this.style.background='#ef4444';"
+                                                class="agri-btn agri-btn--danger agri-btn--sm"
+                                                style="font-size:12px; font-weight:700; border-radius:8px; padding:7px 14px;"
                                             >
                                                 Disapprove
                                             </button>

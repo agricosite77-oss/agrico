@@ -675,7 +675,7 @@
                 <a href="{{ route('website.scan') }}"
                    @if($isHPending) onclick="event.preventDefault(); showAccountPendingModal('Account Pending Approval', 'Your account is awaiting admin approval. Scanning and Map access will be enabled once approved.');"
                    @elseif(!$isHAuth) onclick="event.preventDefault(); showGlobalLoginModal('scan');" @endif
-                   class="hero-btn-primary" style="padding: 14px 34px; border-radius: 999px;">
+                   class="hero-btn-primary agri-btn agri-btn--primary" style="padding: 14px 34px; border-radius: 999px;">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"
                          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
@@ -685,7 +685,7 @@
                 </a>
                 <a href="{{ route('website.download') }}"
                    @if(\App\Models\Application::isMaintenanceMode()) onclick="event.preventDefault(); showSystemMaintenanceModal();" @endif
-                   class="hero-btn-outline" style="padding: 13px 30px; border-radius: 999px;">
+                   class="hero-btn-outline agri-btn agri-btn--secondary" style="padding: 13px 30px; border-radius: 999px;">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"
                          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -838,7 +838,7 @@
         <div class="cta-banner ui-scroll-reveal" style="max-width:1200px; margin:0 auto;">
             <h2>Ready to Understand Your Soil?</h2>
             <p style="opacity: 0.95;">Start exploring soil scan data, Munsell color charts, and interactive maps — all free.</p>
-            <a href="{{ route('website.munsell') }}" class="cta-banner-btn">
+            <a href="{{ route('website.munsell') }}" class="cta-banner-btn agri-btn agri-btn--primary">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"
                      stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <rect x="3" y="3" width="18" height="18" rx="3"/>

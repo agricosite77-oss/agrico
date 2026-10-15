@@ -363,7 +363,7 @@
                 @endfor
             </div>
 
-            <button type="submit" class="submit-btn">Verify Code</button>
+            <button type="submit" class="submit-btn agri-btn agri-btn--primary agri-btn--block">Verify Code</button>
         </form>
 
         <div class="resend-row">

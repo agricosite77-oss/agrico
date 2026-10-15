@@ -739,7 +739,7 @@
                         <h4>Looking for our Terms of Service?</h4>
                         <p>Learn about the rules, acceptable use, and disclaimer governing the use of AgriCo.</p>
                     </div>
-                    <a href="{{ route('website.terms') }}" class="legal-cross-btn">
+                    <a href="{{ route('website.terms') }}" class="legal-cross-btn agri-btn agri-btn--primary">
                         <span>Read Terms of Service</span>
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path d="M5 12h14M12 5l7 7-7 7"/>

@@ -976,13 +976,13 @@
                 Can't find the answer you're looking for? Our administrative team is here to help with account verification, scan inquiries, or soil classification questions.
             </p>
             <div class="faq-contact-actions">
-                <a href="mailto:agricosite77@gmail.com" class="faq-btn-primary">
+                <a href="mailto:agricosite77@gmail.com" class="faq-btn-primary agri-btn agri-btn--primary">
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
                     <span>Contact Support (agricosite77@gmail.com)</span>
                 </a>
-                <a href="{{ route('website.map') }}" class="faq-btn-secondary">
+                <a href="{{ route('website.map') }}" class="faq-btn-secondary agri-btn agri-btn--secondary">
                     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
                         <line x1="8" y1="2" x2="8" y2="18"/>
@@ -990,7 +990,7 @@
                     </svg>
                     <span>View Soil Map</span>
                 </a>
-                <a href="{{ route('website.munsell') }}" class="faq-btn-secondary">
+                <a href="{{ route('website.munsell') }}" class="faq-btn-secondary agri-btn agri-btn--secondary">
                     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <rect x="3" y="3" width="18" height="18" rx="3"/>
                         <line x1="3" y1="9" x2="21" y2="9"/>
