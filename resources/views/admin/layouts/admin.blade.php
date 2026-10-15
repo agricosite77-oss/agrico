@@ -1,5 +1,15 @@
+@php
+    $adminAuthUser = auth()->user() ?? Auth::guard('admin')->user();
+    if (!$adminAuthUser && session()->has('user_id')) {
+        $adminAuthUser = \App\Models\User::where('user_id', session('user_id'))->first();
+    }
+    if (!$adminAuthUser && session()->has('admin_id')) {
+        $adminAuthUser = \App\Models\User::where('user_id', session('admin_id'))->first();
+    }
+    $adminTheme = $adminAuthUser ? ($adminAuthUser->theme ?? 'light') : 'light';
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_','-',app()->getLocale()) }}" class="light" style="color-scheme: light;">
+<html lang="{{ str_replace('_','-',app()->getLocale()) }}" class="{{ $adminTheme === 'dark' ? 'dark' : 'light' }}" style="color-scheme: {{ $adminTheme === 'dark' ? 'dark' : 'light' }};">
 
 <head>
     <meta charset="utf-8" />
@@ -7,6 +17,56 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    <script>
+        (function() {
+            try {
+                var stored = localStorage.getItem('agrico-theme');
+                var theme = stored || @json($adminTheme) || 'light';
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('light');
+                    document.documentElement.classList.remove('light-mode');
+                    document.documentElement.style.colorScheme = 'dark';
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.classList.add('light');
+                    document.documentElement.style.colorScheme = 'light';
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch(e) {}
+        })();
+        window.agricoToggleTheme = function() {
+            var isDark = document.documentElement.classList.contains('dark');
+            var newTheme = isDark ? 'light' : 'dark';
+            if (newTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('light');
+                document.documentElement.classList.remove('light-mode');
+                document.documentElement.style.colorScheme = 'dark';
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+                document.documentElement.style.colorScheme = 'light';
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+            try {
+                localStorage.setItem('agrico-theme', newTheme);
+            } catch(e) {}
+            window.dispatchEvent(new CustomEvent('agrico:theme-changed', {
+                detail: { theme: newTheme, isLight: newTheme === 'light' }
+            }));
+            fetch('{{ route("user.update-theme") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ theme: newTheme })
+            }).catch(function(e) {});
+        };
+    </script>
 <script>document.documentElement.classList.add("ui-motion");</script>
 <link rel="stylesheet" href="{{ asset('css/animations.css') }}">
 <script src="{{ asset('js/animations.js') }}" defer></script>

@@ -1424,3 +1424,215 @@ html:not(.light-mode) .agri-pill-btn {
         transition: background-color 0.01ms, border-color 0.01ms, color 0.01ms !important;
     }
 }
+
+/* ==========================================================================
+   AGRICO ADMIN COMPLETE DARK MODE SYSTEM
+   ========================================================================== */
+html.dark,
+html.dark body,
+[data-theme="dark"] body {
+    color-scheme: dark !important;
+    background-color: #071d18 !important;
+    color: #f1f5f9 !important;
+}
+
+html.dark body::-webkit-scrollbar-track,
+html.dark ::-webkit-scrollbar-track {
+    background: #061814 !important;
+}
+html.dark body::-webkit-scrollbar-thumb,
+html.dark ::-webkit-scrollbar-thumb {
+    background-color: #1e3a34 !important;
+    border-color: #061814 !important;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+    background-color: #22c55e !important;
+}
+
+html.dark #appMainContent {
+    background-color: transparent !important;
+    color: #f1f5f9 !important;
+}
+
+/* Admin container */
+html.dark .min-h-screen.flex.bg-\[\#E8F5E9\],
+html.dark div[class*="bg-[#E8F5E9]"],
+html.dark .bg-\[\#E8F5E9\] {
+    background-color: #071d18 !important;
+}
+
+/* Sidebar in Dark Mode */
+html.dark #appSidebar,
+html.dark aside#appSidebar {
+    background-color: #09241e !important;
+    border-color: rgba(142, 182, 155, 0.2) !important;
+}
+html.dark #appSidebar .sidebar-top-logo-header,
+html.dark #appSidebar .sidebar-bottom-profile-card {
+    background-color: #09241e !important;
+    border-color: rgba(142, 182, 155, 0.2) !important;
+}
+html.dark #appSidebar .sidebar-nav-link:not(.is-active) {
+    color: #8eb69b !important;
+}
+html.dark #appSidebar .sidebar-nav-link:not(.is-active):hover {
+    background-color: rgba(34, 197, 94, 0.12) !important;
+    color: #4ade80 !important;
+}
+html.dark #appSidebar .sidebar-nav-link.is-active {
+    background-color: rgba(34, 197, 94, 0.2) !important;
+    color: #4ade80 !important;
+}
+html.dark #appSidebar .sidebar-nav-link.is-active svg {
+    color: #4ade80 !important;
+}
+html.dark #appSidebar .sidebar-action-item:hover {
+    background-color: rgba(34, 197, 94, 0.12) !important;
+}
+html.dark #appSidebar .sidebar-logout-item:hover {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+}
+html.dark #appSidebar p[style*="color: #0f172a"] {
+    color: #ffffff !important;
+}
+
+/* Mobile top header */
+html.dark .mobile-top-header {
+    background-color: #09241e !important;
+    border-bottom-color: rgba(142, 182, 155, 0.2) !important;
+}
+html.dark .mobile-burger-btn {
+    background-color: #061814 !important;
+    border-color: rgba(142, 182, 155, 0.25) !important;
+    color: #8eb69b !important;
+}
+
+/* Headings & Text */
+html.dark h1, html.dark h2, html.dark h3, html.dark h4 {
+    color: #ffffff !important;
+}
+html.dark [style*="color:#0f172a"],
+html.dark [style*="color: #0f172a"],
+html.dark [style*="color:#1e293b"],
+html.dark [style*="color: #1e293b"],
+html.dark [style*="color:#111827"],
+html.dark [style*="color: #111827"] {
+    color: #f1f5f9 !important;
+}
+html.dark [style*="color:#64748b"],
+html.dark [style*="color: #64748b"],
+html.dark [style*="color:#94a3b8"],
+html.dark [style*="color: #94a3b8"] {
+    color: #8eb69b !important;
+}
+
+/* Stat Cards & General Cards */
+html.dark .stat-cards-grid-layout > div > div,
+html.dark .agri-hover-card,
+html.dark [style*="border-radius:18px"][style*="background:#ffffff"],
+html.dark [style*="border-radius: 18px"][style*="background: #ffffff"],
+html.dark [style*="border-radius:20px"][style*="background:#ffffff"],
+html.dark [style*="border-radius: 20px"][style*="background: #ffffff"],
+html.dark [style*="border-radius: 24px"][style*="background: #ffffff"],
+html.dark [style*="border-radius:24px"][style*="background:#ffffff"] {
+    background-color: #0b2b26 !important;
+    border-color: rgba(142, 182, 155, 0.22) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+html.dark .stat-cards-grid-layout .ui-reveal-num,
+html.dark .agri-hover-card .ui-reveal-num {
+    color: #ffffff !important;
+}
+
+/* Tables & Wrappers */
+html.dark table {
+    background-color: #0b2b26 !important;
+    color: #f1f5f9 !important;
+}
+html.dark table thead th,
+html.dark th {
+    background-color: #08211d !important;
+    color: #8eb69b !important;
+    border-bottom-color: rgba(142, 182, 155, 0.2) !important;
+}
+html.dark table tbody td,
+html.dark td {
+    background-color: #0b2b26 !important;
+    color: #e2e8f0 !important;
+    border-bottom-color: rgba(142, 182, 155, 0.15) !important;
+}
+html.dark table tbody tr:hover td {
+    background-color: rgba(34, 197, 94, 0.08) !important;
+}
+
+/* Sticky table columns */
+html.dark th.col-sticky-action,
+html.dark th.col-sticky-id,
+html.dark th.col-sticky-name {
+    background-color: #08211d !important;
+    color: #8eb69b !important;
+}
+html.dark td.col-sticky-action,
+html.dark td.col-sticky-id,
+html.dark td.col-sticky-name {
+    background-color: #0b2b26 !important;
+    color: #e2e8f0 !important;
+}
+html.dark table tbody tr:hover td.col-sticky-action,
+html.dark table tbody tr:hover td.col-sticky-id,
+html.dark table tbody tr:hover td.col-sticky-name {
+    background-color: #0e352f !important;
+}
+
+/* Inputs, Selects, and Filter Bars */
+html.dark input[type="text"],
+html.dark input[type="search"],
+html.dark input[type="date"],
+html.dark input[type="password"],
+html.dark input[type="email"],
+html.dark input[type="number"],
+html.dark select,
+html.dark textarea {
+    background-color: #071f1b !important;
+    border-color: rgba(142, 182, 155, 0.25) !important;
+    color: #f1f5f9 !important;
+}
+html.dark input::placeholder {
+    color: #628373 !important;
+}
+html.dark select option {
+    background-color: #0b2b26 !important;
+    color: #f1f5f9 !important;
+}
+
+/* Pagination Footer */
+html.dark .request-pagination-footer,
+html.dark [class*="-pagination-footer"],
+html.dark .request-table-card > div:last-child {
+    background-color: #0b2b26 !important;
+    border-top-color: rgba(142, 182, 155, 0.2) !important;
+    color: #8eb69b !important;
+}
+
+/* Modals */
+html.dark .modal-animated-card,
+html.dark .admin-profile-modal-card,
+html.dark [style*="max-width:420px"][style*="background:#fff"],
+html.dark [style*="max-width:440px"][style*="background:#fff"],
+html.dark [style*="max-width:390px"][style*="background: #ffffff"] {
+    background-color: #0b2b26 !important;
+    border: 1px solid rgba(142, 182, 155, 0.3) !important;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6) !important;
+    color: #f1f5f9 !important;
+}
+html.dark .modal-footer-btns {
+    background-color: #0b2b26 !important;
+    border-top-color: rgba(142, 182, 155, 0.2) !important;
+}
+
+/* Back to Dashboard buttons / pill buttons */
+html.dark .bg-white.border.border-gray-200.text-gray-700 {
+    background-color: #071f1b !important;
+    border-color: rgba(142, 182, 155, 0.25) !important;
+    color: #e2e8f0 !important;
+}

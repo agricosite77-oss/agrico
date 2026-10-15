@@ -352,6 +352,20 @@ class UserAuthController extends Controller
             $user->theme = $validated['theme'];
             $user->save();
 
+            if ($user instanceof \App\Models\Admin && !empty($user->email)) {
+                $matchingUser = User::where('email', $user->email)->first();
+                if ($matchingUser) {
+                    $matchingUser->theme = $validated['theme'];
+                    $matchingUser->save();
+                }
+            } elseif ($user instanceof \App\Models\User && !empty($user->email)) {
+                $matchingAdmin = \App\Models\Admin::where('email', $user->email)->first();
+                if ($matchingAdmin) {
+                    $matchingAdmin->theme = $validated['theme'];
+                    $matchingAdmin->save();
+                }
+            }
+
             return response()->json([
                 'status'  => 'success',
                 'message' => 'Theme updated successfully.',

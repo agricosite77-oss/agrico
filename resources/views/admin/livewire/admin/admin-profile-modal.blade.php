@@ -21,6 +21,7 @@
                 x-transition:leave="transition ease-in duration-200"
                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                 x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                class="admin-profile-modal-card"
                 style="background: #ffffff; border-radius: 28px; width: 100%; max-width: 390px; margin: auto; max-height: calc(100vh - 64px); overflow-y: auto; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.25); padding: 18px; box-sizing: border-box; position: relative;"
             >
 
@@ -113,16 +114,28 @@
                                 </div>
                             </div>
 
-                            {{-- RIGHT: DARK PILL BUTTON (EDIT PROFILE) --}}
-                            <button
-                                type="button"
-                                wire:click="toggleEdit"
-                                style="background: #0f172a; color: #ffffff; border: none; border-radius: 9999px; padding: 10px 18px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(15,23,42,0.2); transition: all 0.2s ease;"
-                                onmouseover="this.style.background='#1e293b'; this.style.transform='translateY(-1px)';"
-                                onmouseout="this.style.background='#0f172a'; this.style.transform='translateY(0)';"
-                            >
-                                <span>Edit Profile</span>
-                            </button>
+                            {{-- RIGHT: BUTTONS (THEME TOGGLE + EDIT PROFILE) --}}
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <button
+                                    type="button"
+                                    @click="if (typeof window.agricoToggleTheme === 'function') window.agricoToggleTheme();"
+                                    style="width: 38px; height: 38px; border-radius: 50%; border: 1px solid #e2e8f0; background: #f8fafc; color: #f59e0b; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease;"
+                                    class="dark:bg-slate-800 dark:border-slate-700 dark:text-amber-400"
+                                    title="Toggle Dark / Light Mode"
+                                >
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                    </svg>
+                                </button>
+                                <button
+                                    type="button"
+                                    wire:click="toggleEdit"
+                                    class="agri-btn agri-btn--primary agri-btn--sm"
+                                    style="font-size: 13px; font-weight: 700; border-radius: 9999px; padding: 9px 16px;"
+                                >
+                                    <span>Edit Profile</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
