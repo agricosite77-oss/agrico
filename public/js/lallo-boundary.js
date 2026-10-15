@@ -93,17 +93,18 @@
                 weight: 1.2,
                 opacity: 0.85,
                 dashArray: '3, 4',
-                fill: false,
-                fillColor: 'transparent',
-                fillOpacity: 0
+                fill: true,
+                fillColor: '#ffffff',
+                fillOpacity: 0.001, // Near-zero fill: completely invisible to user eye, but enables 100% full-surface hover response
+                interactive: true
             },
             barangayHover: {
-                color: '#4ade80',
+                color: '#22c55e',
                 weight: 2.0,
                 opacity: 1,
                 fill: true,
                 fillColor: '#ffffff',
-                fillOpacity: 0.16 // Subtle luminous brightening inside on hover
+                fillOpacity: 0.14 // Subtle luminous brightening inside on hover
             }
         },
 
@@ -163,15 +164,14 @@
         },
 
         /**
-         * Zero-dependency Ray-Casting algorithm for point-in-polygon.
+         * Zero-dependency Ray-Casting algorithm for point-in-polygon with edge tolerance.
          * Coordinates format: pt = [lng, lat], GeoJSON ring = [[lng, lat], ...]
          */
-        pointInPolygon: function (lat, lng, geometry) {
+        pointInPolygon: function (lat, lng, geometry, withTolerance) {
             if (!geometry || !geometry.coordinates) return false;
-            const pt = [lng, lat];
             const coords = geometry.coordinates;
 
-            function raycast(ring) {
+            function raycast(pt, ring) {
                 let inside = false;
                 for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
                     const xi = ring[i][0], yi = ring[i][1];
@@ -183,14 +183,47 @@
                 return inside;
             }
 
-            if (geometry.type === 'Polygon') {
-                return raycast(coords[0]);
-            } else if (geometry.type === 'MultiPolygon') {
-                for (let k = 0; k < coords.length; k++) {
-                    if (raycast(coords[k][0])) return true;
+            function testPoint(pt) {
+                if (geometry.type === 'Polygon') {
+                    return raycast(pt, coords[0]);
+                } else if (geometry.type === 'MultiPolygon') {
+                    for (let k = 0; k < coords.length; k++) {
+                        if (raycast(pt, coords[k][0])) return true;
+                    }
+                }
+                return false;
+            }
+
+            if (testPoint([lng, lat])) return true;
+
+            if (withTolerance) {
+                const tol = 0.00025; // ~27m edge tolerance for coordinate rounding and boundary clicks
+                if (testPoint([lng + tol, lat])) return true;
+                if (testPoint([lng - tol, lat])) return true;
+                if (testPoint([lng, lat + tol])) return true;
+                if (testPoint([lng, lat - tol])) return true;
+            }
+
+            return false;
+        },
+
+        /**
+         * Find nearest calibrated barangay centroid to (lat, lng)
+         */
+        findNearestBarangay: function (lat, lng) {
+            let nearest = null;
+            let minDistSq = Infinity;
+            for (let i = 0; i < this.BARANGAYS_35.length; i++) {
+                const b = this.BARANGAYS_35[i];
+                const dLat = lat - b.lat;
+                const dLng = lng - b.lng;
+                const distSq = dLat * dLat + dLng * dLng;
+                if (distSq < minDistSq) {
+                    minDistSq = distSq;
+                    nearest = b;
                 }
             }
-            return false;
+            return nearest;
         },
 
         /**
@@ -201,7 +234,7 @@
             for (let i = 0; i < this._cache.features.length; i++) {
                 const f = this._cache.features[i];
                 const isMuni = f.properties && (f.properties.isMunicipality || f.properties.admin_level === '6');
-                if (isMuni && this.pointInPolygon(lat, lng, f.geometry)) {
+                if (isMuni && this.pointInPolygon(lat, lng, f.geometry, true)) {
                     return true;
                 }
             }
@@ -248,27 +281,43 @@
             return this.fetchData().then(function (data) {
                 if (!data || !data.features) return { inside: false, barangay: null, feature: null };
 
-                let insideMuni = false;
-                let muniFeature = null;
-
+                // 1. First check if directly inside any of the 35 barangay polygons
                 for (let i = 0; i < data.features.length; i++) {
                     const f = data.features[i];
                     const isMuni = f.properties && (f.properties.isMunicipality || f.properties.admin_level === '6');
                     if (!isMuni) {
-                        if (self.pointInPolygon(lat, lng, f.geometry)) {
+                        if (self.pointInPolygon(lat, lng, f.geometry, false)) {
                             const name = (f.properties && (f.properties.name || f.properties.adm4_name)) || null;
                             return { inside: true, barangay: name, feature: f };
                         }
-                    } else {
-                        if (self.pointInPolygon(lat, lng, f.geometry)) {
+                    }
+                }
+
+                // 2. Check if inside municipality boundary (with edge tolerance)
+                let insideMuni = false;
+                let muniFeature = null;
+                for (let i = 0; i < data.features.length; i++) {
+                    const f = data.features[i];
+                    const isMuni = f.properties && (f.properties.isMunicipality || f.properties.admin_level === '6');
+                    if (isMuni) {
+                        muniFeature = f;
+                        if (self.pointInPolygon(lat, lng, f.geometry, true)) {
                             insideMuni = true;
-                            muniFeature = f;
+                            break;
                         }
                     }
                 }
 
                 if (insideMuni) {
-                    return { inside: true, barangay: 'Lal-lo Overall', feature: muniFeature };
+                    // Inside municipality but on a microscopic boundary/river gap between barangays:
+                    // Assign to the nearest official barangay so it is NEVER marked Outside Lal-lo!
+                    const nearest = self.findNearestBarangay(lat, lng);
+                    return {
+                        inside: true,
+                        barangay: nearest ? nearest.name : 'Lal-lo Overall',
+                        feature: muniFeature,
+                        isNearestFallback: true
+                    };
                 }
 
                 return { inside: false, barangay: null, feature: null };
@@ -385,7 +434,7 @@
 
                         // Tooltip on Barangays
                         if (options.showTooltips !== false && name) {
-                            layer.bindTooltip(`<strong>${name}</strong> (Barangay)`, {
+                            layer.bindTooltip(`<strong>${name}</strong> <span class="brgy-type-tag">(Barangay)</span>`, {
                                 sticky: true,
                                 direction: 'auto',
                                 className: 'lallo-brgy-tooltip'
@@ -472,29 +521,35 @@
                     100% { opacity: 1; }
                 }
                 .lallo-brgy-tooltip {
-                    background: rgba(11, 43, 38, 0.94) !important;
-                    color: #DAF1DE !important;
-                    border: 1px solid rgba(142, 182, 155, 0.45) !important;
-                    border-radius: 6px !important;
-                    padding: 4px 8px !important;
-                    font-size: 11px !important;
+                    background: rgba(255, 255, 255, 0.98) !important;
+                    color: #051F20 !important;
+                    border: 1px solid rgba(142, 182, 155, 0.5) !important;
+                    border-radius: 8px !important;
+                    padding: 5px 11px !important;
+                    font-size: 11.5px !important;
                     font-weight: 500 !important;
-                    box-shadow: 0 4px 14px rgba(0,0,0,0.4) !important;
-                    backdrop-filter: blur(4px) !important;
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+                    backdrop-filter: blur(6px) !important;
+                    pointer-events: none !important;
+                    white-space: nowrap !important;
                 }
                 .lallo-brgy-tooltip strong {
-                    color: #ffffff !important;
+                    color: #051F20 !important;
                     font-weight: 700 !important;
                 }
+                .lallo-brgy-tooltip .brgy-type-tag {
+                    color: #475569 !important;
+                    font-weight: 500 !important;
+                    margin-left: 3px;
+                }
                 .lallo-brgy-tooltip::before {
-                    border-top-color: rgba(11, 43, 38, 0.94) !important;
+                    border-top-color: rgba(255, 255, 255, 0.98) !important;
                 }
                 html.light-mode .lallo-brgy-tooltip,
                 html.light .lallo-brgy-tooltip {
-                    background: rgba(255, 255, 255, 0.96) !important;
-                    color: #163832 !important;
-                    border: 1px solid rgba(34, 197, 94, 0.4) !important;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+                    background: rgba(255, 255, 255, 0.98) !important;
+                    color: #051F20 !important;
+                    border: 1px solid rgba(34, 197, 94, 0.45) !important;
                 }
                 html.light-mode .lallo-brgy-tooltip strong,
                 html.light .lallo-brgy-tooltip strong {
@@ -502,7 +557,7 @@
                 }
                 html.light-mode .lallo-brgy-tooltip::before,
                 html.light .lallo-brgy-tooltip::before {
-                    border-top-color: rgba(255, 255, 255, 0.96) !important;
+                    border-top-color: rgba(255, 255, 255, 0.98) !important;
                 }
             `;
             document.head.appendChild(style);

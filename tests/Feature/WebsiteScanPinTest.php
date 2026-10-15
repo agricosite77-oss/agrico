@@ -239,4 +239,95 @@ class WebsiteScanPinTest extends TestCase
             ->assertSee('admin-soil-detail-map-99')
             ->assertSee('Centro (Pob.)');
     }
+
+    public function test_pin_location_accepts_valid_lallo_target_point_dagupan(): void
+    {
+        $soil = Soil::create([
+            'soil_id' => 101,
+            'soil_name' => 'Pale Yellow',
+            'full_code' => '5YR 7/6',
+            'hue' => '5YR',
+            'hex_color' => '#E5C07B',
+            'description' => '5YR 7/6 - Pale Yellow Specimen',
+        ]);
+
+        $user = User::create([
+            'user_id' => 'USR-TEST-DAGUPAN',
+            'name' => 'Lal-lo Farmer',
+            'email' => 'farmer@agrico.test',
+            'password' => bcrypt('password'),
+            'role' => 'user',
+        ]);
+
+        // Target point from Problem 1 (18.1746, 121.7260)
+        $response = $this->actingAs($user)->postJson(route('website.scan.pin'), [
+            'latitude' => 18.1746,
+            'longitude' => 121.7260,
+            'barangay' => 'Dagupan',
+            'soil_id' => $soil->soil_id,
+            'scan_note' => 'Soil sample classified as Pale Yellow (5YR 7/6).',
+            'coverage_area' => '500 m²',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'location' => [
+                'status' => 'Pending',
+                'barangay' => 'Dagupan',
+            ],
+        ]);
+
+        $this->assertDatabaseHas('location_mappings', [
+            'barangay' => 'Dagupan',
+            'latitude' => 18.1746,
+            'longitude' => 121.7260,
+            'status' => 'Pending',
+        ]);
+    }
+
+    public function test_pin_location_rejects_coordinates_outside_lallo(): void
+    {
+        $soil = Soil::create([
+            'soil_id' => 102,
+            'soil_name' => 'Outside Soil',
+            'full_code' => '10YR 5/6',
+            'hue' => '10YR',
+            'hex_color' => '#8B5A2B',
+            'description' => 'Test outside point',
+        ]);
+
+        $user = User::create([
+            'user_id' => 'USR-OUTSIDE-TEST',
+            'name' => 'Outside User',
+            'email' => 'outside@agrico.test',
+            'password' => bcrypt('password'),
+            'role' => 'user',
+        ]);
+
+        // Coordinates in Gattaran (outside Lal-lo)
+        $response = $this->actingAs($user)->postJson(route('website.scan.pin'), [
+            'latitude' => 18.0800,
+            'longitude' => 121.6500,
+            'barangay' => 'Outside Lal-lo',
+            'soil_id' => $soil->soil_id,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'success' => false,
+            'message' => 'Selected location is outside the official Lal-lo, Cagayan municipal coverage area (35 Barangays).'
+        ]);
+    }
+
+    public function test_lallo_boundary_service_accepts_all_35_barangay_centroids(): void
+    {
+        foreach (\App\Services\LalloBoundaryService::BARANGAYS_35 as $b) {
+            $isInside = \App\Services\LalloBoundaryService::isInsideLallo($b['lat'], $b['lng']);
+            $this->assertTrue($isInside, "Failed for barangay centroid: {$b['name']} ({$b['lat']}, {$b['lng']})");
+
+            $detected = \App\Services\LalloBoundaryService::findBarangayAt($b['lat'], $b['lng']);
+            $this->assertEquals($b['name'], $detected, "Mismatch for barangay centroid: {$b['name']}");
+        }
+    }
 }

@@ -466,6 +466,25 @@ class WebsiteController extends Controller
                 'regions'       => ['nullable', 'array'],
             ]);
 
+            // Strict Lal-lo Boundary Enforcement (One Source of Truth)
+            $lat = (float) $validated['latitude'];
+            $lng = (float) $validated['longitude'];
+
+            if (!\App\Services\LalloBoundaryService::isInsideLallo($lat, $lng)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected location is outside the official Lal-lo, Cagayan municipal coverage area (35 Barangays).'
+                ], 422);
+            }
+
+            // Auto-align barangay if submitted as generic or out-of-date
+            if (empty($validated['barangay']) || in_array($validated['barangay'], ['Lal-lo Overall', 'Outside Lal-lo', 'Outside Lal-lo Coverage'])) {
+                $detectedBrgy = \App\Services\LalloBoundaryService::findBarangayAt($lat, $lng);
+                if ($detectedBrgy) {
+                    $validated['barangay'] = $detectedBrgy;
+                }
+            }
+
             $authUser = Auth::guard('web')->user() ?? Auth::user() ?? Auth::guard('admin')->user();
             if (!$authUser && session()->has('user_id')) {
                 $authUser = User::where('user_id', session('user_id'))->first();
