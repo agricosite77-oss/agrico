@@ -107,8 +107,8 @@
             color: #DAF1DE;
             font-size: 15px;
             font-weight: 700;
-            border-radius: 14px;
-            border: 1px solid #8EB69B;
+            border-radius: 12px;
+            border: 1.5px solid #8EB69B;
             text-decoration: none;
             box-shadow: 0 10px 30px rgba(35, 83, 71, 0.6);
             transition: all 0.25s ease;
@@ -131,7 +131,7 @@
             color: #DAF1DE;
             font-size: 15px;
             font-weight: 700;
-            border-radius: 14px;
+            border-radius: 12px;
             text-decoration: none;
             box-shadow: 0 4px 16px rgba(0,0,0,0.25);
             transition: all 0.25s ease;
@@ -453,7 +453,7 @@
             color: #051F20;
             font-size: 15px;
             font-weight: 800;
-            border-radius: 14px;
+            border-radius: 12px;
             text-decoration: none;
             box-shadow: 0 10px 30px rgba(218, 241, 222, 0.3);
             transition: all 0.25s ease;
@@ -677,7 +677,7 @@
                 <a href="{{ route('website.scan') }}"
                    @if($isHPending) onclick="event.preventDefault(); showAccountPendingModal('Account Pending Approval', 'Your account is awaiting admin approval. Scanning and Map access will be enabled once approved.');"
                    @elseif(!$isHAuth) onclick="event.preventDefault(); showGlobalLoginModal('scan');" @endif
-                   class="hero-btn-primary" style="padding: 14px 34px; border-radius: 999px;">
+                   class="hero-btn-primary">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"
                          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
@@ -687,7 +687,7 @@
                 </a>
                 <a href="{{ route('website.download') }}"
                    @if(\App\Models\Application::isMaintenanceMode()) onclick="event.preventDefault(); showSystemMaintenanceModal();" @endif
-                   class="hero-btn-outline" style="padding: 13px 30px; border-radius: 999px;">
+                   class="hero-btn-outline">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"
                          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>

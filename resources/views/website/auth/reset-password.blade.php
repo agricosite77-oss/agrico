@@ -485,8 +485,8 @@
                 </div>
             </div>
 
-            <!-- Submit Button (Matches + Add Munsell Color design) -->
-            <button type="submit" style="width: 100%; height: 44px; background: #22c55e; color: #ffffff; border: none; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); transition: all 0.2s ease;" onmouseover="this.style.background='#16a34a'" onmouseout="this.style.background='#22c55e'">
+            <!-- Submit Button (Matches header nav design) -->
+            <button type="submit" style="width: 100%; height: 44px; background: #22c55e; color: #ffffff; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); transition: all 0.2s ease;" onmouseover="this.style.background='#16a34a'" onmouseout="this.style.background='#22c55e'">
                 Update Password
             </button>
         </form>

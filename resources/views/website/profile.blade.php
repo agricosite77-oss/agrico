@@ -712,7 +712,7 @@
             justify-content: center;
             gap: 8px;
             padding: 11px 20px;
-            border-radius: 999px;
+            border-radius: 12px;
             background: rgba(11, 43, 38, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
@@ -1085,7 +1085,7 @@
             justify-content: center;
             gap: 8px;
             padding: 11px 20px;
-            border-radius: 999px;
+            border-radius: 12px;
             background: rgba(239, 68, 68, 0.15);
             border: 1.5px solid rgba(239, 68, 68, 0.5);
             color: #f87171 !important;
@@ -1769,7 +1769,7 @@
             color: #16a34a !important;
         }
         html.light-mode .profile-admin-btn {
-            border-radius: 999px !important;
+            border-radius: 12px !important;
         }
     </style>
 
@@ -2608,7 +2608,7 @@
                                     <button
                                         type="button"
                                         @click="markAllAsRead()"
-                                        style="background: transparent; border: 1.5px solid #22c55e; color: #22c55e; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 4px 12px; cursor: pointer; transition: all 0.2s ease;"
+                                        style="background: transparent; border: 1.5px solid #22c55e; color: #22c55e; font-size: 11.5px; font-weight: 700; border-radius: 12px; padding: 4px 12px; cursor: pointer; transition: all 0.2s ease;"
                                         onmouseover="this.style.background='#22c55e';this.style.color='#ffffff';"
                                         onmouseout="this.style.background='transparent';this.style.color='#22c55e';"
                                     >
@@ -2686,7 +2686,7 @@
                                 type="button"
                                 @click="showNotificationsModal = false"
                                 class="profile-modal-save-btn"
-                                style="width: auto; padding: 9px 24px; font-size: 13.5px; border-radius: 999px;"
+                                style="width: auto; padding: 9px 24px; font-size: 13.5px; border-radius: 12px;"
                             >
                                 Done
                             </button>

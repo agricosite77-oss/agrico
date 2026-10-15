@@ -792,7 +792,7 @@
             border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
             color: #DAF1DE !important;
             padding: 12px 24px;
-            border-radius: 14px !important;
+            border-radius: 12px !important;
             font-weight: 700;
             font-size: 14px;
             cursor: pointer;
@@ -1003,7 +1003,7 @@
             background: #f1f5f9 !important;
             border: 1.5px solid #cbd5e1 !important;
             color: #1e293b !important;
-            border-radius: 14px !important;
+            border-radius: 12px !important;
             font-weight: 800 !important;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             transition: all 0.25s ease !important;

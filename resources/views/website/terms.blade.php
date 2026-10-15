@@ -273,7 +273,7 @@
             color: #ffffff !important;
             font-size: 13.5px;
             font-weight: 700;
-            border-radius: 10px;
+            border-radius: 12px;
             text-decoration: none;
             white-space: nowrap;
             transition: all 0.2s ease;

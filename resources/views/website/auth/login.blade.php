@@ -379,8 +379,8 @@
                 <a href="{{ route('password.request') }}" class="auth-forgot-link" style="font-size: 0.8rem; font-weight: 600; color: #22c55e; text-decoration: none;">Forgot password?</a>
             </div>
 
-            <!-- Submit Button (Matches + Add Munsell Color design) -->
-            <button type="submit" class="auth-submit-btn" style="width: 100%; height: 44px; background: #22c55e !important; color: #ffffff !important; border: none; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); transition: all 0.2s ease; margin-top: 4px;" onmouseover="this.style.background='#16a34a'" onmouseout="this.style.background='#22c55e'">
+            <!-- Submit Button (Matches header nav design) -->
+            <button type="submit" class="auth-submit-btn" style="width: 100%; height: 44px; background: #22c55e !important; color: #ffffff !important; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); transition: all 0.2s ease; margin-top: 4px;" onmouseover="this.style.background='#16a34a'" onmouseout="this.style.background='#22c55e'">
                 Log In
             </button>
         </form>
@@ -770,7 +770,7 @@
                     <form method="POST" action="{{ route('account.request-reactivation') }}" style="margin:0;">
                         @csrf
                         <input type="hidden" name="email" value="{{ $susp['email'] }}">
-                        <button type="submit" style="padding:9px 20px; border-radius:14px; background:#22c55e; border:none; font-size:13px; font-weight:700; color:#fff; cursor:pointer; box-shadow:0 4px 14px rgba(34,197,94,0.35); transition: transform 0.15s ease, background 0.15s ease;" onmouseover="this.style.background='#16a34a'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#22c55e'; this.style.transform='translateY(0)';" title="Submit reactivation request for administrative review">Request Reactivation</button>
+                        <button type="submit" style="padding:9px 20px; border-radius:12px; background:#22c55e; border:none; font-size:13px; font-weight:700; color:#fff; cursor:pointer; box-shadow:0 4px 14px rgba(34,197,94,0.35); transition: transform 0.15s ease, background 0.15s ease;" onmouseover="this.style.background='#16a34a'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#22c55e'; this.style.transform='translateY(0)';" title="Submit reactivation request for administrative review">Request Reactivation</button>
                     </form>
                 @endif
             </div>

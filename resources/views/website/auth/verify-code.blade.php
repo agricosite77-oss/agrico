@@ -162,7 +162,7 @@
             background: #22c55e;
             color: #ffffff;
             border: none;
-            border-radius: 14px;
+            border-radius: 12px;
             font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;

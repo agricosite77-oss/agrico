@@ -703,7 +703,7 @@
             justify-content: center;
             gap: 8px;
             padding: 13px;
-            border-radius: 14px;
+            border-radius: 12px;
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
@@ -2845,7 +2845,7 @@
             background: #f1f5f9 !important;
             color: #0f172a !important;
             border: 1.5px solid #cbd5e1 !important;
-            border-radius: 14px !important;
+            border-radius: 12px !important;
             font-weight: 700 !important;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
             transition: all 0.25s ease !important;
