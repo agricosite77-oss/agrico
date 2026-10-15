@@ -90,25 +90,8 @@
             right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(35, 83, 71, 0.6);
-            border: none;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
             display: none;
-            align-items: center;
-            justify-content: center;
-            color: #DAF1DE;
-            cursor: pointer;
-            font-size: 14px;
-            line-height: 1;
             z-index: 3;
-            transition: all 0.15s ease;
-            padding: 0;
-        }
-        .munsell-clear-btn:hover {
-            background: #235347;
-            color: #ffffff;
         }
 
         /* Search Suggestions Dropdown */
@@ -401,14 +384,7 @@
             stroke: #16a34a !important;
         }
 
-        html.light-mode .munsell-clear-btn {
-            background: #f1f5f9 !important;
-            color: #64748b !important;
-        }
-        html.light-mode .munsell-clear-btn:hover {
-            background: #e2e8f0 !important;
-            color: #0f172a !important;
-        }
+
 
         html.light-mode .munsell-suggestions-box {
             background: #FFFFFF !important;
@@ -518,7 +494,7 @@
                     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 <input type="text" id="munsellSearch" placeholder="Search by color name, Munsell code, or hue group..." autocomplete="off" aria-label="Search by color name, Munsell code, or hue group" />
-                <button type="button" id="munsellSearchClearBtn" class="munsell-clear-btn" onclick="clearMunsellSearch()" title="Clear search" aria-label="Clear search">&times;</button>
+                <x-close-button size="sm" id="munsellSearchClearBtn" class="munsell-clear-btn" onclick="clearMunsellSearch()" title="Clear search" ariaLabel="Clear search" style="display:none;" />
 
                 {{-- Live Suggestions Dropdown --}}
                 <div class="munsell-suggestions-box" id="munsellSuggestionsBox">

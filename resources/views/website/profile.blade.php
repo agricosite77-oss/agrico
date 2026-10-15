@@ -3017,17 +3017,11 @@
                                     Manage your personal identity, email, and password
                                 </p>
                             </div>
-                            <button
-                                type="button"
+                            <x-close-button
                                 @click="showEditModal = false"
-                                class="modal-close-circle-btn"
-                                aria-label="Close"
+                                ariaLabel="Close"
                                 title="Close"
-                            >
-                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                            />
                         </div>
 
                         {{-- MODAL NAVIGATION TABS --}}
@@ -3624,7 +3618,11 @@
                                     <p class="profile-modal-last-updated" style="margin:2px 0 0; font-size:12px;">Permanent account removal & data privacy</p>
                                 </div>
                             </div>
-                            <button type="button" @click="showDeleteModal = false" class="profile-modal-close-btn" aria-label="Close">&times;</button>
+                            <x-close-button
+                                @click="showDeleteModal = false"
+                                ariaLabel="Close"
+                                title="Close"
+                            />
                         </div>
 
                         {{-- Scrollable Body --}}
@@ -3745,7 +3743,11 @@
                                     <p class="profile-modal-last-updated" style="margin:2px 0 0; font-size:12px;">Keep your AgriCo account active</p>
                                 </div>
                             </div>
-                            <button type="button" @click="showCancelDeleteModal = false" class="profile-modal-close-btn" aria-label="Close">&times;</button>
+                            <x-close-button
+                                @click="showCancelDeleteModal = false"
+                                ariaLabel="Close"
+                                title="Close"
+                            />
                         </div>
 
                         <div class="profile-modal-body" style="padding:20px 24px; display:flex; flex-direction:column; gap:14px;">
@@ -3824,14 +3826,11 @@
                                         Mark all read
                                     </button>
                                 </template>
-                                <button
-                                    type="button"
+                                <x-close-button
                                     @click="showNotificationsModal = false"
-                                    class="profile-modal-close-btn"
-                                    aria-label="Close"
-                                >
-                                    &times;
-                                </button>
+                                    ariaLabel="Close"
+                                    title="Close"
+                                />
                             </div>
                         </div>
 

@@ -1091,14 +1091,14 @@
                         autocomplete="off"
                         aria-label="Search map locations"
                     />
-                    <button
-                        type="button"
+                    <x-close-button
+                        size="sm"
                         id="mapSearchClearBtn"
                         class="map-search-clear"
                         onclick="clearMapSearch()"
                         title="Clear search"
-                        aria-label="Clear search"
-                    >&times;</button>
+                        ariaLabel="Clear search"
+                    />
 
                     <!-- Dropdown Search Results List -->
                     <div id="mapSearchResults" class="map-search-dropdown" style="display:none;"></div>
@@ -1730,19 +1730,33 @@
             `;
 
             // 2. DUAL-PREVIEW BANNER SWATCH CARD (Matching Screenshot 2 & 4)
+            const fallbackThumb = (regions[0] && regions[0].region_thumbnail) ? (regions[0].region_thumbnail.startsWith('data:') ? regions[0].region_thumbnail : 'data:image/png;base64,' + regions[0].region_thumbnail) : '';
+            const effectiveAvatarUrl = scanImgUrl || fallbackThumb;
+
             bodyHtml += `
                 <div class="soil-swatch-banner" style="background: ${domHex};">
-                    <div class="soil-swatch-avatar">
-                        ${scanImgUrl ? `
-                            <img src="${scanImgUrl}" alt="Soil Sample" />
-                            <div style="position: absolute; left: ${domBox.left}%; top: ${domBox.top}%; width: ${domBox.width}%; height: ${domBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
-                        ` : `
-                            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2);">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                                </svg>
-                            </div>
-                        `}
+                    <div class="soil-swatch-avatar" style="position: relative; overflow: hidden; width: 68px; height: 68px; min-width: 68px; border-radius: 14px; background: rgba(0,0,0,0.18);">
+                        ${effectiveAvatarUrl ? `
+                            <img src="${effectiveAvatarUrl}" alt="Soil sample photo" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 14px;"
+                                 onload="var b = this.parentElement.querySelector('.soil-avatar-box'); if(b) b.style.display='block';"
+                                 onerror="
+                                     var p = this.parentElement;
+                                     this.style.display='none';
+                                     var b = p.querySelector('.soil-avatar-box');
+                                     if(b) b.style.display='none';
+                                     var f = p.querySelector('.soil-avatar-placeholder');
+                                     if(f) f.style.display='flex';
+                                 " />
+                            <div class="soil-avatar-box" style="display: none; position: absolute; left: ${domBox.left}%; top: ${domBox.top}%; width: ${domBox.width}%; height: ${domBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                        ` : ''}
+                        <div class="soil-avatar-placeholder" style="display: ${effectiveAvatarUrl ? 'none' : 'flex'}; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.22); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span style="font-size: 8px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; opacity: 0.9;">No Photo</span>
+                        </div>
                     </div>
                     <div class="soil-swatch-center">
                         <div style="display: flex; align-items: center; gap: 6px;">
@@ -1938,76 +1952,95 @@
 
             // 6. SOIL NORMALIZATION: BEFORE / AFTER CARD (Matching Screenshot 1)
             // USER CONSTRAINT: "bat remove the Button Save Copy and Pin Location"
-            if (baImgUrl) {
-                const ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
-                let overlayBoxesHtml = '';
-                let swatchPillsHtml = '';
+            // 6. SOIL NORMALIZATION: BEFORE / AFTER CARD (Matching Screenshot 1)
+            const ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
+            let overlayBoxesHtml = '';
+            let swatchPillsHtml = '';
 
-                regions.forEach((r, idx) => {
-                    const bData = normalizeBox(r);
-                    const bx = bData.raw_x;
-                    const by = bData.raw_y;
-                    const bw = bData.raw_w;
-                    const bh = bData.raw_h;
-                    const leftPct = 50 + (bx * 50);
-                    const topPct = 7.41 + (by * 92.59);
-                    const widthPct = bw * 50;
-                    const heightPct = bh * 92.59;
-                    const roleLabel = (ordinalNames[idx] || (idx + 1) + 'TH') + ' COLOR';
+            regions.forEach((r, idx) => {
+                const bData = normalizeBox(r);
+                const bx = bData.raw_x;
+                const by = bData.raw_y;
+                const bw = bData.raw_w;
+                const bh = bData.raw_h;
+                const leftPct = 50 + (bx * 50);
+                const topPct = 7.41 + (by * 92.59);
+                const widthPct = bw * 50;
+                const heightPct = bh * 92.59;
+                const roleLabel = (ordinalNames[idx] || (idx + 1) + 'TH') + ' COLOR';
 
-                    overlayBoxesHtml += `
-                        <div style="position: absolute; left: ${leftPct}%; top: ${topPct}%; width: ${widthPct}%; height: ${heightPct}%; border: 2.5px solid #4ade80; pointer-events: none; border-radius: 4px; box-sizing: border-box;">
-                            <span style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 800; background: #4ade80; color: #000000; padding: 1px 6px; border-radius: 4px; white-space: nowrap; line-height: 1.2; letter-spacing: 0.03em;">
-                                ${roleLabel}
-                            </span>
-                        </div>
-                    `;
-
-                    let rHex = r.hex || domHex;
-                    if (rHex && !rHex.startsWith('#')) rHex = '#' + rHex;
-                    const rCode = r.munsell || r.munsell_code || domCode;
-                    const rPct = r.percent !== undefined ? Math.round(r.percent) : (r.proportion !== undefined ? Math.round(r.proportion * 100) : domPct);
-
-                    swatchPillsHtml += `
-                        <div class="soil-swatch-capsule-pill">
-                            <span class="capsule-pill-swatch" style="width: 14px; height: 14px; border-radius: 3.5px; background: ${rHex}; border: 1px solid rgba(255,255,255,0.25); display: inline-block; flex-shrink: 0; box-shadow: none;"></span>
-                            <span class="capsule-pill-hex" style="font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">${rHex.toUpperCase()}</span>
-                            ${rCode ? `<span class="capsule-pill-code" style="font-weight: 600; font-size: 11px;">(${rCode})</span>` : ''}
-                            <span class="capsule-pill-pct" style="font-weight: 800; font-size: 11.5px; margin-left: 2px;">${rPct}%</span>
-                        </div>
-                    `;
-                });
-
-                bodyHtml += `
-                    <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <div class="soil-metric-card-label" style="margin-bottom: 0;">
-                                SOIL NORMALIZATION
-                            </div>
-                            <span style="font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
-                                BEFORE / AFTER
-                            </span>
-                        </div>
-                        <div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25);">
-                            <img src="${baImgUrl}" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 8px;">
-                            <div style="position: absolute; inset: 0; pointer-events: none;">
-                                ${overlayBoxesHtml}
-                            </div>
-                        </div>
-
-                        <!-- Detected Soil Color Swatch Pills (Matching Screenshot 2 Capsule Design) -->
-                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
-                            ${swatchPillsHtml}
-                        </div>
-
-                        <!-- METADATA Line (High Contrast for Dark & Light Mode) -->
-                        <div class="soil-normalization-meta-row">
-                            <div><strong class="soil-normalization-meta-title">METADATA</strong></div>
-                            <div class="soil-normalization-meta-info">CREATED: ${recordedDate} &nbsp;|&nbsp; DETECTED COLORS: ${regions.length}</div>
-                        </div>
+                overlayBoxesHtml += `
+                    <div style="position: absolute; left: ${leftPct}%; top: ${topPct}%; width: ${widthPct}%; height: ${heightPct}%; border: 2.5px solid #4ade80; pointer-events: none; border-radius: 4px; box-sizing: border-box;">
+                        <span style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 800; background: #4ade80; color: #000000; padding: 1px 6px; border-radius: 4px; white-space: nowrap; line-height: 1.2; letter-spacing: 0.03em;">
+                            ${roleLabel}
+                        </span>
                     </div>
                 `;
-            }
+
+                let rHex = r.hex || domHex;
+                if (rHex && !rHex.startsWith('#')) rHex = '#' + rHex;
+                const rCode = r.munsell || r.munsell_code || domCode;
+                const rPct = r.percent !== undefined ? Math.round(r.percent) : (r.proportion !== undefined ? Math.round(r.proportion * 100) : domPct);
+
+                swatchPillsHtml += `
+                    <div class="soil-swatch-capsule-pill">
+                        <span class="capsule-pill-swatch" style="width: 14px; height: 14px; border-radius: 3.5px; background: ${rHex}; border: 1px solid rgba(255,255,255,0.25); display: inline-block; flex-shrink: 0; box-shadow: none;"></span>
+                        <span class="capsule-pill-hex" style="font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">${rHex.toUpperCase()}</span>
+                        ${rCode ? `<span class="capsule-pill-code" style="font-weight: 600; font-size: 11px;">(${rCode})</span>` : ''}
+                        <span class="capsule-pill-pct" style="font-weight: 800; font-size: 11.5px; margin-left: 2px;">${rPct}%</span>
+                    </div>
+                `;
+            });
+
+            bodyHtml += `
+                <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div class="soil-metric-card-label" style="margin-bottom: 0;">
+                            SOIL NORMALIZATION
+                        </div>
+                        <span style="font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
+                            BEFORE / AFTER
+                        </span>
+                    </div>
+                    <div class="soil-norm-container" style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25);">
+                        ${baImgUrl ? `
+                            <img src="${baImgUrl}" alt="Soil Before & After Normalization" loading="lazy" style="width: 100%; height: auto; display: block; border-radius: 8px;"
+                                 onload="var p = this.parentElement; if(p) { p.classList.add('image-loaded'); var o = p.querySelector('.soil-norm-overlays'); if(o) o.style.display='block'; }"
+                                 onerror="
+                                     var p = this.parentElement;
+                                     this.style.display = 'none';
+                                     var o = p.querySelector('.soil-norm-overlays');
+                                     if (o) o.style.display = 'none';
+                                     var fb = p.querySelector('.soil-norm-missing-placeholder');
+                                     if (fb) fb.style.display = 'flex';
+                                 " />
+                            <div class="soil-norm-overlays" style="display: none; position: absolute; inset: 0; pointer-events: none;">
+                                ${overlayBoxesHtml}
+                            </div>
+                        ` : ''}
+                        <div class="soil-norm-missing-placeholder" style="display: ${baImgUrl ? 'none' : 'flex'}; flex-direction: column; align-items: center; justify-content: center; padding: 28px 16px; background: rgba(12, 26, 23, 0.95); text-align: center; border-radius: 8px;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.02em;">Image not available</span>
+                            <span style="font-size: 10.5px; color: rgba(255,255,255,0.5); margin-top: 3px;">Normalization comparison image was not retained for this record</span>
+                        </div>
+                    </div>
+
+                    <!-- Detected Soil Color Swatch Pills (Matching Screenshot 2 Capsule Design) -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+                        ${swatchPillsHtml}
+                    </div>
+
+                    <!-- METADATA Line (High Contrast for Dark & Light Mode) -->
+                    <div class="soil-normalization-meta-row">
+                        <div><strong class="soil-normalization-meta-title">METADATA</strong></div>
+                        <div class="soil-normalization-meta-info">CREATED: ${recordedDate} &nbsp;|&nbsp; DETECTED COLORS: ${regions.length}</div>
+                    </div>
+                </div>
+            `;
 
             document.getElementById('wsModalBodyContent').innerHTML = bodyHtml;
 
@@ -2037,12 +2070,7 @@
             <!-- Header (Screenshot 2 & 4) -->
             <div class="soil-detail-modal-header">
                 <h3 id="wsModalHeaderTitle">Soil Record Details</h3>
-                <button type="button" class="modal-close-circle-btn" onclick="closeWebsiteSoilDetailModal()" title="Close">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
+                <x-close-button onclick="closeWebsiteSoilDetailModal()" title="Close details" ariaLabel="Close details" />
             </div>
 
             <!-- Scrollable Body -->

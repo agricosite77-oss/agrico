@@ -107,23 +107,7 @@
             right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            background: #f1f5f9;
-            border: none;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
             display: none;
-            align-items: center;
-            justify-content: center;
-            color: #64748b;
-            cursor: pointer;
-            font-size: 14px;
-            line-height: 1;
-            transition: all 0.15s ease;
-        }
-        .faq-search-clear:hover {
-            background: #e2e8f0;
-            color: #0f172a;
         }
 
         /* ── CATEGORY PILLS & NAVIGATION ARROWS ── */
@@ -607,14 +591,7 @@
         html:not(.light-mode) .faq-search-icon {
             stroke: #8EB69B;
         }
-        html:not(.light-mode) .faq-search-clear {
-            background: rgba(35, 83, 71, 0.6);
-            color: #DAF1DE;
-        }
-        html:not(.light-mode) .faq-search-clear:hover {
-            background: #235347;
-            color: #ffffff;
-        }
+
         html:not(.light-mode) .faq-cat-arrow {
             background: #0B2B26;
             border-color: rgba(142, 182, 155, 0.28);
@@ -836,13 +813,14 @@
                     aria-label="Search frequently asked questions"
                     autocomplete="off"
                 />
-                <button
-                    type="button"
+                <x-close-button
+                    size="sm"
                     id="faqSearchClear"
                     class="faq-search-clear"
-                    aria-label="Clear search"
+                    ariaLabel="Clear search"
                     title="Clear search"
-                >&times;</button>
+                    style="display:none;"
+                />
             </div>
 
             {{-- Category Filter Pills with Navigation Arrows --}}

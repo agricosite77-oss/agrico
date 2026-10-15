@@ -4387,9 +4387,7 @@
             </div>
 
             {{-- Close Button --}}
-            <button class="scan-notice-close" onclick="dismissScanNotice()" type="button" aria-label="Close notification">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+            <x-close-button size="sm" onclick="dismissScanNotice()" title="Close notification" ariaLabel="Close notification" class="scan-notice-close" />
         </div>
     </div>
 
@@ -4406,7 +4404,7 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px;">
                     <span style="color: #71717a; font-size: 12px; cursor: default; user-select: none;">•••</span>
-                    <button type="button" onclick="dismissDesktopNotice()" style="background: transparent; border: none; color: #a1a1aa; cursor: pointer; padding: 2px 4px; font-size: 16px; line-height: 1; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s ease;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#a1a1aa'">&times;</button>
+                    <x-close-button size="sm" onclick="dismissDesktopNotice()" title="Close notification" ariaLabel="Close notification" />
                 </div>
             </div>
             {{-- Body --}}
@@ -5217,11 +5215,7 @@
     <div id="loginRequiredModal" class="global-login-modal-overlay" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(5,31,32,0.82); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
         <div class="global-login-modal-card">
             {{-- Close "X" Exit Button --}}
-            <button type="button" class="modal-close-circle-btn" onclick="document.getElementById('loginRequiredModal').style.display='none'" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" aria-label="Close modal">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <path d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+            <x-close-button onclick="document.getElementById('loginRequiredModal').style.display='none'" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" ariaLabel="Close modal" />
 
             {{-- Shield Icon --}}
             <div class="global-login-icon-box">
@@ -5241,11 +5235,7 @@
     {{-- Insecure Context Camera Notice Modal --}}
     <div id="cameraInsecureModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999; align-items: center; justify-content: center; padding: 20px;">
         <div style="background: #0B2B26; border: 1.5px solid rgba(142, 182, 155, 0.3); border-radius: 20px; max-width: 480px; width: 100%; padding: 28px; box-shadow: 0 24px 60px rgba(0,0,0,0.6); color: #DAF1DE; text-align: center; position: relative;">
-            <button type="button" class="modal-close-circle-btn" onclick="document.getElementById('cameraInsecureModal').style.display='none'" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" aria-label="Close modal">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <path d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+            <x-close-button onclick="document.getElementById('cameraInsecureModal').style.display='none'" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" ariaLabel="Close modal" />
             <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #f59e0b;">
                 <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
@@ -8199,14 +8189,6 @@
                 const domRegionThumb = (regions && regions[0] && regions[0].region_thumbnail) ? regions[0].region_thumbnail : null;
                 let cleanSourceImg = data.normalized_image_url || data.stage2_normalized_url || data.image || data.scan_image || domRegionThumb || null;
                 if (cleanSourceImg && typeof cleanSourceImg === 'string') {
-                    if (cleanSourceImg.includes('supabase.co') || cleanSourceImg.includes('agrico-scans')) {
-                        const mUuid = cleanSourceImg.match(/(?:scan|region)_([a-f0-9\-]{10,})/i);
-                        if (mUuid) {
-                            cleanSourceImg = '/storage/scans/scan_' + mUuid[1] + '_normalized.jpg';
-                        } else if (domRegionThumb) {
-                            cleanSourceImg = domRegionThumb.startsWith('data:') ? domRegionThumb : ('data:image/png;base64,' + domRegionThumb);
-                        }
-                    }
                     if (cleanSourceImg.startsWith('storage/')) {
                         cleanSourceImg = '/' + cleanSourceImg;
                     }
@@ -8443,6 +8425,9 @@
                                 if (modalBeforeAfterBoxes) renderBeforeAfterBoxes(modalBeforeAfterBoxes, regions);
                             } else {
                                 modalBeforeAfterImg.dataset.loaded = 'false';
+                                modalBeforeAfterImg.style.display = 'none';
+                                if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = '';
+                                modalBeforeAfterCard.style.display = 'none';
                             }
                         };
                         modalBeforeAfterImg.dataset.loaded = 'pending';
@@ -10575,11 +10560,7 @@
             <!-- Modal Header -->
             <div class="soil-modal-header" style="display: flex; align-items: center; justify-content: space-between;">
                 <h3 class="soil-modal-title" id="modalRecordTitle">Soil Record Details</h3>
-                <button type="button" class="modal-close-circle-btn" onclick="closeSoilRecordModal()" title="Close details" aria-label="Close details">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+                <x-close-button onclick="closeSoilRecordModal()" title="Close details" ariaLabel="Close details" />
             </div>
 
             <!-- Modal Body Container -->
@@ -10793,7 +10774,7 @@
                     <h3 class="pin-modal-title">Pin Soil Location</h3>
                     <p class="pin-modal-subtitle">Select Barangay &amp; Pin Coordinates in Lal-lo, Cagayan for Admin Review</p>
                 </div>
-                <button type="button" class="pin-modal-close-btn" onclick="closePinLocationModal()" title="Close">&times;</button>
+                <x-close-button onclick="closePinLocationModal()" title="Close" ariaLabel="Close modal" class="pin-modal-close-btn" />
             </div>
 
             <!-- Scrollable Body -->
@@ -10808,7 +10789,7 @@
                     <div class="pin-search-row">
                         <div class="pin-search-box" style="flex: 1; min-width: 0; position: relative;">
                             <input type="text" id="pinBrgySearchInput" class="pin-input-field" placeholder="Search from 35 Barangays in Lal-lo..." autocomplete="off">
-                            <button type="button" id="pinClearBrgyBtn" class="pin-clear-btn" style="display: none;" onclick="clearPinBrgySearch()">&times;</button>
+                            <x-close-button size="sm" id="pinClearBrgyBtn" class="pin-clear-btn" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 5;" onclick="clearPinBrgySearch()" title="Clear search" ariaLabel="Clear search" />
                             <!-- Autocomplete Dropdown -->
                             <div id="pinBrgyDropdown" class="pin-dropdown-box" style="display: none;"></div>
                         </div>
@@ -10926,9 +10907,7 @@
                         Stage 2 PromptNorm
                     </span>
                 </div>
-                <button type="button" class="ba-zoom-close-btn" onclick="closeBeforeAfterZoomModal(event)" title="Close">
-                    ✕
-                </button>
+                <x-close-button onclick="closeBeforeAfterZoomModal(event)" title="Close" ariaLabel="Close modal" class="ba-zoom-close-btn" />
             </div>
             <div class="ba-zoom-body">
                 <div class="ba-zoom-img-container">

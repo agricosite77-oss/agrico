@@ -1,13 +1,24 @@
-<button 
+@props([
+    'size' => 'normal',
+    'click' => null,
+    'ariaLabel' => 'Close',
+    'title' => 'Close',
+])
+
+@php
+    $sizeClass = $size === 'sm' ? 'agrico-close-btn--sm' : 'agrico-close-btn--normal';
+@endphp
+
+<button
+    type="button"
+    @if($click) @click="{{ $click }}" wire:click="{{ $click }}" @endif
     {{ $attributes->merge([
-        'type' => 'button',
-        'class' => 'modal-close-circle-btn'
+        'class' => "agrico-close-btn modal-close-circle-btn {$sizeClass}",
+        'aria-label' => $ariaLabel,
+        'title' => $title,
     ]) }}
-    aria-label="Close"
-    title="Close"
 >
-    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+    <svg class="agrico-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
         <path d="M6 18L18 6M6 6l12 12" />
     </svg>
 </button>
-

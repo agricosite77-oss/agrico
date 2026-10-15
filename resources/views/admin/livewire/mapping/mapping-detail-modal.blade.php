@@ -83,56 +83,17 @@
 
     $munsellFallback = $mColor?->image ? $formatImageUrl($mColor->image) : ($soil?->image ? $formatImageUrl($soil->image) : '');
 
-    $scanImg = $scan?->scan_image_url ?? ($scan?->scan_image ? $formatImageUrl($scan->scan_image) : '');
-    if (!$scanImg && !empty($dominant['image'])) {
-        $scanImg = $formatImageUrl($dominant['image']);
-    }
-    if (!$scanImg && !empty($dominant['image_url'])) {
-        $scanImg = $formatImageUrl($dominant['image_url']);
-    }
-    if (!$scanImg && $siblingScanImg) {
-        $scanImg = $siblingScanImg;
-    }
-    if (!$scanImg && $munsellFallback) {
-        $scanImg = $munsellFallback;
-    }
-    if (!$scanImg && $thumbFallback) {
-        $scanImg = $thumbFallback;
-    }
-
+    $scanImg = \App\Helpers\SoilImageHelper::scanImageUrl($mapping ?: ($scan ?: $soil)) ?: $thumbFallback;
     $scanUser = $scan?->user?->name ?? 'Admin Analyst';
     $scanPlatform = $scan?->platform ?? 'website';
-
-    $baImg = $mapping->before_after_image_url ?: ($scan?->before_after_image_url ?? null);
-    if (!$baImg && $scan?->scan_image) {
-        $rawImg = $scan->scan_image;
-        if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
-            $scanUuid = $m[1];
-            $baImg = asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
-        }
-    }
-    if (!$baImg && $scan?->scan_note) {
-        if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $scan->scan_note, $m)) {
-            $scanUuid = $m[1];
-            $baImg = asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
-        }
-    }
-    if (!$baImg && $soil?->image) {
-        $rawImg = $soil->image;
-        if (preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $rawImg, $m)) {
-            $scanUuid = $m[1];
-            $baImg = asset("storage/scans/scan_{$scanUuid}_before_after.jpg");
-        }
-    }
-    if (!$baImg && $scan?->soil_scan_id) {
-        $baImg = asset("storage/scans/scan_{$scan->soil_scan_id}_before_after.jpg");
-    }
+    $baImg = \App\Helpers\SoilImageHelper::beforeAfterImageUrl($mapping ?: ($scan ?: $soil));
 
     $rawPhotoImg = '';
     if ($scan?->scan_image && preg_match('/(?:scan|region)_([a-f0-9\-]{10,})/i', $scan->scan_image, $m)) {
-        $rawPhotoImg = asset("storage/scans/scan_{$m[1]}_raw.jpg");
-    } elseif ($scan?->soil_scan_id) {
-        $rawPhotoImg = asset("storage/scans/scan_{$scan->soil_scan_id}_raw.jpg");
+        $rawRel = "scans/scan_{$m[1]}_raw.jpg";
+        if (file_exists(public_path("storage/{$rawRel}")) || file_exists(storage_path("app/public/{$rawRel}"))) {
+            $rawPhotoImg = asset("storage/{$rawRel}");
+        }
     }
 
     $normalizeBox = function($r) {
@@ -761,31 +722,15 @@
             {{-- 2. DUAL-PREVIEW BANNER SWATCH CARD (Matching Screenshot 2 & 4) --}}
             <div class="soil-swatch-banner" style="background: {{ $displayHex }};">
                 {{-- Square Avatar with ROI Green Crop Box --}}
-                <div class="soil-swatch-avatar">
+                <div class="soil-swatch-avatar" style="position: relative; overflow: hidden; width: 68px; height: 68px; min-width: 68px; border-radius: 14px; background: rgba(0,0,0,0.18);">
                     @if($scanImg)
                         <img
                             src="{{ $scanImg }}"
-                            data-fallback-thumb="{{ $thumbFallback }}"
-                            data-fallback-sibling="{{ $siblingScanImg }}"
-                            data-fallback-munsell="{{ $munsellFallback }}"
-                            alt=""
+                            alt="Soil sample photo"
+                            loading="lazy"
+                            style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 14px;"
                             onload="var b = this.parentElement.querySelector('.soil-bounding-box'); if(b) b.style.display='block';"
                             onerror="
-                                var fbThumb = this.getAttribute('data-fallback-thumb');
-                                var fbSib = this.getAttribute('data-fallback-sibling');
-                                var fbMun = this.getAttribute('data-fallback-munsell');
-                                if (fbThumb && this.src !== fbThumb) {
-                                    this.src = fbThumb;
-                                    return;
-                                }
-                                if (fbSib && this.src !== fbSib) {
-                                    this.src = fbSib;
-                                    return;
-                                }
-                                if (fbMun && this.src !== fbMun) {
-                                    this.src = fbMun;
-                                    return;
-                                }
                                 this.style.setProperty('display', 'none', 'important');
                                 var b = this.parentElement.querySelector('.soil-bounding-box');
                                 if(b) b.style.display='none';
@@ -794,16 +739,22 @@
                             "
                         />
                         <div class="soil-bounding-box" style="display: none; position: absolute; left: {{ $domBox['left'] }}%; top: {{ $domBox['top'] }}%; width: {{ $domBox['width'] }}%; height: {{ $domBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
-                        <div class="soil-avatar-fallback" style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: rgba(0,0,0,0.25);">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <div class="soil-avatar-fallback" style="display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.22); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
                             </svg>
+                            <span style="font-size: 8px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; opacity: 0.9;">No Photo</span>
                         </div>
                     @else
-                        <div class="soil-avatar-fallback" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.25);">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <div class="soil-avatar-fallback" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.22); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
                             </svg>
+                            <span style="font-size: 8px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; opacity: 0.9;">No Photo</span>
                         </div>
                     @endif
                 </div>
@@ -1029,26 +980,26 @@
             @endif
 
             {{-- 6. SOIL NORMALIZATION: BEFORE / AFTER CARD (Matching Screenshot 1) --}}
-            @if($baImg || $scanImg || $rawPhotoImg)
-                @php
-                    $displayBaImg = $baImg ?: ($rawPhotoImg ?: $scanImg);
-                    $renderRegions = !empty($regions) ? $regions : [($dominant ?: ['box' => ['x' => 0.25, 'y' => 0.25, 'w' => 0.5, 'h' => 0.5]])];
-                    $ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
-                    $rawSource = $rawPhotoImg ?: $scanImg;
-                    $normSource = $scanImg ?: $rawPhotoImg;
-                @endphp
-                <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <div class="soil-metric-card-label" style="margin-bottom: 0;">
-                            SOIL NORMALIZATION
-                        </div>
-                        <span style="font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
-                            BEFORE / AFTER
-                        </span>
+            @php
+                $displayBaImg = $baImg;
+                $renderRegions = !empty($regions) ? $regions : [($dominant ?: ['box' => ['x' => 0.25, 'y' => 0.25, 'w' => 0.5, 'h' => 0.5]])];
+                $ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
+                $rawSource = $rawPhotoImg ?: $scanImg;
+                $normSource = $scanImg ?: $rawPhotoImg;
+            @endphp
+            <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div class="soil-metric-card-label" style="margin-bottom: 0;">
+                        SOIL NORMALIZATION
                     </div>
+                    <span style="font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
+                        BEFORE / AFTER
+                    </span>
+                </div>
 
-                    {{-- Unified Before & After Container (Composite Image with Canvas Stitching Fallback) --}}
-                    <div id="mappingBeforeAfterWrapper-{{ $mapping->mapping_id ?? ($scan?->soil_scan_id ?? $soil?->soil_id) }}" style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25); cursor: pointer;" title="Click to view full resolution comparison">
+                {{-- Unified Before & After Container --}}
+                <div id="mappingBeforeAfterWrapper-{{ $mapping->mapping_id ?? ($scan?->soil_scan_id ?? $soil?->soil_id) }}" class="soil-norm-container" style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25);">
+                    @if($displayBaImg)
                         <img
                             id="mappingSoilBaImg-{{ $mapping->mapping_id ?? ($scan?->soil_scan_id ?? $soil?->soil_id) }}"
                             src="{{ $displayBaImg }}"
@@ -1056,10 +1007,12 @@
                             data-norm="{{ $normSource }}"
                             data-code="{{ $displayCode }}"
                             alt="Soil Before & After Normalization"
+                            loading="lazy"
                             style="width: 100%; height: auto; display: block; border-radius: 8px;"
+                            onload="var p = this.parentElement; if(p) { p.classList.add('image-loaded'); var o = p.querySelector('.soil-norm-overlays'); if(o) o.style.display='block'; }"
                             onerror="window.handleAdminSoilBaFallback && window.handleAdminSoilBaFallback(this);"
                         />
-                        <div style="position: absolute; inset: 0; pointer-events: none; z-index: 10;">
+                        <div class="soil-norm-overlays" style="display: none; position: absolute; inset: 0; pointer-events: none; z-index: 10;">
                             @foreach($renderRegions as $idx => $r)
                                 @php
                                     $bData = $normalizeBox($r);
@@ -1080,7 +1033,17 @@
                                 </div>
                             @endforeach
                         </div>
+                    @endif
+                    <div class="soil-norm-missing-placeholder" style="display: {{ $displayBaImg ? 'none' : 'flex' }}; flex-direction: column; align-items: center; justify-content: center; padding: 28px 16px; background: rgba(12, 26, 23, 0.95); text-align: center; border-radius: 8px;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <span style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.02em;">Image not available</span>
+                        <span style="font-size: 10.5px; color: rgba(255,255,255,0.5); margin-top: 3px;">Normalization comparison image was not retained for this record</span>
                     </div>
+                </div>
 
                     {{-- Detected Soil Color Swatch Pills (Matching Screenshot 2 Capsule Design) --}}
                     <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
@@ -1144,75 +1107,99 @@
                 if (!img || img.dataset.handledFallback === 'true') return;
                 img.dataset.handledFallback = 'true';
 
+                const showPlaceholder = () => {
+                    img.style.display = 'none';
+                    const wrapper = img.closest('.soil-norm-container') || img.parentElement;
+                    if (wrapper) {
+                        const overlay = wrapper.querySelector('.soil-norm-overlays');
+                        if (overlay) overlay.style.display = 'none';
+                        const fb = wrapper.querySelector('.soil-norm-missing-placeholder');
+                        if (fb) fb.style.display = 'flex';
+                    }
+                };
+
                 const rawSrc = img.dataset.raw;
                 const normSrc = img.dataset.norm;
                 const label = img.dataset.code || '';
 
-                if (rawSrc && normSrc) {
-                    const imgBefore = new Image();
-                    const imgAfter = new Image();
-                    if (!rawSrc.startsWith('data:') && !rawSrc.startsWith('blob:')) imgBefore.crossOrigin = 'anonymous';
-                    if (!normSrc.startsWith('data:') && !normSrc.startsWith('blob:')) imgAfter.crossOrigin = 'anonymous';
-
-                    let beforeDone = false, afterDone = false;
-                    const tryStitch = () => {
-                        try {
-                            const targetW = 640;
-                            const scale = targetW / (imgBefore.naturalWidth || targetW);
-                            const w = targetW;
-                            const h = Math.max(160, Math.round((imgBefore.naturalHeight || 360) * scale));
-                            const barH = Math.max(30, Math.round(h * 0.08));
-                            const canvas = document.createElement('canvas');
-                            canvas.width = w * 2;
-                            canvas.height = h + barH;
-                            const ctx = canvas.getContext('2d');
-                            if (!ctx) return;
-
-                            // Top Bar background (#121e18)
-                            ctx.fillStyle = '#121e18';
-                            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                            // Draw Before and After images
-                            ctx.drawImage(imgBefore, 0, barH, w, h);
-                            ctx.drawImage(imgAfter, w, barH, w, h);
-
-                            // Bar text
-                            ctx.font = 'bold 12px Inter, ui-sans-serif, system-ui, sans-serif';
-                            ctx.textBaseline = 'middle';
-
-                            // BEFORE label (amber)
-                            ctx.fillStyle = '#fbbf24';
-                            ctx.fillText('BEFORE', 12, barH / 2);
-
-                            // AFTER label (mint green)
-                            ctx.fillStyle = '#8ef2b2';
-                            const afterText = 'AFTER (NORMALIZED)' + (label ? ' -- ' + label : '');
-                            ctx.fillText(afterText, w + 12, barH / 2);
-
-                            // Center divider line
-                            ctx.save();
-                            ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-                            ctx.lineWidth = 1;
-                            ctx.beginPath();
-                            ctx.moveTo(w, 0);
-                            ctx.lineTo(w, canvas.height);
-                            ctx.stroke();
-                            ctx.restore();
-
-                            img.src = canvas.toDataURL('image/jpeg', 0.92);
-                        } catch (err) {
-                            console.warn('[Admin Mapping Detail] Canvas stitching fallback error:', err);
-                        }
-                    };
-
-                    imgBefore.onload = () => { beforeDone = true; if (afterDone) tryStitch(); };
-                    imgAfter.onload = () => { afterDone = true; if (beforeDone) tryStitch(); };
-                    imgBefore.onerror = () => { beforeDone = true; if (afterDone) tryStitch(); };
-                    imgAfter.onerror = () => { afterDone = true; if (beforeDone) tryStitch(); };
-
-                    imgBefore.src = rawSrc;
-                    imgAfter.src = normSrc;
+                if (!rawSrc || !normSrc) {
+                    showPlaceholder();
+                    return;
                 }
+
+                const imgBefore = new Image();
+                const imgAfter = new Image();
+                if (!rawSrc.startsWith('data:') && !rawSrc.startsWith('blob:')) imgBefore.crossOrigin = 'anonymous';
+                if (!normSrc.startsWith('data:') && !normSrc.startsWith('blob:')) imgAfter.crossOrigin = 'anonymous';
+
+                let beforeDone = false, afterDone = false;
+                let beforeFailed = false, afterFailed = false;
+
+                const tryStitch = () => {
+                    if (beforeFailed || afterFailed) {
+                        showPlaceholder();
+                        return;
+                    }
+                    try {
+                        const targetW = 640;
+                        const scale = targetW / (imgBefore.naturalWidth || targetW);
+                        const w = targetW;
+                        const h = Math.max(160, Math.round((imgBefore.naturalHeight || 360) * scale));
+                        const barH = Math.max(30, Math.round(h * 0.08));
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w * 2;
+                        canvas.height = h + barH;
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) {
+                            showPlaceholder();
+                            return;
+                        }
+
+                        // Top Bar background (#121e18)
+                        ctx.fillStyle = '#121e18';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                        // Draw Before and After images
+                        ctx.drawImage(imgBefore, 0, barH, w, h);
+                        ctx.drawImage(imgAfter, w, barH, w, h);
+
+                        // Bar text
+                        ctx.font = 'bold 12px Inter, ui-sans-serif, system-ui, sans-serif';
+                        ctx.textBaseline = 'middle';
+
+                        // BEFORE label (amber)
+                        ctx.fillStyle = '#fbbf24';
+                        ctx.fillText('BEFORE', 12, barH / 2);
+
+                        // AFTER label (mint green)
+                        ctx.fillStyle = '#8ef2b2';
+                        const afterText = 'AFTER (NORMALIZED)' + (label ? ' -- ' + label : '');
+                        ctx.fillText(afterText, w + 12, barH / 2);
+
+                        // Center divider line
+                        ctx.save();
+                        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(w, 0);
+                        ctx.lineTo(w, canvas.height);
+                        ctx.stroke();
+                        ctx.restore();
+
+                        img.src = canvas.toDataURL('image/jpeg', 0.92);
+                    } catch (err) {
+                        console.warn('[Admin Mapping Detail] Canvas stitching fallback error:', err);
+                        showPlaceholder();
+                    }
+                };
+
+                imgBefore.onload = () => { beforeDone = true; if (afterDone) tryStitch(); };
+                imgAfter.onload = () => { afterDone = true; if (beforeDone) tryStitch(); };
+                imgBefore.onerror = () => { beforeFailed = true; showPlaceholder(); };
+                imgAfter.onerror = () => { afterFailed = true; showPlaceholder(); };
+
+                imgBefore.src = rawSrc;
+                imgAfter.src = normSrc;
             };
         }
     </script>

@@ -1543,3 +1543,209 @@ html:not(.light-mode) .agri-pill-btn {
     }
 }
 
+/* ==========================================================================
+   AgriCo Universal Close Button System — .agrico-close-btn
+   Single Source of Truth across Modals, Windows, Popups, Toasts, and Search Clears
+   ========================================================================== */
+
+:root {
+    --close-btn-size: 32px;
+    --close-btn-icon-size: 16px;
+    --close-btn-stroke: 2.2;
+    --close-btn-border-width: 1.5px;
+
+    --close-btn-size-sm: 24px;
+    --close-btn-icon-size-sm: 13px;
+    --close-btn-stroke-sm: 2.2;
+    --close-btn-border-width-sm: 1.2px;
+
+    --close-btn-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --close-btn-dur: 200ms;
+
+    /* Light Mode (html.light-mode or light theme) */
+    --close-btn-bg: #f1f5f9;
+    --close-btn-border: #e2e8f0;
+    --close-btn-color: #64748b;
+    --close-btn-bg-hover: #e2e8f0;
+    --close-btn-border-hover: #cbd5e1;
+    --close-btn-color-hover: #0f172a;
+    --close-btn-focus-ring: rgba(34, 197, 94, 0.45);
+}
+
+/* Dark Mode (Default for AgriCo Soil Modals & Dark Theme) */
+html:not(.light-mode),
+body:not(.light-mode),
+[data-theme="dark"] {
+    --close-btn-bg: rgba(5, 31, 32, 0.70);
+    --close-btn-border: rgba(142, 182, 155, 0.35);
+    --close-btn-color: #8EB69B;
+    --close-btn-bg-hover: rgba(35, 83, 71, 0.85);
+    --close-btn-border-hover: #DAF1DE;
+    --close-btn-color-hover: #DAF1DE;
+    --close-btn-focus-ring: rgba(74, 222, 128, 0.5);
+}
+
+/* Base close button */
+.agrico-close-btn,
+.modal-close-circle-btn,
+.soil-modal-close {
+    width: var(--close-btn-size);
+    height: var(--close-btn-size);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: var(--close-btn-bg);
+    border: var(--close-btn-border-width) solid var(--close-btn-border);
+    color: var(--close-btn-color);
+    outline: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    transition: transform var(--close-btn-dur) var(--close-btn-ease),
+                background-color var(--close-btn-dur) var(--close-btn-ease),
+                border-color var(--close-btn-dur) var(--close-btn-ease),
+                color var(--close-btn-dur) var(--close-btn-ease),
+                box-shadow var(--close-btn-dur) var(--close-btn-ease);
+    user-select: none;
+    -webkit-user-select: none;
+    flex-shrink: 0;
+    position: relative;
+    line-height: 1;
+    text-decoration: none;
+}
+
+/* SVG icon sizing */
+.agrico-close-btn svg,
+.agrico-close-btn .agrico-close-icon,
+.modal-close-circle-btn svg,
+.soil-modal-close svg {
+    width: var(--close-btn-icon-size);
+    height: var(--close-btn-icon-size);
+    stroke-width: var(--close-btn-stroke);
+    stroke: currentColor;
+    display: block;
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+/* Small Variant (Search bars, inline toasts, filter chips) */
+.agrico-close-btn--sm,
+.agrico-close-btn.is-sm {
+    width: var(--close-btn-size-sm);
+    height: var(--close-btn-size-sm);
+    border-width: var(--close-btn-border-width-sm);
+}
+
+.agrico-close-btn--sm svg,
+.agrico-close-btn--sm .agrico-close-icon,
+.agrico-close-btn.is-sm svg {
+    width: var(--close-btn-icon-size-sm);
+    height: var(--close-btn-icon-size-sm);
+    stroke-width: var(--close-btn-stroke-sm);
+}
+
+/* 44x44px Touch Target Expansion via invisible hit area */
+.agrico-close-btn::after,
+.modal-close-circle-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 44px;
+    min-height: 44px;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+}
+
+/* Hover effect on pointer-capable devices */
+@media (hover: hover) and (pointer: fine) {
+    .agrico-close-btn:hover:not(:disabled),
+    .modal-close-circle-btn:hover:not(:disabled),
+    .soil-modal-close:hover:not(:disabled) {
+        background: var(--close-btn-bg-hover);
+        border-color: var(--close-btn-border-hover);
+        color: var(--close-btn-color-hover);
+        transform: scale(1.08);
+    }
+}
+
+/* Active / Tap Feedback */
+.agrico-close-btn:active:not(:disabled),
+.modal-close-circle-btn:active:not(:disabled),
+.soil-modal-close:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+/* Focus Visible Accessible Ring */
+.agrico-close-btn:focus-visible,
+.modal-close-circle-btn:focus-visible {
+    outline: 2px solid var(--close-btn-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Disabled State */
+.agrico-close-btn:disabled,
+.modal-close-circle-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Leaflet Map Popup Close Button Override */
+.leaflet-popup a.leaflet-popup-close-button,
+.agrico-custom-popup a.leaflet-popup-close-button {
+    top: 10px !important;
+    right: 10px !important;
+    width: var(--close-btn-size-sm) !important;
+    height: var(--close-btn-size-sm) !important;
+    border-radius: 50% !important;
+    background: var(--close-btn-bg) !important;
+    border: var(--close-btn-border-width-sm) solid var(--close-btn-border) !important;
+    color: var(--close-btn-color) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    font: inherit !important;
+    text-decoration: none !important;
+    transition: transform var(--close-btn-dur) var(--close-btn-ease),
+                background-color var(--close-btn-dur) var(--close-btn-ease),
+                border-color var(--close-btn-dur) var(--close-btn-ease),
+                color var(--close-btn-dur) var(--close-btn-ease) !important;
+    z-index: 30 !important;
+    overflow: hidden !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .leaflet-popup a.leaflet-popup-close-button:hover,
+    .agrico-custom-popup a.leaflet-popup-close-button:hover {
+        background: var(--close-btn-bg-hover) !important;
+        border-color: var(--close-btn-border-hover) !important;
+        color: var(--close-btn-color-hover) !important;
+        transform: scale(1.08) !important;
+    }
+}
+
+.leaflet-popup a.leaflet-popup-close-button:active,
+.agrico-custom-popup a.leaflet-popup-close-button:active {
+    transform: scale(0.95) !important;
+}
+
+/* Prefers-reduced-motion: disable scaling */
+@media (prefers-reduced-motion: reduce) {
+    .agrico-close-btn,
+    .modal-close-circle-btn,
+    .soil-modal-close,
+    .leaflet-popup a.leaflet-popup-close-button,
+    .agrico-custom-popup a.leaflet-popup-close-button {
+        transform: none !important;
+        transition: background-color 0.01ms, border-color 0.01ms, color 0.01ms !important;
+    }
+}
+
+

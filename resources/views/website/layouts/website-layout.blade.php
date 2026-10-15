@@ -1405,11 +1405,7 @@
 <div id="globalLoginRequiredModal" class="global-login-modal-overlay" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(5,31,32,0.82); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
     <div class="global-login-modal-card">
         {{-- Close "X" Exit Button --}}
-        <button type="button" class="modal-close-circle-btn" onclick="closeGlobalLoginModal()" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" aria-label="Close modal">
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
+        <x-close-button onclick="closeGlobalLoginModal()" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" ariaLabel="Close modal" />
 
         {{-- Shield Icon --}}
         <div class="global-login-icon-box">
@@ -1557,49 +1553,7 @@
     }
 
     /* â”€â”€ Universal Modal Close / Exit Circle Button â”€â”€ */
-    .modal-close-circle-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        border: none;
-        background: transparent;
-        color: #8EB69B;
-        outline: none;
-        padding: 0;
-        margin: 0;
-        box-sizing: border-box;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        user-select: none;
-        -webkit-user-select: none;
-        flex-shrink: 0;
-    }
-    .modal-close-circle-btn:hover {
-        background: rgba(255, 255, 255, 0.12);
-        color: #ffffff;
-        transform: scale(1.06);
-    }
-    .modal-close-circle-btn:active {
-        transform: scale(0.95);
-    }
 
-    /* Light Mode Overrides */
-    html.light-mode .modal-close-circle-btn,
-    .light-mode .modal-close-circle-btn,
-    body.light-mode .modal-close-circle-btn {
-        color: #94a3b8 !important;
-        background: transparent !important;
-    }
-    html.light-mode .modal-close-circle-btn:hover,
-    .light-mode .modal-close-circle-btn:hover,
-    body.light-mode .modal-close-circle-btn:hover {
-        background: #f1f5f9 !important;
-        color: #0f172a !important;
-        transform: scale(1.06) !important;
-    }
 </style>
 @endguest
 
@@ -1607,11 +1561,7 @@
 <div id="globalAccountPendingModal" class="global-pending-modal-overlay" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(5,31,32,0.85); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
     <div class="global-pending-modal-card">
         {{-- Close "X" Exit Button --}}
-        <button type="button" class="modal-close-circle-btn" onclick="closeAccountPendingModal()" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" aria-label="Close modal">
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
+        <x-close-button onclick="closeAccountPendingModal()" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" ariaLabel="Close modal" />
 
         {{-- Glowing Amber / Clock Shield Icon --}}
         <div class="global-pending-icon-box">
@@ -1633,11 +1583,7 @@
 <div id="globalSystemMaintenanceModal" class="global-pending-modal-overlay" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(5,31,32,0.85); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
     <div class="global-pending-modal-card" style="border-color:rgba(234, 88, 12, 0.45); box-shadow:0 30px 80px rgba(0,0,0,0.65), 0 0 40px rgba(234, 88, 12, 0.15);">
         {{-- Close "X" Exit Button --}}
-        <button type="button" class="modal-close-circle-btn" onclick="closeSystemMaintenanceModal()" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" aria-label="Close modal">
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
+        <x-close-button onclick="closeSystemMaintenanceModal()" style="position: absolute; top: 16px; right: 16px; z-index: 10;" title="Close modal" ariaLabel="Close modal" />
 
         {{-- Glowing Orange / Gear Wrench Icon --}}
         <div class="global-pending-icon-box" style="background:linear-gradient(135deg, rgba(234, 88, 12, 0.2), rgba(22, 56, 50, 0.85)); border-color:rgba(234, 88, 12, 0.5);">

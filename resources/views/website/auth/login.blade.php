@@ -705,9 +705,7 @@
                         <p style="font-size:12px; color:#94a3b8; font-weight:500; margin:2px 0 0 0;">{{ $susp['name'] }}</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeSuspensionModal()" style="background:transparent; border:none; color:#94a3b8; cursor:pointer; width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition: background 0.15s ease, color 0.15s ease;" onmouseover="this.style.background='#f1f5f9'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#94a3b8';" aria-label="Close modal">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
+                <x-close-button onclick="closeSuspensionModal()" ariaLabel="Close modal" title="Close modal" />
             </div>
 
             <div style="padding:14px 28px 20px 28px; display:flex; flex-direction:column; gap:14px;">
