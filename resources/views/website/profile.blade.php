@@ -11,328 +11,414 @@
             touch-action: none !important;
         }
         
+        /* ==========================================================================
+           EDIT INFORMATION MODAL DESIGN TOKENS (LIGHT & DARK MODE)
+           ========================================================================== */
+        :root {
+            --pm-overlay: rgba(0, 0, 0, 0.65);
+            --pm-bg: #0B2B26;
+            --pm-border: rgba(142, 182, 155, 0.28);
+            --pm-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(35, 83, 71, 0.25);
+            --pm-header-bg: rgba(11, 43, 38, 0.98);
+            --pm-footer-bg: rgba(11, 43, 38, 0.98);
+            --pm-divider: rgba(142, 182, 155, 0.2);
+            --pm-title: #DAF1DE;
+            --pm-subtitle: #8EB69B;
+            --pm-body-text: #DAF1DE;
+            --pm-muted: #8EB69B;
+            
+            /* Tabs */
+            --pm-tabs-track: rgba(16, 44, 38, 0.6);
+            --pm-tabs-border: rgba(142, 182, 155, 0.2);
+            --pm-tab-inactive-text: #8EB69B;
+            --pm-tab-inactive-hover: #DAF1DE;
+            --pm-tab-active-bg: #235347;
+            --pm-tab-active-text: #FFFFFF;
+            --pm-tab-active-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+
+            /* Inputs */
+            --pm-input-bg: rgba(5, 31, 32, 0.75);
+            --pm-input-border: #475569;
+            --pm-input-text: #DAF1DE;
+            --pm-input-icon: #8EB69B;
+            --pm-input-focus-border: #94A3B8;
+            --pm-input-focus-ring: rgba(148, 163, 184, 0.22);
+            --pm-input-locked-bg: rgba(5, 31, 32, 0.4);
+            --pm-input-locked-border: rgba(142, 182, 155, 0.18);
+            --pm-label-color: #94A3B8;
+            --pm-label-bg: #0B2B26;
+            --pm-label-active-text: #E2E8F0;
+
+            /* Buttons */
+            --pm-btn-primary-bg: linear-gradient(135deg, #235347, #163832);
+            --pm-btn-primary-border: #8EB69B;
+            --pm-btn-primary-text: #DAF1DE;
+            --pm-btn-primary-shadow: 0 4px 14px rgba(35, 83, 71, 0.5);
+            --pm-btn-primary-hover-bg: #235347;
+            --pm-btn-primary-hover-border: #DAF1DE;
+            --pm-btn-primary-hover-text: #FFFFFF;
+
+            --pm-btn-secondary-bg: rgba(142, 182, 155, 0.12);
+            --pm-btn-secondary-border: rgba(142, 182, 155, 0.25);
+            --pm-btn-secondary-text: #8EB69B;
+            --pm-btn-secondary-hover-bg: rgba(142, 182, 155, 0.22);
+            --pm-btn-secondary-hover-text: #DAF1DE;
+
+            /* Avatar & Preview */
+            --pm-avatar-bg: linear-gradient(135deg, #235347, #163832);
+            --pm-avatar-border: #8EB69B;
+            --pm-avatar-text: #DAF1DE;
+            --pm-avatar-shadow: 0 8px 24px rgba(35, 83, 71, 0.5);
+            --pm-pencil-bg: #163832;
+            --pm-pencil-border: #8EB69B;
+            --pm-pencil-stroke: #DAF1DE;
+
+            /* Security & Current Email Boxes */
+            --pm-sec-box-bg: rgba(34, 197, 94, 0.08);
+            --pm-sec-box-border: rgba(34, 197, 94, 0.28);
+            --pm-sec-box-title: #DAF1DE;
+            --pm-sec-box-text: #8EB69B;
+            --pm-current-email-bg: rgba(16, 44, 38, 0.55);
+            --pm-current-email-border: rgba(142, 182, 155, 0.25);
+            --pm-current-email-label: #8EB69B;
+            --pm-current-email-val: #FFFFFF;
+
+            /* Badges & Meters */
+            --pm-badge-inactive-bg: rgba(5, 31, 32, 0.7);
+            --pm-badge-inactive-border: rgba(142, 182, 155, 0.25);
+            --pm-badge-inactive-text: #8EB69B;
+            --pm-meter-bg: rgba(142, 182, 155, 0.25);
+            --pm-scrollbar-thumb: rgba(142, 182, 155, 0.35);
+            --pm-scrollbar-track: rgba(5, 31, 32, 0.3);
+        }
+
+        html.light-mode,
+        .light-mode,
+        body.light-mode {
+            --pm-overlay: rgba(15, 23, 42, 0.5);
+            --pm-bg: #FFFFFF;
+            --pm-border: #E2E8F0;
+            --pm-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.15), 0 0 20px rgba(0, 0, 0, 0.04);
+            --pm-header-bg: #F8FAFC;
+            --pm-footer-bg: #F8FAFC;
+            --pm-divider: #E2E8F0;
+            --pm-title: #0F172A;
+            --pm-subtitle: #64748B;
+            --pm-body-text: #1E293B;
+            --pm-muted: #64748B;
+            
+            /* Tabs */
+            --pm-tabs-track: #F1F5F9;
+            --pm-tabs-border: #E2E8F0;
+            --pm-tab-inactive-text: #64748B;
+            --pm-tab-inactive-hover: #0F172A;
+            --pm-tab-active-bg: #FFFFFF;
+            --pm-tab-active-text: #0F172A;
+            --pm-tab-active-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+
+            /* Inputs */
+            --pm-input-bg: #F8FAFC;
+            --pm-input-border: #CBD5E1;
+            --pm-input-text: #0F172A;
+            --pm-input-icon: #64748B;
+            --pm-input-focus-border: #16A34A;
+            --pm-input-focus-ring: rgba(22, 163, 74, 0.2);
+            --pm-input-locked-bg: #F1F5F9;
+            --pm-input-locked-border: #E2E8F0;
+            --pm-label-color: #64748B;
+            --pm-label-bg: #FFFFFF;
+            --pm-label-active-text: #16A34A;
+
+            /* Buttons */
+            --pm-btn-primary-bg: linear-gradient(135deg, #16A34A, #15803D);
+            --pm-btn-primary-border: #16A34A;
+            --pm-btn-primary-text: #FFFFFF;
+            --pm-btn-primary-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
+            --pm-btn-primary-hover-bg: #15803D;
+            --pm-btn-primary-hover-border: #15803D;
+            --pm-btn-primary-hover-text: #FFFFFF;
+
+            --pm-btn-secondary-bg: #F1F5F9;
+            --pm-btn-secondary-border: #CBD5E1;
+            --pm-btn-secondary-text: #475569;
+            --pm-btn-secondary-hover-bg: #E2E8F0;
+            --pm-btn-secondary-hover-text: #0F172A;
+
+            /* Avatar & Preview */
+            --pm-avatar-bg: linear-gradient(135deg, #DCFCE7, #BBF7D0);
+            --pm-avatar-border: #86EFAC;
+            --pm-avatar-text: #166534;
+            --pm-avatar-shadow: 0 6px 18px rgba(22, 163, 74, 0.18);
+            --pm-pencil-bg: #FFFFFF;
+            --pm-pencil-border: #86EFAC;
+            --pm-pencil-stroke: #166534;
+
+            /* Security & Current Email Boxes */
+            --pm-sec-box-bg: #F0FDF4;
+            --pm-sec-box-border: #BBF7D0;
+            --pm-sec-box-title: #166534;
+            --pm-sec-box-text: #15803D;
+            --pm-current-email-bg: #F8FAFC;
+            --pm-current-email-border: #E2E8F0;
+            --pm-current-email-label: #64748B;
+            --pm-current-email-val: #0F172A;
+
+            /* Badges & Meters */
+            --pm-badge-inactive-bg: #F1F5F9;
+            --pm-badge-inactive-border: #CBD5E1;
+            --pm-badge-inactive-text: #64748B;
+            --pm-meter-bg: #E2E8F0;
+            --pm-scrollbar-thumb: #CBD5E1;
+            --pm-scrollbar-track: #F1F5F9;
+        }
+
+        /* Autofill Neutralization (Chrome / Safari / Edge) */
+        .floating-input:-webkit-autofill,
+        .floating-input:-webkit-autofill:hover, 
+        .floating-input:-webkit-autofill:focus, 
+        .floating-input:-webkit-autofill:active {
+            -webkit-text-fill-color: var(--pm-input-text) !important;
+            -webkit-box-shadow: 0 0 0 1000px var(--pm-input-bg) inset !important;
+            box-shadow: 0 0 0 1000px var(--pm-input-bg) inset !important;
+            transition: background-color 5000s ease-in-out 0s !important;
+        }
+
+        /* Modal Overlay */
         .profile-modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             width: 100vw;
             height: 100vh;
             z-index: 99999;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(20px);
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            background: var(--pm-overlay);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px 16px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* Modal Responsive Layout Styling - Dark Mode Theme */
-        /* Modal Responsive Layout Styling - Dark Mode Theme */
+        /* Consistent Responsive Card (Equal across all 3 tabs) */
         .profile-modal-card {
             position: relative;
             z-index: 100000;
             width: 100%;
-            max-width: 580px;
-            background: #0B2B26;
+            max-width: 640px;
+            height: min(90vh, 670px);
+            max-height: 90dvh;
+            background: var(--pm-bg);
             border-radius: 24px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(35, 83, 71, 0.25);
-            border: 1px solid rgba(142, 182, 155, 0.28);
+            box-shadow: var(--pm-shadow);
+            border: 1px solid var(--pm-border);
             display: flex;
             flex-direction: column;
-            max-height: min(90vh, 660px);
             overflow: hidden;
             margin: auto;
+            transition: background-color 0.25s ease, border-color 0.25s ease;
         }
 
-        .profile-modal-body {
-            padding: 16px 20px 20px 20px;
-            flex: 1;
-            min-height: 0;
-            display: grid;
-            grid-template-columns: 1fr 180px;
-            gap: 20px;
-            align-items: start;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(142, 182, 155, 0.4) transparent;
-        }
-        .profile-modal-body::-webkit-scrollbar { width: 7px; }
-        .profile-modal-body::-webkit-scrollbar-thumb { background: rgba(142, 182, 155, 0.35); border-radius: 999px; transition: background 0.2s ease; }
-        .profile-modal-body::-webkit-scrollbar-thumb:hover { background: #4ADE80; }
-        .profile-modal-body::-webkit-scrollbar-track { background: rgba(5, 31, 32, 0.3); border-radius: 999px; }
-
-        .profile-modal-inputs {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            padding-top: 10px;
-        }
-
-        .profile-modal-preview {
-            padding-left: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        @media (max-width: 640px) {
-            .profile-modal-card {
-                width: calc(100vw - 32px) !important;
-                max-height: 90vh !important;
-                border-radius: 20px !important;
-            }
-            .profile-modal-tabs {
-                margin: 0 16px 12px 16px !important;
-                gap: 4px !important;
-                padding: 3px !important;
-            }
-            .profile-modal-tab-btn {
-                padding: 7px 4px !important;
-                font-size: 11px !important;
-                gap: 3px !important;
-            }
-            .profile-modal-tab-btn svg {
-                width: 13px !important;
-                height: 13px !important;
-                flex-shrink: 0 !important;
-            }
-            .profile-modal-body {
-                grid-template-columns: 1fr !important;
-                gap: 16px !important;
-                padding: 14px 16px !important;
-            }
-            .profile-modal-preview {
-                order: -1 !important;
-                padding-left: 0 !important;
-                padding-bottom: 14px !important;
-                border-bottom: 1px solid rgba(142, 182, 155, 0.2) !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                text-align: center !important;
-            }
-            .profile-modal-inputs {
-                padding-top: 8px !important;
-            }
-        }
-
-        /* Animated Floating Label & Color State Styling (Dark Mode Theme) - Neutral Gray */
-        .floating-input {
-            border-radius: 12px !important;
-            transition: all 0.25s ease !important;
-            background: rgba(5, 31, 32, 0.7) !important;
-            border: 1.5px solid #475569 !important;
-            color: #DAF1DE !important;
-        }
-        .floating-input:focus {
-            border-color: #94a3b8 !important;
-            box-shadow: 0 0 0 3.5px rgba(148, 163, 184, 0.22) !important;
-        }
-        .floating-input ~ .floating-label {
-            color: #94a3b8 !important;
-        }
-        .floating-input:focus ~ .floating-label {
-            top: 0px !important;
-            left: 20px !important;
-            transform: translateY(-50%) scale(0.82) !important;
-            background: #0B2B26 !important;
-            color: #e2e8f0 !important;
-            font-weight: 700 !important;
-            border-radius: 4px !important;
-            padding: 0 5px !important;
-        }
-        .floating-input:not(:placeholder-shown) ~ .floating-label {
-            top: 0px !important;
-            left: 20px !important;
-            transform: translateY(-50%) scale(0.82) !important;
-            background: #0B2B26 !important;
-            color: #cbd5e1 !important;
-            font-weight: 700 !important;
-            border-radius: 4px !important;
-            padding: 0 5px !important;
-        }
-        .floating-input:focus:not(:placeholder-shown) ~ .floating-label {
-            color: #e2e8f0 !important;
-        }
-
-        .modal-close-circle-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(142, 182, 155, 0.12);
-            border: 1px solid rgba(142, 182, 155, 0.25);
-            color: #8EB69B;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            padding: 0;
-            outline: none;
-        }
-        .modal-close-circle-btn:hover {
-            background: rgba(142, 182, 155, 0.25);
-            color: #DAF1DE;
-            border-color: #DAF1DE;
-            transform: scale(1.06);
-        }
-
-        /* ── Modal Avatar: Image 3 (Dark Mode) ── */
-        .profile-modal-avatar {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #235347, #163832) !important;
-            border: 2px solid #8EB69B !important;
-            color: #DAF1DE !important;
-            font-size: 26px;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 24px rgba(35, 83, 71, 0.5) !important;
-            transition: all 0.25s ease;
-            user-select: none;
-        }
-
-        /* ── Modal Save Button: Image 4 (Dark Mode) ── */
-        .profile-modal-save-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 9px 24px;
-            border-radius: 12px !important;
-            background: linear-gradient(135deg, #235347, #163832) !important;
-            border: 1.5px solid #8EB69B !important;
-            color: #DAF1DE !important;
-            font-size: 13.5px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.5) !important;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            font-family: inherit;
-        }
-        .profile-modal-save-btn:hover {
-            background: #235347 !important;
-            border-color: #DAF1DE !important;
-            color: #ffffff !important;
-            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.6) !important;
-            transform: translateY(-1px);
-        }
-
-        /* ── Preview Pencil Button ── */
-        .profile-modal-pencil-btn {
-            position: absolute;
-            bottom: 0px;
-            right: 0px;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: #163832;
-            border: 1.5px solid #8EB69B;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            cursor: pointer;
-            padding: 0;
-            outline: none;
-            transition: all 0.2s ease;
-            z-index: 5;
-        }
-        .profile-modal-pencil-btn svg {
-            stroke: #DAF1DE;
-        }
-        .profile-modal-pencil-btn:hover {
-            background: #235347;
-            border-color: #DAF1DE;
-            transform: scale(1.1);
-        }
-
+        /* Fixed Sticky Header */
         .profile-modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 18px 24px 14px 24px;
-            border-bottom: 1px solid rgba(142, 182, 155, 0.2);
+            border-bottom: 1px solid var(--pm-divider);
             flex-shrink: 0;
-            background: rgba(11, 43, 38, 0.98);
+            background: var(--pm-header-bg);
             z-index: 10;
         }
+        .profile-modal-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--pm-title);
+            margin: 0;
+            letter-spacing: -0.3px;
+        }
+        .profile-modal-subtitle {
+            font-size: 12px;
+            color: var(--pm-subtitle);
+            margin: 2px 0 0 0;
+            font-weight: 500;
+        }
+
+        /* Fixed Tabs Bar */
+        .profile-modal-tabs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--pm-tabs-track);
+            border: 1px solid var(--pm-tabs-border);
+            border-radius: 14px;
+            padding: 4px;
+            margin: 12px 24px 0 24px;
+            flex-shrink: 0;
+        }
+        .profile-modal-tab-btn {
+            flex: 1;
+            padding: 9px 12px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            color: var(--pm-tab-inactive-text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            white-space: nowrap;
+            min-height: 40px;
+        }
+        .profile-modal-tab-btn:hover {
+            color: var(--pm-tab-inactive-hover);
+        }
+        .profile-modal-tab-btn.active {
+            background: var(--pm-tab-active-bg);
+            color: var(--pm-tab-active-text);
+            box-shadow: var(--pm-tab-active-shadow);
+        }
+        .tab-label-desktop { display: inline; }
+        .tab-label-mobile { display: none; }
+
+        /* Scrollable Middle Body (Standardized across all tabs) */
+        .profile-modal-body {
+            padding: 20px 24px;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: var(--pm-scrollbar-thumb) transparent;
+        }
+        .profile-modal-body::-webkit-scrollbar { width: 6px; }
+        .profile-modal-body::-webkit-scrollbar-thumb { background: var(--pm-scrollbar-thumb); border-radius: 999px; }
+        .profile-modal-body::-webkit-scrollbar-track { background: var(--pm-scrollbar-track); border-radius: 999px; }
+
+        /* Grid layout for Personal Info Tab */
+        .profile-modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 180px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .profile-modal-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .profile-modal-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 8px 0 0 12px;
+            border-left: 1px solid var(--pm-divider);
+        }
+
+        /* Fixed Sticky Footer */
         .profile-modal-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 14px 24px 16px 24px;
             flex-shrink: 0;
-            border-top: 1px solid rgba(142, 182, 155, 0.2);
-            background: rgba(11, 43, 38, 0.98);
+            border-top: 1px solid var(--pm-divider);
+            background: var(--pm-footer-bg);
             z-index: 10;
+            gap: 12px;
         }
-        .profile-modal-title {
-            font-size: 16.5px;
-            font-weight: 800;
-            color: #DAF1DE;
-            margin: 0;
-        }
-        .profile-modal-last-updated {
-            font-size: 11.5px;
-            color: #8EB69B;
+        .profile-modal-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--pm-muted);
             font-weight: 500;
         }
-        .profile-modal-preview-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: #8EB69B;
-            margin-bottom: 8px;
-        }
-        .profile-modal-preview-name {
-            font-size: 14.5px;
-            font-weight: 800;
-            color: #DAF1DE;
-            margin: 4px 0 2px 0;
-        }
-        .profile-modal-preview-role {
-            font-size: 12px;
-            color: #8EB69B;
-            margin: 0 0 6px 0;
-            font-weight: 600;
-        }
-        .profile-modal-preview-id {
-            background: transparent !important;
-            border: none !important;
-            border-radius: 0 !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-            font-size: 12px;
-            font-weight: 700;
-            color: #8EB69B;
-            display: inline-flex;
+        .profile-modal-footer-right {
+            display: flex;
             align-items: center;
-            gap: 5px;
-        }
-        .profile-modal-preview-id svg {
-            stroke: #8EB69B;
+            gap: 10px;
+            margin-left: auto;
         }
 
-        /* ── Modal Form Elements (Dark Mode) ── */
+        /* Floating Input and Label */
+        .floating-field-group {
+            position: relative;
+            width: 100%;
+        }
+        .floating-input {
+            width: 100%;
+            height: 48px;
+            border-radius: 12px !important;
+            background: var(--pm-input-bg) !important;
+            border: 1.5px solid var(--pm-input-border) !important;
+            color: var(--pm-input-text) !important;
+            font-size: 14.5px;
+            padding: 10px 42px 10px 42px;
+            outline: none !important;
+            box-sizing: border-box !important;
+            transition: all 0.2s ease;
+        }
+        .floating-input.has-no-right-icon {
+            padding-right: 16px;
+        }
+        .floating-input.has-badge {
+            padding-right: 88px;
+        }
+        .floating-input:focus {
+            border-color: var(--pm-input-focus-border) !important;
+            box-shadow: 0 0 0 3px var(--pm-input-focus-ring) !important;
+        }
+        .floating-label {
+            position: absolute;
+            left: 42px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--pm-label-color);
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            background: transparent;
+            padding: 0 6px;
+            border-radius: 4px;
+            z-index: 2;
+            white-space: nowrap;
+        }
+        .floating-input:focus ~ .floating-label,
+        .floating-input:not(:placeholder-shown) ~ .floating-label {
+            top: 0px !important;
+            left: 16px !important;
+            transform: translateY(-50%) scale(0.82) !important;
+            background: var(--pm-label-bg) !important;
+            color: var(--pm-label-active-text) !important;
+            font-weight: 700 !important;
+        }
+        .floating-input:focus ~ .floating-label {
+            color: var(--pm-input-focus-border) !important;
+        }
+
         .input-lead-icon {
             position: absolute;
             left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
+            width: 17px;
+            height: 17px;
             pointer-events: none;
             z-index: 3;
-            stroke: #8EB69B;
+            stroke: var(--pm-input-icon);
             transition: stroke 0.2s ease;
         }
         .input-eye-btn {
@@ -342,131 +428,383 @@
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: #8EB69B;
+            color: var(--pm-input-icon);
             cursor: pointer;
             padding: 4px;
             display: flex;
             align-items: center;
+            justify-content: center;
             z-index: 3;
             transition: color 0.2s ease;
         }
-        .input-eye-btn:hover { color: #DAF1DE; }
+        .input-eye-btn:hover { color: var(--pm-title); }
 
-        .profile-modal-divider {
-            border-top: 1px solid rgba(142, 182, 155, 0.2);
-            margin-top: 2px;
-            padding-top: 8px;
+        /* Close Button */
+        .modal-close-circle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--pm-btn-secondary-bg);
+            border: 1px solid var(--pm-btn-secondary-border);
+            color: var(--pm-btn-secondary-text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            outline: none;
         }
-        .profile-modal-section-title {
-            font-size: 10.5px;
+        .modal-close-circle-btn:hover {
+            background: var(--pm-btn-secondary-hover-bg);
+            color: var(--pm-title);
+            transform: scale(1.06);
+        }
+
+        /* Buttons */
+        .profile-modal-save-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 22px;
+            min-height: 44px;
+            border-radius: 12px !important;
+            background: var(--pm-btn-primary-bg) !important;
+            border: 1.5px solid var(--pm-btn-primary-border) !important;
+            color: var(--pm-btn-primary-text) !important;
+            font-size: 13.5px;
             font-weight: 700;
-            color: #8EB69B;
+            cursor: pointer;
+            box-shadow: var(--pm-btn-primary-shadow) !important;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .profile-modal-save-btn:hover:not(:disabled) {
+            background: var(--pm-btn-primary-hover-bg) !important;
+            border-color: var(--pm-btn-primary-hover-border) !important;
+            color: var(--pm-btn-primary-hover-text) !important;
+            transform: translateY(-1px);
+        }
+
+        .profile-cancel-req-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 18px;
+            min-height: 44px;
+            border-radius: 12px;
+            background: var(--pm-btn-secondary-bg);
+            border: 1px solid var(--pm-btn-secondary-border);
+            color: var(--pm-btn-secondary-text);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .profile-cancel-req-btn:hover {
+            background: var(--pm-btn-secondary-hover-bg);
+            color: var(--pm-btn-secondary-hover-text);
+        }
+
+        /* Avatar */
+        .profile-modal-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--pm-avatar-bg) !important;
+            border: 2px solid var(--pm-avatar-border) !important;
+            color: var(--pm-avatar-text) !important;
+            font-size: 26px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--pm-avatar-shadow) !important;
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+        .profile-modal-pencil-btn {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--pm-pencil-bg);
+            border: 1.5px solid var(--pm-pencil-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            cursor: pointer;
+            padding: 0;
+            outline: none;
+            transition: all 0.2s ease;
+            z-index: 5;
+        }
+        .profile-modal-pencil-btn svg { stroke: var(--pm-pencil-stroke); }
+        .profile-modal-pencil-btn:hover { transform: scale(1.1); }
+
+        .profile-modal-preview-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--pm-muted);
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-
-        .pass-helper-label {
-            font-size: 0.65rem;
-            color: #8EB69B;
+        .profile-modal-preview-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--pm-title);
+            margin: 6px 0 2px 0;
+            word-break: break-word;
+        }
+        .profile-modal-preview-role {
+            font-size: 12px;
+            color: var(--pm-muted);
+            margin: 0 0 6px 0;
             font-weight: 600;
-            white-space: nowrap;
-            flex-shrink: 0;
         }
-        .meter-bar {
-            width: 8px;
-            height: 3.5px;
-            border-radius: 2px;
-            transition: all 0.25s ease;
-            background: rgba(142, 182, 155, 0.25);
-        }
-
-        .pass-clear-btn {
-            font-size: 11px;
+        .profile-modal-preview-id {
+            font-size: 12px;
             font-weight: 700;
-            color: #8EB69B;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            transition: color 0.2s ease;
-        }
-        .pass-clear-btn:hover { color: #DAF1DE; }
-
-        .pass-status-checking { color: #8EB69B; display: inline-flex; align-items: center; gap: 4px; }
-        .pass-status-correct  { color: #4ADE80; display: inline-flex; align-items: center; gap: 4px; }
-        .pass-status-error    { color: #F87171; display: inline-flex; align-items: center; gap: 4px; }
-
-        .profile-forgot-link {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #4ADE80;
-            text-decoration: none;
-            transition: color 0.2s ease, text-decoration 0.2s ease;
+            color: var(--pm-muted);
             display: inline-flex;
             align-items: center;
-        }
-        .profile-forgot-link:hover {
-            color: #86EFAC;
-            text-decoration: underline;
+            gap: 5px;
         }
 
-        .floating-input.border-correct { border-color: #94a3b8 !important; }
-        .floating-input.border-incorrect { border-color: #F87171 !important; }
-
-        .floating-input.input-locked {
-            opacity: 0.55;
-            cursor: not-allowed !important;
-            background: rgba(5, 31, 32, 0.4) !important;
-            border-color: rgba(142, 182, 155, 0.18) !important;
+        /* Sec box & current email */
+        .profile-modal-sec-box {
+            background: var(--pm-sec-box-bg);
+            border: 1px solid var(--pm-sec-box-border);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            transition: all 0.25s ease;
         }
-        .floating-input.input-unlocked {
-            opacity: 1;
-            cursor: text !important;
+        .profile-modal-sec-box strong {
+            font-size: 13.5px;
+            display: block;
+            margin-bottom: 3px;
+            color: var(--pm-sec-box-title);
+        }
+        .profile-modal-sec-box span {
+            font-size: 12.5px;
+            line-height: 1.5;
+            display: block;
+            color: var(--pm-sec-box-text);
         }
 
-        /* ── Password Requirements Badges ── */
+        .profile-modal-current-email {
+            background: var(--pm-current-email-bg);
+            border: 1px solid var(--pm-current-email-border);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.25s ease;
+        }
+        .profile-modal-current-email-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--pm-current-email-label);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+        }
+        .profile-modal-current-email-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--pm-current-email-val);
+            display: block;
+            margin-top: 2px;
+            word-break: break-all;
+        }
+
+        /* Password badges & meter */
+        .pass-helper-label {
+            font-size: 11.5px;
+            color: var(--pm-muted);
+            font-weight: 600;
+        }
+        .meter-bar {
+            width: 9px;
+            height: 4px;
+            border-radius: 2px;
+            transition: all 0.25s ease;
+            background: var(--pm-meter-bg);
+        }
         .pass-req-badges {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 6px;
+            gap: 6px;
+            margin-top: 8px;
         }
         .pass-req-badge {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 3px 8px;
+            gap: 5px;
+            padding: 4px 10px;
             border-radius: 9999px;
-            font-size: 0.65rem;
+            font-size: 11px;
             font-weight: 600;
             transition: all 0.2s ease;
-            background: rgba(5, 31, 32, 0.7);
-            border: 1px solid rgba(142, 182, 155, 0.25);
-            color: #8EB69B;
+            background: var(--pm-badge-inactive-bg);
+            border: 1px solid var(--pm-badge-inactive-border);
+            color: var(--pm-badge-inactive-text);
             user-select: none;
         }
         .pass-req-badge.active {
-            background: rgba(74, 222, 128, 0.15);
-            border-color: rgba(74, 222, 128, 0.4);
-            color: #4ADE80;
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.4);
+            color: #22C55E;
             font-weight: 700;
         }
         .pass-req-icon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 12px;
-            height: 12px;
+            width: 13px;
+            height: 13px;
             border-radius: 50%;
-            font-size: 7px;
+            font-size: 8px;
             font-weight: 800;
             transition: all 0.2s ease;
-            background: rgba(142, 182, 155, 0.2);
-            color: #8EB69B;
+            background: var(--pm-badge-inactive-border);
+            color: var(--pm-badge-inactive-text);
         }
         .pass-req-badge.active .pass-req-icon {
-            background: #4ADE80;
-            color: #051F20;
+            background: #22C55E;
+            color: #FFFFFF;
+        }
+
+        .pass-clear-btn {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--pm-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.2s ease;
+        }
+        .pass-clear-btn:hover { color: var(--pm-title); }
+
+        .pass-status-checking { color: var(--pm-muted); display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; }
+        .pass-status-correct  { color: #22C55E; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 700; }
+        .pass-status-error    { color: #EF4444; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 700; }
+
+        .profile-forgot-link {
+            font-size: 12px;
+            font-weight: 600;
+            color: #22C55E;
+            text-decoration: none;
+            transition: color 0.2s ease, text-decoration 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .profile-forgot-link:hover {
+            color: #16A34A;
+            text-decoration: underline;
+        }
+
+        .floating-input.border-correct { border-color: #22C55E !important; }
+        .floating-input.border-incorrect { border-color: #EF4444 !important; }
+        .floating-input.input-locked {
+            opacity: 0.6;
+            cursor: not-allowed !important;
+            background: var(--pm-input-locked-bg) !important;
+            border-color: var(--pm-input-locked-border) !important;
+        }
+        .floating-input.input-unlocked {
+            opacity: 1;
+            cursor: text !important;
+        }
+
+        /* Mobile Breakpoint (< 640px) */
+        @media (max-width: 640px) {
+            .profile-modal-overlay {
+                padding: 12px;
+                align-items: flex-end; /* Bottom sheet on phone */
+            }
+            .profile-modal-card {
+                max-width: 100% !important;
+                height: auto !important;
+                max-height: 88dvh !important;
+                border-radius: 20px 20px 16px 16px !important;
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+            .profile-modal-header {
+                padding: 14px 16px !important;
+            }
+            .profile-modal-tabs {
+                margin: 10px 16px 0 16px !important;
+                gap: 4px !important;
+                padding: 3px !important;
+            }
+            .profile-modal-tab-btn {
+                padding: 8px 6px !important;
+                font-size: 11.5px !important;
+                gap: 4px !important;
+                min-height: 44px !important;
+            }
+            .profile-modal-body {
+                padding: 16px !important;
+            }
+            .profile-modal-grid {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+            }
+            .profile-modal-preview {
+                order: -1 !important;
+                border-left: none !important;
+                border-bottom: 1px solid var(--pm-divider) !important;
+                padding: 0 0 14px 0 !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                text-align: left !important;
+                gap: 14px !important;
+            }
+            .profile-modal-preview-title { display: none !important; }
+            .profile-modal-avatar {
+                width: 52px !important;
+                height: 52px !important;
+                font-size: 20px !important;
+            }
+            .floating-input {
+                font-size: 16px !important; /* Prevents auto zoom */
+                height: 48px !important;
+            }
+            .profile-modal-footer {
+                padding: 12px 16px !important;
+                flex-direction: column !important;
+                gap: 10px !important;
+                align-items: stretch !important;
+            }
+            .profile-modal-footer-left {
+                order: 2 !important;
+                justify-content: center !important;
+                font-size: 11px !important;
+            }
+            .profile-modal-footer-right {
+                order: 1 !important;
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+            .profile-modal-footer-right .profile-modal-save-btn,
+            .profile-modal-footer-right .profile-cancel-req-btn {
+                width: 100% !important;
+                min-height: 44px !important;
+                justify-content: center !important;
+            }
+            .tab-label-desktop { display: none !important; }
+            .tab-label-mobile { display: inline !important; }
         }
 
         .ws-page-hero {
@@ -1882,142 +2220,6 @@
         html.light-mode .profile-admin-btn {
             border-radius: 12px !important;
         }
-
-        /* ── Profile Modal Navigation Tabs ── */
-        .profile-modal-tabs {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(16, 44, 38, 0.6);
-            border: 1px solid rgba(142, 182, 155, 0.2);
-            border-radius: 14px;
-            padding: 4px;
-            margin: 0 24px 16px 24px;
-        }
-        html.light-mode .profile-modal-tabs,
-        .light-mode .profile-modal-tabs {
-            background: #f1f5f9 !important;
-            border-color: #e2e8f0 !important;
-        }
-        .profile-modal-tab-btn {
-            flex: 1;
-            padding: 8px 12px;
-            font-size: 12.5px;
-            font-weight: 700;
-            border-radius: 10px;
-            border: none;
-            background: transparent;
-            color: #8eb69b;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        html.light-mode .profile-modal-tab-btn,
-        .light-mode .profile-modal-tab-btn {
-            color: #64748b !important;
-        }
-        .profile-modal-tab-btn.active {
-            background: #235347;
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-        html.light-mode .profile-modal-tab-btn.active,
-        .light-mode .profile-modal-tab-btn.active {
-            background: #ffffff !important;
-            color: #0f172a !important;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08) !important;
-        }
-
-        /* ── Profile Modal Security & Email Boxes ── */
-        .profile-modal-sec-box {
-            background: rgba(34, 197, 94, 0.08);
-            border: 1px solid rgba(34, 197, 94, 0.28);
-            border-radius: 14px;
-            padding: 14px 16px;
-            margin-bottom: 18px;
-            color: #DAF1DE;
-            transition: all 0.25s ease;
-        }
-        html.light-mode .profile-modal-sec-box,
-        .light-mode .profile-modal-sec-box {
-            background: #f0fdf4 !important;
-            border-color: #bbf7d0 !important;
-            color: #14532d !important;
-        }
-        html.light-mode .profile-modal-sec-box strong,
-        .light-mode .profile-modal-sec-box strong {
-            color: #166534 !important;
-        }
-        html.light-mode .profile-modal-sec-box span,
-        .light-mode .profile-modal-sec-box span {
-            color: #15803d !important;
-        }
-
-        .profile-modal-current-email {
-            background: rgba(16, 44, 38, 0.55);
-            border: 1px solid rgba(142, 182, 155, 0.25);
-            border-radius: 14px;
-            padding: 14px 18px;
-            margin-bottom: 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.25s ease;
-        }
-        html.light-mode .profile-modal-current-email,
-        .light-mode .profile-modal-current-email {
-            background: #f8fafc !important;
-            border-color: #e2e8f0 !important;
-        }
-        .profile-modal-current-email-label {
-            font-size: 11px;
-            font-weight: 800;
-            color: #8EB69B;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: block;
-        }
-        html.light-mode .profile-modal-current-email-label,
-        .light-mode .profile-modal-current-email-label {
-            color: #64748b !important;
-        }
-        .profile-modal-current-email-val {
-            font-size: 14px;
-            font-weight: 700;
-            color: #FFFFFF;
-            display: block;
-            margin-top: 2px;
-        }
-        html.light-mode .profile-modal-current-email-val,
-        .light-mode .profile-modal-current-email-val {
-            color: #0f172a !important;
-        }
-
-        html.light-mode .profile-email-verify-sub,
-        .light-mode .profile-email-verify-sub {
-            color: #475569 !important;
-        }
-        html.light-mode .profile-email-verify-target,
-        .light-mode .profile-email-verify-target {
-            color: #16a34a !important;
-        }
-
-        /* ── 6-digit code box ── */
-        .email-code-box {
-            letter-spacing: 6px;
-            font-size: 22px;
-            font-weight: 800;
-            text-align: center;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            transition: all 0.2s ease;
-        }
-        .email-code-box:focus {
-            border-color: #22c55e !important;
-            box-shadow: 0 0 0 3.5px rgba(34, 197, 94, 0.25) !important;
-        }
     </style>
 
     {{-- Page Hero --}}
@@ -2762,14 +2964,14 @@
                     @click.self="showEditModal = false"
                     class="profile-modal-overlay"
                 >
-                    <div class="profile-modal-card" style="display:flex; flex-direction:column; max-height:90vh; overflow:hidden;">
+                    <div class="profile-modal-card">
                         {{-- FIXED STICKY HEADER --}}
-                        <div class="profile-modal-header" style="justify-content:space-between; align-items:center;">
+                        <div class="profile-modal-header">
                             <div>
-                                <h2 class="profile-modal-title" style="margin:0;">
+                                <h2 class="profile-modal-title">
                                     Edit Information
                                 </h2>
-                                <p class="profile-modal-last-updated" style="margin:2px 0 0; font-size:12px;">
+                                <p class="profile-modal-subtitle">
                                     Manage your personal identity, email, and password
                                 </p>
                             </div>
@@ -2795,7 +2997,8 @@
                                 :class="{ 'active': editTab === 'personal' }"
                             >
                                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                <span>Personal Info</span>
+                                <span class="tab-label-desktop">Personal Info</span>
+                                <span class="tab-label-mobile">Personal</span>
                             </button>
                             <button
                                 type="button"
@@ -2804,7 +3007,8 @@
                                 :class="{ 'active': editTab === 'email' }"
                             >
                                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                                <span>Change Email</span>
+                                <span class="tab-label-desktop">Change Email</span>
+                                <span class="tab-label-mobile">Email</span>
                             </button>
                             <button
                                 type="button"
@@ -2813,7 +3017,8 @@
                                 :class="{ 'active': editTab === 'password' }"
                             >
                                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                                <span>Password & Security</span>
+                                <span class="tab-label-desktop">Password & Security</span>
+                                <span class="tab-label-mobile">Password</span>
                             </button>
                         </div>
 
@@ -2844,276 +3049,291 @@
                                 >
 
                                 <div class="profile-modal-body">
-                                    {{-- LEFT COLUMN: Personal Info Inputs --}}
-                                    <div class="profile-modal-inputs">
-                                        {{-- Full name --}}
-                                        <div style="position:relative;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                            </svg>
-                                            <input
-                                                id="edit_name"
-                                                type="text"
-                                                name="name"
-                                                x-model="editName"
-                                                required
-                                                placeholder=" "
-                                                class="floating-input"
-                                                style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
-                                            >
-                                            <label for="edit_name" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Full Name</label>
-                                        </div>
-
-                                        {{-- Current Email (Read-only on personal tab) --}}
-                                        <div style="position:relative;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                                            </svg>
-                                            <input
-                                                id="edit_email_readonly"
-                                                type="email"
-                                                :value="editEmail"
-                                                disabled
-                                                placeholder=" "
-                                                class="floating-input"
-                                                style="width:100%; height:44px; padding:10px 80px 10px 42px; font-size:0.88rem; opacity:0.85; cursor:not-allowed; box-sizing:border-box;"
-                                            >
-                                            <label for="edit_email_readonly" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Current Email</label>
-                                            <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#22c55e; background:rgba(34,197,94,0.12); border-radius:9999px; padding:2px 8px; z-index:3;">
-                                                Verified
-                                            </span>
-                                        </div>
-
-                                        @if(strtolower(trim($user->role ?? '')) === 'student')
-                                            {{-- Student ID --}}
-                                            <div style="position:relative;">
+                                    <div class="profile-modal-grid">
+                                        {{-- LEFT COLUMN: Personal Info Inputs --}}
+                                        <div class="profile-modal-inputs">
+                                            {{-- Full name --}}
+                                            <div class="floating-field-group">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.364a4.125 4.125 0 0 0-6.338 0c-.267.319-.064.811.353.811h5.632c.417 0 .62-.492.353-.811Z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                                 </svg>
                                                 <input
-                                                    id="edit_student_id"
+                                                    id="edit_name"
                                                     type="text"
-                                                    name="student_id"
-                                                    x-model="editStudentId"
+                                                    name="name"
+                                                    x-model="editName"
+                                                    required
                                                     placeholder=" "
-                                                    class="floating-input"
-                                                    style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
+                                                    class="floating-input has-no-right-icon"
                                                 >
-                                                <label for="edit_student_id" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Student ID</label>
+                                                <label for="edit_name" class="floating-label">Full Name</label>
                                             </div>
 
-                                            {{-- Section --}}
-                                            <div style="position:relative;">
+                                            {{-- Current Email (Read-only on personal tab) --}}
+                                            <div class="floating-field-group">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-5.25 6.557c.75-.45 1.5-.85 2.25-1.2" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                                                 </svg>
                                                 <input
-                                                    id="edit_section"
-                                                    type="text"
-                                                    name="section"
-                                                    x-model="editSection"
+                                                    id="edit_email_readonly"
+                                                    type="email"
+                                                    :value="editEmail"
+                                                    disabled
                                                     placeholder=" "
-                                                    class="floating-input"
-                                                    style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
+                                                    class="floating-input has-badge"
+                                                    style="opacity:0.85; cursor:not-allowed;"
                                                 >
-                                                <label for="edit_section" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Section</label>
+                                                <label for="edit_email_readonly" class="floating-label">Current Email</label>
+                                                <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#22c55e; background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); border-radius:9999px; padding:2px 8px; z-index:3;">
+                                                    Verified
+                                                </span>
                                             </div>
-                                        @endif
-                                    </div>
 
-                                    {{-- RIGHT COLUMN: Live Preview Card --}}
-                                    <div class="profile-modal-preview">
-                                        <span class="profile-modal-preview-title">Preview</span>
-
-                                        {{-- Circular Avatar Badge with Interactive Pencil Edit Button --}}
-                                        <div style="position:relative; margin-bottom:8px; cursor:pointer;" @click="$refs.photoInput.click()" title="Click to change profile picture">
-                                            <div class="profile-modal-avatar" style="overflow:hidden; position:relative; padding:0; display:flex; align-items:center; justify-content:center;">
-                                                <template x-if="photoPreview">
-                                                    <img :src="photoPreview" alt="Profile Photo Preview" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
-                                                </template>
-                                                <template x-if="!photoPreview">
-                                                    @if($user->profile_photo_url)
-                                                        <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
-                                                    @else
-                                                        <span x-text="(editName ? editName.charAt(0).toUpperCase() : '{{ $initial }}')"></span>
-                                                    @endif
-                                                </template>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                @click.stop="$refs.photoInput.click()"
-                                                title="Change Profile Photo"
-                                                aria-label="Change Profile Photo"
-                                                class="profile-modal-pencil-btn"
-                                            >
-                                                <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                            </button>
-                                        </div>
-
-                                        {{-- Name --}}
-                                        <h4 class="profile-modal-preview-name" x-text="editName || '{{ $user->name }}'"></h4>
-
-                                        {{-- Role --}}
-                                        <p class="profile-modal-preview-role">{{ $roleBadge }}</p>
-
-                                        {{-- User ID --}}
-                                        <div class="profile-modal-preview-id">
                                             @if(strtolower(trim($user->role ?? '')) === 'student')
-                                                <span x-text="editStudentId || '{{ $userId }}'"></span>
-                                            @else
-                                                {{ $userId }}
+                                                {{-- Student ID --}}
+                                                <div class="floating-field-group">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.364a4.125 4.125 0 0 0-6.338 0c-.267.319-.064.811.353.811h5.632c.417 0 .62-.492.353-.811Z" />
+                                                    </svg>
+                                                    <input
+                                                        id="edit_student_id"
+                                                        type="text"
+                                                        name="student_id"
+                                                        x-model="editStudentId"
+                                                        placeholder=" "
+                                                        class="floating-input has-no-right-icon"
+                                                    >
+                                                    <label for="edit_student_id" class="floating-label">Student ID</label>
+                                                </div>
+
+                                                {{-- Section --}}
+                                                <div class="floating-field-group">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-5.25 6.557c.75-.45 1.5-.85 2.25-1.2" />
+                                                    </svg>
+                                                    <input
+                                                        id="edit_section"
+                                                        type="text"
+                                                        name="section"
+                                                        x-model="editSection"
+                                                        placeholder=" "
+                                                        class="floating-input has-no-right-icon"
+                                                    >
+                                                    <label for="edit_section" class="floating-label">Section</label>
+                                                </div>
                                             @endif
+                                        </div>
+
+                                        {{-- RIGHT COLUMN: Live Preview Card --}}
+                                        <div class="profile-modal-preview">
+                                            <span class="profile-modal-preview-title">Preview</span>
+
+                                            {{-- Circular Avatar Badge with Interactive Pencil Edit Button --}}
+                                            <div style="position:relative; margin-bottom:8px; cursor:pointer;" @click="$refs.photoInput.click()" title="Click to change profile picture">
+                                                <div class="profile-modal-avatar" style="overflow:hidden; position:relative; padding:0; display:flex; align-items:center; justify-content:center;">
+                                                    <template x-if="photoPreview">
+                                                        <img :src="photoPreview" alt="Profile Photo Preview" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                                                    </template>
+                                                    <template x-if="!photoPreview">
+                                                        @if($user->profile_photo_url)
+                                                            <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                                                        @else
+                                                            <span x-text="(editName ? editName.charAt(0).toUpperCase() : '{{ $initial }}')"></span>
+                                                        @endif
+                                                    </template>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    @click.stop="$refs.photoInput.click()"
+                                                    title="Change Profile Photo"
+                                                    aria-label="Change Profile Photo"
+                                                    class="profile-modal-pencil-btn"
+                                                >
+                                                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                </button>
+                                            </div>
+
+                                            {{-- Name --}}
+                                            <h4 class="profile-modal-preview-name" x-text="editName || '{{ $user->name }}'"></h4>
+
+                                            {{-- Role --}}
+                                            <p class="profile-modal-preview-role">{{ $roleBadge }}</p>
+
+                                            {{-- User ID --}}
+                                            <div class="profile-modal-preview-id">
+                                                @if(strtolower(trim($user->role ?? '')) === 'student')
+                                                    <span x-text="editStudentId || '{{ $userId }}'"></span>
+                                                @else
+                                                    {{ $userId }}
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {{-- FIXED STICKY FOOTER --}}
                                 <div class="profile-modal-footer">
-                                    <span class="profile-modal-last-updated">
-                                        Last updated: {{ $user->updated_at ? $user->updated_at->format('M d, Y') : now()->format('M d, Y') }}
-                                    </span>
-                                    <button
-                                        type="submit"
-                                        class="profile-modal-save-btn"
-                                    >
-                                        Save changes
-                                    </button>
+                                    <div class="profile-modal-footer-left">
+                                        <span>Last updated: {{ $user->updated_at ? $user->updated_at->format('M d, Y') : now()->format('M d, Y') }}</span>
+                                    </div>
+                                    <div class="profile-modal-footer-right">
+                                        <button
+                                            type="submit"
+                                            class="profile-modal-save-btn"
+                                        >
+                                            Save changes
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
 
                         {{-- TAB 2: CHANGE EMAIL --}}
-                        <div x-show="editTab === 'email'" style="display:flex; flex-direction:column; flex:1; min-height:0; padding:20px 24px; overflow-y:auto;">
-                            {{-- Privacy & Security Banner --}}
-                            <div class="profile-modal-sec-box">
-                                <div style="display:flex; align-items:flex-start; gap:10px;">
-                                    <svg width="18" height="18" fill="none" stroke="#4ADE80" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0; margin-top:2px;">
-                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                    </svg>
+                        <div x-show="editTab === 'email'" style="display:flex; flex-direction:column; flex:1; min-height:0;">
+                            <div class="profile-modal-body">
+                                {{-- Privacy & Security Banner --}}
+                                <div class="profile-modal-sec-box">
+                                    <div style="display:flex; align-items:flex-start; gap:12px;">
+                                        <svg width="20" height="20" fill="none" stroke="#22c55e" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0; margin-top:2px;">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                        </svg>
+                                        <div>
+                                            <strong>Encrypted & Private Information</strong>
+                                            <span>
+                                                To ensure strict account privacy and security, a 6-digit confirmation code will be sent to your new email before updating. A security notification will also be sent to your current email.
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Current Email Card --}}
+                                <div class="profile-modal-current-email">
                                     <div>
-                                        <strong style="font-size:13px; display:block; margin-bottom:2px;">Encrypted & Private Information</strong>
-                                        <span style="font-size:12.5px; opacity:0.88; line-height:1.45; display:block;">
-                                            To ensure strict account privacy and security, a 6-digit confirmation code will be sent to your new email before updating. A security notification will also be sent to your current email.
-                                        </span>
+                                        <span class="profile-modal-current-email-label">Current Email</span>
+                                        <span class="profile-modal-current-email-val">{{ $user->email }}</span>
+                                    </div>
+                                    <span style="font-size:11.5px; font-weight:700; color:#22c55e; background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); border-radius:9999px; padding:3px 10px;">
+                                        Verified
+                                    </span>
+                                </div>
+
+                                {{-- Inline Alerts --}}
+                                <template x-if="emailChangeError">
+                                    <div style="background:rgba(239,68,68,0.12); border:1px solid #F87171; border-radius:12px; padding:12px 16px; font-size:13px; color:#EF4444; font-weight:600; margin-bottom:16px;" x-text="emailChangeError"></div>
+                                </template>
+                                <template x-if="emailChangeMsg">
+                                    <div style="background:rgba(34,197,94,0.12); border:1px solid #4ADE80; border-radius:12px; padding:12px 16px; font-size:13px; color:#22C55E; font-weight:600; margin-bottom:16px;" x-text="emailChangeMsg"></div>
+                                </template>
+
+                                {{-- STEP 1: Enter New Email --}}
+                                <div x-show="emailStep === 1" style="display:flex; flex-direction:column; gap:16px;">
+                                    <div class="floating-field-group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                                        </svg>
+                                        <input
+                                            id="edit_new_email"
+                                            type="text"
+                                            inputmode="email"
+                                            name="agrico_new_email_no_autofill"
+                                            x-model="newEmailInput"
+                                            :readonly="emailReadonly"
+                                            @focus="emailReadonly = false"
+                                            @click="emailReadonly = false"
+                                            autocomplete="off"
+                                            autocorrect="off"
+                                            autocapitalize="off"
+                                            spellcheck="false"
+                                            data-lpignore="true"
+                                            data-form-type="other"
+                                            placeholder=" "
+                                            class="floating-input has-no-right-icon"
+                                            @keydown.enter.prevent="sendEmailCode()"
+                                        >
+                                        <label for="edit_new_email" class="floating-label">New Email Address</label>
+                                    </div>
+                                </div>
+
+                                {{-- STEP 2: Enter 6-digit Code --}}
+                                <div x-show="emailStep === 2" style="display:flex; flex-direction:column; gap:16px;">
+                                    <div style="text-align:center; padding:6px 0;">
+                                        <span class="profile-email-verify-sub" style="font-size:13px; color:var(--pm-muted);">Enter the 6-digit verification code sent to</span>
+                                        <div class="profile-email-verify-target" style="font-size:15px; font-weight:800; color:#22c55e; margin-top:3px;" x-text="newEmailInput"></div>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:center;">
+                                        <input
+                                            type="text"
+                                            x-model="emailCode"
+                                            maxlength="6"
+                                            placeholder="------"
+                                            class="floating-input email-code-box"
+                                            style="width:220px; height:50px; border-radius:14px; text-align:center;"
+                                            @keydown.enter.prevent="verifyEmailCode()"
+                                            autocomplete="one-time-code"
+                                        >
+                                    </div>
+
+                                    <div style="text-align:center; margin-top:2px;">
+                                        <template x-if="resendCountdown > 0">
+                                            <span style="font-size:12px; color:var(--pm-muted);">Resend code in <strong x-text="resendCountdown + 's'" style="color:var(--pm-title);"></strong></span>
+                                        </template>
+                                        <template x-if="resendCountdown === 0">
+                                            <button type="button" @click="sendEmailCode()" style="background:none; border:none; color:#22c55e; font-size:12.5px; font-weight:700; cursor:pointer; text-decoration:underline;">
+                                                Didn't receive code? Resend
+                                            </button>
+                                        </template>
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- Current Email Card --}}
-                            <div class="profile-modal-current-email">
-                                <div>
-                                    <span class="profile-modal-current-email-label">Current Email</span>
-                                    <span class="profile-modal-current-email-val">{{ $user->email }}</span>
-                                </div>
-                                <span style="font-size:11.5px; font-weight:700; color:#22c55e; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); border-radius:9999px; padding:3px 10px;">
-                                    Verified
-                                </span>
-                            </div>
-
-                            {{-- Inline Alerts --}}
-                            <template x-if="emailChangeError">
-                                <div style="background:rgba(239,68,68,0.15); border:1px solid #F87171; border-radius:12px; padding:12px 16px; font-size:13px; color:#FCA5A5; font-weight:600; margin-bottom:14px;" x-text="emailChangeError"></div>
-                            </template>
-                            <template x-if="emailChangeMsg">
-                                <div style="background:rgba(34,197,94,0.15); border:1px solid #4ADE80; border-radius:12px; padding:12px 16px; font-size:13px; color:#86EFAC; font-weight:600; margin-bottom:14px;" x-text="emailChangeMsg"></div>
-                            </template>
-
-                            {{-- STEP 1: Enter New Email --}}
-                            <div x-show="emailStep === 1" style="display:flex; flex-direction:column; gap:16px;">
-                                <div style="position:relative;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                                    </svg>
-                                    <input
-                                        id="edit_new_email"
-                                        type="text"
-                                        inputmode="email"
-                                        name="agrico_new_email_no_autofill"
-                                        x-model="newEmailInput"
-                                        :readonly="emailReadonly"
-                                        @focus="emailReadonly = false"
-                                        @click="emailReadonly = false"
-                                        autocomplete="off"
-                                        autocorrect="off"
-                                        autocapitalize="off"
-                                        spellcheck="false"
-                                        data-lpignore="true"
-                                        data-form-type="other"
-                                        placeholder=" "
-                                        class="floating-input"
-                                        style="width:100%; height:46px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
-                                        @keydown.enter.prevent="sendEmailCode()"
-                                    >
-                                    <label for="edit_new_email" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">New Email Address</label>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    @click="sendEmailCode()"
-                                    :disabled="sendingEmailCode || !newEmailInput"
-                                    class="profile-modal-save-btn"
-                                    style="height:44px; justify-content:center; border-radius:12px; font-size:13.5px;"
-                                    :style="(sendingEmailCode || !newEmailInput) ? 'opacity:0.6; cursor:not-allowed;' : ''"
-                                >
-                                    <template x-if="sendingEmailCode">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                            {{-- FIXED STICKY FOOTER (BUTTON AT BOTTOM-RIGHT) --}}
+                            <div class="profile-modal-footer">
+                                <div class="profile-modal-footer-left">
+                                    <template x-if="emailStep === 1">
+                                        <span>Security verification required</span>
                                     </template>
-                                    <span x-text="sendingEmailCode ? 'Sending verification code...' : 'Send 6-digit Verification Code'"></span>
-                                </button>
-                            </div>
-
-                            {{-- STEP 2: Enter 6-digit Code --}}
-                            <div x-show="emailStep === 2" style="display:flex; flex-direction:column; gap:16px;">
-                                <div style="text-align:center; padding:10px 0;">
-                                    <span class="profile-email-verify-sub" style="font-size:13px; opacity:0.85;">Enter the 6-digit verification code sent to</span>
-                                    <div class="profile-email-verify-target" style="font-size:15px; font-weight:800; color:#4ADE80; margin-top:2px;" x-text="newEmailInput"></div>
-                                </div>
-
-                                <div style="display:flex; justify-content:center;">
-                                    <input
-                                        type="text"
-                                        x-model="emailCode"
-                                        maxlength="6"
-                                        placeholder="------"
-                                        class="floating-input email-code-box"
-                                        style="width:220px; height:50px; border-radius:14px; outline:none;"
-                                        @keydown.enter.prevent="verifyEmailCode()"
-                                        autocomplete="one-time-code"
-                                    >
-                                </div>
-
-                                <div style="display:flex; gap:10px; margin-top:8px;">
-                                    <button
-                                        type="button"
-                                        @click="emailStep = 1; emailCode = '';"
-                                        class="profile-cancel-req-btn"
-                                        style="flex:1; border-radius:12px; font-size:13px;"
-                                    >
-                                        Change Email
-                                    </button>
-                                    <button
-                                        type="button"
-                                        @click="verifyEmailCode()"
-                                        :disabled="verifyingEmailCode || emailCode.length !== 6"
-                                        class="profile-modal-save-btn"
-                                        style="flex:2; height:44px; justify-content:center; border-radius:12px; font-size:13.5px;"
-                                        :style="(verifyingEmailCode || emailCode.length !== 6) ? 'opacity:0.6; cursor:not-allowed;' : ''"
-                                    >
-                                        <template x-if="verifyingEmailCode">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
-                                        </template>
-                                        <span x-text="verifyingEmailCode ? 'Verifying...' : 'Verify & Change Email'"></span>
-                                    </button>
-                                </div>
-
-                                <div style="text-align:center; margin-top:6px;">
-                                    <template x-if="resendCountdown > 0">
-                                        <span style="font-size:12px; opacity:0.75;">Resend code in <strong x-text="resendCountdown + 's'"></strong></span>
+                                    <template x-if="emailStep === 2">
+                                        <span>Code valid for 10 minutes</span>
                                     </template>
-                                    <template x-if="resendCountdown === 0">
-                                        <button type="button" @click="sendEmailCode()" style="background:none; border:none; color:#4ADE80; font-size:12.5px; font-weight:700; cursor:pointer; text-decoration:underline;">
-                                            Didn't receive code? Resend
+                                </div>
+                                <div class="profile-modal-footer-right">
+                                    <template x-if="emailStep === 1">
+                                        <button
+                                            type="button"
+                                            @click="sendEmailCode()"
+                                            :disabled="sendingEmailCode || !newEmailInput"
+                                            class="profile-modal-save-btn"
+                                            :style="(sendingEmailCode || !newEmailInput) ? 'opacity:0.6; cursor:not-allowed;' : ''"
+                                        >
+                                            <template x-if="sendingEmailCode">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite; margin-right:6px;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                                            </template>
+                                            <span x-text="sendingEmailCode ? 'Sending code...' : 'Send 6-digit Verification Code'"></span>
                                         </button>
+                                    </template>
+                                    <template x-if="emailStep === 2">
+                                        <div style="display:flex; align-items:center; gap:10px; width:100%;">
+                                            <button
+                                                type="button"
+                                                @click="emailStep = 1; emailCode = '';"
+                                                class="profile-cancel-req-btn"
+                                            >
+                                                Change Email
+                                            </button>
+                                            <button
+                                                type="button"
+                                                @click="verifyEmailCode()"
+                                                :disabled="verifyingEmailCode || emailCode.length !== 6"
+                                                class="profile-modal-save-btn"
+                                                :style="(verifyingEmailCode || emailCode.length !== 6) ? 'opacity:0.6; cursor:not-allowed;' : ''"
+                                            >
+                                                <template x-if="verifyingEmailCode">
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite; margin-right:6px;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                                                </template>
+                                                <span x-text="verifyingEmailCode ? 'Verifying...' : 'Verify & Change Email'"></span>
+                                            </button>
+                                        </div>
                                     </template>
                                 </div>
                             </div>
@@ -3124,11 +3344,11 @@
                             <form method="POST" action="{{ route('website.profile.password.update') }}" autocomplete="off" style="display:flex; flex-direction:column; flex:1; min-height:0; margin:0;">
                                 @csrf
 
-                                <div class="profile-modal-body" style="grid-template-columns:1fr; max-width:560px; margin:0 auto; width:100%; box-sizing:border-box;">
-                                    <div class="profile-modal-inputs" style="gap:16px;">
+                                <div class="profile-modal-body">
+                                    <div class="profile-modal-inputs">
                                         {{-- Current Password --}}
                                         <div>
-                                            <div style="position:relative;">
+                                            <div class="floating-field-group">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                                 </svg>
@@ -3146,28 +3366,28 @@
                                                         'border-correct': currentPassword.length > 0 && isCurrentPassCorrect,
                                                         'border-incorrect': currentPassword.length > 0 && !checkingCurrentPass && !isCurrentPassCorrect
                                                     }"
-                                                    style="width:100%; height:44px; padding:10px 40px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
                                                 >
-                                                <label for="tab_current_password" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Current Password</label>
+                                                <label for="tab_current_password" class="floating-label">Current Password</label>
                                                 <button
                                                     type="button"
                                                     @click="showCurrentPass = !showCurrentPass"
                                                     class="input-eye-btn"
+                                                    aria-label="Toggle password visibility"
                                                 >
                                                     <template x-if="!showCurrentPass">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:16px; height:16px;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:17px; height:17px;">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
                                                         </svg>
                                                     </template>
                                                     <template x-if="showCurrentPass">
-                                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                     </template>
                                                 </button>
                                             </div>
 
-                                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; min-height:18px;">
+                                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; min-height:20px;">
                                                 <div>
-                                                    <div x-show="currentPassword.length > 0" style="font-size:11.5px; font-weight:600;">
+                                                    <div x-show="currentPassword.length > 0">
                                                         <template x-if="checkingCurrentPass">
                                                             <span class="pass-status-checking">
                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
@@ -3196,20 +3416,20 @@
 
                                         {{-- New Password --}}
                                         <div>
-                                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; gap:6px;">
+                                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; gap:6px;">
                                                 <span class="pass-helper-label" x-show="!isCurrentPassCorrect">(Enter current password first)</span>
-                                                <div style="display:flex; align-items:center; gap:4px; margin-left:auto;">
+                                                <div style="display:flex; align-items:center; gap:6px; margin-left:auto;">
                                                     <span class="pass-helper-label">Security level</span>
-                                                    <div style="display:flex; align-items:center; gap:2px;">
-                                                        <div class="meter-bar" :style="{ background: strengthScore >= 1 ? (strengthScore <= 2 ? '#F87171' : (strengthScore <= 4 ? '#FBBF24' : '#4ADE80')) : '' }"></div>
-                                                        <div class="meter-bar" :style="{ background: strengthScore >= 2 ? (strengthScore <= 2 ? '#F87171' : (strengthScore <= 4 ? '#FBBF24' : '#4ADE80')) : '' }"></div>
-                                                        <div class="meter-bar" :style="{ background: strengthScore >= 3 ? (strengthScore <= 4 ? '#FBBF24' : '#4ADE80') : '' }"></div>
-                                                        <div class="meter-bar" :style="{ background: strengthScore >= 4 ? (strengthScore <= 4 ? '#FBBF24' : '#4ADE80') : '' }"></div>
-                                                        <div class="meter-bar" :style="{ background: strengthScore >= 5 ? '#4ADE80' : '' }"></div>
+                                                    <div style="display:flex; align-items:center; gap:3px;">
+                                                        <div class="meter-bar" :style="{ background: strengthScore >= 1 ? (strengthScore <= 2 ? '#EF4444' : (strengthScore <= 4 ? '#F59E0B' : '#22C55E')) : '' }"></div>
+                                                        <div class="meter-bar" :style="{ background: strengthScore >= 2 ? (strengthScore <= 2 ? '#EF4444' : (strengthScore <= 4 ? '#F59E0B' : '#22C55E')) : '' }"></div>
+                                                        <div class="meter-bar" :style="{ background: strengthScore >= 3 ? (strengthScore <= 4 ? '#F59E0B' : '#22C55E') : '' }"></div>
+                                                        <div class="meter-bar" :style="{ background: strengthScore >= 4 ? (strengthScore <= 4 ? '#F59E0B' : '#22C55E') : '' }"></div>
+                                                        <div class="meter-bar" :style="{ background: strengthScore >= 5 ? '#22C55E' : '' }"></div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div style="position:relative;">
+                                            <div class="floating-field-group">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                                 </svg>
@@ -3223,21 +3443,21 @@
                                                     placeholder=" "
                                                     class="floating-input"
                                                     :class="!isCurrentPassCorrect ? 'input-locked' : 'input-unlocked'"
-                                                    style="width:100%; height:44px; padding:10px 40px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
                                                 >
-                                                <label for="tab_new_password" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">New Password</label>
+                                                <label for="tab_new_password" class="floating-label">New Password</label>
                                                 <button
                                                     type="button"
                                                     @click="showNewPass = !showNewPass"
                                                     class="input-eye-btn"
+                                                    aria-label="Toggle new password visibility"
                                                 >
                                                     <template x-if="!showNewPass">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:16px; height:16px;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:17px; height:17px;">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
                                                         </svg>
                                                     </template>
                                                     <template x-if="showNewPass">
-                                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                     </template>
                                                 </button>
                                             </div>
@@ -3268,7 +3488,7 @@
 
                                         {{-- Confirm Password --}}
                                         <div>
-                                            <div style="display:flex; justify-content:flex-end; margin-bottom:2px;">
+                                            <div style="display:flex; justify-content:flex-end; margin-bottom:4px;">
                                                 <button
                                                     type="button"
                                                     @click="clearPasswords()"
@@ -3278,7 +3498,7 @@
                                                     Clear
                                                 </button>
                                             </div>
-                                            <div style="position:relative;">
+                                            <div class="floating-field-group">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" class="input-lead-icon">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
                                                 </svg>
@@ -3292,21 +3512,21 @@
                                                     placeholder=" "
                                                     class="floating-input"
                                                     :class="!isCurrentPassCorrect ? 'input-locked' : 'input-unlocked'"
-                                                    style="width:100%; height:44px; padding:10px 40px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
                                                 >
-                                                <label for="tab_password_confirmation" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Confirm Password</label>
+                                                <label for="tab_password_confirmation" class="floating-label">Confirm Password</label>
                                                 <button
                                                     type="button"
                                                     @click="showConfirmPass = !showConfirmPass"
                                                     class="input-eye-btn"
+                                                    aria-label="Toggle confirm password visibility"
                                                 >
                                                     <template x-if="!showConfirmPass">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:16px; height:16px;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:17px; height:17px;">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
                                                         </svg>
                                                     </template>
                                                     <template x-if="showConfirmPass">
-                                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                     </template>
                                                 </button>
                                             </div>
@@ -3314,18 +3534,21 @@
                                     </div>
                                 </div>
 
+                                {{-- FIXED STICKY FOOTER --}}
                                 <div class="profile-modal-footer">
-                                    <span class="profile-modal-last-updated">
-                                        Signs out other active device sessions
-                                    </span>
-                                    <button
-                                        type="submit"
-                                        :disabled="!isCurrentPassCorrect || strengthScore < 5 || newPassword !== confirmPassword"
-                                        class="profile-modal-save-btn"
-                                        :style="(!isCurrentPassCorrect || strengthScore < 5 || newPassword !== confirmPassword) ? 'opacity:0.6; cursor:not-allowed;' : ''"
-                                    >
-                                        Update password
-                                    </button>
+                                    <div class="profile-modal-footer-left">
+                                        <span>Signs out other active device sessions</span>
+                                    </div>
+                                    <div class="profile-modal-footer-right">
+                                        <button
+                                            type="submit"
+                                            :disabled="!isCurrentPassCorrect || strengthScore < 5 || newPassword !== confirmPassword"
+                                            class="profile-modal-save-btn"
+                                            :style="(!isCurrentPassCorrect || strengthScore < 5 || newPassword !== confirmPassword) ? 'opacity:0.6; cursor:not-allowed;' : ''"
+                                        >
+                                            Update password
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
