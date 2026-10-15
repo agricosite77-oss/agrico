@@ -103,21 +103,31 @@
             align-items: center;
             gap: 8px;
             padding: 15px 34px;
-            background: linear-gradient(135deg, #235347, #163832);
-            color: #DAF1DE;
+            background: #22c55e;
+            color: #ffffff !important;
             font-size: 15px;
             font-weight: 700;
-            border-radius: 14px;
-            border: 1px solid #8EB69B;
+            border-radius: 9999px;
+            border: 1.5px solid #4ade80;
             text-decoration: none;
-            box-shadow: 0 10px 30px rgba(35, 83, 71, 0.6);
-            transition: all 0.25s ease;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: heroBtnGlow 3.5s ease-in-out infinite;
         }
         .hero-btn-primary:hover {
             transform: translateY(-2px);
-            background: linear-gradient(135deg, #163832, #0B2B26);
-            box-shadow: 0 14px 38px rgba(35, 83, 71, 0.8);
-            border-color: #DAF1DE;
+            background: #16a34a;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.65);
+            border-color: #86efac;
+            color: #ffffff !important;
+        }
+        @keyframes heroBtnGlow {
+            0%, 100% {
+                box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45);
+            }
+            50% {
+                box-shadow: 0 8px 30px rgba(34, 197, 94, 0.75);
+            }
         }
         .hero-btn-outline {
             display: inline-flex;
@@ -131,15 +141,16 @@
             color: #DAF1DE;
             font-size: 15px;
             font-weight: 700;
-            border-radius: 14px;
+            border-radius: 9999px;
             text-decoration: none;
             box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-            transition: all 0.25s ease;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .hero-btn-outline:hover {
             background: rgba(35, 83, 71, 0.8);
             border-color: #4ade80;
             color: #ffffff;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
             transform: translateY(-2px);
         }
 

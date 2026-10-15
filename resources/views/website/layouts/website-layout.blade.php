@@ -429,13 +429,13 @@
         }
         .ws-nav-link.active {
             background: linear-gradient(135deg, #235347, #163832) !important;
-            color: #DAF1DE !important;
+            color: #ffffff !important;
             font-weight: 700 !important;
-            border: 1.5px solid #8EB69B !important;
-            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.5) !important;
+            border: 1.5px solid #22c55e !important;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
         }
         .ws-nav-link svg { opacity: 0.85; flex-shrink: 0; transition: stroke 0.3s ease; }
-        .ws-nav-link.active svg { opacity: 1; }
+        .ws-nav-link.active svg { opacity: 1; stroke: #4ADE80 !important; }
 
         /* Auth buttons */
         .ws-nav-auth {
@@ -445,23 +445,24 @@
         }
         .ws-btn-login {
             padding: 8px 20px;
-            border-radius: 12px;
+            border-radius: 9999px;
             font-size: 13.5px;
             font-weight: 700;
-            color: #DAF1DE;
-            background: rgba(35, 83, 71, 0.45);
-            border: 1.5px solid #8EB69B;
+            color: #ffffff !important;
+            background: #22c55e;
+            border: 1.5px solid #22c55e;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             display: inline-block;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
         }
         .ws-btn-login:hover {
-            background: #235347;
-            border-color: #DAF1DE;
-            box-shadow: 0 4px 16px rgba(35, 83, 71, 0.5);
-            transform: translateY(-1px);
+            background: #16a34a;
+            border-color: #16a34a;
+            color: #ffffff !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.55);
+            transform: translateY(-2px);
         }
 
         /* ── CIRCULAR REVEAL THEME TRANSITION TOKENS ── */
