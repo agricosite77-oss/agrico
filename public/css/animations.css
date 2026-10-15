@@ -1740,4 +1740,10 @@ body:not(.light-mode),
     }
 }
 
+/* Map Pin Status Styling */
+.agrico-map-pin-marker.is-rejected-pin {
+    opacity: 0.55 !important;
+    filter: grayscale(100%) !important;
+}
+
 

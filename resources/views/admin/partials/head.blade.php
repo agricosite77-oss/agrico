@@ -20,6 +20,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{{ asset('js/lallo-boundary.js') }}"></script>
 <script src="{{ asset('js/agrico-map-focus.js') }}"></script>
+<script src="{{ asset('js/agrico-pin.js') }}"></script>
 
 <script>
     try {

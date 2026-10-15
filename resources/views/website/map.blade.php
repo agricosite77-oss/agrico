@@ -1128,6 +1128,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="{{ asset('js/lallo-boundary.js') }}"></script>
     <script src="{{ asset('js/agrico-map-focus.js') }}"></script>
+    <script src="{{ asset('js/agrico-pin.js') }}"></script>
 
     <script>
         const mappingsData = @json($mappings);
@@ -1339,8 +1340,13 @@
                 </div>
             `;
 
-            const isApproved = String(m.status || '').toLowerCase() === 'active' || String(m.status || '').toLowerCase() === 'approved';
-            const markerIcon = isApproved ? redIcon : grayIcon;
+            const pinMeta = typeof window.getAgricoPinStatusMeta === 'function'
+                ? window.getAgricoPinStatusMeta(m.status)
+                : { isApproved: String(m.status || '').toLowerCase() === 'active' || String(m.status || '').toLowerCase() === 'approved' };
+            const isApproved = pinMeta.isApproved;
+            const markerIcon = typeof window.createSoilPinIcon === 'function'
+                ? window.createSoilPinIcon(m.status)
+                : (isApproved ? redIcon : grayIcon);
 
             const marker = L.marker([lt, ln], { icon: markerIcon, interactive: true });
             const popupOpts = window.AgricoMapFocus 
@@ -1366,9 +1372,9 @@
             const dims = getParcelDimensions(covStr);
             const boxCoords = getRoundedBoxCoords(lt, ln, dims.w, dims.h);
 
-            const polyBorderColor = isApproved ? '#16a34a' : '#6b7280';
-            const polyFillColor   = isApproved ? '#22c55e' : '#9ca3af';
-            const polyHoverColor  = isApproved ? '#15803d' : '#4b5563';
+            const polyBorderColor = pinMeta.polyBorderColor || (isApproved ? '#16a34a' : '#6b7280');
+            const polyFillColor   = pinMeta.polyFillColor || (isApproved ? '#22c55e' : '#9ca3af');
+            const polyHoverColor  = pinMeta.polyHoverColor || (isApproved ? '#15803d' : '#4b5563');
 
             const poly = L.polygon(boxCoords, {
                 color: polyBorderColor,

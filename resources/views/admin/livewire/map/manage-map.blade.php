@@ -1502,8 +1502,10 @@
                 let rawBrgy = (loc.barangay && loc.barangay !== '') ? loc.barangay : 'Centro (Poblacion)';
                 let brgyClean = rawBrgy.replace(/^(brgy\.?|barangay\.?)\s*/i, '').replace(/,\s*lal-lo\s*$/i, '').replace(/,\s*cagayan\s*$/i, '');
                 const brgy = `Brgy. ${brgyClean}, Lal-lo`;
-                const s = (loc.status || '').toLowerCase();
-                const isActive = s === 'active' || s === 'approved';
+                const pinMeta = typeof window.getAgricoPinStatusMeta === 'function'
+                    ? window.getAgricoPinStatusMeta(loc.status)
+                    : { isApproved: (loc.status || '').toLowerCase() === 'active' || (loc.status || '').toLowerCase() === 'approved' };
+                const isActive = pinMeta.isApproved;
                 const covStr = loc.coverage || (loc.soil_scan && loc.soil_scan.scan_note && loc.soil_scan.scan_note.match(/\[Covered Area:\s*([^\]]+)\]/i) ? loc.soil_scan.scan_note.match(/\[Covered Area:\s*([^\]]+)\]/i)[1].trim() : '500 m²');
 
                 let regions = [];
@@ -1591,8 +1593,12 @@
                     </div>
                 `;
 
+                const markerIcon = typeof window.createSoilPinIcon === 'function'
+                    ? window.createSoilPinIcon(loc.status)
+                    : (isActive ? agricoIcon : agricoGrayIcon);
+
                 const marker = L.marker([lat, lng], { 
-                    icon: isActive ? agricoIcon : agricoGrayIcon,
+                    icon: markerIcon,
                     interactive: true
                 });
                 const popupOpts = window.AgricoMapFocus 
@@ -1618,9 +1624,9 @@
                 const dims = getParcelDimensions(covStr);
                 const boxCoords = getRoundedBoxCoords(lat, lng, dims.w, dims.h);
 
-                const polyBorderColor = isActive ? '#16a34a' : '#6b7280';
-                const polyFillColor   = isActive ? '#22c55e' : '#9ca3af';
-                const polyHoverColor  = isActive ? '#15803d' : '#4b5563';
+                const polyBorderColor = pinMeta.polyBorderColor || (isActive ? '#16a34a' : '#6b7280');
+                const polyFillColor   = pinMeta.polyFillColor || (isActive ? '#22c55e' : '#9ca3af');
+                const polyHoverColor  = pinMeta.polyHoverColor || (isActive ? '#15803d' : '#4b5563');
 
                 const poly = L.polygon(boxCoords, {
                     color: polyBorderColor,

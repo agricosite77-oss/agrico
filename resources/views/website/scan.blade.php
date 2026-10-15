@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="{{ asset('js/lallo-boundary.js') }}"></script>
+    <script src="{{ asset('js/agrico-pin.js') }}"></script>
     {{-- jsPDF for Multi-Page A4 Soil Classification Reports --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -4953,6 +4954,10 @@
                                 $scanLat = $loc?->latitude;
                                 $scanLng = $loc?->longitude;
                                 $scanBrgy = $loc?->barangay;
+                                $scanStatus = $loc?->status ?? ($scan->verification_status ?? 'Pending');
+                                if (!$scanStatus || strtolower($scanStatus) === 'verified') {
+                                    $scanStatus = 'Active';
+                                }
                                 $scanCoverage = '';
                                 try {
                                     if ($scan->scan_note && preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $scan->scan_note, $covMatch)) {
@@ -5011,6 +5016,7 @@
                                 $scanLng = null;
                                 $scanBrgy = '';
                                 $scanCoverage = '';
+                                $scanStatus = 'Pending';
                                 $uName = 'User';
                                 $uEmail = '';
                                 $uCode = '';
@@ -5063,6 +5069,7 @@
                                     data-lng="{{ $scanLng }}"
                                     data-barangay="{{ $scanBrgy }}"
                                     data-coverage="{{ $scanCoverage }}"
+                                    data-status="{{ $scanStatus }}"
                                     data-uname="{{ $uName }}"
                                     data-uemail="{{ $uEmail }}"
                                     data-ucode="{{ $uCode }}"
@@ -8016,6 +8023,7 @@
                             data-lng="${match.lng || ''}"
                             data-barangay="${match.barangay || ''}"
                             data-coverage="${match.coverage || ''}"
+                            data-status="${match.status || 'Pending'}"
                             data-uname="${loggedUName}"
                             data-uemail="${loggedUEmail}"
                             data-ucode="${loggedUCode}"
@@ -8062,6 +8070,7 @@
                 lng: btn.getAttribute('data-lng') || null,
                 barangay: btn.getAttribute('data-barangay') || null,
                 coverage: btn.getAttribute('data-coverage') || null,
+                status: btn.getAttribute('data-status') || null,
                 organic: btn.getAttribute('data-organic') || 'Moderate (2.2% – 3.7%)',
                 drainage: btn.getAttribute('data-drainage') || 'Well-Drained Clay / Latosol',
                 confidence: btn.getAttribute('data-confidence') || '97.4%',
@@ -8592,6 +8601,7 @@
 
                 // Soil Pin Location & Covered Area Map Card (Placed BEFORE Soil Normalization)
                 const modalSoilLocationCard = document.getElementById('modalSoilLocationCard');
+                const modalLocStatusBadge = document.getElementById('modalLocStatusBadge');
                 const modalLocBrgyBadge = document.getElementById('modalLocBrgyBadge');
                 const modalLocCoverageBadge = document.getElementById('modalLocCoverageBadge');
                 const modalLocCoordsBadge = document.getElementById('modalLocCoordsBadge');
@@ -8601,6 +8611,32 @@
 
                 if (modalSoilLocationCard && scanLat && scanLng && !isNaN(scanLat) && !isNaN(scanLng)) {
                     modalSoilLocationCard.style.display = 'block';
+
+                    const pinMeta = typeof window.getAgricoPinStatusMeta === 'function'
+                        ? window.getAgricoPinStatusMeta(data.status)
+                        : {
+                            badgeText: (data.status && String(data.status).toLowerCase() === 'active') ? 'VERIFIED (PIN VISIBLE)' : 'PENDING APPROVAL',
+                            textColor: '#15803d',
+                            darkTextColor: '#4ade80',
+                            bgColor: '#dcfce7',
+                            darkBgColor: 'rgba(34, 197, 94, 0.15)',
+                            borderColor: '#bbf7d0',
+                            darkBorderColor: 'rgba(34, 197, 94, 0.3)',
+                            polyBorderColor: '#16a34a',
+                            polyFillColor: '#22c55e',
+                            isApproved: (data.status && (String(data.status).toLowerCase() === 'active' || String(data.status).toLowerCase() === 'approved' || String(data.status).toLowerCase() === 'verified')),
+                            isRejected: (data.status && (String(data.status).toLowerCase() === 'rejected' || String(data.status).toLowerCase() === 'inactive' || String(data.status).toLowerCase() === 'disapproved'))
+                        };
+
+                    if (modalLocStatusBadge) {
+                        const isLightMode = document.documentElement.classList.contains('light-mode');
+                        modalLocStatusBadge.textContent = pinMeta.badgeText;
+                        modalLocStatusBadge.style.display = 'inline-block';
+                        modalLocStatusBadge.style.color = isLightMode ? pinMeta.textColor : pinMeta.darkTextColor;
+                        modalLocStatusBadge.style.backgroundColor = isLightMode ? pinMeta.bgColor : pinMeta.darkBgColor;
+                        modalLocStatusBadge.style.border = `1px solid ${isLightMode ? pinMeta.borderColor : pinMeta.darkBorderColor}`;
+                    }
+
                     if (modalLocBrgyBadge) modalLocBrgyBadge.textContent = data.barangay || 'Lal-lo Overall';
                     if (modalLocCoordsBadge) modalLocCoordsBadge.textContent = `${scanLat.toFixed(4)}, ${scanLng.toFixed(4)}`;
                     if (modalLocCoverageBadge) {
@@ -8632,21 +8668,27 @@
                             maxZoom: 19
                         }).addTo(modalSoilDetailMapInstance);
 
-                        const isApproved = data.status && (String(data.status).toLowerCase() === 'active' || String(data.status).toLowerCase() === 'approved');
+                        const isApproved = pinMeta.isApproved;
 
-                        const pinIcon = L.icon({
-                            iconUrl: isApproved ? "{{ asset('images/agrico-map-pin.png') }}" : "{{ asset('images/agrico-map-pin-gray.png') }}",
-                            iconSize: [36, 52],
-                            iconAnchor: [18, 52],
-                            popupAnchor: [0, -46]
-                        });
+                        const pinIcon = typeof window.createSoilPinIcon === 'function'
+                            ? window.createSoilPinIcon(data.status)
+                            : L.icon({
+                                iconUrl: isApproved ? "{{ asset('images/agrico-map-pin.png') }}" : "{{ asset('images/agrico-map-pin-gray.png') }}",
+                                iconSize: [38, 56],
+                                iconAnchor: [19, 56],
+                                popupAnchor: [0, -50]
+                            });
 
                         const marker = L.marker([scanLat, scanLng], { icon: pinIcon }).addTo(modalSoilDetailMapInstance);
 
                         const isLight = document.documentElement.classList.contains('light-mode');
+                        const popupBrgyColor = isLight 
+                            ? (pinMeta.isApproved ? '#16a34a' : (pinMeta.isRejected ? '#dc2626' : '#d97706')) 
+                            : (pinMeta.isApproved ? '#4ade80' : (pinMeta.isRejected ? '#f87171' : '#fbbf24'));
+
                         const popupHtml = `
                             <div style='font-family:inherit; min-width:170px; padding:3px;' class='soil-map-popup-inner'>
-                                <div class='soil-map-popup-brgy' style='font-size:11px; font-weight:800; color:${isLight ? (isApproved ? '#16a34a' : '#64748b') : (isApproved ? '#4ade80' : '#8EB69B')}; text-transform:uppercase;'>${data.barangay || 'Lal-lo Overall'}</div>
+                                <div class='soil-map-popup-brgy' style='font-size:11px; font-weight:800; color:${popupBrgyColor}; text-transform:uppercase;'>${data.barangay || 'Lal-lo Overall'}</div>
                                 <strong class='soil-map-popup-title' style='font-size:13.5px; color:${isLight ? '#0f172a' : '#DAF1DE'}; display:block; margin:2px 0;'>${name || 'Soil Specimen'}</strong>
                                 <div class='soil-map-popup-munsell' style='font-size:11px; color:${isLight ? '#64748b' : '#8EB69B'}; font-family:monospace; margin-bottom:2px;'>Munsell: <strong style='color:${isLight ? '#0f172a' : '#DAF1DE'};'>${code || ''}</strong></div>
                                 <div class='soil-map-popup-coords' style='font-size:10.5px; color:${isLight ? '#0284c7' : '#38bdf8'}; font-family:monospace;'>${scanLat.toFixed(5)}, ${scanLng.toFixed(5)}</div>
@@ -8669,8 +8711,8 @@
                             : [];
 
                         if (roundedCoords.length > 0) {
-                            const polyBorderColor = isLight ? (isApproved ? '#16a34a' : '#64748b') : (isApproved ? '#4ade80' : '#8EB69B');
-                            const polyFillColor   = isLight ? (isApproved ? '#22c55e' : '#9ca3af') : (isApproved ? '#22c55e' : '#163832');
+                            const polyBorderColor = isLight ? (pinMeta.polyBorderColor || '#16a34a') : (pinMeta.isApproved ? '#4ade80' : '#8EB69B');
+                            const polyFillColor   = isLight ? (pinMeta.polyFillColor || '#22c55e') : (pinMeta.isApproved ? '#22c55e' : '#163832');
                             const poly = L.polygon(roundedCoords, {
                                 color: polyBorderColor,
                                 fillColor: polyFillColor,
@@ -8679,7 +8721,8 @@
                             }).addTo(modalSoilDetailMapInstance);
 
                             if (covStr) {
-                                poly.bindTooltip(`${isApproved ? 'Covered Area' : 'Pending Covered Area'} (Sakop): ${covStr}`, { sticky: true });
+                                const areaPrefix = pinMeta.isApproved ? 'Covered Area' : (pinMeta.isRejected ? 'Unapproved Covered Area' : 'Pending Covered Area');
+                                poly.bindTooltip(`${areaPrefix} (Sakop): ${covStr}`, { sticky: true });
                             }
                         }
 
@@ -9540,10 +9583,13 @@
         }
 
         function getAgricoPinIcon() {
+            if (typeof window.createSoilPinIcon === 'function') {
+                return window.createSoilPinIcon('Active');
+            }
             return L.icon({
                 iconUrl: "{{ asset('images/agrico-map-pin.png') }}",
                 iconSize: [38, 56],
-                iconAnchor: [19, 53],
+                iconAnchor: [19, 56],
                 popupAnchor: [0, -50],
                 className: 'agrico-map-pin-marker'
             });
@@ -10700,7 +10746,10 @@
                         <div class="soil-modal-label" style="font-size: 11px; font-weight: 700; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.03em;">
                             SOIL PIN LOCATION &amp; COVERED AREA
                         </div>
-                        <div style="display: flex; gap: 6px; align-items: center;">
+                        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                            <span id="modalLocStatusBadge" class="modal-loc-badge-status" style="display: none; padding: 2px 8px; border-radius: 9999px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.03em;">
+                                --
+                            </span>
                             <span id="modalLocBrgyBadge" class="modal-loc-badge-brgy">
                                 --
                             </span>

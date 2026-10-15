@@ -1121,7 +1121,10 @@
                         try { mapEl._leaflet_id = null; } catch(e) {}
                     }
 
-                    const isApproved = String(status || '').toLowerCase() === 'approved';
+                    const pinMeta = typeof window.getAgricoPinStatusMeta === 'function'
+                        ? window.getAgricoPinStatusMeta(status)
+                        : { isApproved: String(status || '').toLowerCase() === 'approved' || String(status || '').toLowerCase() === 'active' };
+                    const isApproved = pinMeta.isApproved;
 
                     const reqMap = L.map(mapEl, {
                         zoomControl: true,
@@ -1132,12 +1135,14 @@
                         maxZoom: 19
                     }).addTo(reqMap);
 
-                    const pinIcon = L.icon({
-                        iconUrl: isApproved ? '{{ asset('images/agrico-map-pin.png') }}' : '{{ asset('images/agrico-map-pin-gray.png') }}',
-                        iconSize: [36, 52],
-                        iconAnchor: [18, 52],
-                        popupAnchor: [0, -46]
-                    });
+                    const pinIcon = typeof window.createSoilPinIcon === 'function'
+                        ? window.createSoilPinIcon(status)
+                        : L.icon({
+                            iconUrl: isApproved ? '{{ asset('images/agrico-map-pin.png') }}' : '{{ asset('images/agrico-map-pin-gray.png') }}',
+                            iconSize: [38, 56],
+                            iconAnchor: [19, 56],
+                            popupAnchor: [0, -50]
+                        });
 
                     const marker = L.marker([lat, lng], { icon: pinIcon }).addTo(reqMap);
 
@@ -1182,14 +1187,15 @@
 
                     const roundedBoxCoords = getRoundedBoxCoords(lat, lng, boxW, boxH, cornerR);
                     const poly = L.polygon(roundedBoxCoords, {
-                        color: isApproved ? '#16a34a' : '#6b7280',
-                        fillColor: isApproved ? '#22c55e' : '#9ca3af',
+                        color: pinMeta.polyBorderColor || (isApproved ? '#16a34a' : '#6b7280'),
+                        fillColor: pinMeta.polyFillColor || (isApproved ? '#22c55e' : '#9ca3af'),
                         fillOpacity: 0.22,
                         weight: 2.5
                     }).addTo(reqMap);
 
                     if (covStr) {
-                        poly.bindTooltip(`${isApproved ? 'Covered Area' : 'Pending Covered Area'} (Sakop): ${covStr}`, { sticky: true });
+                        const areaPrefix = pinMeta.isApproved ? 'Covered Area' : (pinMeta.isRejected ? 'Unapproved Covered Area' : 'Pending Covered Area');
+                        poly.bindTooltip(`${areaPrefix} (Sakop): ${covStr}`, { sticky: true });
                     }
 
                     // Render official Lal-lo municipal & barangay boundary overlay
