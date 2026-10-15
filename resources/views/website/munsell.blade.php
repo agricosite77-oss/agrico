@@ -30,63 +30,59 @@
             padding: 36px 24px 80px;
         }
 
-        /* Filter bar */
+        /* Filter bar - matching FAQ controls */
         .munsell-filter-bar {
+            margin-bottom: 24px;
             display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 16px;
         }
         .munsell-search {
-            flex: 1;
-            min-width: 280px;
-            max-width: 480px;
             position: relative;
+            width: 100%;
         }
         .munsell-search input {
             width: 100%;
-            padding: 11px 40px 11px 46px;
-            border: 1px solid rgba(142, 182, 155, 0.3);
+            height: 50px;
+            background: #0B2B26;
+            border: 2px solid rgba(142, 182, 155, 0.28);
             border-radius: 16px;
-            font-size: 14px;
-            font-weight: 500;
-            font-family: inherit;
-            outline: none;
+            padding: 10px 48px 10px 48px;
+            font-size: 15px;
             color: #DAF1DE;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            background: rgba(11, 43, 38, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
             box-sizing: border-box;
+            outline: none;
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
         .munsell-search input::placeholder {
             color: #8EB69B;
-            font-weight: 500;
+            opacity: 0.8;
+            font-size: 14.5px;
         }
         .munsell-search input:hover {
             border-color: rgba(142, 182, 155, 0.5);
-            background: rgba(11, 43, 38, 0.8);
         }
         .munsell-search input:focus {
-            border-color: rgba(142, 182, 155, 0.6);
-            background: rgba(11, 43, 38, 0.95);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            border-color: #22c55e !important;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25) !important;
         }
-        .munsell-search svg {
+        .munsell-search .munsell-search-icon {
             position: absolute;
-            left: 16px; top: 50%;
+            left: 16px;
+            top: 50%;
             transform: translateY(-50%);
-            pointer-events: none;
+            width: 20px;
+            height: 20px;
             stroke: #8EB69B;
+            pointer-events: none;
             z-index: 2;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: stroke 0.2s ease;
         }
-        .munsell-search input:focus ~ svg,
-        .munsell-search:focus-within svg {
+        .munsell-search input:focus ~ .munsell-search-icon,
+        .munsell-search:focus-within .munsell-search-icon {
             stroke: #4ADE80 !important;
-            transform: translateY(-50%) scale(1.05) !important;
         }
 
         .munsell-clear-btn {
@@ -94,31 +90,25 @@
             right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: transparent;
+            background: rgba(35, 83, 71, 0.6);
             border: none;
-            color: #8EB69B;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
             display: none;
             align-items: center;
             justify-content: center;
+            color: #DAF1DE;
             cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
             z-index: 3;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.15s ease;
             padding: 0;
         }
         .munsell-clear-btn:hover {
-            background: rgba(255, 255, 255, 0.14);
+            background: #235347;
             color: #ffffff;
-            transform: translateY(-50%) scale(1.08);
-        }
-        html.light-mode .munsell-clear-btn {
-            color: #94a3b8 !important;
-        }
-        html.light-mode .munsell-clear-btn:hover {
-            background: #f1f5f9 !important;
-            color: #0f172a !important;
         }
 
         /* Search Suggestions Dropdown */
@@ -388,59 +378,29 @@
         }
 
         html.light-mode .munsell-search input {
-            background: #FFFFFF !important;
-            border: 1px solid #e2e8f0 !important;
+            background: #ffffff !important;
+            border: 2px solid #e2e8f0 !important;
             border-radius: 16px !important;
-            color: #1e293b !important;
-            font-size: 14px !important;
-            font-weight: 500 !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            color: #0f172a !important;
+            font-size: 15px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
         }
         html.light-mode .munsell-search input::placeholder {
             color: #94a3b8 !important;
-            font-weight: 500 !important;
+            opacity: 1 !important;
         }
-        html.light-mode .munsell-search svg {
+        html.light-mode .munsell-search .munsell-search-icon {
             stroke: #94a3b8 !important;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
         html.light-mode .munsell-search input:focus,
         html.light-mode .munsell-search:focus-within input {
             border-color: #22c55e !important;
-            box-shadow: 0 0 0 3.5px rgba(34, 197, 94, 0.22), 0 4px 12px rgba(34, 197, 94, 0.12) !important;
-            background: #FFFFFF !important;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15) !important;
+            background: #ffffff !important;
         }
-        html.light-mode .munsell-search:focus-within svg {
+        html.light-mode .munsell-search:focus-within .munsell-search-icon {
             stroke: #16a34a !important;
-            transform: translateY(-50%) scale(1.1) !important;
-        }
-
-        .munsell-clear-btn {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(142, 182, 155, 0.25);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            color: #DAF1DE;
-            font-weight: bold;
-            line-height: 1;
-            padding: 0;
-            z-index: 3;
-            transition: all 0.2s ease;
-        }
-        .munsell-clear-btn:hover {
-            background: rgba(142, 182, 155, 0.45);
-            color: #ffffff;
         }
 
         html.light-mode .munsell-clear-btn {
@@ -449,7 +409,7 @@
         }
         html.light-mode .munsell-clear-btn:hover {
             background: #e2e8f0 !important;
-            color: #1e293b !important;
+            color: #0f172a !important;
         }
 
         html.light-mode .munsell-suggestions-box {
@@ -555,16 +515,12 @@
         {{-- Filter Bar --}}
         <div class="munsell-filter-bar ui-reveal">
             <div class="munsell-search">
-                <input type="text" id="munsellSearch" placeholder="Search by color name, Munsell code, or hue group..." autocomplete="off" />
-                <svg width="18" height="18" fill="none" stroke="#8EB69B" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <svg class="munsell-search-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <button type="button" id="munsellSearchClearBtn" class="munsell-clear-btn" onclick="clearMunsellSearch()" title="Clear Search" aria-label="Clear Search">
-                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                <input type="text" id="munsellSearch" placeholder="Search by color name, Munsell code, or hue group..." autocomplete="off" aria-label="Search by color name, Munsell code, or hue group" />
+                <button type="button" id="munsellSearchClearBtn" class="munsell-clear-btn" onclick="clearMunsellSearch()" title="Clear search" aria-label="Clear search">&times;</button>
 
                 {{-- Live Suggestions Dropdown --}}
                 <div class="munsell-suggestions-box" id="munsellSuggestionsBox">

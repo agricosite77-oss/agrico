@@ -97,6 +97,139 @@
             width: 100%;
             box-sizing: border-box;
         }
+        /* ── MAP SEARCH CONTROLS (FAQ DESIGN & POSITIONING) ── */
+        .map-controls {
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            flex-shrink: 0;
+        }
+        .map-search-box {
+            position: relative;
+            width: 100%;
+        }
+        .map-search-input {
+            width: 100%;
+            height: 50px;
+            background: #0B2B26;
+            border: 2px solid rgba(142, 182, 155, 0.28);
+            border-radius: 16px;
+            padding: 10px 48px 10px 48px;
+            font-size: 15px;
+            color: #DAF1DE;
+            box-sizing: border-box;
+            outline: none;
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .map-search-input::placeholder {
+            color: #8EB69B;
+            opacity: 0.8;
+            font-size: 14.5px;
+        }
+        .map-search-input:hover {
+            border-color: rgba(142, 182, 155, 0.5);
+        }
+        .map-search-input:focus {
+            border-color: #22c55e !important;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25) !important;
+        }
+        .map-search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            stroke: #8EB69B;
+            pointer-events: none;
+            z-index: 2;
+            transition: stroke 0.2s ease;
+        }
+        .map-search-input:focus ~ .map-search-icon,
+        .map-search-box:focus-within .map-search-icon {
+            stroke: #4ADE80 !important;
+        }
+        .map-search-clear {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(35, 83, 71, 0.6);
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #DAF1DE;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            z-index: 3;
+            transition: all 0.15s ease;
+            padding: 0;
+        }
+        .map-search-clear:hover {
+            background: #235347;
+            color: #ffffff;
+        }
+
+        /* Map Search Results Dropdown */
+        .map-search-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            max-height: 280px;
+            overflow-y: auto;
+            background: rgba(11, 43, 38, 0.96);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(142, 182, 155, 0.35);
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(35, 83, 71, 0.3);
+        }
+        .map-search-result-item {
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: all 0.15s ease;
+            margin-bottom: 3px;
+        }
+        .map-search-result-item:hover {
+            background: rgba(35, 83, 71, 0.55);
+        }
+        .map-search-result-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #DAF1DE;
+        }
+        .map-search-result-meta {
+            font-size: 11.5px;
+            color: #8EB69B;
+            margin-top: 2px;
+        }
+        .map-search-result-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: #ffffff;
+            background: #22c55e;
+            padding: 3px 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.35);
+        }
+
         .ws-map-card {
             background: #0B2B26;
             border-radius: 20px;
@@ -295,39 +428,53 @@
             color: #64748b !important;
         }
 
-        /* Floating Search Bar in Light Mode */
-        html.light-mode #mapSearchInputContainer {
-            background: rgba(255, 255, 255, 0.95) !important;
-            border: 1px solid #cbd5e1 !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
-        }
-
-        html.light-mode #mapSearchInput {
+        /* Search Bar in Light Mode (FAQ Design) */
+        html.light-mode .map-search-input {
+            background: #ffffff !important;
+            border: 2px solid #e2e8f0 !important;
+            border-radius: 16px !important;
             color: #0f172a !important;
+            font-size: 15px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
         }
-
-        html.light-mode #mapSearchInput::placeholder {
+        html.light-mode .map-search-input::placeholder {
             color: #94a3b8 !important;
+            opacity: 1 !important;
         }
-
-        html.light-mode #mapSearchIcon {
+        html.light-mode .map-search-icon {
+            stroke: #94a3b8 !important;
+        }
+        html.light-mode .map-search-input:focus,
+        html.light-mode .map-search-box:focus-within .map-search-input {
+            border-color: #22c55e !important;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15) !important;
+            background: #ffffff !important;
+        }
+        html.light-mode .map-search-box:focus-within .map-search-icon {
             stroke: #16a34a !important;
         }
-
-        html.light-mode #mapSearchResults {
-            background: rgba(255, 255, 255, 0.98) !important;
+        html.light-mode .map-search-clear {
+            background: #f1f5f9 !important;
+            color: #64748b !important;
+        }
+        html.light-mode .map-search-clear:hover {
+            background: #e2e8f0 !important;
+            color: #0f172a !important;
+        }
+        html.light-mode .map-search-dropdown {
+            background: #ffffff !important;
             border: 1px solid #cbd5e1 !important;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
-            color: #0f172a !important;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12) !important;
         }
-
-        html.light-mode #mapSearchResults .map-search-item {
-            border-bottom-color: #f1f5f9 !important;
-            color: #0f172a !important;
-        }
-
-        html.light-mode #mapSearchResults .map-search-item:hover {
+        html.light-mode .map-search-result-item:hover {
             background: #f0fdf4 !important;
+        }
+        html.light-mode .map-search-result-title {
+            color: #0f172a !important;
+        }
+        html.light-mode .map-search-result-meta {
+            color: #64748b !important;
         }
 
         /* Leaflet Popups in Light Mode */
@@ -909,6 +1056,36 @@
         </div>
 
         <div class="ws-map-wrapper">
+            {{-- Map Search Controls (FAQ Design & Positioning) --}}
+            <div class="map-controls ui-reveal">
+                <div class="map-search-box">
+                    <svg class="map-search-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input
+                        type="text"
+                        id="mapSearchInput"
+                        class="map-search-input"
+                        oninput="handleMapSearch(this.value)"
+                        placeholder="Search soil name, code, barangay, soil type..."
+                        autocomplete="off"
+                        aria-label="Search map locations"
+                    />
+                    <button
+                        type="button"
+                        id="mapSearchClearBtn"
+                        class="map-search-clear"
+                        onclick="clearMapSearch()"
+                        title="Clear search"
+                        aria-label="Clear search"
+                    >&times;</button>
+
+                    <!-- Dropdown Search Results List -->
+                    <div id="mapSearchResults" class="map-search-dropdown" style="display:none;"></div>
+                </div>
+            </div>
+
             <div class="ws-map-card ui-reveal">
                 <div class="ws-map-topbar">
                     <div class="ws-map-topbar-left">
@@ -922,25 +1099,6 @@
                         <h2>Soil Scan Locations</h2>
                         <span class="ws-pin-count">{{ $mappings->count() }} locations</span>
                     </div>
-                </div>
-
-                {{-- MOVED: search bar is now a sibling of #soilMap, not a child --}}
-                <div style="position:absolute; top:66px; left:50px; z-index:999; max-width:380px; width:calc(100% - 64px);">
-                    <div id="mapSearchInputContainer" style="background:rgba(11, 43, 38, 0.92); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(142, 182, 155, 0.38); border-radius:14px; padding:9px 14px; display:flex; align-items:center; gap:9px; box-shadow:0 10px 30px rgba(0,0,0,0.45);">
-                        <svg id="mapSearchIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8EB69B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input type="text" id="mapSearchInput" oninput="handleMapSearch(this.value)" placeholder="Search soil name, code, barangay, soil type..." style="background:transparent; border:none; outline:none; font-size:13px; font-weight:600; width:100%; font-family:inherit;">
-                        <button type="button" id="mapSearchClearBtn" onclick="clearMapSearch()" class="modal-close-circle-btn" style="display:none; width:22px !important; height:22px !important;" title="Clear search" aria-label="Clear search">
-                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Dropdown Search Results List -->
-                    <div id="mapSearchResults" style="display:none; max-height:240px; overflow-y:auto; background:rgba(11, 43, 38, 0.95); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(142, 182, 155, 0.38); border-radius:14px; margin-top:6px; padding:6px; box-shadow:0 12px 36px rgba(0,0,0,0.55);"></div>
                 </div>
 
                 <div id="soilMap"></div>
@@ -1160,13 +1318,13 @@
             map.setView([defaultLat, defaultLng], defaultZoom);
         }
 
-        // Map Search Logic
+        // Map Search Logic (FAQ Design & Positioning)
         function handleMapSearch(query) {
             const clearBtn = document.getElementById('mapSearchClearBtn');
             const resultsDiv = document.getElementById('mapSearchResults');
             const q = query.trim().toLowerCase();
 
-            if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+            if (clearBtn) clearBtn.style.display = q ? 'flex' : 'none';
 
             if (!q) {
                 if (resultsDiv) resultsDiv.style.display = 'none';
@@ -1182,13 +1340,13 @@
             });
 
             if (matches.length === 0) {
-                resultsDiv.innerHTML = '<div style="padding:10px 12px; font-size:12px; color:#8EB69B; text-align:center;">No matching soil locations found</div>';
+                resultsDiv.innerHTML = '<div style="padding:14px 16px; font-size:13px; color:#8EB69B; text-align:center; font-weight:600;">No matching soil locations found</div>';
                 resultsDiv.style.display = 'block';
                 return;
             }
 
             let html = '';
-            matches.slice(0, 6).forEach((item, idx) => {
+            matches.slice(0, 8).forEach((item) => {
                 const subMeta = [
                     item.barangay ? 'Brgy. ' + item.barangay : 'Lal-lo',
                     item.fullCode,
@@ -1196,12 +1354,12 @@
                 ].filter(Boolean).join(' • ');
 
                 html += `
-                    <div onclick="selectMapSearchResult(${item.lat}, ${item.lng})" style="padding:8px 12px; border-radius:10px; cursor:pointer; font-size:12.5px; color:#DAF1DE; display:flex; align-items:center; justify-content:space-between; transition:background 0.15s; margin-bottom:2px;" onmouseover="this.style.background='rgba(35, 83, 71, 0.6)';" onmouseout="this.style.background='transparent';">
+                    <div onclick="selectMapSearchResult(${item.lat}, ${item.lng})" class="map-search-result-item">
                         <div>
-                            <div style="font-weight:700; color:#DAF1DE;">${item.soilName}</div>
-                            <div style="font-size:11px; color:#8EB69B;">${subMeta}</div>
+                            <div class="map-search-result-title">${item.soilName}</div>
+                            <div class="map-search-result-meta">${subMeta}</div>
                         </div>
-                        <span style="font-size:11px; font-weight:700; color:#4ADE80; background:rgba(74, 222, 128, 0.15); border:1px solid rgba(74, 222, 128, 0.3); padding:2px 7px; border-radius:6px;">View</span>
+                        <span class="map-search-result-badge">View Pin</span>
                     </div>
                 `;
             });
@@ -1235,6 +1393,22 @@
                 map.fitBounds(boundsGroup, { padding: [40, 40] });
             }
         }
+
+        // Hide map search dropdown on outside click
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.map-search-box')) {
+                const resultsDiv = document.getElementById('mapSearchResults');
+                if (resultsDiv) resultsDiv.style.display = 'none';
+            }
+        });
+
+        // Hide on Escape key
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                const resultsDiv = document.getElementById('mapSearchResults');
+                if (resultsDiv) resultsDiv.style.display = 'none';
+            }
+        });
 
         // Helper: normalize bounding box for ROI display
         function normalizeBox(r) {

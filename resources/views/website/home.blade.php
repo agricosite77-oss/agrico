@@ -366,12 +366,12 @@
             border-radius: 20px;
             padding: 32px 24px;
             text-align: center;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .step-card:hover {
-            transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(35, 83, 71, 0.45);
-            border-color: #DAF1DE !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.25), 0 10px 24px rgba(0, 0, 0, 0.4) !important;
+            border-color: #22c55e !important;
             background: linear-gradient(145deg, #1c453e, #0B2B26);
         }
         .step-num {
@@ -384,14 +384,14 @@
             font-weight: 900;
             display: flex; align-items: center; justify-content: center;
             margin: 0 auto 18px;
-            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.5);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.5);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .step-card:hover .step-num {
-            background: linear-gradient(135deg, #235347, #163832) !important;
-            border-color: #DAF1DE !important;
+            background: #22c55e !important;
+            border-color: #22c55e !important;
             color: #FFFFFF !important;
-            box-shadow: 0 4px 16px rgba(35, 83, 71, 0.6) !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
             transform: scale(1.08);
         }
         .step-card h4, .step-card h3 {
@@ -399,11 +399,11 @@
             font-weight: 800;
             color: #DAF1DE;
             margin: 0 0 8px 0;
-            transition: color 0.25s ease;
+            transition: color 0.2s ease;
         }
         .step-card:hover h4,
         .step-card:hover h3 {
-            color: #FFFFFF !important;
+            color: #4ade80 !important;
         }
         .step-card p {
             font-size: 13.5px;
@@ -599,8 +599,8 @@
         html.light-mode .step-card:hover {
             background: #FFFFFF !important;
             border-color: #22c55e !important;
-            box-shadow: 0 16px 36px rgba(34, 197, 94, 0.18) !important;
-            transform: translateY(-6px) scale(1.02) !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.25), 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+            transform: translateY(-2px) !important;
         }
         html.light-mode .step-num {
             background: linear-gradient(135deg, #22c55e, #16a34a) !important;
