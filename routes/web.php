@@ -47,6 +47,10 @@ Route::post('/reset-password', [PasswordResetCodeController::class, 'resetPasswo
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
+    return redirect()->route('website.home');
+})->name('root');
+
+Route::get('/splash', function () {
     return view('splash');
 })->name('splash');
 
