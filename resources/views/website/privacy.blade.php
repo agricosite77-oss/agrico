@@ -283,6 +283,7 @@
             white-space: nowrap;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+            animation: glowingGreenPulse 3s ease-in-out infinite;
         }
         .legal-cross-btn:hover {
             background: #16a34a;

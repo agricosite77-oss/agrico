@@ -521,11 +521,11 @@
             background: #22c55e !important;
             border-color: #22c55e !important;
             color: #FFFFFF !important;
-            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35) !important;
+            animation: heroBtnGlow 3.5s ease-in-out infinite;
         }
         html.light-mode .hero-btn-primary:hover {
             background: #16a34a !important;
-            box-shadow: 0 12px 32px rgba(34, 197, 94, 0.5) !important;
+            box-shadow: 0 12px 32px rgba(34, 197, 94, 0.6) !important;
         }
         html.light-mode .hero-btn-outline {
             background: #ffffff;
