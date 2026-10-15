@@ -327,4 +327,42 @@ class UserAuthController extends Controller
 
         return redirect()->route('login');
     }
+
+    /**
+     * Update user theme preference (light or dark).
+     */
+    public function updateTheme(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'string', 'in:light,dark'],
+        ]);
+
+        $user = Auth::guard('web')->user() 
+             ?? Auth::user() 
+             ?? Auth::guard('admin')->user();
+
+        if (!$user && session()->has('user_id')) {
+            $user = User::where('user_id', session('user_id'))->first();
+        }
+        if (!$user && session()->has('admin_id')) {
+            $user = User::where('user_id', session('admin_id'))->first();
+        }
+
+        if ($user) {
+            $user->theme = $validated['theme'];
+            $user->save();
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Theme updated successfully.',
+                'theme'   => $user->theme,
+            ]);
+        }
+
+        return response()->json([
+            'status'  => 'guest',
+            'message' => 'Theme preference received.',
+            'theme'   => $validated['theme'],
+        ]);
+    }
 }

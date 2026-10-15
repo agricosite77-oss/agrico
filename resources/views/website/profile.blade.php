@@ -862,6 +862,49 @@
             transform: translateX(2px);
         }
 
+        /* Alert banners: Dark mode default & Light mode adaptive */
+        .profile-alert-banner {
+            padding: 14px 20px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.25s ease;
+        }
+        .profile-alert-banner.success {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.45);
+            color: #4ADE80;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+        }
+        .profile-alert-banner.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(248, 113, 113, 0.45);
+            color: #F87171;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            font-size: 13.5px;
+            font-weight: 600;
+        }
+        html.light-mode .profile-alert-banner.success {
+            background: #f0fdf4 !important;
+            border-color: #86efac !important;
+            color: #16a34a !important;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.15) !important;
+        }
+        html.light-mode .profile-alert-banner.error {
+            background: #fef2f2 !important;
+            border-color: #fca5a5 !important;
+            color: #dc2626 !important;
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.12) !important;
+        }
+
+        .profile-setting-item:focus-visible {
+            outline: 2px solid #22c55e;
+            outline-offset: 2px;
+        }
+
         /* Toggle switch */
         .profile-theme-switch {
             width: 44px;
@@ -889,6 +932,12 @@
         }
         .profile-theme-switch.is-light .profile-switch-knob {
             transform: translateX(20px);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .profile-theme-switch,
+            .profile-switch-knob {
+                transition: none !important;
+            }
         }
 
         /* Modal Notifications List */
@@ -1773,7 +1822,7 @@
 
     @if(session('success'))
         <div class="profile-alert-container">
-            <div style="background:#f0fdf4; border:1px solid #86efac; color:#16a34a; padding:14px 20px; border-radius:16px; font-size:14px; font-weight:700; display:flex; align-items:center; gap:10px; box-shadow:0 4px 14px rgba(34,197,94,0.15);">
+            <div class="profile-alert-banner success">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                 {{ session('success') }}
             </div>
@@ -1782,7 +1831,7 @@
 
     @if($errors->any())
         <div class="profile-alert-container">
-            <div style="background:#fef2f2; border:1px solid #fca5a5; color:#dc2626; padding:14px 20px; border-radius:16px; font-size:13.5px; font-weight:600; box-shadow:0 4px 14px rgba(220,38,38,0.12);">
+            <div class="profile-alert-banner error">
                 <ul style="margin:0; padding-left:18px;">
                     @foreach($errors->all() as $err)
                         <li>{{ $err }}</li>
@@ -1872,16 +1921,22 @@
         unreadCount: {{ (int) ($unreadCount ?? 0) }},
         init() {
             window.addEventListener('agrico:theme-changed', (e) => {
-                this.isLightMode = e.detail ? e.detail.isLight : document.documentElement.classList.contains('light-mode');
+                if (e.detail && typeof e.detail.isLight === 'boolean') {
+                    this.isLightMode = e.detail.isLight;
+                } else {
+                    this.isLightMode = document.documentElement.classList.contains('light-mode');
+                }
             });
         },
         toggleTheme() {
+            // Update local state immediately for responsive switch animation (200-300ms)
+            this.isLightMode = !this.isLightMode;
+
             if (typeof window.agricoToggleTheme === 'function') {
                 window.agricoToggleTheme();
-                this.isLightMode = document.documentElement.classList.contains('light-mode');
             } else {
-                const isLight = document.documentElement.classList.toggle('light-mode');
-                this.isLightMode = isLight;
+                const isLight = this.isLightMode;
+                document.documentElement.classList.toggle('light-mode', isLight);
                 const newTheme = isLight ? 'light' : 'dark';
                 document.documentElement.style.colorScheme = newTheme;
                 localStorage.setItem('agrico-theme', newTheme);
@@ -2020,7 +2075,14 @@
                     </div>
 
                     {{-- 2. Dark and Light Mode --}}
-                    <div class="profile-setting-item" @click="toggleTheme()" role="button" tabindex="0">
+                    <div class="profile-setting-item" 
+                         @click="toggleTheme()" 
+                         @keydown.space.prevent="toggleTheme()" 
+                         @keydown.enter.prevent="toggleTheme()"
+                         role="switch" 
+                         :aria-checked="!isLightMode" 
+                         aria-label="Toggle dark and light appearance mode"
+                         tabindex="0">
                         <div class="profile-setting-left">
                             <div class="profile-setting-icon theme">
                                 <template x-if="isLightMode">
@@ -2058,7 +2120,7 @@
                     <h4>Logout</h4>
                     <p style="font-size: 12.5px; line-height: 1.4;">You will be logged out of your AgriCo account.</p>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" onsubmit="localStorage.removeItem('agrico-theme');" style="margin:0; width:100%;">
+                <form method="POST" action="{{ route('logout') }}" style="margin:0; width:100%;">
                     @csrf
                     <button type="submit" class="ws-btn-red" style="width: 100%; justify-content: center; box-sizing: border-box;">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"

@@ -10,9 +10,8 @@
     $isWsAdmin = $isWsAuth && (in_array(strtolower($wsAuthUser->role ?? ''), ['admin', 'superadmin', 'super admin']) || Auth::guard('admin')->check());
     $isApproved = $isWsAuth && ($isWsAdmin || in_array(strtolower(trim($wsAuthUser->status ?? '')), ['active', 'approved']));
     $isPending  = $isWsAuth && !$isApproved;
-    // Default theme is dark mode for AgriCo (rich dark forest green).
-    // If user is logged in, use their saved account theme preference (defaulting to dark).
-    $currentTheme = $wsAuthUser ? ($wsAuthUser->theme ?? 'dark') : 'dark';
+    // Default theme is light mode per user preference (or user saved database theme when logged in)
+    $currentTheme = $wsAuthUser ? ($wsAuthUser->theme ?? 'light') : 'light';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ $currentTheme === 'light' ? 'light-mode' : '' }}">
@@ -22,37 +21,43 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <meta name="description" content="AgriCo â€” Smart Soil Scanning & Munsell Color Classification for smarter farming decisions." />
-    <meta name="color-scheme" content="dark light" />
-    <title>{{ isset($title) ? $title . ' â€” AgriCo' : 'AgriCo â€” Smart Soil Management' }}</title>
+    <meta name="description" content="AgriCo — Smart Soil Scanning & Munsell Color Classification for smarter farming decisions." />
+    <meta name="color-scheme" content="light dark" />
+    <title>{{ isset($title) ? $title . ' — AgriCo' : 'AgriCo — Smart Soil Management' }}</title>
 <script>document.documentElement.classList.add("ui-motion","ui-booting");setTimeout(function(){document.documentElement.classList.remove("ui-booting")},1500);</script>
 <link rel="stylesheet" href="{{ asset('css/animations.css') }}">
 <script src="{{ asset('js/animations.js') }}" defer></script>
     <script>
-        // Apply saved theme IMMEDIATELY to prevent flash of wrong theme
+        // Apply saved theme IMMEDIATELY before paint to eliminate any flash
         (function() {
-            @if($wsAuthUser)
-                // Logged-in user: use server-backed account theme preference
-                var userTheme = @json($currentTheme);
-                localStorage.setItem('agrico-theme', userTheme);
-                if (userTheme === 'light') {
+            try {
+                var stored = localStorage.getItem('agrico-theme');
+                var theme = stored;
+                @if($wsAuthUser)
+                    var userTheme = @json($currentTheme);
+                    if (!theme) {
+                        theme = userTheme || 'light';
+                        localStorage.setItem('agrico-theme', theme);
+                    }
+                @else
+                    if (!theme) {
+                        theme = 'light';
+                        localStorage.setItem('agrico-theme', 'light');
+                    }
+                @endif
+
+                if (theme === 'light') {
                     document.documentElement.classList.add('light-mode');
                     document.documentElement.style.colorScheme = 'light';
                 } else {
                     document.documentElement.classList.remove('light-mode');
                     document.documentElement.style.colorScheme = 'dark';
                 }
-            @else
-                // Guest: default to dark mode unless user explicitly chose light mode
-                var savedTheme = localStorage.getItem('agrico-theme');
-                if (savedTheme === 'light') {
-                    document.documentElement.classList.add('light-mode');
-                    document.documentElement.style.colorScheme = 'light';
-                } else {
-                    document.documentElement.classList.remove('light-mode');
-                    document.documentElement.style.colorScheme = 'dark';
-                }
-            @endif
+            } catch (e) {
+                // In case localStorage is blocked in private browsing
+                document.documentElement.classList.add('light-mode');
+                document.documentElement.style.colorScheme = 'light';
+            }
         })();
     </script>
     <script>
@@ -461,7 +466,7 @@
 
         /* ── CIRCULAR REVEAL THEME TRANSITION TOKENS ── */
         :root {
-            --theme-reveal-duration: 700ms;
+            --theme-reveal-duration: 300ms;
             --theme-reveal-ease: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -1209,7 +1214,7 @@
                                 {{ strtoupper(substr($wsUser->name ?? $wsUser->full_name ?? 'U', 0, 1)) }}
                             </div>
                         </a>
-                        <form method="POST" action="{{ route('logout') }}" onsubmit="localStorage.removeItem('agrico-theme');" style="margin:0;display:inline;">
+                        <form method="POST" action="{{ route('logout') }}" style="margin:0;display:inline;">
                             @csrf
                             <button type="submit" class="ws-btn-logout">
                                 Logout
@@ -1272,7 +1277,7 @@
                     Admin Panel
                 </a>
             @endif
-            <form method="POST" action="{{ route('logout') }}" onsubmit="localStorage.removeItem('agrico-theme');" style="width:100%;margin:0;">
+            <form method="POST" action="{{ route('logout') }}" style="width:100%;margin:0;">
                 @csrf
                 <button type="submit" class="ws-btn-login"
                         style="width:100%;text-align:center;border-color:#fca5a5;color:#ef4444;">
@@ -1868,7 +1873,7 @@
         let isThemeTransitioning = false;
 
         // Configurable duration (ms) and easing function
-        const THEME_DURATION = 700;
+        const THEME_DURATION = 300;
         const THEME_EASING   = 'cubic-bezier(0.4, 0, 0.2, 1)';
 
         function applyThemeState(isLight) {
