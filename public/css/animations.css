@@ -1587,7 +1587,6 @@ body:not(.light-mode),
 
 /* Base close button */
 .agrico-close-btn,
-.modal-close-circle-btn,
 .soil-modal-close {
     width: var(--close-btn-size);
     height: var(--close-btn-size);
@@ -1619,7 +1618,6 @@ body:not(.light-mode),
 /* SVG icon sizing */
 .agrico-close-btn svg,
 .agrico-close-btn .agrico-close-icon,
-.modal-close-circle-btn svg,
 .soil-modal-close svg {
     width: var(--close-btn-icon-size);
     height: var(--close-btn-icon-size);
@@ -1647,8 +1645,7 @@ body:not(.light-mode),
 }
 
 /* 44x44px Touch Target Expansion via invisible hit area */
-.agrico-close-btn::after,
-.modal-close-circle-btn::after {
+.agrico-close-btn::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -1664,7 +1661,6 @@ body:not(.light-mode),
 /* Hover effect on pointer-capable devices */
 @media (hover: hover) and (pointer: fine) {
     .agrico-close-btn:hover:not(:disabled),
-    .modal-close-circle-btn:hover:not(:disabled),
     .soil-modal-close:hover:not(:disabled) {
         background: var(--close-btn-bg-hover);
         border-color: var(--close-btn-border-hover);
@@ -1675,21 +1671,18 @@ body:not(.light-mode),
 
 /* Active / Tap Feedback */
 .agrico-close-btn:active:not(:disabled),
-.modal-close-circle-btn:active:not(:disabled),
 .soil-modal-close:active:not(:disabled) {
     transform: scale(0.95);
 }
 
 /* Focus Visible Accessible Ring */
-.agrico-close-btn:focus-visible,
-.modal-close-circle-btn:focus-visible {
+.agrico-close-btn:focus-visible {
     outline: 2px solid var(--close-btn-focus-ring);
     outline-offset: 2px;
 }
 
 /* Disabled State */
-.agrico-close-btn:disabled,
-.modal-close-circle-btn:disabled {
+.agrico-close-btn:disabled {
     opacity: 0.45;
     cursor: not-allowed;
     transform: none !important;
@@ -1739,7 +1732,6 @@ body:not(.light-mode),
 /* Prefers-reduced-motion: disable scaling */
 @media (prefers-reduced-motion: reduce) {
     .agrico-close-btn,
-    .modal-close-circle-btn,
     .soil-modal-close,
     .leaflet-popup a.leaflet-popup-close-button,
     .agrico-custom-popup a.leaflet-popup-close-button {
