@@ -216,16 +216,15 @@
                         onblur="this.style.borderColor='rgba(226, 232, 240, 0.95)'; this.style.boxShadow='0 4px 18px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06)';"
                     />
 
-                    <button
+                    <x-close-button
+                        size="sm"
                         x-show="query.length > 0"
                         x-cloak
                         @click="clear()"
-                        type="button"
-                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #f1f5f9; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-size: 14px; line-height: 1; color: #64748b; font-weight: bold; z-index: 3; transition: all 0.15s ease;"
-                        onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
-                        onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
                         title="Clear Search"
-                    >&times;</button>
+                        ariaLabel="Clear search"
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 3;"
+                    />
                 </div>
 
                 {{-- AUTO SUGGESTION DROPDOWN INSIDE MAP --}}
@@ -304,12 +303,7 @@
                 onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
             />
             @if($search)
-                <button
-                    wire:click="$set('search', '')"
-                    type="button"
-                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:#f1f5f9; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-size:12px; color:#64748b; font-weight:bold; z-index:3;"
-                    title="Clear Search"
-                >&times;</button>
+                <x-close-button size="sm" click="$set('search', '')" title="Clear search" ariaLabel="Clear search" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); z-index:3;" />
             @endif
 
             {{-- AUTO SUGGESTION DROPDOWN --}}
@@ -409,12 +403,7 @@
                 title="Filter by Date"
             />
             @if($selectedDate)
-                <button
-                    wire:click="$set('selectedDate', '')"
-                    type="button"
-                    style="background:#f1f5f9; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-size:12px; color:#64748b; font-weight:bold; margin-left:2px;"
-                    title="Clear Date Filter"
-                >&times;</button>
+                <x-close-button size="sm" click="$set('selectedDate', '')" title="Clear date filter" ariaLabel="Clear date filter" style="margin-left:4px;" />
             @endif
         </div>
 

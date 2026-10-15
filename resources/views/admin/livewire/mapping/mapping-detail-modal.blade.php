@@ -254,27 +254,6 @@
         background: #94a3b8 !important;
     }
 
-    /* Modal Close Circle Button */
-    .modal-close-circle-btn {
-        background: #f1f5f9 !important;
-        border: 1.5px solid #e2e8f0 !important;
-        color: #64748b !important;
-        width: 32px !important;
-        height: 32px !important;
-        border-radius: 50% !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-        padding: 0 !important;
-        transition: all 0.2s ease !important;
-        flex-shrink: 0 !important;
-    }
-    .modal-close-circle-btn:hover {
-        background: #e2e8f0 !important;
-        color: #0f172a !important;
-        border-color: #cbd5e1 !important;
-    }
 
     /* Swatch Banner */
     .soil-swatch-banner {
@@ -692,12 +671,7 @@
             <h3>
                 Soil Record Details{{ $isMulti ? ' (' . count($regions) . ' DETECTED)' : '' }}
             </h3>
-            <button type="button" wire:click="closeModal" class="modal-close-circle-btn" title="Close">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
+            <x-modal-close-button click="closeModal" />
         </div>
 
         {{-- SCROLLABLE BODY --}}

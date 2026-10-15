@@ -118,12 +118,7 @@
                 title="Filter by Date"
             />
             @if($selectedDate)
-                <button
-                    wire:click="$set('selectedDate', '')"
-                    type="button"
-                    style="background:#f1f5f9; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-size:12px; color:#64748b; font-weight:bold; margin-left:2px;"
-                    title="Clear Date Filter"
-                >&times;</button>
+                <x-close-button size="sm" click="$set('selectedDate', '')" title="Clear date filter" ariaLabel="Clear date filter" style="margin-left:4px;" />
             @endif
         </div>
 

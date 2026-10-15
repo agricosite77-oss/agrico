@@ -39,12 +39,7 @@
                 onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
             />
             @if($search)
-                <button
-                    wire:click="$set('search', '')"
-                    type="button"
-                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:#f1f5f9; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-size:12px; color:#64748b; font-weight:bold; z-index:3;"
-                    title="Clear Search"
-                >&times;</button>
+                <x-close-button size="sm" click="$set('search', '')" title="Clear search" ariaLabel="Clear search" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); z-index:3;" />
             @endif
 
             {{-- AUTO SUGGESTION DROPDOWN --}}
@@ -145,12 +140,7 @@
                 title="Filter by Date"
             />
             @if($selectedDate)
-                <button
-                    wire:click="$set('selectedDate', '')"
-                    type="button"
-                    style="background:#f1f5f9; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-size:12px; color:#64748b; font-weight:bold; margin-left:2px;"
-                    title="Clear Date Filter"
-                >&times;</button>
+                <x-close-button size="sm" click="$set('selectedDate', '')" title="Clear date filter" ariaLabel="Clear date filter" style="margin-left:4px;" />
             @endif
         </div>
 

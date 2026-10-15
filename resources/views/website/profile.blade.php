@@ -462,24 +462,29 @@
 
         /* Close Button */
         .modal-close-circle-btn {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: var(--pm-btn-secondary-bg);
-            border: 1px solid var(--pm-btn-secondary-border);
-            color: var(--pm-btn-secondary-text);
+            background: rgba(5, 31, 32, 0.70);
+            border: 1.5px solid rgba(142, 182, 155, 0.35);
+            color: #8EB69B;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             padding: 0;
             outline: none;
+            box-sizing: border-box;
         }
         .modal-close-circle-btn:hover {
-            background: var(--pm-btn-secondary-hover-bg);
-            color: var(--pm-title);
+            background: rgba(35, 83, 71, 0.85);
+            border-color: #DAF1DE;
+            color: #DAF1DE;
             transform: scale(1.06);
+        }
+        .modal-close-circle-btn:active {
+            transform: scale(0.95);
         }
 
         /* Buttons */
@@ -2135,15 +2140,17 @@
         html.light-mode .modal-close-circle-btn,
         .light-mode .modal-close-circle-btn,
         body.light-mode .modal-close-circle-btn {
-            background: #f1f5f9 !important;
-            border-color: #e2e8f0 !important;
-            color: #64748b !important;
+            background: transparent !important;
+            border: 1.5px solid transparent !important;
+            color: #94a3b8 !important;
         }
         html.light-mode .modal-close-circle-btn:hover,
         .light-mode .modal-close-circle-btn:hover,
         body.light-mode .modal-close-circle-btn:hover {
-            background: #e2e8f0 !important;
+            background: #f1f5f9 !important;
+            border-color: #f1f5f9 !important;
             color: #0f172a !important;
+            transform: scale(1.06) !important;
         }
 
         .ws-breadcrumb-current { color: #DAF1DE; font-weight: 700; }

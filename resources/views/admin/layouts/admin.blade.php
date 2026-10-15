@@ -910,16 +910,16 @@
 
         /* â”€â”€ Universal Modal Close / Exit Circle Button â”€â”€ */
         .modal-close-circle-btn {
-            width: 36px;
-            height: 36px;
+            width: var(--close-btn-size, 36px);
+            height: var(--close-btn-size, 36px);
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border: none;
-            background: transparent;
-            color: #94a3b8;
+            border: var(--close-btn-border-width, 1.5px) solid var(--close-btn-border, transparent);
+            background: var(--close-btn-bg, transparent);
+            color: var(--close-btn-color, #94a3b8);
             outline: none;
             padding: 0;
             margin: 0;
@@ -930,24 +930,27 @@
             flex-shrink: 0;
         }
         .modal-close-circle-btn:hover {
-            background: #f1f5f9;
-            color: #0f172a;
-            transform: scale(1.06);
+            background: var(--close-btn-bg-hover, #f1f5f9);
+            border-color: var(--close-btn-border-hover, #f1f5f9);
+            color: var(--close-btn-color-hover, #0f172a);
+            transform: scale(var(--close-btn-scale-hover, 1.06));
         }
         .modal-close-circle-btn:active {
-            transform: scale(0.95);
+            transform: scale(var(--close-btn-scale-active, 0.95));
         }
 
         /* Dark Mode Overrides in Admin */
         .dark .modal-close-circle-btn,
         [data-theme="dark"] .modal-close-circle-btn {
+            background: rgba(5, 31, 32, 0.70) !important;
+            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
             color: #8EB69B !important;
-            background: transparent !important;
         }
         .dark .modal-close-circle-btn:hover,
         [data-theme="dark"] .modal-close-circle-btn:hover {
-            background: rgba(255, 255, 255, 0.12) !important;
-            color: #ffffff !important;
+            background: rgba(35, 83, 71, 0.85) !important;
+            border-color: #DAF1DE !important;
+            color: #DAF1DE !important;
             transform: scale(1.06) !important;
         }
     </style>

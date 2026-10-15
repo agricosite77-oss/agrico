@@ -55,15 +55,15 @@
 
         /* ── Universal Modal Close / Exit Circle Button ── */
         .modal-close-circle-btn {
-            width: 36px !important;
-            height: 36px !important;
+            width: var(--close-btn-size, 36px) !important;
+            height: var(--close-btn-size, 36px) !important;
             border-radius: 50% !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
             cursor: pointer !important;
-            border: none !important;
-            background: transparent !important;
+            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
+            background: rgba(5, 31, 32, 0.70) !important;
             color: #8EB69B !important;
             outline: none !important;
             padding: 0 !important;
@@ -75,9 +75,10 @@
             flex-shrink: 0 !important;
         }
         .modal-close-circle-btn:hover {
-            background: rgba(255, 255, 255, 0.14) !important;
-            color: #ffffff !important;
-            transform: scale(1.08) !important;
+            background: rgba(35, 83, 71, 0.85) !important;
+            border-color: #DAF1DE !important;
+            color: #DAF1DE !important;
+            transform: scale(1.06) !important;
         }
         .modal-close-circle-btn:active {
             transform: scale(0.95) !important;
@@ -89,13 +90,15 @@
         body.light-mode .modal-close-circle-btn {
             color: #94a3b8 !important;
             background: transparent !important;
+            border-color: transparent !important;
         }
         html.light-mode .modal-close-circle-btn:hover,
         .light-mode .modal-close-circle-btn:hover,
         body.light-mode .modal-close-circle-btn:hover {
             background: #f1f5f9 !important;
+            border-color: #f1f5f9 !important;
             color: #0f172a !important;
-            transform: scale(1.08) !important;
+            transform: scale(1.06) !important;
         }
 
         /* Custom Selection Highlight (replaces default browser blue highlight box) */
@@ -2267,15 +2270,15 @@
             background: rgba(5, 31, 32, 0.7) !important;
             border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
             color: #8EB69B !important;
-            width: 32px !important;
-            height: 32px !important;
+            width: 36px !important;
+            height: 36px !important;
             border-radius: 50% !important;
-            display: flex !important;
+            display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
             cursor: pointer !important;
             padding: 0 !important;
-            transition: all 0.2s ease !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
             flex-shrink: 0 !important;
         }
         .soil-modal-close:hover,
@@ -2283,6 +2286,11 @@
             background: rgba(35, 83, 71, 0.8) !important;
             color: #DAF1DE !important;
             border-color: #DAF1DE !important;
+            transform: scale(1.06) !important;
+        }
+        .soil-modal-close:active,
+        .modal-close-circle-btn:active {
+            transform: scale(0.95) !important;
         }
         .soil-modal-body-container {
             padding: 18px 24px 20px !important;
@@ -2577,14 +2585,16 @@
         }
         html.light-mode .soil-modal-close,
         html.light-mode .modal-close-circle-btn {
-            background: #f1f5f9 !important;
-            border: 1px solid #e2e8f0 !important;
-            color: #64748b !important;
+            background: transparent !important;
+            border: 1.5px solid transparent !important;
+            color: #94a3b8 !important;
         }
         html.light-mode .soil-modal-close:hover,
         html.light-mode .modal-close-circle-btn:hover {
-            background: #e2e8f0 !important;
+            background: #f1f5f9 !important;
+            border-color: #f1f5f9 !important;
             color: #0f172a !important;
+            transform: scale(1.06) !important;
         }
         html.light-mode .soil-modal-body-container {
             scrollbar-color: #cbd5e1 #f1f5f9 !important;

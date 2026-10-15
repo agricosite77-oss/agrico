@@ -357,31 +357,36 @@
         .leaflet-container a.leaflet-popup-close-button,
         .agrico-custom-popup a.leaflet-popup-close-button,
         a.leaflet-popup-close-button {
-            top: 12px !important;
-            right: 12px !important;
-            width: 24px !important;
-            height: 24px !important;
+            top: 10px !important;
+            right: 10px !important;
+            width: 28px !important;
+            height: 28px !important;
             border-radius: 50% !important;
-            background: #ffffff !important;
-            color: #64748b !important;
-            display: flex !important;
+            background: var(--close-btn-bg, rgba(5, 31, 32, 0.70)) !important;
+            color: var(--close-btn-color, #8EB69B) !important;
+            display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            font-size: 14px !important;
-            font-weight: 700 !important;
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-            transition: all 0.15s ease !important;
+            font-size: 16px !important;
+            border: var(--close-btn-border-width, 1.5px) solid var(--close-btn-border, rgba(142, 182, 155, 0.35)) !important;
+            transition: var(--close-btn-transition, all 0.2s cubic-bezier(0.16, 1, 0.3, 1)) !important;
             padding: 0 !important;
             z-index: 20 !important;
             text-decoration: none !important;
+            box-sizing: border-box !important;
         }
         .leaflet-container a.leaflet-popup-close-button:hover,
         .agrico-custom-popup a.leaflet-popup-close-button:hover,
         a.leaflet-popup-close-button:hover {
-            background: #f1f5f9 !important;
-            color: #0f172a !important;
-            border-color: #cbd5e1 !important;
+            background: var(--close-btn-bg-hover, rgba(35, 83, 71, 0.85)) !important;
+            color: var(--close-btn-color-hover, #DAF1DE) !important;
+            border-color: var(--close-btn-border-hover, #DAF1DE) !important;
+            transform: scale(1.06) !important;
+        }
+        .leaflet-container a.leaflet-popup-close-button:active,
+        .agrico-custom-popup a.leaflet-popup-close-button:active,
+        a.leaflet-popup-close-button:active {
+            transform: scale(0.95) !important;
         }
 
         /* ── LIGHT MODE OVERRIDES FOR SOIL MAP PAGE ── */
@@ -528,29 +533,32 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.06) !important;
         }
         .agrico-custom-popup a.leaflet-popup-close-button {
-            top: 12px !important;
-            right: 12px !important;
-            width: 24px !important;
-            height: 24px !important;
+            top: 10px !important;
+            right: 10px !important;
+            width: 28px !important;
+            height: 28px !important;
             border-radius: 50% !important;
-            background: #ffffff !important;
-            color: #64748b !important;
-            display: flex !important;
+            background: var(--close-btn-bg, rgba(5, 31, 32, 0.70)) !important;
+            color: var(--close-btn-color, #8EB69B) !important;
+            display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            font-size: 14px !important;
-            font-weight: 700 !important;
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
-            transition: all 0.15s ease !important;
+            font-size: 16px !important;
+            border: var(--close-btn-border-width, 1.5px) solid var(--close-btn-border, rgba(142, 182, 155, 0.35)) !important;
+            transition: var(--close-btn-transition, all 0.2s cubic-bezier(0.16, 1, 0.3, 1)) !important;
             padding: 0 !important;
             z-index: 20 !important;
             text-decoration: none !important;
+            box-sizing: border-box !important;
         }
         .agrico-custom-popup a.leaflet-popup-close-button:hover {
-            background: #f1f5f9 !important;
-            color: #0f172a !important;
-            border-color: #cbd5e1 !important;
+            background: var(--close-btn-bg-hover, rgba(35, 83, 71, 0.85)) !important;
+            color: var(--close-btn-color-hover, #DAF1DE) !important;
+            border-color: var(--close-btn-border-hover, #DAF1DE) !important;
+            transform: scale(1.06) !important;
+        }
+        .agrico-custom-popup a.leaflet-popup-close-button:active {
+            transform: scale(0.95) !important;
         }
 
         /* Soil Record Details Modal (Matching Screenshots 1, 2, 3, 4) */
@@ -633,21 +641,25 @@
             background: rgba(5, 31, 32, 0.7) !important;
             border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
             color: #8EB69B !important;
-            width: 32px !important;
-            height: 32px !important;
+            width: 36px !important;
+            height: 36px !important;
             border-radius: 50% !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
             cursor: pointer !important;
             padding: 0 !important;
-            transition: all 0.2s ease !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
             flex-shrink: 0 !important;
         }
         .modal-close-circle-btn:hover {
             background: rgba(35, 83, 71, 0.8) !important;
             color: #DAF1DE !important;
             border-color: #DAF1DE !important;
+            transform: scale(1.06) !important;
+        }
+        .modal-close-circle-btn:active {
+            transform: scale(0.95) !important;
         }
 
         /* Swatch Banner */
@@ -913,9 +925,15 @@
             color: #0f172a;
         }
         html.light-mode .modal-close-circle-btn {
+            background: transparent !important;
+            border: 1.5px solid transparent !important;
+            color: #94a3b8 !important;
+        }
+        html.light-mode .modal-close-circle-btn:hover {
             background: #f1f5f9 !important;
-            border: 1px solid #e2e8f0 !important;
-            color: #64748b !important;
+            border-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            transform: scale(1.06) !important;
         }
         html.light-mode .soil-detail-modal-body {
             scrollbar-color: #cbd5e1 #f1f5f9;

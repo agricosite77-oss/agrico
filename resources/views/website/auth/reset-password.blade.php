@@ -331,7 +331,7 @@
                     <div style="font-weight: 700; color: #b91c1c; margin-bottom: 2px;" id="passwordAlertTitle">Password requirements not met</div>
                     <div id="passwordAlertMessage" style="font-size: 0.78rem; color: #7f1d1d; line-height: 1.4;"></div>
                 </div>
-                <button type="button" onclick="dismissPasswordAlert()" style="background: none; border: none; color: #991b1b; cursor: pointer; padding: 2px; font-size: 16px; line-height: 1; font-weight: bold;">×</button>
+                <x-close-button size="sm" onclick="dismissPasswordAlert()" ariaLabel="Dismiss alert" title="Dismiss alert" />
             </div>
         </div>
 
@@ -613,7 +613,7 @@
                     </div>
                     <div style="font-size: 0.8rem; color: #475569; line-height: 1.4;">${message}</div>
                 </div>
-                <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 2px; font-size: 16px; line-height: 1;">×</button>
+                <button type="button" onclick="this.parentElement.remove()" class="agrico-close-btn agrico-close-btn--sm" aria-label="Dismiss message" title="Dismiss"><svg fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
             `;
 
             container.appendChild(toast);
