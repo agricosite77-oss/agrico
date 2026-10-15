@@ -1071,7 +1071,6 @@
                         <div class="soil-normalization-meta-info">CREATED: {{ $recordedDate }} &nbsp;|&nbsp; DETECTED COLORS: {{ count($renderRegions) }}</div>
                     </div>
                 </div>
-            @endif
 
         </div>
 
