@@ -1182,9 +1182,40 @@
         });
 
 
+        function getRoundedBoxCoords(centerLat, centerLng, widthMeters, heightMeters) {
+            const latConversion = 111320;
+            const lngConversion = 111320 * Math.cos(centerLat * Math.PI / 180);
+            const halfW = widthMeters / 2;
+            const halfH = heightMeters / 2;
+
+            const north = centerLat + (halfH / latConversion);
+            const south = centerLat - (halfH / latConversion);
+            const east  = centerLng + (halfW / lngConversion);
+            const west  = centerLng - (halfW / lngConversion);
+
+            return [
+                [north, west],
+                [north, east],
+                [south, east],
+                [south, west]
+            ];
+        }
+
+        function getParcelDimensions(covStr) {
+            const s = String(covStr || '').toLowerCase();
+            if (s.includes('50 m')) return { w: 35, h: 35 };
+            if (s.includes('250 m')) return { w: 55, h: 55 };
+            if (s.includes('500 m')) return { w: 75, h: 75 };
+            if (s.includes('1,000') || s.includes('1000')) return { w: 100, h: 100 };
+            if (s.includes('2,500') || s.includes('2500')) return { w: 130, h: 130 };
+            if (s.includes('5,000') || s.includes('5000')) return { w: 160, h: 160 };
+            if (s.includes('hectare')) return { w: 190, h: 190 };
+            return { w: 75, h: 75 };
+        }
+
         function centerMapOnPopup(mapInstance, lat, lng, offsetPx) {
             if (!mapInstance) return;
-            offsetPx = typeof offsetPx === 'number' ? offsetPx : 165;
+            offsetPx = typeof offsetPx === 'number' ? offsetPx : 175;
             const latlng = L.latLng(lat, lng);
             const zoom = mapInstance.getZoom();
             const point = mapInstance.project(latlng, zoom);
@@ -1330,10 +1361,55 @@
                     window.AgricoMapFocus.focusPin(map, marker, { targetZoom: 15 });
                 }
             });
+
+            // Green semi-transparent parcel polygon box representing soil covered area
+            const dims = getParcelDimensions(covStr);
+            const boxCoords = getRoundedBoxCoords(lt, ln, dims.w, dims.h);
+
+            const polyBorderColor = isApproved ? '#16a34a' : '#6b7280';
+            const polyFillColor   = isApproved ? '#22c55e' : '#9ca3af';
+            const polyHoverColor  = isApproved ? '#15803d' : '#4b5563';
+
+            const poly = L.polygon(boxCoords, {
+                color: polyBorderColor,
+                fillColor: polyFillColor,
+                fillOpacity: 0.22,
+                weight: 2.5,
+                interactive: isApproved
+            });
+
+            if (isApproved) {
+                poly.bindTooltip(`<div style="font-family:inherit; font-size:11px; font-weight:700; color:#14532d;">Covered Area: <strong>${covStr}</strong></div>`, {
+                    sticky: true,
+                    direction: 'top',
+                    offset: [0, -10]
+                });
+
+                poly.on('mouseover', function() {
+                    this.setStyle({ fillOpacity: 0.42, weight: 3.5, color: polyHoverColor });
+                });
+                poly.on('mouseout', function() {
+                    this.setStyle({ fillOpacity: 0.22, weight: 2.5, color: polyBorderColor });
+                });
+                poly.on('click', function(e) {
+                    if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
+                    if (window.AgricoMapFocus) {
+                        window.AgricoMapFocus.focusPin(map, marker, { targetZoom: 15 });
+                    } else {
+                        centerMapOnPopup(map, lt, ln, 175);
+                        marker.openPopup();
+                    }
+                });
+            }
+
+            poly.addTo(map);
             marker.addTo(map);
+
+            allPolygons.push({ poly: poly, lat: lt, lng: ln, covStr: covStr });
 
             markersMap.push({
                 marker: marker,
+                poly: poly,
                 lat: lt,
                 lng: ln,
                 soilName: soilName,
