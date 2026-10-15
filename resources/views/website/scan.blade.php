@@ -712,17 +712,17 @@
         }
         .scanner-btn-primary,
         .scanner-btn-cam {
-            background: linear-gradient(135deg, #235347, #163832) !important;
-            color: #DAF1DE !important;
-            border: 1px solid #8EB69B !important;
-            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.4) !important;
+            background: #22c55e !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
         }
         .scanner-btn-primary:hover,
         .scanner-btn-cam:hover {
             background: #16a34a !important;
             transform: translateY(-2px) !important;
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            border-color: #22c55e !important;
+            border: none !important;
             color: #ffffff !important;
         }
         .scanner-btn-secondary {
@@ -738,15 +738,16 @@
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
         }
         .scanner-btn-cta {
-            background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+            background: #22c55e !important;
             color: #ffffff !important;
             border: none !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4) !important;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
         }
         .scanner-btn-cta:hover {
             background: #16a34a !important;
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
             transform: translateY(-2px) !important;
+            color: #ffffff !important;
         }
 
         /* Result Display Card */
@@ -1551,17 +1552,21 @@
         }
         html.light-mode .scanner-btn-primary:hover {
             background: #16a34a !important;
-            box-shadow: 0 6px 18px rgba(34, 197, 94, 0.45) !important;
-            transform: translateY(-1px) !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
+            transform: translateY(-2px) !important;
+            color: #ffffff !important;
         }
         html.light-mode .scanner-btn-secondary {
-            background: #f1f5f9 !important;
-            color: #0f172a !important;
-            border-color: #cbd5e1 !important;
+            background: #ffffff !important;
+            color: #334155 !important;
+            border: 1.5px solid #cbd5e1 !important;
         }
         html.light-mode .scanner-btn-secondary:hover {
-            background: #e2e8f0 !important;
-            color: #0f172a !important;
+            background: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #16a34a !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
         }
         html.light-mode .result-empty {
             color: #475569 !important;
@@ -3514,32 +3519,32 @@
             outline: none;
         }
         .btn-res-save-copy {
-            background: rgba(11, 43, 38, 0.65);
-            border: 1.5px solid rgba(142, 182, 155, 0.35);
-            color: #8EB69B;
+            background: rgba(11, 43, 38, 0.8) !important;
+            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
+            color: #DAF1DE !important;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         .btn-res-save-copy:hover {
             background: #163832 !important;
             border-color: #22c55e !important;
             color: #4ade80 !important;
-            transform: translateY(-2px);
+            transform: translateY(-2px) !important;
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
         }
         .btn-res-save-copy:active {
             transform: translateY(0);
         }
         .btn-res-pin-location {
-            background: #22c55e;
-            border: 1.5px solid #22c55e;
-            color: #ffffff;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+            background: #22c55e !important;
+            border: none !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
         }
         .btn-res-pin-location:hover {
             background: #16a34a !important;
-            border-color: #22c55e !important;
+            border: none !important;
             color: #ffffff !important;
-            transform: translateY(-2px);
+            transform: translateY(-2px) !important;
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
         }
         .btn-res-pin-location:active {
@@ -3550,27 +3555,28 @@
         html.light-mode .btn-res-save-copy {
             background: #ffffff !important;
             border: 1.5px solid #cbd5e1 !important;
-            color: #475569 !important;
+            color: #334155 !important;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
         }
         html.light-mode .btn-res-save-copy:hover {
-            background: #f8fafc !important;
-            border-color: #94a3b8 !important;
-            color: #0f172a !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-            transform: translateY(-1px) !important;
+            background: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #16a34a !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
+            transform: translateY(-2px) !important;
         }
         html.light-mode .btn-res-pin-location {
-            background: linear-gradient(135deg, #22c55e, #16a34a) !important;
-            border: 1.5px solid #16a34a !important;
+            background: #22c55e !important;
+            border: none !important;
             color: #ffffff !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.28) !important;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
         }
         html.light-mode .btn-res-pin-location:hover {
-            background: linear-gradient(135deg, #16a34a, #15803d) !important;
-            border-color: #15803d !important;
-            box-shadow: 0 6px 18px rgba(22, 163, 74, 0.38) !important;
-            transform: translateY(-1px) !important;
+            background: #16a34a !important;
+            border: none !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
+            transform: translateY(-2px) !important;
         }
 
         /* ── PIN SOIL LOCATION MODAL (DARK MODE DEFAULT) ── */

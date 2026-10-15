@@ -103,21 +103,20 @@
             align-items: center;
             gap: 8px;
             padding: 15px 34px;
-            background: linear-gradient(135deg, #235347, #163832);
-            color: #DAF1DE;
+            background: #22c55e !important;
+            color: #ffffff !important;
             font-size: 15px;
             font-weight: 700;
             border-radius: 14px;
-            border: 1px solid #8EB69B;
+            border: none !important;
             text-decoration: none;
-            box-shadow: 0 10px 30px rgba(35, 83, 71, 0.6);
-            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .hero-btn-primary:hover {
             transform: translateY(-2px);
             background: #16a34a !important;
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            border-color: #22c55e !important;
             color: #ffffff !important;
         }
         .hero-btn-outline {
@@ -451,18 +450,19 @@
             align-items: center;
             gap: 8px;
             padding: 15px 38px;
-            background: #DAF1DE;
-            color: #051F20;
+            background: #22c55e !important;
+            color: #ffffff !important;
             font-size: 15px;
             font-weight: 800;
             border-radius: 14px;
+            border: none !important;
             text-decoration: none;
-            box-shadow: 0 10px 30px rgba(218, 241, 222, 0.3);
-            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
         }
         .cta-banner-btn:hover {
-            background: #22c55e !important;
+            background: #16a34a !important;
             color: #ffffff !important;
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
@@ -631,15 +631,16 @@
         html.light-mode .cta-banner h2,
         html.light-mode .cta-banner p { color: #FFFFFF !important; }
         html.light-mode .cta-banner-btn {
-            background: #FFFFFF;
-            color: #15803d;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            background: #22c55e !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
         }
         html.light-mode .cta-banner-btn:hover {
-            background: #f0fdf4;
-            color: #16a34a;
-            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
-            transform: translateY(-3px);
+            background: #16a34a !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
+            transform: translateY(-2px);
         }
     </style>
 
