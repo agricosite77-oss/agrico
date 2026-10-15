@@ -68,6 +68,8 @@ Route::prefix('')->name('website.')->group(function () {
     Route::get('/map', [WebsiteController::class, 'map'])->name('map');
     Route::get('/munsell', [WebsiteController::class, 'munsell'])->name('munsell');
     Route::get('/faq', [WebsiteController::class, 'faq'])->name('faq');
+    Route::get('/privacy', [WebsiteController::class, 'privacy'])->name('privacy');
+    Route::get('/terms', [WebsiteController::class, 'terms'])->name('terms');
     Route::get('/download', [WebsiteController::class, 'downloadApp'])->name('download');
 
     Route::get('/profile', [WebsiteController::class, 'profile'])

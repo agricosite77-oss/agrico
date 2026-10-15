@@ -1371,8 +1371,8 @@
         <div class="ws-footer-bottom-inner">
             <div>Â© {{ date('Y') }} AGRICO. All rights reserved.</div>
             <div class="ws-footer-bottom-links">
-                <a href="{{ route('website.faq') }}">Privacy Policy</a>
-                <a href="{{ route('website.faq') }}">Terms of Service</a>
+                <a href="{{ route('website.privacy') }}">Privacy Policy</a>
+                <a href="{{ route('website.terms') }}">Terms of Service</a>
             </div>
         </div>
     </div>

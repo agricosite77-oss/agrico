@@ -220,7 +220,7 @@ return [
             'id'       => 'terms-and-privacy',
             'category' => 'terms-privacy',
             'question' => 'What are AgriCo\'s Terms of Service and Privacy Policy?',
-            'answer'   => 'AgriCo is dedicated to open agricultural education and research while protecting your personal information. When you register, we collect your name, email, and academic details solely to administer your account and verify soil scans. We never sell your personal data, and public soil map pins only display soil classifications and geographic barangay locations.',
+            'answer'   => 'AgriCo is dedicated to open agricultural education and research while protecting your personal information under the Philippine Data Privacy Act of 2012. You can read our full legal agreements here: <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.',
             'keywords' => 'terms of service privacy policy data protection user safety rights rules agreement',
         ],
 

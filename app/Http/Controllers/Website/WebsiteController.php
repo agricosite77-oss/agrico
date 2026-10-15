@@ -918,4 +918,20 @@ class WebsiteController extends Controller
             'message' => $isValid ? 'Current password verified' : 'Incorrect current password',
         ]);
     }
+
+    /**
+     * Display the AgriCo Privacy Policy.
+     */
+    public function privacy(): \Illuminate\Contracts\View\View
+    {
+        return view('website.privacy');
+    }
+
+    /**
+     * Display the AgriCo Terms of Service.
+     */
+    public function terms(): \Illuminate\Contracts\View\View
+    {
+        return view('website.terms');
+    }
 }

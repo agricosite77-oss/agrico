@@ -1466,7 +1466,7 @@
                         </div>
                     </div>
                     <span class="terms-policy-text">
-                        I agree to the <a href="{{ route('website.faq') }}#terms-and-privacy" target="_blank" onclick="event.stopPropagation();">Terms of Service</a> and <a href="{{ route('website.faq') }}#terms-and-privacy" target="_blank" onclick="event.stopPropagation();">Privacy Policy</a>.
+                        I agree to the <a href="{{ route('website.terms') }}" target="_blank" onclick="event.stopPropagation();">Terms of Service</a> and <a href="{{ route('website.privacy') }}" target="_blank" onclick="event.stopPropagation();">Privacy Policy</a>.
                     </span>
                 </label>
             </div>

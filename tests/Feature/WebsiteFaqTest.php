@@ -66,7 +66,6 @@ class WebsiteFaqTest extends TestCase
         // 2. Register page
         $regRes = $this->get(route('register'));
         $regRes->assertStatus(200);
-        $regRes->assertSee(route('website.faq') . '#terms-and-privacy');
         $regRes->assertSee(route('website.faq') . '#account-approval');
 
         // 3. Forgot Password page

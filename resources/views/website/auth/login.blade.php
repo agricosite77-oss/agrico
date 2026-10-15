@@ -405,6 +405,12 @@
                 </svg>
             </a>
         </div>
+
+        <div style="text-align: center; margin-top: 12px; font-size: 0.74rem; color: #94a3b8; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <a href="{{ route('website.privacy') }}" target="_blank" style="color: #94a3b8; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#16a34a'" onmouseout="this.style.color='#94a3b8'">Privacy Policy</a>
+            <span>&bull;</span>
+            <a href="{{ route('website.terms') }}" target="_blank" style="color: #94a3b8; text-decoration: none; transition: color 0.15s ease;" onmouseover="this.style.color='#16a34a'" onmouseout="this.style.color='#94a3b8'">Terms of Service</a>
+        </div>
     </div>
 
     <!-- Mailcheck.js for Login email typo checking -->
