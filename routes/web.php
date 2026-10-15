@@ -46,9 +46,7 @@ Route::post('/reset-password', [PasswordResetCodeController::class, 'resetPasswo
 | PUBLIC WEBSITE PORTAL ROUTES
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    return redirect()->route('website.home');
-})->name('root');
+Route::get('/', [WebsiteController::class, 'home'])->name('root');
 
 Route::get('/splash', function () {
     return view('splash');
