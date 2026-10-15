@@ -37,6 +37,34 @@ class LocationController extends Controller
      */
     public function storePin(Request $request)
     {
+        // Tolerant normalization for soil_confidence and soil_percentage
+        if ($request->has('soil_confidence')) {
+            $rawConf = $request->input('soil_confidence');
+            if ($rawConf !== null && $rawConf !== '') {
+                $cleanConf = is_string($rawConf) ? trim(str_replace(['%', ' '], '', $rawConf)) : $rawConf;
+                if (is_numeric($cleanConf)) {
+                    $cVal = (float)$cleanConf;
+                    if ($cVal > 0 && $cVal <= 1.0) {
+                        $cVal = $cVal * 100;
+                    }
+                    $request->merge(['soil_confidence' => round($cVal, 1)]);
+                }
+            } else {
+                $request->merge(['soil_confidence' => null]);
+            }
+        }
+
+        if ($request->has('soil_percentage')) {
+            $rawPct = $request->input('soil_percentage');
+            if ($rawPct !== null && $rawPct !== '') {
+                $cleanPct = is_string($rawPct) ? trim($rawPct) : (string)$rawPct;
+                if (!str_ends_with($cleanPct, '%') && is_numeric($cleanPct)) {
+                    $cleanPct .= '%';
+                }
+                $request->merge(['soil_percentage' => $cleanPct]);
+            }
+        }
+
         $validated = $request->validate([
             'latitude'          => ['required', 'numeric', 'between:-90,90'],
             'longitude'         => ['required', 'numeric', 'between:-180,180'],
@@ -47,7 +75,7 @@ class LocationController extends Controller
             'coverage_area'     => ['nullable', 'string', 'max:100'],
             'pinned_soil_index' => ['nullable', 'integer', 'min:0'],
             'soil_percentage'   => ['nullable', 'string', 'max:20'],
-            'soil_confidence'   => ['nullable', 'string', 'max:20'],
+            'soil_confidence'   => ['nullable', 'numeric', 'between:0,100'],
             'soil_layer_meta'   => ['nullable'],
         ]);
 

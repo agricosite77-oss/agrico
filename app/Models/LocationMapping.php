@@ -29,6 +29,7 @@ class LocationMapping extends Model
 
     protected $casts = [
         'pinned_soil_index' => 'integer',
+        'soil_confidence'   => 'float',
         'soil_layer_meta'   => 'array',
         'latitude'          => 'float',
         'longitude'         => 'float',
@@ -176,6 +177,7 @@ class LocationMapping extends Model
         if (!$pct) $pct = '100%';
         if (is_numeric($pct)) $pct = $pct . '%';
         if (!$conf) $conf = '95%';
+        if (is_numeric($conf)) $conf = round((float)$conf, 1) . '%';
 
         return [[
             'scan_id'        => $this->soil_scan_id ?: $this->location_mapping_id,
@@ -274,6 +276,7 @@ class LocationMapping extends Model
 
         if (!$pctVal) $pctVal = 100.0;
         if (!$conf) $conf = '95%';
+        if (is_numeric($conf)) $conf = round((float)$conf, 1) . '%';
 
         $mCode = $meta['munsell_code'] ?? ($meta['munsell'] ?? ($sSoil?->full_code ?: ($sMColor?->full_code ?: '—')));
         $label = $meta['label'] ?? ($meta['color_name'] ?? ($sSoil?->soil_name ?: ($sMColor?->color_name ?: 'Soil Color')));

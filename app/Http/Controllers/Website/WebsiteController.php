@@ -468,6 +468,34 @@ class WebsiteController extends Controller
      */
     public function pinLocation(Request $request)
     {
+        // Tolerant normalization for soil_confidence and soil_percentage
+        if ($request->has('soil_confidence')) {
+            $rawConf = $request->input('soil_confidence');
+            if ($rawConf !== null && $rawConf !== '') {
+                $cleanConf = is_string($rawConf) ? trim(str_replace(['%', ' '], '', $rawConf)) : $rawConf;
+                if (is_numeric($cleanConf)) {
+                    $cVal = (float)$cleanConf;
+                    if ($cVal > 0 && $cVal <= 1.0) {
+                        $cVal = $cVal * 100;
+                    }
+                    $request->merge(['soil_confidence' => round($cVal, 1)]);
+                }
+            } else {
+                $request->merge(['soil_confidence' => null]);
+            }
+        }
+
+        if ($request->has('soil_percentage')) {
+            $rawPct = $request->input('soil_percentage');
+            if ($rawPct !== null && $rawPct !== '') {
+                $cleanPct = is_string($rawPct) ? trim($rawPct) : (string)$rawPct;
+                if (!str_ends_with($cleanPct, '%') && is_numeric($cleanPct)) {
+                    $cleanPct .= '%';
+                }
+                $request->merge(['soil_percentage' => $cleanPct]);
+            }
+        }
+
         try {
             $validated = $request->validate([
                 'latitude'           => ['required', 'numeric', 'between:-90,90'],
@@ -481,7 +509,7 @@ class WebsiteController extends Controller
                 'pin_mode'           => ['nullable', 'string', 'max:50'],
                 'pinned_soil_index'  => ['nullable', 'integer'],
                 'soil_percentage'    => ['nullable', 'string', 'max:50'],
-                'soil_confidence'    => ['nullable', 'string', 'max:50'],
+                'soil_confidence'    => ['nullable', 'numeric', 'between:0,100'],
                 'soil_layer_meta'    => ['nullable'],
                 'regions'            => ['nullable', 'array'],
             ]);
@@ -625,7 +653,15 @@ class WebsiteController extends Controller
                         }
 
                         $pctStr = isset($r['percent']) ? ($r['percent'] . '%') : ($r['percentage'] ?? null);
-                        $confStr = $r['confidence'] ?? null;
+                        if ($pctStr && is_numeric($pctStr)) $pctStr .= '%';
+
+                        $confNum = null;
+                        if (isset($r['confidence']) && $r['confidence'] !== null && $r['confidence'] !== '') {
+                            $cClean = is_string($r['confidence']) ? trim(str_replace(['%', ' '], '', $r['confidence'])) : $r['confidence'];
+                            if (is_numeric($cClean)) {
+                                $confNum = round((float)$cClean, 1);
+                            }
+                        }
 
                         // Same exact coordinate grouped as cluster
                         $loc = LocationMapping::create([
@@ -638,7 +674,7 @@ class WebsiteController extends Controller
                             'status'            => $directPublish ? 'Active' : 'Pending',
                             'pinned_soil_index' => $pIdx,
                             'soil_percentage'   => $pctStr,
-                            'soil_confidence'   => $confStr,
+                            'soil_confidence'   => $confNum,
                             'soil_layer_meta'   => $r,
                         ]);
                         $createdLocations[] = $loc;
@@ -681,7 +717,14 @@ class WebsiteController extends Controller
 
                 $pct = $validated['soil_percentage'] ?? ($meta['percent'] ?? ($meta['percentage'] ?? '100%'));
                 if (is_numeric($pct)) $pct = $pct . '%';
-                $conf = $validated['soil_confidence'] ?? ($meta['confidence'] ?? '95%');
+                
+                $conf = $validated['soil_confidence'] ?? null;
+                if ($conf === null && !empty($meta['confidence'])) {
+                    $cClean = is_string($meta['confidence']) ? trim(str_replace(['%', ' '], '', $meta['confidence'])) : $meta['confidence'];
+                    if (is_numeric($cClean)) {
+                        $conf = round((float)$cClean, 1);
+                    }
+                }
 
                 $location = LocationMapping::create([
                     'soil_scan_id'      => $soilScanId,
@@ -752,6 +795,12 @@ class WebsiteController extends Controller
                 'pinned_count'      => $pinCount,
                 'pinned_indices'    => $pinnedIndices,
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->validator->errors()->first() ?: 'The given data was invalid.',
+                'errors'  => $e->validator->errors(),
+            ], 422);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('[WebsiteController@pinLocation] ' . $e->getMessage(), [
                 'exception' => $e,
@@ -760,7 +809,7 @@ class WebsiteController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Unable to submit pin location: ' . $e->getMessage(),
+                'message' => 'Unable to submit pin location. Please try again.',
             ], 500);
         }
     }

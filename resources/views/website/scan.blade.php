@@ -3683,6 +3683,64 @@
             background: rgba(142, 182, 155, 0.3);
             color: #ffffff;
         }
+        .pin-modal-alert-banner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #ef4444;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.4;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+        html.light-mode .pin-modal-alert-banner {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+        .pin-modal-alert-banner.is-warning {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.35);
+            color: #f59e0b;
+        }
+        html.light-mode .pin-modal-alert-banner.is-warning {
+            background: #fffbeb;
+            border-color: #fde68a;
+            color: #d97706;
+        }
+        .pin-modal-alert-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .pin-modal-alert-text {
+            flex: 1;
+            min-width: 0;
+            word-break: break-word;
+        }
+        .pin-modal-alert-close {
+            background: none;
+            border: none;
+            color: currentColor;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            margin-left: auto;
+            opacity: 0.7;
+            padding: 0 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pin-modal-alert-close:hover {
+            opacity: 1;
+        }
         .pin-modal-body {
             padding: 16px 20px 20px;
             overflow-y: auto;
@@ -9507,7 +9565,9 @@
             if (isPinningAllSoils) {
                 currentPinTargetSoil = null;
                 if (activeRegions.length > 0 && window.currentScanPinnedIndices && window.currentScanPinnedIndices.length >= activeRegions.length) {
-                    alert('⚠️ All detected soil layers for this scan have already been pinned.');
+                    if (typeof showScanNotice === 'function') {
+                        showScanNotice('⚠️ All detected soil layers for this scan have already been pinned.');
+                    }
                     return;
                 }
                 if (modalTitleEl) modalTitleEl.textContent = 'Pin All Soil Locations';
@@ -9539,7 +9599,9 @@
 
                 const targetIdx = currentPinTargetSoil ? (currentPinTargetSoil.pinned_index ?? 0) : 0;
                 if (window.currentScanPinnedIndices && window.currentScanPinnedIndices.includes(targetIdx)) {
-                    alert('⚠️ This soil specimen layer has already been pinned to the map.');
+                    if (typeof showScanNotice === 'function') {
+                        showScanNotice('⚠️ This soil specimen layer has already been pinned to the map.');
+                    }
                     return;
                 }
 
@@ -9555,6 +9617,7 @@
                 }
             }
 
+            hidePinModalAlert();
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
@@ -9603,7 +9666,28 @@
             }, 300);
         }
 
+        function showPinModalAlert(msg, isWarning = false) {
+            const banner = document.getElementById('pinModalAlertBanner');
+            const text = document.getElementById('pinModalAlertText');
+            if (!banner || !text) return;
+            text.textContent = msg;
+            if (isWarning) {
+                banner.classList.add('is-warning');
+            } else {
+                banner.classList.remove('is-warning');
+            }
+            banner.style.display = 'flex';
+            const modalBody = document.querySelector('.pin-modal-body');
+            if (modalBody) modalBody.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hidePinModalAlert() {
+            const banner = document.getElementById('pinModalAlertBanner');
+            if (banner) banner.style.display = 'none';
+        }
+
         function closePinLocationModal() {
+            hidePinModalAlert();
             const modal = document.getElementById('pinSoilLocationModal');
             if (modal) modal.style.display = 'none';
             document.body.style.overflow = '';
@@ -10052,16 +10136,18 @@
 
         function submitPinLocation() {
             if (currentPinBarangay === 'Outside Lal-lo Coverage') {
-                alert('⚠️ Pinning outside Lal-lo is restricted. Please select coordinates within the Lal-lo municipal boundary before submitting.');
+                showPinModalAlert('⚠️ Pinning outside Lal-lo is restricted. Please select coordinates within the Lal-lo municipal boundary before submitting.', true);
                 return;
             }
 
             if (window.LalloBoundary && typeof window.LalloBoundary.isInsideLallo === 'function') {
                 if (!window.LalloBoundary.isInsideLallo(currentPinLat, currentPinLng)) {
-                    alert('⚠️ Pinning outside Lal-lo is restricted. Please select coordinates within the Lal-lo municipal boundary before submitting.');
+                    showPinModalAlert('⚠️ Pinning outside Lal-lo is restricted. Please select coordinates within the Lal-lo municipal boundary before submitting.', true);
                     return;
                 }
             }
+
+            hidePinModalAlert();
 
             const btn = document.getElementById('btnSubmitPinLocation');
             const spinner = document.getElementById('btnSubmitPinSpinner');
@@ -10072,6 +10158,16 @@
             if (spinner) spinner.style.display = 'inline-block';
             if (btnText) btnText.textContent = 'Submitting...';
 
+            let isRequestFinished = false;
+            const submitTimeout = setTimeout(() => {
+                if (!isRequestFinished) {
+                    if (btn) btn.disabled = false;
+                    if (spinner) spinner.style.display = 'none';
+                    if (btnText) btnText.textContent = 'Submit for Admin Approval';
+                    showPinModalAlert('Submission timed out. Please check your network connection and try again.');
+                }
+            }, 15000);
+
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             const scanData = window.currentScanResult || (typeof currentScanResponseData !== 'undefined' ? currentScanResponseData : lastScanMatch);
             const activeRegions = window.currentActiveScanRegions || (scanData && scanData.regions) || [];
@@ -10080,13 +10176,28 @@
                 ? currentPinTargetSoil.pinned_index
                 : (!isPinningAllSoils ? (window.currentActiveSelectedSoilIndex || 0) : null);
 
-            const soilPercentage = (!isPinningAllSoils && currentPinTargetSoil)
-                ? (currentPinTargetSoil.percent !== undefined ? (currentPinTargetSoil.percent + '%') : (currentPinTargetSoil.percentage || null))
-                : null;
+            let soilPercentage = null;
+            if (!isPinningAllSoils && currentPinTargetSoil) {
+                const rawPct = currentPinTargetSoil.percent !== undefined ? currentPinTargetSoil.percent : (currentPinTargetSoil.percentage || null);
+                if (rawPct !== null && rawPct !== '') {
+                    soilPercentage = String(rawPct).endsWith('%') ? String(rawPct) : (rawPct + '%');
+                }
+            }
 
-            const soilConfidence = (!isPinningAllSoils && currentPinTargetSoil)
-                ? (currentPinTargetSoil.confidence || null)
-                : null;
+            let soilConfidence = null;
+            if (!isPinningAllSoils && currentPinTargetSoil) {
+                const rawConf = currentPinTargetSoil.confidence;
+                if (rawConf !== undefined && rawConf !== null && rawConf !== '') {
+                    if (typeof rawConf === 'number') {
+                        soilConfidence = (rawConf > 0 && rawConf <= 1.0) ? Math.round(rawConf * 1000) / 10 : Math.round(rawConf * 10) / 10;
+                    } else if (typeof rawConf === 'string') {
+                        const parsed = parseFloat(rawConf.replace('%', '').trim());
+                        if (!isNaN(parsed)) {
+                            soilConfidence = (parsed > 0 && parsed <= 1.0) ? Math.round(parsed * 1000) / 10 : Math.round(parsed * 10) / 10;
+                        }
+                    }
+                }
+            }
 
             const soilId = (!isPinningAllSoils && currentPinTargetSoil && (currentPinTargetSoil.soil_id || currentPinTargetSoil.id)) 
                 || (window.currentScanResult && (window.currentScanResult.soil_id || (window.currentScanResult.soil_model && window.currentScanResult.soil_model.soil_id)))
@@ -10125,6 +10236,9 @@
             })
             .then(res => res.json())
             .then(data => {
+                isRequestFinished = true;
+                clearTimeout(submitTimeout);
+
                 if (data.success) {
                     closePinLocationModal();
                     if (data.location && typeof lastScanMatch !== 'undefined' && lastScanMatch) {
@@ -10164,17 +10278,21 @@
                             updatePinButtonStates();
                         }
                     }
-                    alert(data.message || 'Unable to submit pin location.');
+                    showPinModalAlert(data.message || 'Unable to submit pin location. Please review your entries.');
                 }
             })
             .catch(err => {
+                isRequestFinished = true;
+                clearTimeout(submitTimeout);
                 console.error('Pin location error:', err);
-                alert('An error occurred while submitting coordinates. Please try again.');
+                showPinModalAlert('An error occurred while submitting coordinates. Please check your connection and try again.');
             })
             .finally(() => {
+                isRequestFinished = true;
+                clearTimeout(submitTimeout);
                 if (btn) btn.disabled = false;
                 if (spinner) spinner.style.display = 'none';
-                if (btnText) btnText.textContent = 'Submit for Admin Approval 📍';
+                if (btnText) btnText.textContent = 'Submit for Admin Approval';
             });
         }
 
@@ -11171,6 +11289,19 @@
 
             <!-- Scrollable Body -->
             <div class="pin-modal-body">
+
+                <!-- Inline Error / Warning Banner in AgriCo Style -->
+                <div id="pinModalAlertBanner" class="pin-modal-alert-banner" style="display: none;">
+                    <div class="pin-modal-alert-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div id="pinModalAlertText" class="pin-modal-alert-text"></div>
+                    <button type="button" class="pin-modal-alert-close" onclick="hidePinModalAlert()" title="Dismiss">&times;</button>
+                </div>
 
                 <!-- Barangay Search Input -->
                 <div class="pin-field-group" style="position: relative;">
