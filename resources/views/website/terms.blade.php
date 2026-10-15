@@ -96,34 +96,29 @@
         .legal-toc-nav {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 2px;
         }
         .legal-toc-link {
             display: block;
-            padding: 8px 16px;
+            padding: 8px 12px;
             font-size: 13px;
             font-weight: 600;
             color: #64748b;
             text-decoration: none;
-            border-radius: 9999px;
-            border: 1.5px solid transparent;
+            border-radius: 8px;
+            border-left: 2.5px solid transparent;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             line-height: 1.4;
-            user-select: none;
         }
         .legal-toc-link:hover {
             color: #166534;
-            background: #f0fdf4;
-            border-color: #86efac;
-            transform: translateX(3px);
+            background: #f8fafc;
         }
         .legal-toc-link.is-active {
-            color: #ffffff !important;
-            background: #22c55e !important;
-            border-color: #22c55e !important;
+            color: #15803d;
+            background: #f0fdf4;
+            border-left-color: #22c55e;
             font-weight: 700;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
-            transform: translateX(4px);
         }
 
         /* ── MOBILE TOC COLLAPSIBLE ── */
@@ -181,16 +176,6 @@
         .legal-section {
             scroll-margin-top: 100px;
             margin-bottom: 44px;
-            border-radius: 16px;
-            transition: box-shadow 0.35s ease;
-        }
-        .legal-section.highlight-target {
-            animation: highlightPulse 2s ease-out;
-        }
-        @keyframes highlightPulse {
-            0% { box-shadow: 0 0 0 4px #86efac; border-radius: 16px; }
-            50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0.25); border-radius: 16px; }
-            100% { box-shadow: none; border-radius: 16px; }
         }
         .legal-section-header {
             display: flex;
@@ -282,23 +267,22 @@
         .legal-cross-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 11px 22px;
+            gap: 6px;
+            padding: 10px 20px;
             background: #22c55e;
             color: #ffffff !important;
             font-size: 13.5px;
             font-weight: 700;
-            border-radius: 9999px;
+            border-radius: 10px;
             text-decoration: none;
             white-space: nowrap;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
-            animation: glowingGreenPulse 3s ease-in-out infinite;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
         }
         .legal-cross-btn:hover {
             background: #16a34a;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.45);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(34, 197, 94, 0.35);
         }
 
         /* ── BACK TO TOP FLOATING BUTTON ── */
@@ -330,8 +314,8 @@
             background: #f0fdf4;
             border-color: #22c55e;
             color: #15803d;
-            transform: translateY(-3px) scale(1.06);
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(34, 197, 94, 0.25);
         }
 
         /* ── RESPONSIVE DESIGN ── */
@@ -425,22 +409,15 @@
         }
         html:not(.light-mode) .legal-toc-link {
             color: #8EB69B;
-            border-radius: 9999px;
-            border: 1.5px solid transparent;
         }
         html:not(.light-mode) .legal-toc-link:hover {
-            color: #DAF1DE;
-            background: #163832;
-            border-color: #4ADE80;
-            transform: translateX(3px);
+            color: #4ADE80;
+            background: rgba(35, 83, 71, 0.4);
         }
         html:not(.light-mode) .legal-toc-link.is-active {
-            background: #22c55e !important;
-            border-color: #22c55e !important;
-            color: #ffffff !important;
-            font-weight: 700;
-            box-shadow: 0 4px 16px rgba(34, 197, 94, 0.45) !important;
-            transform: translateX(4px);
+            color: #4ADE80;
+            background: rgba(34, 197, 94, 0.15);
+            border-left-color: #22c55e;
         }
         html:not(.light-mode) .legal-mobile-toc {
             background: #0B2B26;
@@ -454,23 +431,13 @@
         }
         html:not(.light-mode) .legal-mobile-toc-list a {
             color: #8EB69B;
-            border-radius: 9999px;
-            padding: 8px 14px;
-            transition: all 0.2s ease;
         }
         html:not(.light-mode) .legal-mobile-toc-list a:hover {
-            background: #163832;
-            color: #DAF1DE;
-            border-color: #4ADE80;
+            background: rgba(35, 83, 71, 0.4);
+            color: #4ADE80;
         }
         html:not(.light-mode) .legal-section-num {
-            background: rgba(34, 197, 94, 0.16);
-            border: 1px solid rgba(74, 222, 128, 0.4);
             color: #4ADE80;
-            padding: 2px 10px;
-            border-radius: 9999px;
-            box-shadow: 0 0 12px rgba(34, 197, 94, 0.25);
-            display: inline-block;
         }
         html:not(.light-mode) .legal-section-title {
             color: #ffffff;
@@ -523,19 +490,6 @@
         html:not(.light-mode) .legal-cross-text p {
             color: #8EB69B;
         }
-        html:not(.light-mode) .legal-cross-btn {
-            background: #22c55e;
-            color: #ffffff !important;
-            border: 1.5px solid #22c55e;
-            box-shadow: 0 4px 16px rgba(34, 197, 94, 0.45);
-            animation: glowingGreenPulse 3s ease-in-out infinite;
-        }
-        html:not(.light-mode) .legal-cross-btn:hover {
-            background: #16a34a;
-            border-color: #16a34a;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 26px rgba(34, 197, 94, 0.65);
-        }
         html:not(.light-mode) .legal-back-to-top {
             background: #0B2B26;
             border-color: rgba(142, 182, 155, 0.35);
@@ -546,20 +500,7 @@
             background: #22c55e;
             border-color: #22c55e;
             color: #ffffff;
-            box-shadow: 0 6px 22px rgba(34, 197, 94, 0.55);
-            transform: translateY(-3px) scale(1.08);
-        }
-        html:not(.light-mode) .legal-section.highlight-target {
-            animation: highlightPulseDark 2s ease-out;
-        }
-        @keyframes highlightPulseDark {
-            0% { box-shadow: 0 0 0 4px #4ADE80, 0 0 20px rgba(34, 197, 94, 0.5); border-radius: 16px; }
-            50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0.3), 0 0 30px rgba(34, 197, 94, 0.35); border-radius: 16px; }
-            100% { box-shadow: none; border-radius: 16px; }
-        }
-        @keyframes glowingGreenPulse {
-            0%, 100% { box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4); }
-            50% { box-shadow: 0 6px 24px rgba(34, 197, 94, 0.7); }
+            box-shadow: 0 6px 18px rgba(34, 197, 94, 0.35);
         }
     </style>
 
@@ -929,21 +870,6 @@
 
             backToTopBtn?.addEventListener('click', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            // 4. Smooth Anchor Click with Glowing Green Pulse Animation
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function() {
-                    const targetId = this.getAttribute('href');
-                    if (targetId && targetId.length > 1) {
-                        const targetEl = document.querySelector(targetId);
-                        if (targetEl) {
-                            targetEl.classList.remove('highlight-target');
-                            void targetEl.offsetWidth;
-                            targetEl.classList.add('highlight-target');
-                        }
-                    }
-                });
             });
         });
     </script>
