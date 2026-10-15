@@ -31,18 +31,19 @@
         }
 
         /* Modal Responsive Layout Styling - Dark Mode Theme */
+        /* Modal Responsive Layout Styling - Dark Mode Theme */
         .profile-modal-card {
             position: relative;
             z-index: 100000;
             width: 100%;
-            max-width: 540px;
+            max-width: 580px;
             background: #0B2B26;
             border-radius: 24px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(35, 83, 71, 0.25);
             border: 1px solid rgba(142, 182, 155, 0.28);
             display: flex;
             flex-direction: column;
-            max-height: min(88vh, 560px);
+            max-height: min(90vh, 660px);
             overflow: hidden;
             margin: auto;
         }
@@ -84,8 +85,23 @@
         @media (max-width: 640px) {
             .profile-modal-card {
                 width: calc(100vw - 32px) !important;
-                max-height: 88vh !important;
+                max-height: 90vh !important;
                 border-radius: 20px !important;
+            }
+            .profile-modal-tabs {
+                margin: 0 16px 12px 16px !important;
+                gap: 4px !important;
+                padding: 3px !important;
+            }
+            .profile-modal-tab-btn {
+                padding: 7px 4px !important;
+                font-size: 11px !important;
+                gap: 3px !important;
+            }
+            .profile-modal-tab-btn svg {
+                width: 13px !important;
+                height: 13px !important;
+                flex-shrink: 0 !important;
             }
             .profile-modal-body {
                 grid-template-columns: 1fr !important;
@@ -1912,13 +1928,92 @@
             box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08) !important;
         }
 
+        /* ── Profile Modal Security & Email Boxes ── */
+        .profile-modal-sec-box {
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.28);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            color: #DAF1DE;
+            transition: all 0.25s ease;
+        }
+        html.light-mode .profile-modal-sec-box,
+        .light-mode .profile-modal-sec-box {
+            background: #f0fdf4 !important;
+            border-color: #bbf7d0 !important;
+            color: #14532d !important;
+        }
+        html.light-mode .profile-modal-sec-box strong,
+        .light-mode .profile-modal-sec-box strong {
+            color: #166534 !important;
+        }
+        html.light-mode .profile-modal-sec-box span,
+        .light-mode .profile-modal-sec-box span {
+            color: #15803d !important;
+        }
+
+        .profile-modal-current-email {
+            background: rgba(16, 44, 38, 0.55);
+            border: 1px solid rgba(142, 182, 155, 0.25);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.25s ease;
+        }
+        html.light-mode .profile-modal-current-email,
+        .light-mode .profile-modal-current-email {
+            background: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+        }
+        .profile-modal-current-email-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #8EB69B;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+        }
+        html.light-mode .profile-modal-current-email-label,
+        .light-mode .profile-modal-current-email-label {
+            color: #64748b !important;
+        }
+        .profile-modal-current-email-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: #FFFFFF;
+            display: block;
+            margin-top: 2px;
+        }
+        html.light-mode .profile-modal-current-email-val,
+        .light-mode .profile-modal-current-email-val {
+            color: #0f172a !important;
+        }
+
+        html.light-mode .profile-email-verify-sub,
+        .light-mode .profile-email-verify-sub {
+            color: #475569 !important;
+        }
+        html.light-mode .profile-email-verify-target,
+        .light-mode .profile-email-verify-target {
+            color: #16a34a !important;
+        }
+
         /* ── 6-digit code box ── */
         .email-code-box {
             letter-spacing: 6px;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
             text-align: center;
-            font-family: monospace;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            transition: all 0.2s ease;
+        }
+        .email-code-box:focus {
+            border-color: #22c55e !important;
+            box-shadow: 0 0 0 3.5px rgba(34, 197, 94, 0.25) !important;
         }
     </style>
 
@@ -2596,24 +2691,15 @@
 
             {{-- Account Info --}}
             <div class="profile-info-card ui-reveal">
-                <div class="profile-info-header" style="justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="profile-info-header-icon">
-                            <svg width="18" height="18" fill="none" stroke="#4ADE80" stroke-width="2"
-                                 stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                        </div>
-                        <h3>Account Information</h3>
-                    </div>
-
-                    <button type="button" @click="showEditModal = true" class="profile-edit-btn">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                <div class="profile-info-header">
+                    <div class="profile-info-header-icon">
+                        <svg width="18" height="18" fill="none" stroke="#4ADE80" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
                         </svg>
-                        Edit Profile
-                    </button>
+                    </div>
+                    <h3>Account Information</h3>
                 </div>
                 <div class="profile-info-rows">
                     <div class="profile-info-row">
@@ -2762,13 +2848,16 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                                             </svg>
                                             <input
+                                                id="edit_email_readonly"
                                                 type="email"
                                                 :value="editEmail"
                                                 disabled
+                                                placeholder=" "
                                                 class="floating-input"
-                                                style="width:100%; height:44px; padding:10px 16px 10px 42px; font-size:0.88rem; opacity:0.75; cursor:not-allowed; box-sizing:border-box;"
+                                                style="width:100%; height:44px; padding:10px 80px 10px 42px; font-size:0.88rem; opacity:0.85; cursor:not-allowed; box-sizing:border-box;"
                                             >
-                                            <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#22c55e; background:rgba(34,197,94,0.12); border-radius:9999px; padding:2px 8px;">
+                                            <label for="edit_email_readonly" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">Current Email</label>
+                                            <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:#22c55e; background:rgba(34,197,94,0.12); border-radius:9999px; padding:2px 8px; z-index:3;">
                                                 Verified
                                             </span>
                                         </div>
@@ -2874,14 +2963,14 @@
                         {{-- TAB 2: CHANGE EMAIL --}}
                         <div x-show="editTab === 'email'" style="display:flex; flex-direction:column; flex:1; min-height:0; padding:20px 24px; overflow-y:auto;">
                             {{-- Privacy & Security Banner --}}
-                            <div style="background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); border-radius:14px; padding:14px 16px; margin-bottom:18px;">
+                            <div class="profile-modal-sec-box">
                                 <div style="display:flex; align-items:flex-start; gap:10px;">
                                     <svg width="18" height="18" fill="none" stroke="#4ADE80" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0; margin-top:2px;">
                                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                                     </svg>
                                     <div>
-                                        <strong style="color:inherit; font-size:13px; display:block; margin-bottom:2px;">Encrypted & Private Information</strong>
-                                        <span style="font-size:12.5px; opacity:0.88; line-height:1.4; display:block;">
+                                        <strong style="font-size:13px; display:block; margin-bottom:2px;">Encrypted & Private Information</strong>
+                                        <span style="font-size:12.5px; opacity:0.88; line-height:1.45; display:block;">
                                             To ensure strict account privacy and security, a 6-digit confirmation code will be sent to your new email before updating. A security notification will also be sent to your current email.
                                         </span>
                                     </div>
@@ -2889,10 +2978,10 @@
                             </div>
 
                             {{-- Current Email Card --}}
-                            <div style="background:rgba(16,44,38,0.5); border:1px solid rgba(142,182,155,0.25); border-radius:14px; padding:14px 18px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center;">
+                            <div class="profile-modal-current-email">
                                 <div>
-                                    <span style="font-size:11px; font-weight:800; color:#8EB69B; text-transform:uppercase; letter-spacing:0.05em; display:block;">Current Email</span>
-                                    <span style="font-size:14px; font-weight:700; color:inherit; display:block; margin-top:2px;">{{ $user->email }}</span>
+                                    <span class="profile-modal-current-email-label">Current Email</span>
+                                    <span class="profile-modal-current-email-val">{{ $user->email }}</span>
                                 </div>
                                 <span style="font-size:11.5px; font-weight:700; color:#22c55e; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); border-radius:9999px; padding:3px 10px;">
                                     Verified
@@ -2914,13 +3003,15 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                                     </svg>
                                     <input
+                                        id="edit_new_email"
                                         type="email"
                                         x-model="newEmailInput"
-                                        placeholder="Enter your new email address"
+                                        placeholder=" "
                                         class="floating-input"
-                                        style="width:100%; height:46px; padding:10px 16px 10px 42px; font-size:0.9rem; outline:none; box-sizing:border-box; border-radius:12px;"
+                                        style="width:100%; height:46px; padding:10px 16px 10px 42px; font-size:0.88rem; outline:none; box-sizing:border-box;"
                                         @keydown.enter.prevent="sendEmailCode()"
                                     >
+                                    <label for="edit_new_email" class="floating-label" style="position:absolute; left:40px; top:50%; transform:translateY(-50%); font-size:0.86rem; pointer-events:none; transition:all 0.2s ease; background:transparent; padding:0 4px; z-index:2;">New Email Address</label>
                                 </div>
 
                                 <button
@@ -2941,8 +3032,8 @@
                             {{-- STEP 2: Enter 6-digit Code --}}
                             <div x-show="emailStep === 2" style="display:flex; flex-direction:column; gap:16px;">
                                 <div style="text-align:center; padding:10px 0;">
-                                    <span style="font-size:13px; opacity:0.85;">Enter the 6-digit verification code sent to</span>
-                                    <div style="font-size:14.5px; font-weight:800; color:#4ADE80; margin-top:2px;" x-text="newEmailInput"></div>
+                                    <span class="profile-email-verify-sub" style="font-size:13px; opacity:0.85;">Enter the 6-digit verification code sent to</span>
+                                    <div class="profile-email-verify-target" style="font-size:15px; font-weight:800; color:#4ADE80; margin-top:2px;" x-text="newEmailInput"></div>
                                 </div>
 
                                 <div style="display:flex; justify-content:center;">
