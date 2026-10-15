@@ -380,6 +380,128 @@
                 color: #000000 !important;
             }
         }
+
+        /* ── DARK MODE OVERRIDES (AGRICO SIGNATURE FOREST DARK) ── */
+        html:not(.light-mode) .legal-page-wrapper {
+            background-color: #051F20;
+            color: #DAF1DE;
+        }
+        html:not(.light-mode) .legal-title {
+            color: #ffffff;
+        }
+        html:not(.light-mode) .legal-subtitle {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .legal-meta {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .legal-divider {
+            background: rgba(142, 182, 155, 0.2);
+        }
+        html:not(.light-mode) .legal-toc-title {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .legal-toc-sidebar {
+            scrollbar-color: rgba(142, 182, 155, 0.3) transparent;
+        }
+        html:not(.light-mode) .legal-toc-sidebar::-webkit-scrollbar-thumb {
+            background-color: rgba(142, 182, 155, 0.3);
+        }
+        html:not(.light-mode) .legal-toc-link {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .legal-toc-link:hover {
+            color: #4ADE80;
+            background: rgba(35, 83, 71, 0.4);
+        }
+        html:not(.light-mode) .legal-toc-link.is-active {
+            color: #4ADE80;
+            background: rgba(34, 197, 94, 0.15);
+            border-left-color: #22c55e;
+        }
+        html:not(.light-mode) .legal-mobile-toc {
+            background: #0B2B26;
+            border-color: rgba(142, 182, 155, 0.28);
+        }
+        html:not(.light-mode) .legal-mobile-toc-toggle {
+            color: #DAF1DE;
+        }
+        html:not(.light-mode) .legal-mobile-toc-list {
+            border-top-color: rgba(142, 182, 155, 0.2);
+        }
+        html:not(.light-mode) .legal-mobile-toc-list a {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .legal-mobile-toc-list a:hover {
+            background: rgba(35, 83, 71, 0.4);
+            color: #4ADE80;
+        }
+        html:not(.light-mode) .legal-section-num {
+            color: #4ADE80;
+        }
+        html:not(.light-mode) .legal-section-title {
+            color: #ffffff;
+        }
+        html:not(.light-mode) .legal-content-canvas p,
+        html:not(.light-mode) .legal-content-canvas ul,
+        html:not(.light-mode) .legal-content-canvas ol,
+        html:not(.light-mode) .legal-content-canvas li {
+            color: #DAF1DE;
+        }
+        html:not(.light-mode) .legal-content-canvas p strong,
+        html:not(.light-mode) .legal-content-canvas li strong,
+        html:not(.light-mode) .legal-content-canvas h3,
+        html:not(.light-mode) .legal-content-canvas h4 {
+            color: #ffffff;
+        }
+        html:not(.light-mode) .legal-content-canvas a {
+            color: #4ADE80;
+        }
+        html:not(.light-mode) .legal-content-canvas a:hover {
+            color: #86efac;
+        }
+        html:not(.light-mode) .legal-content-canvas code {
+            background: rgba(35, 83, 71, 0.55);
+            color: #86efac;
+            border: 1px solid rgba(142, 182, 155, 0.3);
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+        html:not(.light-mode) .legal-disclaimer-box {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1.5px solid rgba(251, 191, 36, 0.35);
+            border-left: 4px solid #f59e0b;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        }
+        html:not(.light-mode) .legal-disclaimer-box h4 {
+            color: #fbbf24;
+        }
+        html:not(.light-mode) .legal-disclaimer-box p {
+            color: #fef3c7 !important;
+        }
+        html:not(.light-mode) .legal-cross-banner {
+            background: linear-gradient(135deg, #072722 0%, #0B2B26 100%);
+            border-color: rgba(142, 182, 155, 0.28);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        html:not(.light-mode) .legal-cross-text h4 {
+            color: #ffffff;
+        }
+        html:not(.light-mode) .legal-cross-text p {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .legal-back-to-top {
+            background: #0B2B26;
+            border-color: rgba(142, 182, 155, 0.35);
+            color: #4ADE80;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+        }
+        html:not(.light-mode) .legal-back-to-top:hover {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: #ffffff;
+            box-shadow: 0 6px 18px rgba(34, 197, 94, 0.35);
+        }
     </style>
 
     <div class="legal-page-wrapper">

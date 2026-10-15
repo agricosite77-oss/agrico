@@ -565,6 +565,215 @@
                 box-sizing: border-box;
             }
         }
+
+        /* ── DARK MODE OVERRIDES (AGRICO SIGNATURE FOREST DARK) ── */
+        html:not(.light-mode) .faq-hero {
+            background: linear-gradient(135deg, #072722 0%, #0B2B26 50%, #051F20 100%);
+            border-bottom-color: rgba(142, 182, 155, 0.2);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+        }
+        html:not(.light-mode) .faq-breadcrumb {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .faq-breadcrumb a {
+            color: #4ADE80;
+        }
+        html:not(.light-mode) .faq-breadcrumb a:hover {
+            color: #86efac;
+        }
+        html:not(.light-mode) .faq-title {
+            color: #ffffff;
+        }
+        html:not(.light-mode) .faq-subtitle {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .faq-search-input {
+            background: #0B2B26;
+            border-color: rgba(142, 182, 155, 0.28);
+            color: #DAF1DE;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+        html:not(.light-mode) .faq-search-input:focus {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+        }
+        html:not(.light-mode) .faq-search-input::placeholder {
+            color: #8EB69B;
+            opacity: 0.8;
+        }
+        html:not(.light-mode) .faq-search-icon {
+            stroke: #8EB69B;
+        }
+        html:not(.light-mode) .faq-search-clear {
+            background: rgba(35, 83, 71, 0.6);
+            color: #DAF1DE;
+        }
+        html:not(.light-mode) .faq-search-clear:hover {
+            background: #235347;
+            color: #ffffff;
+        }
+        html:not(.light-mode) .faq-cat-arrow {
+            background: #0B2B26;
+            border-color: rgba(142, 182, 155, 0.28);
+            color: #4ADE80;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+        html:not(.light-mode) .faq-cat-arrow:hover:not(:disabled) {
+            background: #163832;
+            border-color: #22c55e;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        html:not(.light-mode) .faq-cat-arrow:disabled {
+            border-color: rgba(142, 182, 155, 0.15);
+            color: rgba(142, 182, 155, 0.35);
+        }
+        html:not(.light-mode) .faq-cat-btn {
+            background: #0B2B26;
+            border-color: rgba(142, 182, 155, 0.28);
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .faq-cat-btn:hover {
+            border-color: #4ADE80;
+            color: #DAF1DE;
+            background: #163832;
+        }
+        html:not(.light-mode) .faq-cat-btn.active {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);
+        }
+        html:not(.light-mode) .faq-cat-count {
+            background: rgba(255, 255, 255, 0.12);
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .faq-cat-btn.active .faq-cat-count {
+            background: rgba(255, 255, 255, 0.28);
+            color: #ffffff;
+        }
+        html:not(.light-mode) .faq-status-text {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .faq-expand-toggle {
+            color: #4ADE80;
+        }
+        html:not(.light-mode) .faq-expand-toggle:hover {
+            background: rgba(35, 83, 71, 0.45);
+            color: #ffffff;
+        }
+        html:not(.light-mode) .faq-item {
+            background: #0B2B26;
+            border-color: rgba(142, 182, 155, 0.22);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+        html:not(.light-mode) .faq-item:hover {
+            border-color: rgba(74, 222, 128, 0.45);
+            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.4);
+        }
+        html:not(.light-mode) .faq-item.is-open {
+            border-color: #22c55e;
+            box-shadow: 0 8px 26px rgba(34, 197, 94, 0.18);
+        }
+        html:not(.light-mode) .faq-tag {
+            color: #4ADE80;
+        }
+        html:not(.light-mode) .faq-question {
+            color: #DAF1DE;
+        }
+        html:not(.light-mode) .faq-item.is-open .faq-question {
+            color: #4ADE80;
+        }
+        html:not(.light-mode) .faq-icon-bubble {
+            background: rgba(35, 83, 71, 0.55);
+            border-color: rgba(142, 182, 155, 0.3);
+        }
+        html:not(.light-mode) .faq-icon-bubble svg {
+            stroke: #4ADE80;
+        }
+        html:not(.light-mode) .faq-item.is-open .faq-icon-bubble {
+            background: #22c55e;
+            border-color: #22c55e;
+        }
+        html:not(.light-mode) .faq-item.is-open .faq-icon-bubble svg {
+            stroke: #ffffff;
+        }
+        html:not(.light-mode) .faq-answer-inner {
+            border-top-color: rgba(142, 182, 155, 0.18);
+            color: #DAF1DE;
+        }
+        html:not(.light-mode) .faq-answer-inner strong,
+        html:not(.light-mode) .faq-answer-inner b {
+            color: #ffffff;
+        }
+        html:not(.light-mode) .faq-answer-inner a {
+            color: #4ADE80;
+        }
+        html:not(.light-mode) .faq-answer-inner a:hover {
+            color: #86efac;
+        }
+        html:not(.light-mode) .faq-answer-inner code {
+            background: rgba(35, 83, 71, 0.55);
+            color: #86efac;
+            border: 1px solid rgba(142, 182, 155, 0.25);
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+        html:not(.light-mode) .faq-answer-footer {
+            border-top-color: rgba(142, 182, 155, 0.2);
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .faq-copy-anchor-btn {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .faq-copy-anchor-btn:hover {
+            background: rgba(35, 83, 71, 0.5);
+            color: #4ADE80;
+        }
+        html:not(.light-mode) .faq-no-results {
+            background: #0B2B26;
+            border-color: rgba(142, 182, 155, 0.3);
+        }
+        html:not(.light-mode) .faq-no-results-icon {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .faq-no-results h3 {
+            color: #ffffff;
+        }
+        html:not(.light-mode) .faq-no-results p {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .faq-clear-search-btn {
+            background: rgba(35, 83, 71, 0.6);
+            border-color: #4ADE80;
+            color: #4ADE80;
+        }
+        html:not(.light-mode) .faq-clear-search-btn:hover {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: #ffffff;
+        }
+        html:not(.light-mode) .faq-contact-card {
+            background: linear-gradient(135deg, #072722 0%, #0B2B26 100%);
+            border-color: rgba(142, 182, 155, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        html:not(.light-mode) .faq-contact-card h2 {
+            color: #ffffff;
+        }
+        html:not(.light-mode) .faq-contact-card p {
+            color: #8EB69B;
+        }
+        html:not(.light-mode) .faq-btn-secondary {
+            background: #0B2B26;
+            border-color: rgba(142, 182, 155, 0.35);
+            color: #DAF1DE !important;
+        }
+        html:not(.light-mode) .faq-btn-secondary:hover {
+            background: #163832;
+            border-color: #4ADE80;
+            color: #4ADE80 !important;
+        }
     </style>
 
     {{-- Page Hero Banner --}}
