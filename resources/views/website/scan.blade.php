@@ -713,18 +713,18 @@
         }
         .scanner-btn-primary,
         .scanner-btn-cam {
-            background: #22c55e !important;
-            color: #ffffff !important;
-            border: none !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            background: linear-gradient(135deg, #235347, #163832) !important;
+            color: #DAF1DE !important;
+            border: 1.5px solid #8EB69B !important;
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.4) !important;
         }
         .scanner-btn-primary:hover,
         .scanner-btn-cam:hover {
-            background: #16a34a !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            border: none !important;
+            background: linear-gradient(135deg, #2e695a, #1c453d) !important;
+            border-color: #DAF1DE !important;
             color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.55) !important;
         }
         .scanner-btn-secondary {
             background: rgba(11, 43, 38, 0.8) !important;
@@ -739,16 +739,17 @@
             box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35) !important;
         }
         .scanner-btn-cta {
-            background: #22c55e !important;
-            color: #ffffff !important;
-            border: none !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            background: linear-gradient(135deg, #235347, #163832) !important;
+            color: #DAF1DE !important;
+            border: 1.5px solid #8EB69B !important;
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.4) !important;
         }
         .scanner-btn-cta:hover {
-            background: #16a34a !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            transform: translateY(-2px) !important;
+            background: linear-gradient(135deg, #2e695a, #1c453d) !important;
+            border-color: #DAF1DE !important;
             color: #ffffff !important;
+            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.55) !important;
+            transform: translateY(-2px) !important;
         }
 
         /* Result Display Card */
@@ -1546,16 +1547,17 @@
             }
         }
         html.light-mode .scanner-btn-primary {
-            background: #22c55e !important;
-            color: #ffffff !important;
-            border: none !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            background: linear-gradient(135deg, #235347, #163832) !important;
+            border: 1.5px solid #8EB69B !important;
+            color: #DAF1DE !important;
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.28) !important;
         }
         html.light-mode .scanner-btn-primary:hover {
-            background: #16a34a !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            transform: translateY(-2px) !important;
+            background: linear-gradient(135deg, #2e695a, #1c453d) !important;
+            border-color: #DAF1DE !important;
             color: #ffffff !important;
+            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.45) !important;
+            transform: translateY(-2px) !important;
         }
         html.light-mode .scanner-btn-secondary {
             background: #ffffff !important;
@@ -3542,17 +3544,17 @@
             transform: translateY(0);
         }
         .btn-res-pin-location {
-            background: #22c55e !important;
-            border: none !important;
-            color: #ffffff !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            background: linear-gradient(135deg, #235347, #163832) !important;
+            border: 1.5px solid #8EB69B !important;
+            color: #DAF1DE !important;
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.4) !important;
         }
         .btn-res-pin-location:hover {
-            background: #16a34a !important;
-            border: none !important;
+            background: linear-gradient(135deg, #2e695a, #1c453d) !important;
+            border-color: #DAF1DE !important;
             color: #ffffff !important;
             transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
+            box-shadow: 0 6px 20px rgba(35, 83, 71, 0.55) !important;
         }
         .btn-res-pin-location:active {
             transform: translateY(0);
@@ -3573,16 +3575,16 @@
             transform: translateY(-2px) !important;
         }
         html.light-mode .btn-res-pin-location {
-            background: #22c55e !important;
-            border: none !important;
-            color: #ffffff !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            background: linear-gradient(135deg, #235347, #163832) !important;
+            border: 1.5px solid #8EB69B !important;
+            color: #DAF1DE !important;
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.28) !important;
         }
         html.light-mode .btn-res-pin-location:hover {
-            background: #16a34a !important;
-            border: none !important;
+            background: linear-gradient(135deg, #2e695a, #1c453d) !important;
+            border-color: #DAF1DE !important;
             color: #ffffff !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
+            box-shadow: 0 6px 18px rgba(35, 83, 71, 0.38) !important;
             transform: translateY(-2px) !important;
         }
 
@@ -4517,13 +4519,13 @@
 
                 {{-- Controls --}}
                 <div class="scanner-actions">
-                    <button type="button" class="scanner-btn scanner-btn-primary agri-btn agri-btn--primary" id="btnToggleCamera" onclick="toggleCameraStream()">
+                    <button type="button" class="scanner-btn scanner-btn-primary" id="btnToggleCamera" onclick="toggleCameraStream()">
                         <span>Start Camera</span>
                     </button>
-                    <button type="button" class="scanner-btn scanner-btn-secondary agri-btn agri-btn--secondary" id="btnUploadImage" onclick="triggerPhotoUpload()">
+                    <button type="button" class="scanner-btn scanner-btn-secondary" id="btnUploadImage" onclick="triggerPhotoUpload()">
                         <span>Upload Photo</span>
                     </button>
-                    <button type="button" class="scanner-btn scanner-btn-primary agri-btn agri-btn--primary" id="btnCaptureScan" onclick="analyzeSoilImage()">
+                    <button type="button" class="scanner-btn scanner-btn-primary" id="btnCaptureScan" onclick="analyzeSoilImage()">
                         <span>Scan Soil</span>
                     </button>
                 </div>
@@ -4667,7 +4669,7 @@
 
                     {{-- Primary Soil Result: Pin Location Button (Placed directly after Description - Pins active selected soil) --}}
                     <div id="resPrimaryPinLocationWrapper" style="margin-bottom: 12px;">
-                        <button type="button" id="btnPinLocationScan" class="btn-res-action btn-res-pin-location agri-btn agri-btn--primary" onclick="openPinLocationModal(null, false)" style="width: 100%; justify-content: center;" title="Pin Soil Specimen to Map">
+                        <button type="button" id="btnPinLocationScan" class="btn-res-action btn-res-pin-location" onclick="openPinLocationModal(null, false)" style="width: 100%; justify-content: center;" title="Pin Soil Specimen to Map">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -4730,7 +4732,7 @@
                             </svg>
                             <span>Save Copy</span>
                         </button>
-                        <button type="button" id="btnPinAllLocationScan" class="btn-res-action btn-res-pin-location agri-btn agri-btn--primary" style="display: none;" onclick="openPinAllLocationModal()" title="Pin All Detected Soils to Map">
+                        <button type="button" id="btnPinAllLocationScan" class="btn-res-action btn-res-pin-location" style="display: none;" onclick="openPinAllLocationModal()" title="Pin All Detected Soils to Map">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
