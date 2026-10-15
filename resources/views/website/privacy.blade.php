@@ -26,21 +26,7 @@
             margin: 0 auto;
             text-align: left;
         }
-        .legal-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #f0fdf4;
-            color: #15803d;
-            border: 1px solid #bbf7d0;
-            padding: 4px 14px;
-            border-radius: 9999px;
-            font-size: 12.5px;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(34, 197, 94, 0.1);
-        }
+
         .legal-title {
             font-size: 42px;
             font-weight: 850;
@@ -389,12 +375,6 @@
     <div class="legal-page-wrapper">
         {{-- Hero Header --}}
         <header class="legal-hero">
-            <span class="legal-badge">
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                </svg>
-                Legal
-            </span>
             <h1 class="legal-title">Privacy Policy</h1>
             <p class="legal-subtitle">How we collect, use, and protect your information.</p>
             <div class="legal-meta">
