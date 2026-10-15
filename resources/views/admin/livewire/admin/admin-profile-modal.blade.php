@@ -114,19 +114,8 @@
                                 </div>
                             </div>
 
-                            {{-- RIGHT: BUTTONS (THEME TOGGLE + EDIT PROFILE) --}}
+                            {{-- RIGHT: BUTTONS (EDIT PROFILE) --}}
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <button
-                                    type="button"
-                                    @click="if (typeof window.agricoToggleTheme === 'function') window.agricoToggleTheme();"
-                                    style="width: 38px; height: 38px; border-radius: 50%; border: 1px solid #e2e8f0; background: #f8fafc; color: #f59e0b; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease;"
-                                    class="dark:bg-slate-800 dark:border-slate-700 dark:text-amber-400"
-                                    title="Toggle Dark / Light Mode"
-                                >
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                                    </svg>
-                                </button>
                                 <button
                                     type="button"
                                     wire:click="toggleEdit"

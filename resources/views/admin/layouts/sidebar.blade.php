@@ -404,43 +404,6 @@
             </div>
         </div>
 
-        {{-- DARK / LIGHT MODE THEME TOGGLE --}}
-        <div
-            x-data="{ isDark: document.documentElement.classList.contains('dark') }"
-            x-init="window.addEventListener('agrico:theme-changed', (e) => { isDark = !e.detail.isLight; })"
-            @click="if (typeof window.agricoToggleTheme === 'function') { window.agricoToggleTheme(); isDark = document.documentElement.classList.contains('dark'); }"
-            class="sidebar-action-item"
-            style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 8px; border-radius: 16px; background: transparent; border: none; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; box-sizing: border-box; user-select: none;"
-            title="Toggle Dark / Light Mode"
-            role="switch"
-            :aria-checked="isDark"
-        >
-            <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <div style="width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(251, 191, 36, 0.12); color: #f59e0b;" class="dark:bg-slate-800 dark:text-amber-400">
-                    <template x-if="!isDark">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="5"/>
-                            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                        </svg>
-                    </template>
-                    <template x-if="isDark">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                        </svg>
-                    </template>
-                </div>
-                <span class="whitespace-nowrap sidebar-hide-collapsed text-slate-700 dark:text-slate-200" style="font-weight: 700;" x-text="isDark ? 'Dark Mode' : 'Light Mode'">
-                </span>
-            </div>
-
-            {{-- Toggle Pill Switch --}}
-            <div class="sidebar-hide-collapsed" style="width: 38px; height: 22px; border-radius: 999px; background: #e2e8f0; position: relative; transition: background 0.25s ease; flex-shrink: 0;" :style="isDark ? 'background: #22c55e;' : 'background: #cbd5e1;'">
-                <div style="width: 16px; height: 16px; border-radius: 50%; background: #ffffff; position: absolute; top: 3px; left: 3px; transition: transform 0.25s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.25);" :style="isDark ? 'transform: translateX(16px);' : 'transform: translateX(0);'"></div>
-            </div>
-        </div>
 
         {{-- RED LOGOUT BUTTON --}}
         <form method="POST" action="{{ route('admin.logout') }}" style="margin: 0; width: 100%;">
