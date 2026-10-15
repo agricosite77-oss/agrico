@@ -308,6 +308,25 @@
             position: relative !important;
         }
 
+        /* Responsive Mobile Map (Option A: min-height 60vh so popups never cut off) */
+        @media (max-width: 768px) {
+            .ws-single-screen-container {
+                height: auto;
+                max-height: none;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .ws-map-wrapper {
+                padding: 10px 12px 16px;
+            }
+            .ws-map-card {
+                min-height: 60vh;
+            }
+            #soilMap {
+                min-height: 60vh !important;
+            }
+        }
+
         /* Leaflet popup custom style - Clean White Card (Matching Screenshot) */
         .leaflet-popup-content-wrapper,
         .agrico-custom-popup .leaflet-popup-content-wrapper {
@@ -1108,6 +1127,7 @@
     {{-- Leaflet JS --}}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="{{ asset('js/lallo-boundary.js') }}"></script>
+    <script src="{{ asset('js/agrico-map-focus.js') }}"></script>
 
     <script>
         const mappingsData = @json($mappings);
@@ -1116,6 +1136,10 @@
         const defaultLat = 18.1972, defaultLng = 121.6612, defaultZoom = 12;
 
         const map = L.map('soilMap').setView([defaultLat, defaultLng], defaultZoom);
+
+        if (window.AgricoMapFocus) {
+            window.AgricoMapFocus.attachMapListeners(map, { resetZoomOnClose: true });
+        }
 
         // Standard bright OpenStreetMap tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1288,14 +1312,23 @@
             const markerIcon = isApproved ? redIcon : grayIcon;
 
             const marker = L.marker([lt, ln], { icon: markerIcon, interactive: true });
-            marker.bindPopup(popupHtml, { className: 'agrico-custom-popup', maxWidth: 320, autoPan: false });
+            const popupOpts = window.AgricoMapFocus 
+                ? window.AgricoMapFocus.getPopupOptions() 
+                : { className: 'agrico-custom-popup', maxWidth: 320, autoPan: false };
+            marker.bindPopup(popupHtml, popupOpts);
 
             marker.on('click', function(e) {
                 if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
-                centerMapOnPopup(map, lt, ln, 165);
+                if (window.AgricoMapFocus) {
+                    window.AgricoMapFocus.focusPin(map, marker, { targetZoom: 15 });
+                } else {
+                    centerMapOnPopup(map, lt, ln, 175);
+                }
             });
             marker.on('popupopen', function() {
-                centerMapOnPopup(map, lt, ln, 165);
+                if (window.AgricoMapFocus && !map._agricoIsNavigatingPins) {
+                    window.AgricoMapFocus.focusPin(map, marker, { targetZoom: 15 });
+                }
             });
             marker.addTo(map);
 
@@ -1335,11 +1368,13 @@
             }).then(() => {
                 // If pins exist, fit bounds to the pins comfortably inside Lal-lo
                 if (boundsGroup.length > 0) {
+                    map._agricoOverviewBounds = boundsGroup;
                     map.fitBounds(boundsGroup, { padding: [40, 40] });
                 }
             }).catch(err => console.log('Lal-lo boundary note:', err));
         } else {
             if (boundsGroup.length > 0) {
+                map._agricoOverviewBounds = boundsGroup;
                 map.fitBounds(boundsGroup, { padding: [40, 40] });
             } else {
                 map.setView([defaultLat, defaultLng], defaultZoom);
@@ -1397,14 +1432,18 @@
         }
 
         function selectMapSearchResult(lat, lng) {
-            const targetZoom = 15;
-            const latlng = L.latLng(lat, lng);
-            const point = map.project(latlng, targetZoom);
-            const targetLatLng = map.unproject(point.subtract([0, 165]), targetZoom);
-            map.flyTo(targetLatLng, targetZoom, { duration: 1.0 });
             const item = markersMap.find(m => Math.abs(m.lat - lat) < 0.0001 && Math.abs(m.lng - lng) < 0.0001);
             if (item && item.marker) {
-                setTimeout(() => item.marker.openPopup(), 1050);
+                if (window.AgricoMapFocus) {
+                    window.AgricoMapFocus.focusPin(map, item.marker, { targetZoom: 15 });
+                } else {
+                    const targetZoom = 15;
+                    const latlng = L.latLng(lat, lng);
+                    const point = map.project(latlng, targetZoom);
+                    const targetLatLng = map.unproject(point.subtract([0, 175]), targetZoom);
+                    map.flyTo(targetLatLng, targetZoom, { duration: 0.65 });
+                    setTimeout(() => item.marker.openPopup(), 650);
+                }
             }
             const resultsDiv = document.getElementById('mapSearchResults');
             if (resultsDiv) resultsDiv.style.display = 'none';

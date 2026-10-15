@@ -1455,13 +1455,13 @@
 
         function centerAdminMapOnPopup(mapInstance, lat, lng, offsetPx) {
             if (!mapInstance) return;
-            offsetPx = typeof offsetPx === 'number' ? offsetPx : 165;
+            offsetPx = typeof offsetPx === 'number' ? offsetPx : 175;
             var latlng = L.latLng(parseFloat(lat), parseFloat(lng));
             var zoom = mapInstance.getZoom();
             var point = mapInstance.project(latlng, zoom);
             var targetPoint = point.subtract([0, offsetPx]);
             var targetLatLng = mapInstance.unproject(targetPoint, zoom);
-            mapInstance.panTo(targetLatLng, { animate: true, duration: 0.4 });
+            mapInstance.panTo(targetLatLng, { animate: true, duration: 0.45 });
         }
 
         window.agricoRenderMarkers = function(mapLocations) {
@@ -1595,16 +1595,21 @@
                     icon: isActive ? agricoIcon : agricoGrayIcon,
                     interactive: true
                 });
-                marker.bindPopup(popupContent, { className: 'agrico-custom-popup', maxWidth: 300, autoPan: false });
+                const popupOpts = window.AgricoMapFocus 
+                    ? window.AgricoMapFocus.getPopupOptions({ maxWidth: 300 })
+                    : { className: 'agrico-custom-popup', maxWidth: 300, autoPan: false };
+                marker.bindPopup(popupContent, popupOpts);
                 marker.on('click', function(e) {
                     if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
-                    if (window._agricoLeafMap) {
-                        centerAdminMapOnPopup(window._agricoLeafMap, lat, lng, 165);
+                    if (window.AgricoMapFocus && window._agricoLeafMap) {
+                        window.AgricoMapFocus.focusPin(window._agricoLeafMap, marker, { targetZoom: 15 });
+                    } else if (window._agricoLeafMap) {
+                        centerAdminMapOnPopup(window._agricoLeafMap, lat, lng, 175);
                     }
                 });
                 marker.on('popupopen', function() {
-                    if (window._agricoLeafMap) {
-                        centerAdminMapOnPopup(window._agricoLeafMap, lat, lng, 165);
+                    if (window.AgricoMapFocus && window._agricoLeafMap && !window._agricoLeafMap._agricoIsNavigatingPins) {
+                        window.AgricoMapFocus.focusPin(window._agricoLeafMap, marker, { targetZoom: 15 });
                     }
                 });
                 marker._agricoLocationId = loc.location_mapping_id;
@@ -1640,10 +1645,14 @@
                     });
                     poly.on('click', function(e) {
                         L.DomEvent.stopPropagation(e);
-                        if (window._agricoLeafMap) {
-                            centerAdminMapOnPopup(window._agricoLeafMap, lat, lng, 165);
+                        if (window.AgricoMapFocus && window._agricoLeafMap) {
+                            window.AgricoMapFocus.focusPin(window._agricoLeafMap, marker, { targetZoom: 15 });
+                        } else {
+                            if (window._agricoLeafMap) {
+                                centerAdminMapOnPopup(window._agricoLeafMap, lat, lng, 175);
+                            }
+                            marker.openPopup();
                         }
-                        marker.openPopup();
                     });
                 }
 
@@ -1718,6 +1727,10 @@
             var leafMap = L.map('soil-map', { zoomControl: false }).setView([18.1972, 121.6612], 12);
             window._agricoLeafMap = leafMap;
 
+            if (window.AgricoMapFocus) {
+                window.AgricoMapFocus.attachMapListeners(leafMap, { resetZoomOnClose: true });
+            }
+
             L.control.zoom({ position: 'bottomright' }).addTo(leafMap);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1744,6 +1757,7 @@
                     window._agricoAllLocations = locs;
                     window.agricoRenderMarkers(locs);
                     if (markersGroup.getLayers().length > 0) {
+                        leafMap._agricoOverviewBounds = markersGroup.getBounds();
                         leafMap.fitBounds(markersGroup.getBounds(), { padding: [40, 40], maxZoom: 13 });
                     }
                 } catch(e) { console.error('Map data parse error:', e); }
@@ -1767,19 +1781,28 @@
 
             leafMap.invalidateSize({ animate: false, pan: false });
 
-            var targetZoom = Math.max(leafMap.getZoom(), 15);
-            var latlng = L.latLng(parseFloat(lat), parseFloat(lng));
-            var point = leafMap.project(latlng, targetZoom);
-            var targetLatLng = leafMap.unproject(point.subtract([0, 165]), targetZoom);
-
-            leafMap.setView(targetLatLng, targetZoom, { animate: true });
-
+            var targetMarker = null;
             if (id && window._agricoMarkersGroup) {
                 window._agricoMarkersGroup.eachLayer(function(layer) {
                     if (layer._agricoLocationId == id && layer._agricoIsActive && typeof layer.openPopup === 'function' && layer.getPopup()) {
-                        setTimeout(function() { layer.openPopup(); }, 350);
+                        targetMarker = layer;
                     }
                 });
+            }
+
+            if (targetMarker && window.AgricoMapFocus) {
+                window.AgricoMapFocus.focusPin(leafMap, targetMarker, { targetZoom: 15 });
+            } else {
+                var targetZoom = Math.max(leafMap.getZoom(), 15);
+                var latlng = L.latLng(parseFloat(lat), parseFloat(lng));
+                var point = leafMap.project(latlng, targetZoom);
+                var targetLatLng = leafMap.unproject(point.subtract([0, 175]), targetZoom);
+
+                leafMap.setView(targetLatLng, targetZoom, { animate: true });
+
+                if (targetMarker) {
+                    setTimeout(function() { targetMarker.openPopup(); }, 350);
+                }
             }
         };
 
