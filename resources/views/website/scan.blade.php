@@ -3945,7 +3945,7 @@
             background: #163832;
             border: 1px solid rgba(142, 182, 155, 0.25);
             border-radius: 12px;
-            padding: 9px 34px 9px 14px;
+            padding: 9px 44px 9px 14px;
             color: #DAF1DE;
             font-size: 13px;
             font-weight: 600;
@@ -3959,20 +3959,7 @@
             box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
         }
         .pin-clear-btn {
-            position: absolute;
-            right: 10px;
-            background: rgba(142, 182, 155, 0.2);
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            color: #DAF1DE;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            line-height: 1;
+            right: 10px !important;
         }
         .pin-dropdown-box {
             position: absolute;
@@ -4227,10 +4214,7 @@
             border-color: #16a34a !important;
             box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15) !important;
         }
-        html.light-mode .pin-clear-btn {
-            background: #e2e8f0 !important;
-            color: #475569 !important;
-        }
+
         html.light-mode .pin-select-filter {
             background: #ffffff !important;
             border: 1.5px solid #e2e8f0 !important;
@@ -9849,7 +9833,10 @@
             const input = document.getElementById('pinBrgySearchInput');
             const clearBtn = document.getElementById('pinClearBrgyBtn');
             const dropdown = document.getElementById('pinBrgyDropdown');
-            if (input) input.value = '';
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
             if (clearBtn) clearBtn.style.display = 'none';
             if (dropdown) dropdown.style.display = 'none';
             onPinBarangaySelectChange('Lal-lo Overall');
@@ -11317,8 +11304,8 @@
                     </div>
                     <div class="pin-search-row">
                         <div class="pin-search-box" style="flex: 1; min-width: 0; position: relative;">
-                            <input type="text" id="pinBrgySearchInput" class="pin-input-field" placeholder="Search from 35 Barangays in Lal-lo..." autocomplete="off">
-                            <x-close-button size="sm" id="pinClearBrgyBtn" class="pin-clear-btn" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 5;" onclick="clearPinBrgySearch()" title="Clear search" ariaLabel="Clear search" />
+                            <input type="text" id="pinBrgySearchInput" class="pin-input-field" onkeydown="if (event.key === 'Escape') clearPinBrgySearch()" placeholder="Search from 35 Barangays in Lal-lo..." autocomplete="off">
+                            <x-search-clear-button id="pinClearBrgyBtn" class="pin-clear-btn" style="display: none;" onclick="clearPinBrgySearch()" />
                             <!-- Autocomplete Dropdown -->
                             <div id="pinBrgyDropdown" class="pin-dropdown-box" style="display: none;"></div>
                         </div>

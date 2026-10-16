@@ -64,6 +64,47 @@
                 font-size: 13px !important;
             }
         }
+        /* Mobile Responsive Table (< 680px) */
+        @media (max-width: 679px) {
+            .user-table-container {
+                overflow-x: hidden !important;
+                width: 100% !important;
+            }
+            .user-table {
+                table-layout: fixed !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+            .col-user-email,
+            .col-user-role,
+            .col-user-joined {
+                display: none !important;
+            }
+            .col-user-name {
+                width: auto !important;
+                padding-left: 12px !important;
+                padding-right: 6px !important;
+            }
+            .col-user-status {
+                width: 96px !important;
+                padding-left: 4px !important;
+                padding-right: 4px !important;
+            }
+            .col-sticky-action {
+                width: 108px !important;
+                min-width: 108px !important;
+                max-width: 108px !important;
+                padding-left: 6px !important;
+                padding-right: 10px !important;
+                text-align: center !important;
+            }
+            .user-table th,
+            .user-table td {
+                padding-top: 12px !important;
+                padding-bottom: 12px !important;
+                box-sizing: border-box !important;
+            }
+        }
     </style>
 
     {{-- PAGE HEADER & ONLINE STATUS BADGE --}}
@@ -118,28 +159,17 @@
                 wire:model.live="search"
                 @focus="open = true"
                 @input="open = true"
+                @keydown.escape="$wire.set('search', ''); $el.value = ''; open = false;"
                 type="text"
                 name="agrico_user_search_filter"
                 autocomplete="off"
                 placeholder="Search name, email, role, User ID"
-                style="width:100%; border:1px solid #e2e8f0; border-radius:16px; background:#ffffff; padding:10px 38px 10px 46px; font-size:14px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
+                style="width:100%; border:1px solid #e2e8f0; border-radius:16px; background:#ffffff; padding:10px 44px 10px 46px; font-size:14px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3px rgba(68,175,53,0.15)';"
                 onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
             />
             @if($search)
-                <button
-                    wire:click="$set('search', '')"
-                    type="button"
-                    style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:transparent; border-radius:50%; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; border:none; cursor:pointer; color:#94a3b8; transition:all 0.2s ease; z-index:3;"
-                    onmouseover="this.style.background='#f1f5f9'; this.style.color='#0f172a';"
-                    onmouseout="this.style.background='transparent'; this.style.color='#94a3b8';"
-                    title="Clear Search"
-                    aria-label="Clear Search"
-                >
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                <x-search-clear-button wireModel="search" />
             @endif
 
             {{-- AUTO SUGGESTION DROPDOWN --}}
@@ -513,8 +543,11 @@
                                 <div style="font-weight:700; font-size:14px; color:#6b7280; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="{{ $user->name }}">
                                     {{ $user->name }}
                                 </div>
-                                <div style="font-size:12px; color:#94a3b8; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                <div class="hidden md:block" style="font-size:12px; color:#94a3b8; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                                     {{ $isOnline ? 'Online now' : 'Offline' }}
+                                </div>
+                                <div class="block md:hidden" style="font-size:11px; color:#94a3b8; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="{{ $user->email }}">
+                                    {{ $user->email }} &bull; {{ ucfirst($user->role ?? 'User') }}
                                 </div>
                             </div>
                         </td>

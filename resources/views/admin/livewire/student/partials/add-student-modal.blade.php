@@ -37,9 +37,13 @@
                     <input
                         type="text"
                         wire:model.live.debounce.300ms="studentSearch"
+                        @keydown.escape="$wire.set('studentSearch', ''); $el.value = '';"
                         placeholder="Search by name, Student ID, or section..."
-                        style="width: 100%; height: 42px; padding: 0 12px 0 36px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 13.5px; color: #0f172a; outline: none; box-sizing: border-box; font-family: inherit;"
+                        style="width: 100%; height: 42px; padding: 0 44px 0 36px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 13.5px; color: #0f172a; outline: none; box-sizing: border-box; font-family: inherit;"
                     />
+                    @if($studentSearch)
+                        <x-search-clear-button wireModel="studentSearch" />
+                    @endif
                 </div>
                 <select
                     wire:model.live="modalSectionFilter"

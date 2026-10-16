@@ -44,3 +44,4 @@ android-app/.gradle/
 scratch/
 .superpowers/
 emulator_screen.png
+tests/responsive/screenshots/

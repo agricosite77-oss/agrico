@@ -186,7 +186,13 @@
             }
         }
         @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
             body.auth-body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
                 min-height: 100vh !important;
                 min-height: 100dvh !important;
                 height: auto !important;
@@ -228,10 +234,12 @@
     </style>
 </head>
 
-<body class="auth-body" style="background: linear-gradient(180deg, #DAF1DE 0%, #f6faf7 45%, #ffffff 100%) !important; min-height: 100vh; max-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; margin: 0; padding: 12px 16px; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif;">
+<body class="auth-body" style="background: linear-gradient(180deg, #DAF1DE 0%, #f6faf7 45%, #ffffff 100%) !important; min-height: 100vh; max-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow-x: hidden; overflow-y: auto; max-width: 100vw; margin: 0; padding: 12px 16px; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif;">
 
-    <!-- Decorative arcs -->
-    <div class="auth-arc" style="position: absolute; width: 640px; height: 640px; border: 1.5px solid rgba(142, 182, 155, 0.4); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 0;"></div>
+    <!-- Decorative arcs clipped inside container -->
+    <div style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0;">
+        <div class="auth-arc" style="position: absolute; width: 640px; height: 640px; border: 1.5px solid rgba(142, 182, 155, 0.4); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></div>
+    </div>
 
     <!-- Responsive AgriCo Header Logo -->
     <a href="{{ route('website.home') }}" class="auth-brand">

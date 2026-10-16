@@ -352,6 +352,24 @@ body.auth-body::after {
     animation: floatCloud 25s ease-in-out infinite reverse;
 }
 
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+    body.auth-body::before,
+    body.auth-body::after {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+    .auth-arc {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+}
+
 @keyframes floatCloud {
     0%, 100% { transform: translateY(0) translateX(0); }
     50% { transform: translateY(-20px) translateX(15px); }
@@ -1638,3 +1656,141 @@ html.dark .bg-white.border.border-gray-200.text-gray-700 {
     border-color: rgba(142, 182, 155, 0.25) !important;
     color: #e2e8f0 !important;
 }
+
+/* ─────────────────────────────────────────────────────────────
+   AgriCo Search Input & Clear "X" Button Architecture
+   ───────────────────────────────────────────────────────────── */
+
+/* Suppress browser native clear buttons on type="search" inputs */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none !important;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+input::-ms-clear,
+input::-ms-reveal {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Touch-friendly clear button container (at least 32x32px hit area) */
+.agrico-search-clear-btn {
+    position: absolute !important;
+    right: 10px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 9999px !important;
+    cursor: pointer !important;
+    z-index: 5 !important;
+    outline: none !important;
+    text-decoration: none !important;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* Visually elegant, crisp inner circular badge (22px) */
+.agrico-search-clear-btn .agrico-search-clear-circle {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    max-width: 22px !important;
+    max-height: 22px !important;
+    border-radius: 50% !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Centered, crisp SVG icon */
+.agrico-search-clear-btn svg {
+    width: 12px !important;
+    height: 12px !important;
+    stroke: currentColor !important;
+    stroke-width: 2.4 !important;
+    display: block !important;
+    pointer-events: none !important;
+    transform: none !important;
+    transition: transform 0.15s ease, stroke 0.15s ease;
+}
+
+/* Hover state: darker background, sharper contrast */
+@media (hover: hover) and (pointer: fine) {
+    .agrico-search-clear-btn:hover .agrico-search-clear-circle {
+        background: #e2e8f0 !important;
+        border-color: #94a3b8 !important;
+        color: #0f172a !important;
+        transform: scale(1.08) !important;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08) !important;
+    }
+}
+
+/* Active / Tap state */
+.agrico-search-clear-btn:active .agrico-search-clear-circle {
+    background: #cbd5e1 !important;
+    border-color: #64748b !important;
+    color: #0f172a !important;
+    transform: scale(0.92) !important;
+}
+
+/* Keyboard Accessible Focus Ring matching the input's green border (#22c55e) */
+.agrico-search-clear-btn:focus-visible {
+    outline: none !important;
+}
+.agrico-search-clear-btn:focus-visible .agrico-search-clear-circle {
+    outline: none !important;
+    border-color: #22c55e !important;
+    color: #15803d !important;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #22c55e !important;
+}
+
+/* Dark mode compatibility on website portal */
+html:not(.light-mode) .ws-page-hero .agrico-search-clear-btn .agrico-search-clear-circle,
+html:not(.light-mode) .ws-map-card .agrico-search-clear-btn .agrico-search-clear-circle,
+html:not(.light-mode) .munsell-search .agrico-search-clear-btn .agrico-search-clear-circle,
+html:not(.light-mode) .pin-search-box .agrico-search-clear-btn .agrico-search-clear-circle {
+    background: rgba(255, 255, 255, 0.14) !important;
+    border: 1px solid rgba(255, 255, 255, 0.28) !important;
+    color: #e2e8f0 !important;
+}
+
+html:not(.light-mode) .ws-page-hero .agrico-search-clear-btn:hover .agrico-search-clear-circle,
+html:not(.light-mode) .ws-map-card .agrico-search-clear-btn:hover .agrico-search-clear-circle,
+html:not(.light-mode) .munsell-search .agrico-search-clear-btn:hover .agrico-search-clear-circle,
+html:not(.light-mode) .pin-search-box .agrico-search-clear-btn:hover .agrico-search-clear-circle {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+    color: #ffffff !important;
+}
+
+html:not(.light-mode) .ws-page-hero .agrico-search-clear-btn:focus-visible .agrico-search-clear-circle,
+html:not(.light-mode) .ws-map-card .agrico-search-clear-btn:focus-visible .agrico-search-clear-circle,
+html:not(.light-mode) .munsell-search .agrico-search-clear-btn:focus-visible .agrico-search-clear-circle,
+html:not(.light-mode) .pin-search-box .agrico-search-clear-btn:focus-visible .agrico-search-clear-circle {
+    box-shadow: 0 0 0 2px #0B2B26, 0 0 0 4px #22c55e !important;
+}
+

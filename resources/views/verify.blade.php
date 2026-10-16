@@ -110,6 +110,15 @@
     }
   }
   @media (max-width: 768px) {
+    html, body {
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+    }
+    .auth-arc {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
     .auth-brand {
       position: fixed !important;
       top: max(16px, env(safe-area-inset-top)) !important;
@@ -245,8 +254,10 @@
 </head>
 <body>
 
-  <!-- Decorative concentric arcs matching login page -->
-  <div class="auth-arc"></div>
+  <!-- Decorative concentric arcs matching login page clipped in container -->
+  <div style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0;">
+    <div class="auth-arc"></div>
+  </div>
 
   <!-- Responsive AgriCo Header Logo (Exact design as login page, but no link) -->
   <div class="auth-brand">

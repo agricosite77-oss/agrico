@@ -154,17 +154,7 @@
             stroke: #4ADE80 !important;
         }
         .map-search-clear {
-            position: absolute !important;
-            right: 14px !important;
-            top: 50% !important;
-            transform: translateY(-50%) !important;
-            z-index: 5 !important;
-        }
-        .map-search-clear:hover {
-            transform: translateY(-50%) scale(1.06) !important;
-        }
-        .map-search-clear:active {
-            transform: translateY(-50%) scale(0.95) !important;
+            right: 10px !important;
         }
 
         /* Map Search Results Dropdown */
@@ -438,17 +428,7 @@
         html.light-mode .map-search-box:focus-within .map-search-icon {
             stroke: #16a34a !important;
         }
-        html.light-mode .map-search-clear {
-            background: transparent !important;
-            border-color: transparent !important;
-            color: #94a3b8 !important;
-        }
-        html.light-mode .map-search-clear:hover {
-            background: #f1f5f9 !important;
-            border-color: #f1f5f9 !important;
-            color: #0f172a !important;
-            transform: translateY(-50%) scale(1.06) !important;
-        }
+
         html.light-mode .map-search-dropdown {
             background: #ffffff !important;
             border: 1px solid #cbd5e1 !important;
@@ -1068,17 +1048,15 @@
                         id="mapSearchInput"
                         class="map-search-input"
                         oninput="handleMapSearch(this.value)"
+                        onkeydown="if (event.key === 'Escape') clearMapSearch()"
                         placeholder="Search soil name, code, barangay, soil type..."
                         autocomplete="off"
                         aria-label="Search map locations"
                     />
-                    <x-close-button
-                        size="sm"
+                    <x-search-clear-button
                         id="mapSearchClearBtn"
                         class="map-search-clear"
                         onclick="clearMapSearch()"
-                        title="Clear search"
-                        ariaLabel="Clear search"
                         style="display:none;"
                     />
 
@@ -1560,7 +1538,10 @@
             const input = document.getElementById('mapSearchInput');
             const clearBtn = document.getElementById('mapSearchClearBtn');
             const resultsDiv = document.getElementById('mapSearchResults');
-            if (input) input.value = '';
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
             if (clearBtn) clearBtn.style.display = 'none';
             if (resultsDiv) resultsDiv.style.display = 'none';
             if (boundsGroup.length > 0) {

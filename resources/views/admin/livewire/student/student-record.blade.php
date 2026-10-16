@@ -433,11 +433,33 @@
             }
         }
 
-        /* Mobile (< 680px): Name is first visible column -> 12px left padding */
+        /* Mobile (< 680px): Name is first visible column, table fits screen */
         @media (max-width: 679px) {
+            .student-table-container {
+                overflow-x: hidden !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .student-table {
+                table-layout: fixed !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+            }
             .student-table th.col-sticky-name,
             .student-table td.col-sticky-name {
                 padding-left: 12px !important;
+                padding-right: 6px !important;
+                width: auto !important;
+                overflow: hidden !important;
+            }
+            .student-table th.col-sticky-action,
+            .student-table td.col-sticky-action {
+                width: 124px !important;
+                min-width: 124px !important;
+                max-width: 124px !important;
+                padding-left: 4px !important;
+                padding-right: 8px !important;
             }
         }
 
@@ -709,28 +731,17 @@
                 wire:model.live="search"
                 @focus="open = true"
                 @input="open = true"
+                @keydown.escape="$wire.set('search', ''); $el.value = ''; open = false;"
                 type="text"
                 name="agrico_student_search_filter"
                 autocomplete="off"
                 placeholder="Search student ID, name, email..."
-                style="width: 100%; border: 1px solid #e2e8f0; border-radius: 16px; background: #ffffff; padding: 10px 38px 10px 46px; font-size: 14px; font-weight: 500; color: #1e293b; outline: none; transition: all 0.2s ease; box-sizing: border-box;"
+                style="width: 100%; border: 1px solid #e2e8f0; border-radius: 16px; background: #ffffff; padding: 10px 44px 10px 46px; font-size: 14px; font-weight: 500; color: #1e293b; outline: none; transition: all 0.2s ease; box-sizing: border-box;"
                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3px rgba(68,175,53,0.15)';"
                 onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
             />
             @if($search)
-                <button
-                    wire:click="$set('search', '')"
-                    type="button"
-                    style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: transparent; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; color: #94a3b8; transition: all 0.2s ease;"
-                    onmouseover="this.style.background='#f1f5f9'; this.style.color='#0f172a';"
-                    onmouseout="this.style.background='transparent'; this.style.color='#94a3b8';"
-                    title="Clear Search"
-                    aria-label="Clear Search"
-                >
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                <x-search-clear-button wireModel="search" />
             @endif
 
             {{-- AUTO SUGGESTION DROPDOWN --}}

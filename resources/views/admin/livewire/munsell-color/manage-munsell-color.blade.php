@@ -55,14 +55,15 @@
                 wire:model.live="search"
                 @focus="open = true"
                 @input="open = true"
+                @keydown.escape="$wire.set('search', ''); $el.value = ''; open = false;"
                 type="text"
                 placeholder="Search color name, full code, hue, User ID..."
-                style="width:100%; border:1px solid #e2e8f0; border-radius:16px; background:#ffffff; padding:10px 38px 10px 46px; font-size:14px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
+                style="width:100%; border:1px solid #e2e8f0; border-radius:16px; background:#ffffff; padding:10px 44px 10px 46px; font-size:14px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3px rgba(68,175,53,0.15)';"
                 onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
             />
             @if($search)
-                <x-close-button size="sm" click="$set('search', '')" title="Clear search" ariaLabel="Clear search" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); z-index:3;" />
+                <x-search-clear-button wireModel="search" />
             @endif
 
             {{-- AUTO SUGGESTION DROPDOWN --}}

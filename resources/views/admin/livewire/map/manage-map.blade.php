@@ -210,29 +210,19 @@
                         x-model="query"
                         @input="onInput()"
                         @focus="open = true"
-                        @keydown.escape="open = false"
+                        @keydown.escape="clear(); open = false"
                         type="text"
                         placeholder="Search map: soil, type, code, GPS, barangay..."
-                        style="width: 100%; height: 44px; border: 1.5px solid rgba(226, 232, 240, 0.95); border-radius: 16px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(8px); padding: 0 38px 0 42px; font-size: 13.5px; font-weight: 600; color: #1e293b; outline: none; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06); transition: all 0.2s ease; box-sizing: border-box; line-height: 44px;"
+                        style="width: 100%; height: 44px; border: 1.5px solid rgba(226, 232, 240, 0.95); border-radius: 16px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(8px); padding: 0 44px 0 42px; font-size: 13.5px; font-weight: 600; color: #1e293b; outline: none; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06); transition: all 0.2s ease; box-sizing: border-box; line-height: 44px;"
                         onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 4px 20px rgba(34, 197, 94, 0.25), 0 0 0 3px rgba(34, 197, 94, 0.15)';"
                         onblur="this.style.borderColor='rgba(226, 232, 240, 0.95)'; this.style.boxShadow='0 4px 18px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06)';"
                     />
 
-                    <button
-                        type="button"
+                    <x-search-clear-button
                         x-show="query && query.length > 0"
                         x-cloak
-                        @click="clear()"
-                        title="Clear Search"
-                        aria-label="Clear search"
-                        style="position: absolute !important; right: 10px !important; top: 50% !important; transform: translateY(-50%) !important; width: 26px !important; height: 26px !important; border-radius: 50% !important; background: #f1f5f9 !important; border: 1px solid #e2e8f0 !important; color: #64748b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important; z-index: 3 !important; padding: 0 !important; margin: 0 !important; transition: all 0.15s ease !important;"
-                        onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
-                        onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
-                    >
-                        <svg style="width: 13px !important; height: 13px !important; stroke: currentColor !important;" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                        click="clear()"
+                    />
                 </div>
 
                 {{-- AUTO SUGGESTION DROPDOWN INSIDE MAP --}}
@@ -304,14 +294,15 @@
                 wire:model.live.debounce.250ms="search"
                 @focus="open = true"
                 @input="open = true"
+                @keydown.escape="$wire.set('search', ''); $el.value = ''; open = false;"
                 type="text"
                 placeholder="Search soil name, full code, coordinates, barangay..."
-                style="width:100%; border:1px solid #e2e8f0; border-radius:16px; background:#ffffff; padding:10px 38px 10px 46px; font-size:14px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
+                style="width:100%; border:1px solid #e2e8f0; border-radius:16px; background:#ffffff; padding:10px 44px 10px 46px; font-size:14px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3px rgba(68,175,53,0.15)';"
                 onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
             />
             @if($search)
-                <x-close-button size="sm" click="$set('search', '')" title="Clear search" ariaLabel="Clear search" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); z-index:3;" />
+                <x-search-clear-button wireModel="search" />
             @endif
 
             {{-- AUTO SUGGESTION DROPDOWN --}}

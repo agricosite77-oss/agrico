@@ -4,12 +4,34 @@
 <head>
     @include('admin.partials.head')
     <title>Admin Registration — AgriCo</title>
+    <style>
+        @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+            body.auth-body::before,
+            body.auth-body::after {
+                display: none !important;
+            }
+            .auth-arc {
+                display: none !important;
+            }
+            body.auth-body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+                padding: max(60px, calc(env(safe-area-inset-top) + 48px)) 16px 24px 16px !important;
+            }
+        }
+    </style>
 </head>
 
-<body class="auth-body" style="background: linear-gradient(180deg, #eefbe7 0%, #f0fdf4 45%, #ffffff 100%) !important; min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow-x: hidden; overflow-y: auto; margin: 0; padding: 40px 24px 60px 24px; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif;">
+<body class="auth-body" style="background: linear-gradient(180deg, #eefbe7 0%, #f0fdf4 45%, #ffffff 100%) !important; min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow-x: hidden; overflow-y: auto; max-width: 100vw; margin: 0; padding: 40px 24px 60px 24px; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif;">
 
-    <!-- Decorative arcs -->
-    <div class="auth-arc" style="position: absolute; width: 640px; height: 640px; border: 1.5px solid rgba(187, 247, 208, 0.6); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 0;"></div>
+    <!-- Decorative background layer with strict overflow clipping -->
+    <div style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0;">
+        <div class="auth-arc" style="position: absolute; width: 640px; height: 640px; border: 1.5px solid rgba(187, 247, 208, 0.6); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></div>
+    </div>
 
     <!-- Brand Header -->
     <a href="{{ route('dashboard') }}" class="auth-brand" style="position: fixed; top: 28px; left: 32px; z-index: 10; display: flex; align-items: center; gap: 10px; text-decoration: none;">

@@ -24,10 +24,10 @@
     wire:click.self="closeSectionRecordsModal"
 >
     {{-- MODAL CARD CONTAINER (LIGHT MODE MATCHING ADMIN THEME) --}}
-    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 28px; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.25); width: 96%; max-width: 1080px; margin: auto; display: flex; flex-direction: column; height: 88vh; max-height: 88vh; overflow: hidden; position: relative;">
+    <div class="section-records-dialog" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 28px; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.25); width: 96%; max-width: 1080px; margin: auto; display: flex; flex-direction: column; height: 88vh; max-height: 88vh; overflow: hidden; position: relative;">
 
         {{-- 1. FIXED MODAL HEADER (LIGHT MODE) --}}
-        <div style="padding: 20px 28px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #ffffff; flex-shrink: 0;">
+        <div class="section-records-header" style="padding: 20px 28px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #ffffff; flex-shrink: 0;">
             <div style="display: flex; align-items: center; gap: 14px;">
                 <div style="width: 44px; height: 44px; border-radius: 14px; background: #f0fdf4; border: 1.5px solid #bbf7d0; color: #16a34a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(34, 197, 94, 0.15);">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@
         </div>
 
         {{-- 2. SCROLLABLE BODY CONTENT (LIGHT MODE) --}}
-        <div style="padding: 20px 28px 24px; overflow-y: auto; flex: 1 1 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; background: #f8fafc; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9;">
+        <div class="section-records-body" style="padding: 20px 28px 24px; overflow-y: auto; flex: 1 1 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; background: #f8fafc; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9;">
 
             {{-- TOP: GLOBAL SECTION FILTER --}}
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 14px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.02);">
@@ -452,12 +452,42 @@
             .xl-pin  { color: #d97706 !important; }
             .xl-metric-pill { transition: all 0.15s ease !important; }
             .xl-metric-pill:hover { filter: brightness(0.98) !important; transform: translateY(-1px) !important; }
+            @media (max-width: 640px) {
+                .section-records-dialog {
+                    width: 100% !important;
+                    height: 94vh !important;
+                    max-height: 94vh !important;
+                    border-radius: 20px !important;
+                }
+                .section-records-header {
+                    padding: 14px 16px !important;
+                }
+                .section-records-header h3 {
+                    font-size: 15px !important;
+                }
+                .section-records-header p {
+                    font-size: 11px !important;
+                }
+                .section-records-body {
+                    padding: 14px 12px 18px !important;
+                    gap: 12px !important;
+                }
+                .section-records-footer {
+                    padding: 12px 14px 16px !important;
+                    flex-direction: column !important;
+                    gap: 10px !important;
+                }
+                .section-records-footer > div {
+                    width: 100% !important;
+                    justify-content: center !important;
+                }
+            }
             @media print { .xl-wrap { max-height: none !important; overflow: visible !important; border: none !important; } .xl-table th, .xl-table td { border: 1px solid #64748b !important; } }
             </style>
         </div>
 
         {{-- 3. FIXED MODAL FOOTER (LIGHT MODE) --}}
-        <div style="padding: 16px 28px 20px; background: #ffffff; border-top: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; width: 100%; box-sizing: border-box;">
+        <div class="section-records-footer" style="padding: 16px 28px 20px; background: #ffffff; border-top: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; width: 100%; box-sizing: border-box;">
             <div style="font-size: 12.5px; color: #64748b;">
                 Showing <strong style="color: #0f172a;">{{ $sectionRecords->count() }}</strong> active student record{{ $sectionRecords->count() !== 1 ? 's' : '' }}
             </div>

@@ -947,10 +947,24 @@
            MOBILE SEPARATED DESIGN (max-width: 639px)
            ========================================================== */
         @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+            body.auth-body::before,
+            body.auth-body::after {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+            }
             .auth-arc {
                 display: none !important;
+                width: 0 !important;
+                height: 0 !important;
             }
             body.auth-body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
                 min-height: 100vh !important;
                 min-height: 100dvh !important;
                 height: auto !important;
@@ -1127,9 +1141,11 @@
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- Decorative arcs (Tablet & Desktop Monitor only) -->
-    <div class="auth-arc auth-arc-1"></div>
-    <div class="auth-arc auth-arc-2"></div>
+    <!-- Decorative arcs (Tablet & Desktop Monitor only) clipped in container -->
+    <div style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0;">
+        <div class="auth-arc auth-arc-1"></div>
+        <div class="auth-arc auth-arc-2"></div>
+    </div>
 
     <!-- Responsive AgriCo Header Logo -->
     <a href="{{ route('website.home') }}" class="auth-brand">

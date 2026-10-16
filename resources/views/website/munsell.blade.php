@@ -86,17 +86,7 @@
         }
 
         .munsell-clear-btn {
-            position: absolute !important;
-            right: 14px !important;
-            top: 50% !important;
-            transform: translateY(-50%) !important;
-            z-index: 5 !important;
-        }
-        .munsell-clear-btn:hover {
-            transform: translateY(-50%) scale(1.06) !important;
-        }
-        .munsell-clear-btn:active {
-            transform: translateY(-50%) scale(0.95) !important;
+            right: 10px !important;
         }
 
         /* Search Suggestions Dropdown */
@@ -498,8 +488,8 @@
                     <circle cx="11" cy="11" r="8"/>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="munsellSearch" placeholder="Search by color name, Munsell code, or hue group..." autocomplete="off" aria-label="Search by color name, Munsell code, or hue group" />
-                <x-close-button size="sm" id="munsellSearchClearBtn" class="munsell-clear-btn" onclick="clearMunsellSearch()" title="Clear search" ariaLabel="Clear search" style="display:none;" />
+                <input type="text" id="munsellSearch" onkeydown="if (event.key === 'Escape') clearMunsellSearch()" placeholder="Search by color name, Munsell code, or hue group..." autocomplete="off" aria-label="Search by color name, Munsell code, or hue group" />
+                <x-search-clear-button id="munsellSearchClearBtn" class="munsell-clear-btn" onclick="clearMunsellSearch()" style="display:none;" />
 
                 {{-- Live Suggestions Dropdown --}}
                 <div class="munsell-suggestions-box" id="munsellSuggestionsBox">
@@ -712,7 +702,10 @@
         }
 
         function clearMunsellSearch() {
-            if (searchInput) searchInput.value = '';
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+            }
             const clearBtn = document.getElementById('munsellSearchClearBtn');
             if (clearBtn) clearBtn.style.display = 'none';
             searchTerm = '';

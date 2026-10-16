@@ -103,17 +103,7 @@
             pointer-events: none;
         }
         .faq-search-clear {
-            position: absolute !important;
-            right: 14px !important;
-            top: 50% !important;
-            transform: translateY(-50%) !important;
-            z-index: 5 !important;
-        }
-        .faq-search-clear:hover {
-            transform: translateY(-50%) scale(1.06) !important;
-        }
-        .faq-search-clear:active {
-            transform: translateY(-50%) scale(0.95) !important;
+            right: 10px !important;
         }
 
         /* ── CATEGORY PILLS & NAVIGATION ARROWS ── */
@@ -815,16 +805,14 @@
                     type="text"
                     id="faqSearchInput"
                     class="faq-search-input"
+                    onkeydown="if (event.key === 'Escape') { if (window.resetFaqSearch) window.resetFaqSearch(); }"
                     placeholder="Search questions by topic, keyword, or feature (e.g. forgot password, lighting, pins)..."
                     aria-label="Search frequently asked questions"
                     autocomplete="off"
                 />
-                <x-close-button
-                    size="sm"
+                <x-search-clear-button
                     id="faqSearchClear"
                     class="faq-search-clear"
-                    ariaLabel="Clear search"
-                    title="Clear search"
                     style="display:none;"
                 />
             </div>
@@ -1203,17 +1191,19 @@
                 });
             }
 
-            // Search Clear Button
+            // Search Clear Button & Helper
+            window.resetFaqSearch = function () {
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchQuery = '';
+                    searchInput.focus();
+                }
+                if (searchClear) searchClear.style.display = 'none';
+                applyFilters();
+            };
+
             if (searchClear) {
-                searchClear.addEventListener('click', function () {
-                    if (searchInput) {
-                        searchInput.value = '';
-                        searchQuery = '';
-                        searchInput.focus();
-                    }
-                    searchClear.style.display = 'none';
-                    applyFilters();
-                });
+                searchClear.addEventListener('click', window.resetFaqSearch);
             }
 
             // Global Reset Filters

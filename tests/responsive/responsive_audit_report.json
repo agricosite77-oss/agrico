@@ -1,0 +1,2108 @@
+[
+  {
+    "page": "Website: Splash Screen",
+    "path": "/",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 0,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_splash_screen_iphone13mini.png"
+  },
+  {
+    "page": "Website: Splash Screen",
+    "path": "/",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 0,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_splash_screen_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Splash Screen",
+    "path": "/",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 0,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_splash_screen_small_320.png"
+  },
+  {
+    "page": "Website: Home Landing",
+    "path": "/home",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 21,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_home_landing_iphone13mini.png"
+  },
+  {
+    "page": "Website: Home Landing",
+    "path": "/home",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 21,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_home_landing_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Home Landing",
+    "path": "/home",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 21,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_home_landing_small_320.png"
+  },
+  {
+    "page": "Website: Home Landing",
+    "path": "/home",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "OK",
+    "scrollWidth": 812,
+    "windowWidth": 812,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 21,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_home_landing_landscape_812x375.png"
+  },
+  {
+    "page": "Website: Home Landing",
+    "path": "/home",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 21,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_home_landing_tablet_768.png"
+  },
+  {
+    "page": "Website: Home Landing",
+    "path": "/home",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "OK",
+    "scrollWidth": 1270,
+    "windowWidth": 1280,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 20,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_home_landing_desktop_1280.png"
+  },
+  {
+    "page": "Website: Login Form",
+    "path": "/login",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_login_form_iphone13mini.png"
+  },
+  {
+    "page": "Website: Login Form",
+    "path": "/login",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_login_form_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Login Form",
+    "path": "/login",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_login_form_small_320.png"
+  },
+  {
+    "page": "Website: Login Form",
+    "path": "/login",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "Problem",
+    "scrollWidth": 992,
+    "windowWidth": 812,
+    "hasOverflow": true,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Horizontal overflow: scrollWidth 992px > 812px (child elements wider than viewport)",
+    "screenshot": "website_login_form_landscape_812x375.png"
+  },
+  {
+    "page": "Website: Login Form",
+    "path": "/login",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_login_form_tablet_768.png"
+  },
+  {
+    "page": "Website: Login Form",
+    "path": "/login",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "Problem",
+    "scrollWidth": 1450,
+    "windowWidth": 1280,
+    "hasOverflow": true,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Horizontal overflow: scrollWidth 1450px > 1280px (child elements wider than viewport)",
+    "screenshot": "website_login_form_desktop_1280.png"
+  },
+  {
+    "page": "Website: Register Form",
+    "path": "/register",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_register_form_iphone13mini.png"
+  },
+  {
+    "page": "Website: Register Form",
+    "path": "/register",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_register_form_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Register Form",
+    "path": "/register",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 6,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_register_form_small_320.png"
+  },
+  {
+    "page": "Website: Forgot Password",
+    "path": "/forgot-password",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 2,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_forgot_password_iphone13mini.png"
+  },
+  {
+    "page": "Website: Forgot Password",
+    "path": "/forgot-password",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 2,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_forgot_password_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Forgot Password",
+    "path": "/forgot-password",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 1,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_forgot_password_small_320.png"
+  },
+  {
+    "page": "Website: Interactive Map",
+    "path": "/map",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 8,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_interactive_map_iphone13mini.png"
+  },
+  {
+    "page": "Website: Interactive Map",
+    "path": "/map",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 8,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_interactive_map_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Interactive Map",
+    "path": "/map",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 8,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_interactive_map_small_320.png"
+  },
+  {
+    "page": "Website: Interactive Map",
+    "path": "/map",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "OK",
+    "scrollWidth": 812,
+    "windowWidth": 812,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 8,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_interactive_map_landscape_812x375.png"
+  },
+  {
+    "page": "Website: Interactive Map",
+    "path": "/map",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 8,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_interactive_map_tablet_768.png"
+  },
+  {
+    "page": "Website: Interactive Map",
+    "path": "/map",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "OK",
+    "scrollWidth": 1270,
+    "windowWidth": 1280,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_interactive_map_desktop_1280.png"
+  },
+  {
+    "page": "Website: Munsell Color Chart",
+    "path": "/munsell",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_munsell_color_chart_iphone13mini.png"
+  },
+  {
+    "page": "Website: Munsell Color Chart",
+    "path": "/munsell",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_munsell_color_chart_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Munsell Color Chart",
+    "path": "/munsell",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_munsell_color_chart_small_320.png"
+  },
+  {
+    "page": "Website: FAQ Page",
+    "path": "/faq",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 71,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_faq_page_iphone13mini.png"
+  },
+  {
+    "page": "Website: FAQ Page",
+    "path": "/faq",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 69,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_faq_page_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: FAQ Page",
+    "path": "/faq",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 68,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_faq_page_small_320.png"
+  },
+  {
+    "page": "Website: Soil Scanner",
+    "path": "/scan",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_soil_scanner_iphone13mini.png"
+  },
+  {
+    "page": "Website: Soil Scanner",
+    "path": "/scan",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_soil_scanner_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Soil Scanner",
+    "path": "/scan",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_soil_scanner_small_320.png"
+  },
+  {
+    "page": "Website: Model Training",
+    "path": "/training",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_model_training_iphone13mini.png"
+  },
+  {
+    "page": "Website: Model Training",
+    "path": "/training",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_model_training_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Model Training",
+    "path": "/training",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_model_training_small_320.png"
+  },
+  {
+    "page": "Website: Download App",
+    "path": "/download",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "Error",
+    "issueSummary": "Page error: net::ERR_ABORTED at http://127.0.0.1:8000/download",
+    "screenshot": "N/A"
+  },
+  {
+    "page": "Website: Download App",
+    "path": "/download",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "Error",
+    "issueSummary": "Page error: net::ERR_ABORTED at http://127.0.0.1:8000/download",
+    "screenshot": "N/A"
+  },
+  {
+    "page": "Website: Download App",
+    "path": "/download",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "Error",
+    "issueSummary": "Page error: net::ERR_ABORTED at http://127.0.0.1:8000/download",
+    "screenshot": "N/A"
+  },
+  {
+    "page": "Website: Terms of Service",
+    "path": "/terms",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 23,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_terms_of_service_iphone13mini.png"
+  },
+  {
+    "page": "Website: Terms of Service",
+    "path": "/terms",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 23,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_terms_of_service_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Terms of Service",
+    "path": "/terms",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 22,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_terms_of_service_small_320.png"
+  },
+  {
+    "page": "Website: Privacy Policy",
+    "path": "/privacy",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 20,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_privacy_policy_iphone13mini.png"
+  },
+  {
+    "page": "Website: Privacy Policy",
+    "path": "/privacy",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 20,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_privacy_policy_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: Privacy Policy",
+    "path": "/privacy",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_privacy_policy_small_320.png"
+  },
+  {
+    "page": "Website: User Profile",
+    "path": "/profile",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_user_profile_iphone13mini.png"
+  },
+  {
+    "page": "Website: User Profile",
+    "path": "/profile",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_user_profile_galaxy_a6s.png"
+  },
+  {
+    "page": "Website: User Profile",
+    "path": "/profile",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "website_user_profile_small_320.png"
+  },
+  {
+    "page": "Admin: Dashboard",
+    "path": "/dashboard",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 0,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_dashboard_iphone13mini.png"
+  },
+  {
+    "page": "Admin: Dashboard",
+    "path": "/dashboard",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 0,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_dashboard_galaxy_a6s.png"
+  },
+  {
+    "page": "Admin: Dashboard",
+    "path": "/dashboard",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 0,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_dashboard_small_320.png"
+  },
+  {
+    "page": "Admin: Dashboard",
+    "path": "/dashboard",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "OK",
+    "scrollWidth": 812,
+    "windowWidth": 812,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 1,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_dashboard_landscape_812x375.png"
+  },
+  {
+    "page": "Admin: Dashboard",
+    "path": "/dashboard",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 0,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_dashboard_tablet_768.png"
+  },
+  {
+    "page": "Admin: Dashboard",
+    "path": "/dashboard",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "OK",
+    "scrollWidth": 1270,
+    "windowWidth": 1280,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 1,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_dashboard_desktop_1280.png"
+  },
+  {
+    "page": "Admin: Manage Users",
+    "path": "/users",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 349,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "NAME",
+          "EMAIL",
+          "ROLE",
+          "JOINED",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 11,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_users_iphone13mini.png"
+  },
+  {
+    "page": "Admin: Manage Users",
+    "path": "/users",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 334,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "NAME",
+          "EMAIL",
+          "ROLE",
+          "JOINED",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 11,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_users_galaxy_a6s.png"
+  },
+  {
+    "page": "Admin: Manage Users",
+    "path": "/users",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 294,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "NAME",
+          "EMAIL",
+          "ROLE",
+          "JOINED",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 11,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_users_small_320.png"
+  },
+  {
+    "page": "Admin: Manage Users",
+    "path": "/users",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "OK",
+    "scrollWidth": 812,
+    "windowWidth": 812,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1016,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "FULL NAME USER",
+          "EMAIL",
+          "ROLE",
+          "JOINED",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 12,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_users_landscape_812x375.png"
+  },
+  {
+    "page": "Admin: Manage Users",
+    "path": "/users",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1016,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "FULL NAME USER",
+          "EMAIL",
+          "ROLE",
+          "JOINED",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 11,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_users_tablet_768.png"
+  },
+  {
+    "page": "Admin: Manage Users",
+    "path": "/users",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "OK",
+    "scrollWidth": 1270,
+    "windowWidth": 1280,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1016,
+        "overflowsScreen": false,
+        "hasScrollWrapper": true,
+        "headers": [
+          "FULL NAME USER",
+          "EMAIL",
+          "ROLE",
+          "JOINED",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 12,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_users_desktop_1280.png"
+  },
+  {
+    "page": "Admin: Soil Scan History",
+    "path": "/soil",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 349,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "SOIL CHARACTERISTICS",
+          "FULL CODE",
+          "SCAN COUNT",
+          "SCAN NOTE",
+          "SCAN DATE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 6,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_soil_scan_history_iphone13mini.png"
+  },
+  {
+    "page": "Admin: Soil Scan History",
+    "path": "/soil",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 334,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "SOIL CHARACTERISTICS",
+          "FULL CODE",
+          "SCAN COUNT",
+          "SCAN NOTE",
+          "SCAN DATE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 6,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_soil_scan_history_galaxy_a6s.png"
+  },
+  {
+    "page": "Admin: Soil Scan History",
+    "path": "/soil",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 294,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "SOIL CHARACTERISTICS",
+          "FULL CODE",
+          "SCAN COUNT",
+          "SCAN NOTE",
+          "SCAN DATE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 6,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_soil_scan_history_small_320.png"
+  },
+  {
+    "page": "Admin: Soil Scan History",
+    "path": "/soil",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "OK",
+    "scrollWidth": 812,
+    "windowWidth": 812,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 663,
+        "overflowsScreen": false,
+        "hasScrollWrapper": true,
+        "headers": [
+          "SOIL CHARACTERISTICS",
+          "FULL CODE",
+          "SCAN COUNT",
+          "SCAN NOTE",
+          "SCAN DATE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_soil_scan_history_landscape_812x375.png"
+  },
+  {
+    "page": "Admin: Soil Scan History",
+    "path": "/soil",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 742,
+        "overflowsScreen": false,
+        "hasScrollWrapper": true,
+        "headers": [
+          "SOIL CHARACTERISTICS",
+          "FULL CODE",
+          "SCAN COUNT",
+          "SCAN NOTE",
+          "SCAN DATE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 6,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_soil_scan_history_tablet_768.png"
+  },
+  {
+    "page": "Admin: Soil Scan History",
+    "path": "/soil",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "OK",
+    "scrollWidth": 1270,
+    "windowWidth": 1280,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 946,
+        "overflowsScreen": false,
+        "hasScrollWrapper": true,
+        "headers": [
+          "SOIL CHARACTERISTICS",
+          "FULL CODE",
+          "SCAN COUNT",
+          "SCAN NOTE",
+          "SCAN DATE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_soil_scan_history_desktop_1280.png"
+  },
+  {
+    "page": "Admin: Manage Map Pins",
+    "path": "/manage-map",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 349,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "SOIL NAME",
+          "COORDINATES",
+          "SCAN NOTE",
+          "TIMESTAMP",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 21,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_map_pins_iphone13mini.png"
+  },
+  {
+    "page": "Admin: Manage Map Pins",
+    "path": "/manage-map",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 334,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "SOIL NAME",
+          "COORDINATES",
+          "SCAN NOTE",
+          "TIMESTAMP",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 21,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_map_pins_galaxy_a6s.png"
+  },
+  {
+    "page": "Admin: Manage Map Pins",
+    "path": "/manage-map",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 294,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "SOIL NAME",
+          "COORDINATES",
+          "SCAN NOTE",
+          "TIMESTAMP",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 21,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_map_pins_small_320.png"
+  },
+  {
+    "page": "Admin: Mapping History",
+    "path": "/mapping-history",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 349,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "SOIL NAME",
+          "COORDINATES",
+          "SCAN NOTE",
+          "TIMESTAMP",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 35,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_mapping_history_iphone13mini.png"
+  },
+  {
+    "page": "Admin: Mapping History",
+    "path": "/mapping-history",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 334,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "SOIL NAME",
+          "COORDINATES",
+          "SCAN NOTE",
+          "TIMESTAMP",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 35,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_mapping_history_galaxy_a6s.png"
+  },
+  {
+    "page": "Admin: Mapping History",
+    "path": "/mapping-history",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 294,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "SOIL NAME",
+          "COORDINATES",
+          "SCAN NOTE",
+          "TIMESTAMP",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 35,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_mapping_history_small_320.png"
+  },
+  {
+    "page": "Admin: Mapping History",
+    "path": "/mapping-history",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "OK",
+    "scrollWidth": 812,
+    "windowWidth": 812,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1000,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "SOIL NAME",
+          "COORDINATES",
+          "SCAN NOTE",
+          "TIMESTAMP",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 16,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_mapping_history_landscape_812x375.png"
+  },
+  {
+    "page": "Admin: Mapping History",
+    "path": "/mapping-history",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1000,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "SOIL NAME",
+          "COORDINATES",
+          "SCAN NOTE",
+          "TIMESTAMP",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 15,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_mapping_history_tablet_768.png"
+  },
+  {
+    "page": "Admin: Mapping History",
+    "path": "/mapping-history",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "OK",
+    "scrollWidth": 1270,
+    "windowWidth": 1280,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1000,
+        "overflowsScreen": false,
+        "hasScrollWrapper": true,
+        "headers": [
+          "SOIL NAME",
+          "COORDINATES",
+          "SCAN NOTE",
+          "TIMESTAMP",
+          "STATUS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 16,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_mapping_history_desktop_1280.png"
+  },
+  {
+    "page": "Admin: Manage Munsell Colors",
+    "path": "/munsell-color",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 349,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "COLOR NAME",
+          "IMAGE COLOR",
+          "FULL CODE",
+          "SOIL ORGANIC INDEX",
+          "SOIL TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 18,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_munsell_colors_iphone13mini.png"
+  },
+  {
+    "page": "Admin: Manage Munsell Colors",
+    "path": "/munsell-color",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 334,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "COLOR NAME",
+          "IMAGE COLOR",
+          "FULL CODE",
+          "SOIL ORGANIC INDEX",
+          "SOIL TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 18,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_munsell_colors_galaxy_a6s.png"
+  },
+  {
+    "page": "Admin: Manage Munsell Colors",
+    "path": "/munsell-color",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 294,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "COLOR NAME",
+          "IMAGE COLOR",
+          "FULL CODE",
+          "SOIL ORGANIC INDEX",
+          "SOIL TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 18,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_munsell_colors_small_320.png"
+  },
+  {
+    "page": "Admin: Manage Munsell Colors",
+    "path": "/munsell-color",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "OK",
+    "scrollWidth": 812,
+    "windowWidth": 812,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1253,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "COLOR NAME & CHARACTERISTICS",
+          "IMAGE COLOR",
+          "FULL CODE",
+          "SOIL ORGANIC INDEX",
+          "SOIL TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_munsell_colors_landscape_812x375.png"
+  },
+  {
+    "page": "Admin: Manage Munsell Colors",
+    "path": "/munsell-color",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1253,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "COLOR NAME & CHARACTERISTICS",
+          "IMAGE COLOR",
+          "FULL CODE",
+          "SOIL ORGANIC INDEX",
+          "SOIL TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 18,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_munsell_colors_tablet_768.png"
+  },
+  {
+    "page": "Admin: Manage Munsell Colors",
+    "path": "/munsell-color",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "OK",
+    "scrollWidth": 1270,
+    "windowWidth": 1280,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1784,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "COLOR NAME & CHARACTERISTICS",
+          "IMAGE COLOR",
+          "FULL CODE",
+          "SOIL ORGANIC INDEX",
+          "SOIL TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 19,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_munsell_colors_desktop_1280.png"
+  },
+  {
+    "page": "Admin: User Requests",
+    "path": "/user-requests",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 349,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "Request ID",
+          "USER",
+          "Submitted",
+          "Status",
+          "TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 2,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_user_requests_iphone13mini.png"
+  },
+  {
+    "page": "Admin: User Requests",
+    "path": "/user-requests",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 334,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "Request ID",
+          "USER",
+          "Submitted",
+          "Status",
+          "TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 2,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_user_requests_galaxy_a6s.png"
+  },
+  {
+    "page": "Admin: User Requests",
+    "path": "/user-requests",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 294,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "Request ID",
+          "USER",
+          "Submitted",
+          "Status",
+          "TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 2,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_user_requests_small_320.png"
+  },
+  {
+    "page": "Admin: User Requests",
+    "path": "/user-requests",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "OK",
+    "scrollWidth": 812,
+    "windowWidth": 812,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1045,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "REQUEST ID",
+          "USER",
+          "SUBMITTED",
+          "STATUS",
+          "TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 3,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_user_requests_landscape_812x375.png"
+  },
+  {
+    "page": "Admin: User Requests",
+    "path": "/user-requests",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 742,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "Request ID",
+          "USER",
+          "Submitted",
+          "Status",
+          "TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 2,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_user_requests_tablet_768.png"
+  },
+  {
+    "page": "Admin: User Requests",
+    "path": "/user-requests",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "OK",
+    "scrollWidth": 1270,
+    "windowWidth": 1280,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 1045,
+        "overflowsScreen": false,
+        "hasScrollWrapper": true,
+        "headers": [
+          "REQUEST ID",
+          "USER",
+          "SUBMITTED",
+          "STATUS",
+          "TYPE"
+        ]
+      }
+    ],
+    "smallTargetsCount": 3,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_user_requests_desktop_1280.png"
+  },
+  {
+    "page": "Admin: Manage FAQs",
+    "path": "/faqs",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 349,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "QUESTION",
+          "CATEGORY",
+          "STATUS",
+          "ACTION"
+        ]
+      }
+    ],
+    "smallTargetsCount": 16,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_faqs_iphone13mini.png"
+  },
+  {
+    "page": "Admin: Manage FAQs",
+    "path": "/faqs",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 334,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "QUESTION",
+          "CATEGORY",
+          "STATUS",
+          "ACTION"
+        ]
+      }
+    ],
+    "smallTargetsCount": 16,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_faqs_galaxy_a6s.png"
+  },
+  {
+    "page": "Admin: Manage FAQs",
+    "path": "/faqs",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 294,
+        "overflowsScreen": false,
+        "hasScrollWrapper": false,
+        "headers": [
+          "QUESTION",
+          "CATEGORY",
+          "STATUS",
+          "ACTION"
+        ]
+      }
+    ],
+    "smallTargetsCount": 16,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_faqs_small_320.png"
+  },
+  {
+    "page": "Admin: Manage FAQs",
+    "path": "/faqs",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "OK",
+    "scrollWidth": 812,
+    "windowWidth": 812,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 2606,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "QUESTION & ANSWER",
+          "CATEGORY",
+          "STATUS",
+          "ACTIONS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 17,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_faqs_landscape_812x375.png"
+  },
+  {
+    "page": "Admin: Manage FAQs",
+    "path": "/faqs",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 2606,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "QUESTION & ANSWER",
+          "CATEGORY",
+          "STATUS",
+          "ACTIONS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 16,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_faqs_tablet_768.png"
+  },
+  {
+    "page": "Admin: Manage FAQs",
+    "path": "/faqs",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "OK",
+    "scrollWidth": 1270,
+    "windowWidth": 1280,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [
+      {
+        "width": 2606,
+        "overflowsScreen": true,
+        "hasScrollWrapper": true,
+        "headers": [
+          "QUESTION & ANSWER",
+          "CATEGORY",
+          "STATUS",
+          "ACTIONS"
+        ]
+      }
+    ],
+    "smallTargetsCount": 17,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_manage_faqs_desktop_1280.png"
+  },
+  {
+    "page": "Admin: Student Records",
+    "path": "/students",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 6,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_student_records_iphone13mini.png"
+  },
+  {
+    "page": "Admin: Student Records",
+    "path": "/students",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 6,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_student_records_galaxy_a6s.png"
+  },
+  {
+    "page": "Admin: Student Records",
+    "path": "/students",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 6,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_student_records_small_320.png"
+  },
+  {
+    "page": "Admin: Student Records",
+    "path": "/students",
+    "device": "Landscape (812x375)",
+    "dimensions": "812x375",
+    "result": "OK",
+    "scrollWidth": 812,
+    "windowWidth": 812,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_student_records_landscape_812x375.png"
+  },
+  {
+    "page": "Admin: Student Records",
+    "path": "/students",
+    "device": "Tablet (768px)",
+    "dimensions": "768x1024",
+    "result": "OK",
+    "scrollWidth": 768,
+    "windowWidth": 768,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 6,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_student_records_tablet_768.png"
+  },
+  {
+    "page": "Admin: Student Records",
+    "path": "/students",
+    "device": "Desktop (1280px)",
+    "dimensions": "1280x800",
+    "result": "OK",
+    "scrollWidth": 1270,
+    "windowWidth": 1280,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 7,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_student_records_desktop_1280.png"
+  },
+  {
+    "page": "Admin: Upload Application",
+    "path": "/upload-application",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 0,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_upload_application_iphone13mini.png"
+  },
+  {
+    "page": "Admin: Upload Application",
+    "path": "/upload-application",
+    "device": "Galaxy A6s",
+    "dimensions": "360x720",
+    "result": "OK",
+    "scrollWidth": 360,
+    "windowWidth": 360,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 0,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_upload_application_galaxy_a6s.png"
+  },
+  {
+    "page": "Admin: Upload Application",
+    "path": "/upload-application",
+    "device": "Small Phone (320px)",
+    "dimensions": "320x568",
+    "result": "OK",
+    "scrollWidth": 320,
+    "windowWidth": 320,
+    "hasOverflow": false,
+    "culprits": [],
+    "tables": [],
+    "smallTargetsCount": 0,
+    "issueSummary": "Responsive layout fits screen cleanly",
+    "screenshot": "admin_upload_application_small_320.png"
+  },
+  {
+    "page": "Modal: Admin Mobile Sidebar Drawer",
+    "path": "/dashboard",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "issueSummary": "Interactive view opens cleanly within screen bounds (triggered: true)",
+    "screenshot": "interactive_admin_mobile_sidebar_drawer_375x812.png"
+  },
+  {
+    "page": "Modal: Website Mobile Navigation Menu",
+    "path": "/home",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "issueSummary": "Interactive view opens cleanly within screen bounds (triggered: false)",
+    "screenshot": "interactive_website_mobile_navigation_menu_375x812.png"
+  },
+  {
+    "page": "Modal: Soil Record Details Modal",
+    "path": "/soil",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "issueSummary": "Interactive view opens cleanly within screen bounds (triggered: true)",
+    "screenshot": "interactive_soil_record_details_modal_375x812.png"
+  },
+  {
+    "page": "Modal: Add Student Modal",
+    "path": "/students",
+    "device": "iPhone 13 mini",
+    "dimensions": "375x812",
+    "result": "OK",
+    "scrollWidth": 375,
+    "windowWidth": 375,
+    "hasOverflow": false,
+    "issueSummary": "Interactive view opens cleanly within screen bounds (triggered: true)",
+    "screenshot": "interactive_add_student_modal_375x812.png"
+  }
+]

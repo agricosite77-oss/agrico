@@ -22,12 +22,16 @@
             </svg>
             <input
                 wire:model.live.debounce.300ms="search"
+                @keydown.escape="$wire.set('search', ''); $el.value = '';"
                 type="text"
                 placeholder="Search soil name, coordinates, notes..."
-                style="width:100%; border:1px solid #e2e8f0; border-radius:16px; background:#ffffff; padding:10px 16px 10px 46px; font-size:14px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
+                style="width:100%; border:1px solid #e2e8f0; border-radius:16px; background:#ffffff; padding:10px 44px 10px 46px; font-size:14px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3px rgba(68,175,53,0.15)';"
                 onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
             />
+            @if($search)
+                <x-search-clear-button wireModel="search" />
+            @endif
         </div>
 
         {{-- FUNNEL ICON --}}
@@ -62,20 +66,20 @@
             </h2>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full min-w-[1000px] mapping-table">
+        <div class="overflow-x-auto mapping-table-container">
+            <table class="w-full min-w-0 md:min-w-[1000px] mapping-table">
                 <thead>
                     <tr class="bg-[#F1FBF1] border-b border-gray-100">
 
                         {{-- SOIL NAME --}}
-                        <th class="px-5 py-4 text-left text-xs font-bold text-gray-500 whitespace-nowrap">
+                        <th class="col-mapping-soil px-5 py-4 text-left text-xs font-bold text-gray-500 whitespace-nowrap">
                             SOIL NAME
                         </th>
 
                         {{-- COORDINATES --}}
                         <th
                             wire:click="sortBy('latitude')"
-                            class="soil-th-sortable px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group whitespace-nowrap"
+                            class="col-mapping-coords soil-th-sortable px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group whitespace-nowrap"
                         >
                             <div class="flex items-center gap-1">
                                 <span class="group-hover:text-[#22c55e] transition-colors duration-200">COORDINATES</span>
@@ -97,14 +101,14 @@
                         </th>
 
                         {{-- SCAN DETAILS --}}
-                        <th class="px-5 py-4 text-left text-xs font-bold text-gray-500 whitespace-nowrap">
+                        <th class="col-mapping-note px-5 py-4 text-left text-xs font-bold text-gray-500 whitespace-nowrap">
                             SCAN NOTE
                         </th>
 
                         {{-- TIMESTAMP --}}
                         <th
                             wire:click="sortBy('timestamp')"
-                            class="soil-th-sortable px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group whitespace-nowrap"
+                            class="col-mapping-time soil-th-sortable px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group whitespace-nowrap"
                         >
                             <div class="flex items-center gap-1">
                                 <span class="group-hover:text-[#22c55e] transition-colors duration-200">TIMESTAMP</span>
@@ -126,12 +130,12 @@
                         </th>
 
                         {{-- STATUS --}}
-                        <th class="px-5 py-4 text-left text-xs font-bold text-gray-500 whitespace-nowrap">
+                        <th class="col-mapping-status px-5 py-4 text-left text-xs font-bold text-gray-500 whitespace-nowrap">
                             STATUS
                         </th>
 
                         {{-- ACTIONS --}}
-                        <th class="px-5 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap col-sticky-action" style="min-width: 120px; padding-right: 12px !important;">
+                        <th class="col-sticky-action px-5 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap" style="min-width: 120px; padding-right: 12px !important;">
                             ACTIONS
                         </th>
                     </tr>
@@ -142,17 +146,20 @@
                     <tr wire:key="history-row-{{ $map->location_mapping_id ?? $map->id }}" class="border-b border-gray-100 hover:bg-green-50/40 transition">
 
                         {{-- SOIL NAME --}}
-                        <td class="px-5 py-5 whitespace-nowrap">
+                        <td class="col-mapping-soil px-5 py-5 whitespace-nowrap">
                             <div class="font-bold text-sm text-gray-800">
                                 {{ $map->soil->soil_name ?? '—' }}
                             </div>
                             <div class="text-xs text-gray-400 mt-0.5">
                                 {{ $map->soil->full_code ?? '' }}
                             </div>
+                            <div class="mapping-mobile-meta text-xs text-gray-400 mt-0.5 hidden">
+                                <span>{{ number_format($map->latitude, 4) }}, {{ number_format($map->longitude, 4) }}</span>
+                            </div>
                         </td>
 
                         {{-- COORDINATES --}}
-                        <td class="px-5 py-5 whitespace-nowrap">
+                        <td class="col-mapping-coords px-5 py-5 whitespace-nowrap">
                             <div class="flex items-center gap-1.5 text-sm text-gray-700 font-semibold">
                                 <svg class="w-4 h-4 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
@@ -162,19 +169,19 @@
                         </td>
 
                         {{-- SCAN NOTE --}}
-                        <td class="px-5 py-5" style="max-width: 250px;">
+                        <td class="col-mapping-note px-5 py-5" style="max-width: 250px;">
                             <div class="text-sm text-gray-600 truncate" title="{{ $map->soilScan->scan_note ?? '—' }}">
                                 {{ $map->soilScan->scan_note ?? '—' }}
                             </div>
                         </td>
 
                         {{-- TIMESTAMP --}}
-                        <td class="px-5 py-5 text-sm text-gray-500 whitespace-nowrap">
+                        <td class="col-mapping-time px-5 py-5 text-sm text-gray-500 whitespace-nowrap">
                             {{ $map->timestamp ? \Illuminate\Support\Carbon::parse($map->timestamp)->format('Y-m-d H:i') : $map->created_at?->format('Y-m-d H:i') }}
                         </td>
 
                         {{-- STATUS --}}
-                        <td class="px-5 py-5 whitespace-nowrap">
+                        <td class="col-mapping-status px-5 py-5 whitespace-nowrap">
                             <button
                                 wire:click="toggleStatus({{ $map->location_mapping_id ?? $map->id }})"
                                 wire:loading.attr="disabled"
@@ -324,9 +331,56 @@
             padding-left: 20px !important;
         }
         @media (max-width: 679px) {
+            .mapping-table-container {
+                overflow-x: hidden !important;
+                width: 100% !important;
+            }
+            .mapping-table {
+                table-layout: fixed !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+            .col-mapping-coords,
+            .col-mapping-note,
+            .col-mapping-time {
+                display: none !important;
+            }
+            .mapping-mobile-meta {
+                display: block !important;
+            }
             .mapping-table th:first-child,
             .mapping-table td:first-child {
                 padding-left: 12px !important;
+                padding-right: 4px !important;
+            }
+            .col-mapping-status {
+                width: 84px !important;
+                min-width: 84px !important;
+                max-width: 84px !important;
+                padding: 10px 4px !important;
+                text-align: center !important;
+            }
+            .col-mapping-status button {
+                padding: 3px 8px !important;
+                font-size: 11px !important;
+            }
+            .col-sticky-action {
+                width: 88px !important;
+                min-width: 88px !important;
+                max-width: 88px !important;
+                padding: 10px 8px 10px 2px !important;
+                text-align: center !important;
+            }
+            .col-sticky-action .flex {
+                justify-content: center !important;
+                gap: 4px !important;
+            }
+            .agrico-view-btn,
+            .agrico-delete-btn {
+                width: 32px !important;
+                height: 32px !important;
+                min-width: 32px !important;
+                border-radius: 8px !important;
             }
         }
     </style>
