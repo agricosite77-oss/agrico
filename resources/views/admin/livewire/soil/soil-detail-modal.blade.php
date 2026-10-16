@@ -547,7 +547,7 @@
         border-top: 1px solid #f1f5f9 !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: center !important;
+        justify-content: flex-end !important;
         flex-shrink: 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
@@ -706,25 +706,6 @@
                 <h3 style="margin: 0;">
                     Soil Record Details{{ $isMulti ? ' (' . count($regions) . ' DETECTED)' : '' }}
                 </h3>
-                @php
-                    $vStatus = $scan?->verification_status ?: 'Pending';
-                @endphp
-                @if(strtolower($vStatus) === 'verified')
-                    <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 800; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0;">
-                        <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                        VERIFIED (PIN VISIBLE)
-                    </span>
-                @elseif(strtolower($vStatus) === 'rejected')
-                    <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 800; background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;">
-                        <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        REJECTED (PIN HIDDEN)
-                    </span>
-                @else
-                    <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 800; background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">
-                        <svg style="width: 12px; height: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        PENDING REVIEW
-                    </span>
-                @endif
             </div>
             <x-modal-close-button click="closeModal" />
         </div>
@@ -1193,36 +1174,8 @@
 
         </div>
 
-        {{-- FIXED FOOTER BAR FOR RECORD DETAILS & MODERATION --}}
-        <div class="soil-detail-modal-footer" style="padding: 14px 24px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; width: 100%; box-sizing: border-box; flex-shrink: 0; background: #ffffff; border-top: 1px solid #f1f5f9;">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <button
-                    type="button"
-                    wire:click="approveScan"
-                    class="py-2.5 px-5 rounded-full text-xs font-bold transition cursor-pointer text-center"
-                    style="background: #16a34a; border: 1.5px solid #15803d; color: #ffffff; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);"
-                    onmouseover="this.style.background='#15803d';"
-                    onmouseout="this.style.background='#16a34a';"
-                    title="Approve scan, mark verified, and make pin visible on public map"
-                >
-                    <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                    Approve (Publish Pin)
-                </button>
-
-                <button
-                    type="button"
-                    wire:click="rejectScan"
-                    class="py-2.5 px-5 rounded-full text-xs font-bold transition cursor-pointer text-center"
-                    style="background: #ffffff; border: 1.5px solid #ef4444; color: #ef4444; display: inline-flex; align-items: center; gap: 6px;"
-                    onmouseover="this.style.background='#fef2f2';"
-                    onmouseout="this.style.background='#ffffff';"
-                    title="Reject scan and hide pin from public map"
-                >
-                    <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    Reject (Hide Pin)
-                </button>
-            </div>
-
+        {{-- FIXED FOOTER BAR FOR RECORD DETAILS --}}
+        <div class="soil-detail-modal-footer" style="padding: 14px 24px 16px; display: flex; align-items: center; justify-content: flex-end; width: 100%; box-sizing: border-box; flex-shrink: 0; background: #ffffff; border-top: 1px solid #f1f5f9;">
             <button
                 type="button"
                 wire:click="closeModal"

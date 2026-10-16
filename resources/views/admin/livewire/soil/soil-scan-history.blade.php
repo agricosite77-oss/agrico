@@ -251,11 +251,11 @@
                 left: auto !important;
                 right: auto !important;
                 box-shadow: none !important;
-                padding-left: 12px !important;
-                padding-right: 12px !important;
-                width: 134px !important;
-                min-width: 134px !important;
-                max-width: 134px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+                width: 96px !important;
+                min-width: 96px !important;
+                max-width: 96px !important;
                 text-align: center !important;
             }
             .soil-table th.col-sticky-action {
@@ -309,15 +309,15 @@
             .soil-table td.col-sticky-action {
                 position: sticky !important;
                 right: 0 !important;
-                width: 144px !important;
-                min-width: 144px !important;
-                max-width: 144px !important;
+                width: 96px !important;
+                min-width: 96px !important;
+                max-width: 96px !important;
                 white-space: nowrap !important;
                 box-shadow: none !important;
                 z-index: 10 !important;
                 background-color: #ffffff !important;
-                padding-left: 12px !important;
-                padding-right: 12px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
                 text-align: center !important;
             }
             .soil-table td.col-sticky-action .flex,
@@ -463,15 +463,15 @@
             .soil-table td.col-sticky-action {
                 position: sticky !important;
                 right: 0 !important;
-                width: 144px !important;
-                min-width: 144px !important;
-                max-width: 144px !important;
+                width: 96px !important;
+                min-width: 96px !important;
+                max-width: 96px !important;
                 white-space: nowrap !important;
                 box-shadow: none !important;
                 z-index: 10 !important;
                 background-color: #ffffff !important;
-                padding-left: 12px !important;
-                padding-right: 12px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
                 text-align: center !important;
             }
             .soil-table td.col-sticky-action .flex,
@@ -789,32 +789,6 @@
                         {{-- ACTION --}}
                         <td class="px-3 py-5 whitespace-nowrap col-sticky-action text-center">
                             <div class="flex justify-center items-center gap-1.5 whitespace-nowrap">
-                                {{-- QUICK APPROVE --}}
-                                @if(strtolower($scan->verification_status ?? '') !== 'verified')
-                                <button
-                                    wire:click="approveScan({{ $scan->soil_scan_id }})"
-                                    class="agrico-approve-btn"
-                                    title="Approve Scan & Publish Pin"
-                                >
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                </button>
-                                @endif
-
-                                {{-- QUICK REJECT --}}
-                                @if(strtolower($scan->verification_status ?? '') !== 'rejected')
-                                <button
-                                    wire:click="rejectScan({{ $scan->soil_scan_id }})"
-                                    class="agrico-reject-btn"
-                                    title="Reject Scan & Hide Pin"
-                                >
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                </button>
-                                @endif
-
                                 {{-- VIEW (Line Eye) --}}
                                 <button
                                     wire:click="$dispatch('view-soil',{id:{{ $scan->soil_scan_id }}})"
