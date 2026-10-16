@@ -1762,7 +1762,6 @@ body.bg-\[\#E8F5E9\] .soil-modal-close,
     user-select: none !important;
     -webkit-user-select: none !important;
     flex-shrink: 0 !important;
-    position: relative !important;
     line-height: 1 !important;
     text-decoration: none !important;
 }
@@ -1980,36 +1979,12 @@ html.light .leaflet-popup a.leaflet-popup-close-button,
     color: #94a3b8 !important;
 }
 
-@media (hover: hover) and (pointer: fine) {
-    .leaflet-popup a.leaflet-popup-close-button:hover,
-    .agrico-custom-popup a.leaflet-popup-close-button:hover,
-    .leaflet-container a.leaflet-popup-close-button:hover {
-        background: var(--close-btn-bg-hover, rgba(35, 83, 71, 0.85)) !important;
-        border-color: var(--close-btn-border-hover, #DAF1DE) !important;
-        color: var(--close-btn-color-hover, #DAF1DE) !important;
-        transform: scale(var(--close-btn-scale-hover, 1.06)) !important;
-    }
-
-    html.light-mode .leaflet-popup a.leaflet-popup-close-button:hover,
-    html.light-mode .agrico-custom-popup a.leaflet-popup-close-button:hover,
-    html.light-mode .leaflet-container a.leaflet-popup-close-button:hover,
-    html.light .leaflet-popup a.leaflet-popup-close-button:hover,
-    [data-theme="light"] .leaflet-popup a.leaflet-popup-close-button:hover,
-    .light-mode a.leaflet-popup-close-button:hover {
-        background: #f1f5f9 !important;
-        border-color: #f1f5f9 !important;
-        color: #0f172a !important;
-        transform: scale(1.06) !important;
-    }
-}
-
-.leaflet-popup a.leaflet-popup-close-button:active,
-.agrico-custom-popup a.leaflet-popup-close-button:active,
-.leaflet-container a.leaflet-popup-close-button:active {
-    transform: scale(var(--close-btn-scale-active, 0.95)) !important;
-}
-
-/* Modal preview map (Image 5): COMPLETELY REMOVE POPUP CLOSE BUTTON */
+/* Remove popup close button across all Agrico maps (user request: remove the X part from popups) */
+.leaflet-popup-close-button,
+.leaflet-popup a.leaflet-popup-close-button,
+.agrico-custom-popup a.leaflet-popup-close-button,
+.leaflet-container a.leaflet-popup-close-button,
+a.leaflet-popup-close-button,
 #modalSoilDetailMap .leaflet-popup-close-button,
 .admin-soil-detail-map .leaflet-popup-close-button {
     display: none !important;

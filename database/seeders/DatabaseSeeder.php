@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             Munsell2_5YRSeeder::class,
             Munsell2_5YSeeder::class,
             FullMunsellDescriptionsSeeder::class,
+            FaqSeeder::class,
+            AdminRecordSeeder::class,
         ]);
     }
 }

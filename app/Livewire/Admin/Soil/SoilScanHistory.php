@@ -27,6 +27,20 @@ class SoilScanHistory extends Component
         'scan-moderated' => '$refresh',
     ];
 
+    public function mount()
+    {
+        if (SoilScan::count() === 0) {
+            (new \Database\Seeders\AdminRecordSeeder())->seedSoilScans();
+        }
+    }
+
+    public function seedSampleRecords()
+    {
+        (new \Database\Seeders\AdminRecordSeeder())->seedSoilScans();
+        session()->flash('message', 'Sample soil scan records have been seeded successfully.');
+        $this->resetPage();
+    }
+
     public function selectSuggestion($value)
     {
         $this->search = $value;

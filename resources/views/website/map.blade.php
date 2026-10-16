@@ -344,47 +344,9 @@
         }
         .leaflet-container a.leaflet-popup-close-button,
         .agrico-custom-popup a.leaflet-popup-close-button,
-        a.leaflet-popup-close-button {
-            top: 10px !important;
-            right: 10px !important;
-            width: 28px !important;
-            height: 28px !important;
-            border-radius: 50% !important;
-            background: var(--close-btn-bg, rgba(5, 31, 32, 0.70)) !important;
-            color: var(--close-btn-color, #8EB69B) !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: 16px !important;
-            border: var(--close-btn-border-width, 1.5px) solid var(--close-btn-border, rgba(142, 182, 155, 0.35)) !important;
-            transition: var(--close-btn-transition, all 0.2s cubic-bezier(0.16, 1, 0.3, 1)) !important;
-            padding: 0 !important;
-            z-index: 20 !important;
-            text-decoration: none !important;
-            box-sizing: border-box !important;
-        }
-        .leaflet-container a.leaflet-popup-close-button:hover,
-        .agrico-custom-popup a.leaflet-popup-close-button:hover,
-        a.leaflet-popup-close-button:hover {
-            background: var(--close-btn-bg-hover, rgba(35, 83, 71, 0.85)) !important;
-            color: var(--close-btn-color-hover, #DAF1DE) !important;
-            border-color: var(--close-btn-border-hover, #DAF1DE) !important;
-            transform: scale(1.06) !important;
-        }
-        html.light-mode .leaflet-container a.leaflet-popup-close-button,
-        html.light-mode .agrico-custom-popup a.leaflet-popup-close-button,
-        html.light-mode a.leaflet-popup-close-button {
-            background: transparent !important;
-            border-color: transparent !important;
-            color: #94a3b8 !important;
-        }
-        html.light-mode .leaflet-container a.leaflet-popup-close-button:hover,
-        html.light-mode .agrico-custom-popup a.leaflet-popup-close-button:hover,
-        html.light-mode a.leaflet-popup-close-button:hover {
-            background: #f1f5f9 !important;
-            border-color: #f1f5f9 !important;
-            color: #0f172a !important;
-            transform: scale(1.06) !important;
+        a.leaflet-popup-close-button,
+        .leaflet-popup-close-button {
+            display: none !important;
         }
 
         /* ── LIGHT MODE OVERRIDES FOR SOIL MAP PAGE ── */

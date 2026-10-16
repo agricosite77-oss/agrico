@@ -32,6 +32,10 @@ class StudentRecord extends Component
         if ($this->isSuperAdminActor()) {
             $this->adminFilter = $this->getLoggedInAdminId();
         }
+
+        if (User::where('role', 'student')->count() === 0) {
+            (new \Database\Seeders\AdminRecordSeeder())->seedStudents();
+        }
     }
 
     public function updatingPerPage()

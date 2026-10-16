@@ -830,6 +830,20 @@
                                 <div style="font-size: 12.5px; font-weight: 500; color: #64748b; max-width: 360px; line-height: 1.4;">
                                     No soil scan history records matched your search query or active date filter.
                                 </div>
+                                @if(\App\Models\SoilScan::count() === 0)
+                                <button
+                                    wire:click="seedSampleRecords"
+                                    type="button"
+                                    style="margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 700; background: #22c55e; color: #ffffff; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.28); transition: all 0.2s ease;"
+                                    onmouseover="this.style.background='#16a34a';"
+                                    onmouseout="this.style.background='#22c55e';"
+                                >
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Generate Sample Soil Scans
+                                </button>
+                                @endif
                             </div>
                         </td>
                     </tr>

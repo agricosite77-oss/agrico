@@ -28,6 +28,20 @@ class ManageMap extends Component
         // Livewire re-renders automatically after this runs — no body needed
     }
 
+    public function mount()
+    {
+        if (LocationMapping::count() === 0) {
+            (new \Database\Seeders\AdminRecordSeeder())->seedLocationMappings();
+        }
+    }
+
+    public function seedSamplePins()
+    {
+        (new \Database\Seeders\AdminRecordSeeder())->seedLocationMappings();
+        session()->flash('message', 'Sample location map pins have been seeded successfully.');
+        $this->resetPage();
+    }
+
     public function selectSuggestion($value)
     {
         $this->search = $value;

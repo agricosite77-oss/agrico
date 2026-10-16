@@ -22,6 +22,13 @@ class ManageMappingHistory extends Component
         'mapping-updated' => '$refresh',
     ];
 
+    public function mount()
+    {
+        if (LocationMapping::count() === 0) {
+            (new \Database\Seeders\AdminRecordSeeder())->seedLocationMappings();
+        }
+    }
+
     public function toggleStatus($id)
     {
         $mapping = LocationMapping::find($id);

@@ -1,5 +1,20 @@
 <div wire:poll.5s class="space-y-6">
 
+    {{-- FLASH NOTIFICATION --}}
+    @if(session()->has('message'))
+        <div class="ui-reveal p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold flex items-center justify-between shadow-sm" style="--i:0">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{{ session('message') }}</span>
+            </div>
+            <button type="button" onclick="this.closest('div').remove()" class="text-emerald-500 hover:text-emerald-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    @endif
+
     {{-- HEADER --}}
     <div class="ui-reveal faq-header-bar" style="--i:0">
         <div>
@@ -11,16 +26,34 @@
             </p>
         </div>
 
-        <button
-            wire:click="$dispatch('create-faq')"
-            class="faq-add-btn ui-reveal-text"
-            style="--i:0; background: #22c55e !important; color: #ffffff !important; font-weight: 700; font-size: 13px; border: none; padding: 10px 20px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); cursor: pointer; transition: all 0.2s ease; width: fit-content; flex-shrink: 0;"
-            onmouseover="this.style.background='#16a34a';"
-            onmouseout="this.style.background='#22c55e';"
-        >
-            <span style="font-size: 16px; font-weight: 800; line-height: 1;">+</span>
-            <span>Add FAQ</span>
-        </button>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button
+                wire:click="syncDefaultFaqs"
+                wire:loading.attr="disabled"
+                class="faq-sync-btn ui-reveal-text"
+                title="Sync standard questions from system catalog"
+                style="--i:0; background: #ffffff !important; color: #334155 !important; font-weight: 700; font-size: 13px; border: 1.5px solid #e2e8f0; padding: 9px 16px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); cursor: pointer; transition: all 0.2s ease; width: fit-content; flex-shrink: 0;"
+                onmouseover="this.style.borderColor='#22c55e'; this.style.color='#16a34a';"
+                onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#334155';"
+            >
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+                <span wire:loading.remove wire:target="syncDefaultFaqs">Sync Defaults</span>
+                <span wire:loading wire:target="syncDefaultFaqs">Syncing...</span>
+            </button>
+
+            <button
+                wire:click="$dispatch('create-faq')"
+                class="faq-add-btn ui-reveal-text"
+                style="--i:0; background: #22c55e !important; color: #ffffff !important; font-weight: 700; font-size: 13px; border: none; padding: 10px 20px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); cursor: pointer; transition: all 0.2s ease; width: fit-content; flex-shrink: 0;"
+                onmouseover="this.style.background='#16a34a';"
+                onmouseout="this.style.background='#22c55e';"
+            >
+                <span style="font-size: 16px; font-weight: 800; line-height: 1;">+</span>
+                <span>Add FAQ</span>
+            </button>
+        </div>
     </div>
 
     {{-- SEARCH AND FILTER CARD --}}

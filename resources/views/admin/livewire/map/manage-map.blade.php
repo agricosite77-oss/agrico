@@ -198,11 +198,13 @@
                 @dblclick.stop
             >
                 {{-- SEARCH INPUT BOX --}}
-                <div style="position: relative; width: 100%;">
-                    <svg style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #16a34a; z-index: 2; pointer-events: none;" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <circle cx="11" cy="11" r="8"/>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                    </svg>
+                <div style="position: relative; width: 100%; display: flex; align-items: center;">
+                    <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; justify-content: center; pointer-events: none; z-index: 2; width: 18px; height: 18px; color: #16a34a;">
+                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                    </span>
 
                     <input
                         x-model="query"
@@ -211,20 +213,26 @@
                         @keydown.escape="open = false"
                         type="text"
                         placeholder="Search map: soil, type, code, GPS, barangay..."
-                        style="width: 100%; border: 1.5px solid rgba(226, 232, 240, 0.95); border-radius: 16px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(8px); padding: 10px 38px 10px 42px; font-size: 13.5px; font-weight: 600; color: #1e293b; outline: none; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06); transition: all 0.2s ease; box-sizing: border-box;"
+                        style="width: 100%; height: 44px; border: 1.5px solid rgba(226, 232, 240, 0.95); border-radius: 16px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(8px); padding: 0 38px 0 42px; font-size: 13.5px; font-weight: 600; color: #1e293b; outline: none; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06); transition: all 0.2s ease; box-sizing: border-box; line-height: 44px;"
                         onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 4px 20px rgba(34, 197, 94, 0.25), 0 0 0 3px rgba(34, 197, 94, 0.15)';"
                         onblur="this.style.borderColor='rgba(226, 232, 240, 0.95)'; this.style.boxShadow='0 4px 18px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06)';"
                     />
 
-                    <x-close-button
-                        size="sm"
-                        x-show="query.length > 0"
+                    <button
+                        type="button"
+                        x-show="query && query.length > 0"
                         x-cloak
                         @click="clear()"
                         title="Clear Search"
-                        ariaLabel="Clear search"
-                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 3;"
-                    />
+                        aria-label="Clear search"
+                        style="position: absolute !important; right: 10px !important; top: 50% !important; transform: translateY(-50%) !important; width: 26px !important; height: 26px !important; border-radius: 50% !important; background: #f1f5f9 !important; border: 1px solid #e2e8f0 !important; color: #64748b !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important; z-index: 3 !important; padding: 0 !important; margin: 0 !important; transition: all 0.15s ease !important;"
+                        onmouseover="this.style.background='#e2e8f0'; this.style.color='#0f172a';"
+                        onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';"
+                    >
+                        <svg style="width: 13px !important; height: 13px !important; stroke: currentColor !important;" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
 
                 {{-- AUTO SUGGESTION DROPDOWN INSIDE MAP --}}
@@ -750,6 +758,20 @@
                                 <div style="font-size: 12.5px; font-weight: 500; color: #64748b; max-width: 360px; line-height: 1.4;">
                                     No map location pin entries matched your search query or active filter settings.
                                 </div>
+                                @if(\App\Models\LocationMapping::count() === 0)
+                                <button
+                                    wire:click="seedSamplePins"
+                                    type="button"
+                                    style="margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 700; background: #22c55e; color: #ffffff; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.28); transition: all 0.2s ease;"
+                                    onmouseover="this.style.background='#16a34a';"
+                                    onmouseout="this.style.background='#22c55e';"
+                                >
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Generate Sample Map Pins
+                                </button>
+                                @endif
                             </div>
                         </td>
                     </tr>

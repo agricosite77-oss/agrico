@@ -21,6 +21,9 @@ class ManageRequest extends Component
 
     public function mount()
     {
+        if (UserRequest::count() === 0) {
+            (new \Database\Seeders\AdminRecordSeeder())->seedUserRequests();
+        }
     }
 
     public function updatedPerPage()

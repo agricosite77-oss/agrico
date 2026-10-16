@@ -21,6 +21,20 @@ class ManageFaq extends Component
         'faq-deleted' => '$refresh',
     ];
 
+    public function mount()
+    {
+        if (FAQ::count() === 0) {
+            (new \Database\Seeders\FaqSeeder())->run();
+        }
+    }
+
+    public function syncDefaultFaqs()
+    {
+        (new \Database\Seeders\FaqSeeder())->run();
+        session()->flash('message', 'All 27 standard FAQs have been synchronized with the database successfully.');
+        $this->resetPage();
+    }
+
     public function toggleStatus($id)
     {
         $faq = FAQ::find($id);

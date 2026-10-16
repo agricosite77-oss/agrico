@@ -31,7 +31,7 @@
                 maxWidth: 320,
                 minWidth: 260,
                 autoPan: false, // Managed by AgricoMapFocus.focusPin for smooth flyTo
-                closeButton: true,
+                closeButton: false, // Disables popup close button across all Agrico maps
                 autoClose: true,
                 closeOnEscapeKey: true
             }, overrides || {});

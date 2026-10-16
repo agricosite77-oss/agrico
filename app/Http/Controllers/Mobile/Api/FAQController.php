@@ -10,7 +10,7 @@ class FAQController extends Controller
 {
     public function index(Request $request)
     {
-        $faqs = FAQ::where('status', 'Active')->orderBy('order')->get();
+        $faqs = FAQ::where('status', 'Active')->orderBy('faq_id')->get();
 
         return response()->json([
             'status' => 'success',

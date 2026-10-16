@@ -24,6 +24,13 @@ class ManageUser extends Component
         // which re-runs render() and pulls fresh status/counts from the DB
     }
 
+    public function mount()
+    {
+        if (User::where('role', 'user')->count() === 0) {
+            (new \Database\Seeders\AdminRecordSeeder())->seedUsers();
+        }
+    }
+
     public $search = '';
     public $roleFilter = '';
     public $statusFilter = '';
