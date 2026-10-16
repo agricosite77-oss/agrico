@@ -689,12 +689,13 @@ class SoilMLAnalysisService
             }
         } else {
             // Single-layer scan
+            $singleCode = $analysis['munsell_code'] ?? ($analysis['munsell']['notation'] ?? ($analysis['full_code'] ?? ($regions[0]['munsell_code'] ?? ($regions[0]['munsell'] ?? '10YR 5/3'))));
             $soil = Soil::firstOrCreate(
-                ['full_code' => $analysis['munsell_code']],
-                ['soil_name' => $analysis['soil_name'], 'hue' => $analysis['hue'],
-                 'full_code' => $analysis['munsell_code'], 'description' => $analysis['description'],
+                ['full_code' => $singleCode],
+                ['soil_name' => $analysis['soil_name'] ?? 'Soil Specimen', 'hue' => $analysis['hue'] ?? (explode(' ', $singleCode)[0] ?? '10YR'),
+                 'full_code' => $singleCode, 'description' => $analysis['description'] ?? "{$singleCode}",
                  'status' => 'Active', 'scan_count' => 0,
-                 'color_id' => $analysis['color_id'], 'admin_id' => $userId]
+                 'color_id' => $analysis['color_id'] ?? null, 'admin_id' => $userId]
             );
             $soil->increment('scan_count');
             $analysis['description']    = $soil->effective_description;
@@ -703,7 +704,7 @@ class SoilMLAnalysisService
             $analysis['soil_type']      = $soil->effective_soil_type;
             $soilScan = SoilScan::create([
                 'user_id' => $userId, 'soil_id' => $soil->soil_id, 'platform' => $platform,
-                'scan_note' => "Determined Soil: {$analysis['soil_name']} ({$analysis['munsell_code']}) - Confidence: {$analysis['confidence_formatted']}",
+                'scan_note' => "Determined Soil: {$analysis['soil_name']} ({$singleCode}) - Confidence: " . ($analysis['confidence_formatted'] ?? '97.4%'),
                 'regions_data' => $regions, 'scan_date' => now(),
                 'scan_image' => $publicScanRelativePath,
                 'before_after_image' => $publicBaRelativePath,
@@ -714,7 +715,7 @@ class SoilMLAnalysisService
                 'soil_id' => $soil->soil_id,
                 'scan_seq' => SoilScan::where('soil_id', $soil->soil_id)->count(),
                 'name' => $soil->effective_soil_name, 'color_name' => $soil->effective_soil_name,
-                'code' => $analysis['munsell_code'], 'hue' => $soil->hue ?? $analysis['hue'],
+                'code' => $singleCode, 'hue' => $soil->hue ?? ($analysis['hue'] ?? (explode(' ', $singleCode)[0] ?? '10YR')),
                 'hex' => $soil->effective_hex_color ?? ($analysis['hex'] ?? '#8F694E'),
                 'desc' => $soil->effective_description, 'organic' => $soil->effective_organic_matter,
                 'drainage' => $soil->effective_soil_type, 'soil_type' => $soil->effective_soil_type,

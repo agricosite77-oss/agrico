@@ -583,11 +583,14 @@ class WebsiteController extends Controller
                     }
                 } else {
                     $newScan = SoilScan::create([
-                        'user_id'    => $finalUserId,
-                        'soil_id'    => $soilId,
-                        'platform'   => 'web',
-                        'scan_note'  => $validated['scan_note'] ?? 'Website soil location sample pin',
-                        'scan_date'  => now(),
+                        'user_id'            => $finalUserId,
+                        'soil_id'            => $soilId,
+                        'platform'           => 'web',
+                        'scan_note'          => $validated['scan_note'] ?? 'Website soil location sample pin',
+                        'scan_date'          => now(),
+                        'scan_image'         => $request->input('scan_image') ?? $request->input('scan_image_url'),
+                        'thumbnail_image'    => $request->input('thumbnail_image') ?? $request->input('thumbnail_image_url'),
+                        'before_after_image' => $request->input('before_after_image') ?? $request->input('before_after_image_url'),
                     ]);
                     $soilScanId = $newScan->soil_scan_id;
                 }
@@ -901,10 +904,14 @@ class WebsiteController extends Controller
         })->orderBy('faq_id')->get();
 
         if ($dbFaqs->isNotEmpty()) {
-            $faqs = $dbFaqs->map(function ($faq) use ($categories) {
+            $configMap = collect($configItems)->keyBy('question');
+            $faqs = $dbFaqs->map(function ($faq) use ($categories, $configMap) {
                 $catSlug = \Illuminate\Support\Str::slug($faq->category ?: 'getting-started');
+                $matchedConfig = $configMap->get($faq->question);
+                $anchorId = $matchedConfig['id'] ?? (\Illuminate\Support\Str::slug($faq->question) ?: ('faq-' . $faq->faq_id));
+
                 return [
-                    'id'            => 'faq-' . $faq->faq_id,
+                    'id'            => $anchorId,
                     'category'      => $catSlug,
                     'category_name' => $categories[$catSlug] ?? ($faq->category ?: 'General'),
                     'question'      => $faq->question,

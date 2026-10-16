@@ -22,24 +22,6 @@ class SoilImageHelper
         $soilScan = ($scan instanceof SoilScan) ? $scan : ($scan->soilScan ?? null);
         $cloudStorage = app(CloudStorageService::class);
 
-        // Fallback to latest valid scan for this soil_id if current scan record is missing images
-        $targetSoilId = $scan->soil_id ?? ($soilScan?->soil_id ?? null);
-        if ((!$soilScan || (empty($soilScan->scan_image) && empty($soilScan->thumbnail_image))) && $targetSoilId) {
-            $sibling = SoilScan::where('soil_id', $targetSoilId)
-                ->where(function($q) {
-                    $q->where(function($sq) {
-                        $sq->whereNotNull('scan_image')->where('scan_image', '!=', '');
-                    })->orWhere(function($sq) {
-                        $sq->whereNotNull('thumbnail_image')->where('thumbnail_image', '!=', '');
-                    });
-                })
-                ->latest('soil_scan_id')
-                ->first();
-            if ($sibling) {
-                $soilScan = $sibling;
-            }
-        }
-
         // Check if thumbnail was requested
         $isThumbRequest = ($typeOrFallback === 'thumb' || $typeOrFallback === true);
 
@@ -105,19 +87,6 @@ class SoilImageHelper
 
         $soilScan = ($scan instanceof SoilScan) ? $scan : ($scan->soilScan ?? null);
         $cloudStorage = app(CloudStorageService::class);
-
-        // Fallback to latest valid scan for this soil_id if current scan record is missing before_after_image
-        $targetSoilId = $scan->soil_id ?? ($soilScan?->soil_id ?? null);
-        if ((!$soilScan || empty($soilScan->before_after_image)) && $targetSoilId) {
-            $sibling = SoilScan::where('soil_id', $targetSoilId)
-                ->whereNotNull('before_after_image')
-                ->where('before_after_image', '!=', '')
-                ->latest('soil_scan_id')
-                ->first();
-            if ($sibling) {
-                $soilScan = $sibling;
-            }
-        }
 
         // 1. Direct database column in soil_scans table
         if ($soilScan && !empty($soilScan->before_after_image)) {

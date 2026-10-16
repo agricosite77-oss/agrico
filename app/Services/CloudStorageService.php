@@ -86,20 +86,39 @@ class CloudStorageService
         $cleanPath = ltrim($path, '/');
         $cleanPath = preg_replace('#^(?:storage/|agrico-scans/)#', '', $cleanPath);
 
-        // 1. Try Cloudflare R2 or S3 disk first
+        // Pre-optimize image if larger than 1.5MB or dimensions exceed 1600px
+        if (str_starts_with($mimeType, 'image/')) {
+            [$binaryContent, $mimeType] = $this->optimizeImageBinary($binaryContent, $mimeType);
+        }
+
+        // 1. Try S3, Supabase, or Cloudflare R2 disk first
         if (in_array($this->activeDisk, ['r2', 's3', 'supabase'])) {
             try {
                 $disk = Storage::disk($this->activeDisk);
                 $uploaded = $disk->put($cleanPath, $binaryContent, [
                     'visibility'   => 'public',
                     'ContentType'  => $mimeType,
+                    'mimetype'     => $mimeType,
                 ]);
 
                 if ($uploaded) {
+                    // Also maintain local copy for immediate fast local caching
+                    try {
+                        $localDest = storage_path('app/public/' . $cleanPath);
+                        $localDir = dirname($localDest);
+                        if (!is_dir($localDir)) {
+                            @mkdir($localDir, 0755, true);
+                        }
+                        @file_put_contents($localDest, $binaryContent);
+                    } catch (\Throwable $ignored) {}
+
                     return $this->publicUrl($cleanPath);
                 }
             } catch (\Throwable $e) {
-                Log::warning("[CloudStorageService] {$this->activeDisk} upload failed: " . $e->getMessage());
+                Log::error("[CloudStorageService] {$this->activeDisk} upload failed: " . $e->getMessage(), [
+                    'path' => $cleanPath,
+                    'disk' => $this->activeDisk,
+                ]);
             }
         }
 
@@ -126,19 +145,70 @@ class CloudStorageService
             }
         }
 
-        // 3. Fallback: Save to local public storage disk
-        try {
-            $localDest = storage_path('app/public/' . $cleanPath);
-            $localDir = dirname($localDest);
-            if (!is_dir($localDir)) {
-                @mkdir($localDir, 0755, true);
+        // 3. Fallback: Save to local public storage disk ONLY if cloud storage is not configured
+        if (!in_array($this->activeDisk, ['r2', 's3', 'supabase'])) {
+            try {
+                $localDest = storage_path('app/public/' . $cleanPath);
+                $localDir = dirname($localDest);
+                if (!is_dir($localDir)) {
+                    @mkdir($localDir, 0755, true);
+                }
+                @file_put_contents($localDest, $binaryContent);
+                return asset('storage/' . $cleanPath);
+            } catch (\Throwable $e) {
+                Log::warning('[CloudStorageService] Local fallback save error: ' . $e->getMessage());
             }
-            @file_put_contents($localDest, $binaryContent);
-        } catch (\Throwable $e) {
-            Log::warning('[CloudStorageService] Local fallback save error: ' . $e->getMessage());
         }
 
-        return $this->publicUrl($cleanPath);
+        return null;
+    }
+
+    /**
+     * Resizes large images (long side max 1600px, quality 85) to ensure files are < 2MB.
+     */
+    public function optimizeImageBinary(string $binaryContent, string $mimeType, int $maxDim = 1600, int $quality = 85): array
+    {
+        if (!extension_loaded('gd') || strlen($binaryContent) < 100) {
+            return [$binaryContent, $mimeType];
+        }
+
+        try {
+            $img = @imagecreatefromstring($binaryContent);
+            if (!$img) {
+                return [$binaryContent, $mimeType];
+            }
+
+            $w = imagesx($img);
+            $h = imagesy($img);
+
+            // Compress if dimensions exceed maxDim OR raw file size > 1.5MB
+            if ($w > $maxDim || $h > $maxDim || strlen($binaryContent) > 1.5 * 1024 * 1024) {
+                $scale = min($maxDim / $w, $maxDim / $h, 1.0);
+                $nw = (int) max(1, round($w * $scale));
+                $nh = (int) max(1, round($h * $scale));
+
+                $canvas = imagecreatetruecolor($nw, $nh);
+                $white = imagecolorallocate($canvas, 255, 255, 255);
+                imagefilledrectangle($canvas, 0, 0, $nw, $nh, $white);
+                imagecopyresampled($canvas, $img, 0, 0, 0, 0, $nw, $nh, $w, $h);
+                imagedestroy($img);
+
+                ob_start();
+                imagejpeg($canvas, null, $quality);
+                $optimized = ob_get_clean();
+                imagedestroy($canvas);
+
+                if (!empty($optimized)) {
+                    return [$optimized, 'image/jpeg'];
+                }
+            } else {
+                imagedestroy($img);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('[CloudStorageService] Image optimization skipped: ' . $e->getMessage());
+        }
+
+        return [$binaryContent, $mimeType];
     }
 
     /**
