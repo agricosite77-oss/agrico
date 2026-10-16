@@ -198,29 +198,6 @@ dark:border-slate-800
 ">
 
 
-                        {{-- ID --}}
-                        <th
-                            wire:click="sortBy('id')"
-                            class="soil-th-sortable px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group whitespace-nowrap col-munsell-id"
-                        >
-                            <div class="flex items-center gap-1">
-                                <span class="group-hover:text-[#22c55e] transition-colors duration-200">ID</span>
-                                <span class="sort-arrows">
-                                    @if($sortField === 'id')
-                                        @if($sortDirection === 'asc')
-                                            <svg class="sort-chevron sort-chevron-active sort-chevron-up" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 9L7 5.5L10 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        @else
-                                            <svg class="sort-chevron sort-chevron-active sort-chevron-down" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5L7 8.5L10 5" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        @endif
-                                    @else
-                                        <span class="sort-chevron-pair">
-                                            <svg class="sort-chevron-idle sort-chevron-idle-up" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 5L5 1L9 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                            <svg class="sort-chevron-idle sort-chevron-idle-down" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        </span>
-                                    @endif
-                                </span>
-                            </div>
-                        </th>
 
 
                         {{-- COLOR NAME / CHARACTERISTICS --}}
@@ -405,10 +382,6 @@ dark:border-slate-800
                     <tr class="border-b border-gray-100 transition {{ $isSearchMatch ? 'bg-emerald-50/80 border-l-4 border-l-emerald-500 font-medium' : 'hover:bg-green-50/40' }}">
 
 
-                        {{-- ID --}}
-                        <td class="px-5 py-5 text-gray-400 text-sm whitespace-nowrap col-munsell-id">
-                            #<span class="ui-reveal-num" style="--i:2" x-data x-init="animateCount($el, {{ (int) $color->id }}, { delay: 1000 })">{{ $color->id }}</span>
-                        </td>
 
 
                         {{-- SOIL CHARACTERISTICS: Color Name + Description --}}
@@ -605,7 +578,7 @@ dark:border-slate-800
 
                     @empty
                     <tr>
-                        <td colspan="9" style="padding: 64px 24px; text-align: center; border-bottom: none;">
+                        <td colspan="8" style="padding: 64px 24px; text-align: center; border-bottom: none;">
                             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
                                 <div style="width: 56px; height: 56px; border-radius: 16px; background: #f0fdf4; border: 1px solid #dcfce7; display: flex; align-items: center; justify-content: center; color: #22c55e; box-shadow: 0 4px 14px rgba(22,163,74,0.12);">
                                     <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">

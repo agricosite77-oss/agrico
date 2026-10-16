@@ -1329,18 +1329,15 @@ body.auth-body::after {
     width: 100%;
 }
 
-/* AgriCo Hover Card (Question card style: 2px lift + vibrant green border + glowing green shadow) */
+/* AgriCo Hover Card (Matching Dashboard Stat Card: 2px lift + soft box-shadow, no green border) */
 .agri-hover-card {
-    transition: border-color 0.25s ease,
-                box-shadow 0.25s ease,
-                transform 0.2s var(--agri-motion-ease);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
     .agri-hover-card:hover {
-        border-color: #22c55e !important;
-        box-shadow: 0 6px 20px rgba(34, 197, 94, 0.25) !important;
         transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06) !important;
     }
 }
 
@@ -1399,10 +1396,10 @@ html:not(.light-mode) .agri-btn--secondary {
         box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
     }
 
-    html:not(.light-mode) .agri-hover-card:hover {
-        border-color: #4ADE80 !important;
-        box-shadow: 0 6px 24px rgba(34, 197, 94, 0.25), 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+    html:not(.light-mode) .agri-hover-card:hover,
+    html.dark .agri-hover-card:hover {
         transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35) !important;
     }
 
     html:not(.light-mode) .agri-pill-btn:hover {

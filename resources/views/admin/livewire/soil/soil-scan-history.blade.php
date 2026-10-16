@@ -33,7 +33,7 @@
                 @focus="open = true"
                 @input="open = true"
                 type="text"
-                placeholder="Search soil name, full code, hue, User ID..."
+                placeholder="Search soil name, full code, hue..."
                 style="width:100%; border:1px solid #e2e8f0; border-radius:16px; background:#ffffff; padding:10px 38px 10px 46px; font-size:14px; font-weight:500; color:#1e293b; outline:none; transition:all 0.2s ease; box-sizing:border-box;"
                 onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3px rgba(68,175,53,0.15)';"
                 onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';"
@@ -408,51 +408,19 @@
             background-color: #0f172a !important;
         }
 
-        /* Desktop / Big screens (>= 1024px): ID column is visible at left: 0, Soil Characteristic is at left: 95px */
+        /* Desktop / Big screens (>= 1024px): Soil Characteristic is sticky at left: 0 */
         @media (min-width: 1024px) {
-            .col-soil-id {
-                display: table-cell !important;
-            }
-            .soil-table th.col-sticky-id,
-            .soil-table td.col-sticky-id {
-                position: sticky !important;
-                left: 0 !important;
-                width: 95px !important;
-                min-width: 95px !important;
-                max-width: 95px !important;
-                white-space: nowrap !important;
-                z-index: 12 !important;
-                background-color: #ffffff !important;
-                padding-left: 20px !important;
-            }
-            .soil-table th.col-sticky-id {
-                z-index: 22 !important;
-                background-color: #F1FBF1 !important;
-            }
-            .soil-table tbody tr:hover td.col-sticky-id,
-            .soil-table tbody tr.hover\:bg-green-50\/40:hover td.col-sticky-id {
-                background-color: #f7fdf7 !important;
-            }
-            .soil-table tbody tr.bg-emerald-50\/80 td.col-sticky-id {
-                background-color: #ecfdf5 !important;
-            }
-            .dark .soil-table th.col-sticky-id {
-                background-color: #1e293b !important;
-            }
-            .dark .soil-table td.col-sticky-id {
-                background-color: #0f172a !important;
-            }
-
             .soil-table th.col-sticky-soil,
             .soil-table td.col-sticky-soil {
                 position: sticky !important;
-                left: 95px !important;
+                left: 0 !important;
                 min-width: 180px !important;
                 max-width: 280px !important;
                 white-space: nowrap !important;
                 box-shadow: 4px 0 8px -2px rgba(0, 0, 0, 0.05) !important;
                 z-index: 11 !important;
                 background-color: #ffffff !important;
+                padding-left: 20px !important;
             }
             .soil-table th.col-sticky-soil {
                 z-index: 21 !important;
@@ -503,30 +471,6 @@
             <table class="w-full soil-table">
                 <thead>
                     <tr class="bg-[#F1FBF1] dark:bg-slate-800/80 border-b border-gray-100 dark:border-slate-800">
-                        {{-- ID --}}
-                        <th
-                            wire:click="sortBy('id')"
-                            class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-sticky-id col-soil-id"
-                        >
-                            <div class="flex items-center gap-1">
-                                <span class="group-hover:text-[#22c55e] transition-colors duration-200">ID</span>
-                                <span class="sort-arrows">
-                                    @if($sortField === 'id')
-                                        @if($sortDirection === 'asc')
-                                            <svg class="sort-chevron sort-chevron-active sort-chevron-up" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 9L7 5.5L10 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        @else
-                                            <svg class="sort-chevron sort-chevron-active sort-chevron-down" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5L7 8.5L10 5" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        @endif
-                                    @else
-                                        <span class="sort-chevron-pair">
-                                            <svg class="sort-chevron-idle sort-chevron-idle-up" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 5L5 1L9 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                            <svg class="sort-chevron-idle sort-chevron-idle-down" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        </span>
-                                    @endif
-                                </span>
-                            </div>
-                        </th>
-
                         {{-- SOL NAME --}}
                         <th
                             wire:click="sortBy('soil_name')"
@@ -624,30 +568,6 @@
                             </div>
                         </th>
 
-                        {{-- USER ID --}}
-                        <th
-                            wire:click="sortBy('admin_id')"
-                            class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-user-id"
-                        >
-                            <div class="flex items-center gap-1">
-                                <span class="group-hover:text-[#22c55e] transition-colors duration-200">USER ID</span>
-                                <span class="sort-arrows">
-                                    @if($sortField === 'admin_id')
-                                        @if($sortDirection === 'asc')
-                                            <svg class="sort-chevron sort-chevron-active sort-chevron-up" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 9L7 5.5L10 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        @else
-                                            <svg class="sort-chevron sort-chevron-active sort-chevron-down" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5L7 8.5L10 5" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        @endif
-                                    @else
-                                        <span class="sort-chevron-pair">
-                                            <svg class="sort-chevron-idle sort-chevron-idle-up" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 5L5 1L9 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                            <svg class="sort-chevron-idle sort-chevron-idle-down" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        </span>
-                                    @endif
-                                </span>
-                            </div>
-                        </th>
-
                         {{-- SCAN_DATE --}}
                         <th
                             wire:click="sortBy('created_at')"
@@ -670,11 +590,6 @@
                                     @endif
                                 </span>
                             </div>
-                        </th>
-
-                        {{-- STATUS --}}
-                        <th class="px-4 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap">
-                            STATUS
                         </th>
 
                         {{-- ACTION (no sorting) --}}
@@ -701,11 +616,6 @@
                         );
                     @endphp
                     <tr class="border-b border-gray-100 transition {{ $isSearchMatch ? 'bg-emerald-50/80 border-l-4 border-l-emerald-500 font-medium' : 'hover:bg-green-50/40' }}">
-                        {{-- ID --}}
-                        <td class="px-5 py-5 text-gray-400 text-sm font-semibold whitespace-nowrap col-sticky-id col-soil-id">
-                            #<span class="ui-reveal-num" style="--i:2" x-data x-init="animateCount($el, {{ (int) $scan->soil_scan_id }}, { delay: 1000 })">{{ $scan->soil_scan_id }}</span>
-                        </td>
-
                         {{-- SOIL CHARACTERISTICS --}}
                         @php
                             $hueVal = $soil?->full_code ?? $soil?->munsellColor?->full_code ?? '10YR 4/3';
@@ -753,37 +663,9 @@
                             {{ !empty($scan->scan_note) ? \Illuminate\Support\Str::limit($scan->scan_note, 28, '...') : '-' }}
                         </td>
 
-                        {{-- USER ID --}}
-                        <td class="px-5 py-5 text-sm text-gray-500 font-bold whitespace-nowrap col-user-id">
-                            {{ $scan->user_id ?? ($scan->user?->name ?? '226-0001') }}
-                        </td>
-
                         {{-- SCAN_DATE / TIMESTAMP --}}
                         <td class="px-5 py-5 text-sm text-gray-500 font-bold whitespace-nowrap col-scan-date">
                             {{ $scan->scan_date ? \Carbon\Carbon::parse($scan->scan_date)->format('m/d/Y') : $scan->created_at?->format('m/d/Y') }}
-                        </td>
-
-                        {{-- STATUS --}}
-                        <td class="px-4 py-5 text-center whitespace-nowrap">
-                            @php
-                                $modStatus = $scan->verification_status ?: 'Pending';
-                            @endphp
-                            @if(strtolower($modStatus) === 'verified')
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200" title="Verified — Map pin is visible on public map">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    Verified
-                                </span>
-                            @elseif(strtolower($modStatus) === 'rejected')
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200" title="Rejected — Map pin is hidden">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                                    Rejected
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200" title="Pending — Awaiting review">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                    Pending
-                                </span>
-                            @endif
                         </td>
 
                         {{-- ACTION --}}

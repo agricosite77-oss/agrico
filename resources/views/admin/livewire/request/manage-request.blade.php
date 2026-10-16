@@ -24,8 +24,15 @@
     {{-- 2. STATS CARDS GRID --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         {{-- CARD 1: PENDING --}}
-        <div class="ui-reveal agri-hover-card" style="--i:1; background:#ffffff; border-radius:18px; padding:20px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; align-items:center; gap:16px;">
-            <div class="ui-reveal-text" style="--i:1; width:48px; height:48px; border-radius:14px; background:#fef3c7; color:#d97706; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <div
+            wire:click="$set('statusFilter', 'Pending')"
+            title="Filter by Pending"
+            class="ui-reveal agri-hover-card"
+            style="--i:1; background:#ffffff; border-radius:20px; padding:18px 20px; border:1px solid rgba(241, 245, 249, 0.9); box-shadow:0 2px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02); display:flex; align-items:center; gap:14px; width:100%; box-sizing:border-box; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer;"
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.06)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.03)';"
+        >
+            <div class="ui-reveal-text" style="--i:1; width:46px; height:46px; border-radius:14px; background:#fef3c7; color:#d97706; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                 <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"/>
                     <path d="M12 6v6l4 2"/>
@@ -38,8 +45,15 @@
         </div>
 
         {{-- CARD 2: APPROVED --}}
-        <div class="ui-reveal agri-hover-card" style="--i:2; background:#ffffff; border-radius:18px; padding:20px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; align-items:center; gap:16px;">
-            <div class="ui-reveal-text" style="--i:2; width:48px; height:48px; border-radius:14px; background:#dcfce7; color:#22c55e; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <div
+            wire:click="$set('statusFilter', 'Approved')"
+            title="Filter by Approved"
+            class="ui-reveal agri-hover-card"
+            style="--i:2; background:#ffffff; border-radius:20px; padding:18px 20px; border:1px solid rgba(241, 245, 249, 0.9); box-shadow:0 2px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02); display:flex; align-items:center; gap:14px; width:100%; box-sizing:border-box; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer;"
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.06)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.03)';"
+        >
+            <div class="ui-reveal-text" style="--i:2; width:46px; height:46px; border-radius:14px; background:#dcfce7; color:#22c55e; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                 <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
@@ -52,8 +66,15 @@
         </div>
 
         {{-- CARD 3: DISAPPROVED --}}
-        <div class="ui-reveal agri-hover-card" style="--i:3; background:#ffffff; border-radius:18px; padding:20px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; align-items:center; gap:16px;">
-            <div class="ui-reveal-text" style="--i:3; width:48px; height:48px; border-radius:14px; background:#fee2e2; color:#dc2626; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <div
+            wire:click="$set('statusFilter', 'Disapproved')"
+            title="Filter by Disapproved"
+            class="ui-reveal agri-hover-card"
+            style="--i:3; background:#ffffff; border-radius:20px; padding:18px 20px; border:1px solid rgba(241, 245, 249, 0.9); box-shadow:0 2px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02); display:flex; align-items:center; gap:14px; width:100%; box-sizing:border-box; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer;"
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.06)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.03)';"
+        >
+            <div class="ui-reveal-text" style="--i:3; width:46px; height:46px; border-radius:14px; background:#fee2e2; color:#dc2626; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                 <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"/>
                     <line x1="15" y1="9" x2="9" y2="15"/>
