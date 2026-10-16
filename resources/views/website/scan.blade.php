@@ -10266,6 +10266,7 @@
                         if (typeof updatePinButtonStates === 'function') {
                             updatePinButtonStates();
                         }
+                    }
                     let errorMsg = data.message || 'Unable to submit pin location. Please review your entries.';
                     if (data.errors && typeof data.errors === 'object') {
                         const errorDetails = Object.values(data.errors).flat().filter(Boolean);
