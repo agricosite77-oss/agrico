@@ -10,7 +10,7 @@
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
             class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
-            style="background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 32px 16px;"
+            style="background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 16px 12px;"
             @keydown.escape.window="$wire.closeModal()"
         >
             <div
@@ -22,7 +22,7 @@
                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                 x-transition:leave-end="opacity-0 scale-95 translate-y-2"
                 class="admin-profile-modal-card"
-                style="background: #ffffff; border-radius: 28px; width: 100%; max-width: 390px; margin: auto; max-height: calc(100vh - 64px); overflow-y: auto; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.25); padding: 18px; box-sizing: border-box; position: relative;"
+                style="background: #ffffff; border-radius: 28px; width: 100%; max-width: 390px; margin: auto; max-height: calc(100dvh - 24px); overflow-y: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.25); padding: 18px; box-sizing: border-box; position: relative;"
             >
 
                 {{-- FLASH MESSAGE NOTIFICATION --}}
@@ -49,7 +49,7 @@
                     <div>
 
                         {{-- MAIN PORTRAIT IMAGE CARD CONTAINER (TEXT & PHOTO BOTH INSIDE) --}}
-                        <div style="width: 100%; height: 380px; border-radius: 24px; overflow: hidden; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box; margin-bottom: 16px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06); transform: translateZ(0); -webkit-mask-image: -webkit-radial-gradient(white, black);">
+                        <div style="width: 100%; height: 380px; max-height: min(380px, 45vh); border-radius: 24px; overflow: hidden; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box; margin-bottom: 16px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06); transform: translateZ(0); -webkit-mask-image: -webkit-radial-gradient(white, black);">
                             
                             {{-- BACKGROUND IMAGE OR CLEAN PAST LIGHT GREEN --}}
                             @if($profilePhotoUrl)

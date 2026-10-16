@@ -5,7 +5,10 @@
     style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.30); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999;"
     wire:click.self="closeModal"
 >
-    <div style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:420px; margin:0 16px; padding:24px; text-align:center;">
+    <div style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:420px; margin:0 16px; padding:24px; text-align:center; position:relative;">
+        <div style="position:absolute; top:16px; right:16px;">
+            <x-close-button wire:click="closeModal" />
+        </div>
 
         <div class="w-11 h-11 rounded-full bg-red-50 flex items-center justify-center shrink-0 mx-auto mb-4">
             <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

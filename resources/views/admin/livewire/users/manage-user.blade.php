@@ -1107,7 +1107,7 @@
                 x-transition:enter="transition ease-out duration-300 transform"
                 x-transition:enter-start="opacity-0 scale-90 translate-y-4"
                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                style="background:#ffffff; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; width:100%; max-width:680px; height:75vh; max-height:75vh; margin:auto; display:flex; flex-direction:column; overflow:hidden; position:relative;"
+                style="background:#ffffff; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; width:100%; max-width:680px; height:auto; max-height:calc(100dvh - 24px); margin:auto; display:flex; flex-direction:column; overflow:hidden; position:relative;"
             >
 
                 {{-- HEADER --}}
@@ -1852,8 +1852,8 @@
             border-radius: 28px;
             width: 100%;
             max-width: 680px;
-            height: 75vh;
-            max-height: 75vh;
+            height: auto;
+            max-height: min(85vh, calc(100dvh - 24px));
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
             border: 1px solid #f1f5f9;
             display: flex;
@@ -1925,8 +1925,8 @@
                 padding: 16px 14px !important;
             }
             .user-view-modal-container {
-                height: 75vh !important;
-                max-height: 75vh !important;
+                height: auto !important;
+                max-height: calc(100dvh - 20px) !important;
                 border-radius: 24px !important;
                 margin: auto !important;
                 box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
@@ -2313,9 +2313,11 @@
         }
 
         .agrico-more-btn {
-            width: 36px !important;
-            height: 36px !important;
-            border-radius: 11px !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            min-height: 40px !important;
+            border-radius: 12px !important;
             background: #ffffff !important;
             border: 1px solid #e2e8f0 !important;
             display: inline-flex !important;

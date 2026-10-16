@@ -2,10 +2,10 @@
 @if($showModal && $user)
 <div
     class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
-    style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.30); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999; padding: 32px 16px;"
+    style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.30); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999; padding: 16px 12px;"
     wire:click.self="closeModal"
 >
-    <div style="background:#fff; border-radius:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:440px; margin:auto; max-height:calc(100vh - 64px); overflow-y:auto; padding:24px; position:relative; animation: modalFadeIn 0.2s ease-out;">
+    <div style="background:#fff; border-radius:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:440px; margin:auto; max-height:calc(100dvh - 24px); overflow-y:auto; -webkit-overflow-scrolling:touch; padding:24px; position:relative; animation: modalFadeIn 0.2s ease-out;">
 
         {{-- CLOSE BUTTON (TOP RIGHT) --}}
         <x-close-button wire:click="closeModal" class="absolute top-4 right-4" />
@@ -29,11 +29,11 @@
         </div>
 
         {{-- ACTION BUTTONS --}}
-        <div style="display: flex; gap: 12px; align-items: center; width: 100%; box-sizing: border-box; margin-top: 24px;">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; width: 100%; box-sizing: border-box; margin-top: 24px;">
             <button
                 type="button"
                 wire:click="closeModal"
-                class="agri-btn agri-btn--secondary flex-1"
+                class="agri-btn agri-btn--secondary flex-1 min-w-[110px]"
                 style="padding: 12px 16px; border-radius: 9999px; font-size: 14px; font-weight: 700; min-height: 44px;"
                 title="Cancel"
             >
@@ -42,7 +42,7 @@
             <button
                 type="button"
                 wire:click="confirmSuspend"
-                class="agri-btn {{ $user->status === 'Suspended' ? 'agri-btn--primary' : 'agri-btn--danger' }} flex-1"
+                class="agri-btn {{ $user->status === 'Suspended' ? 'agri-btn--primary' : 'agri-btn--danger' }} flex-1 min-w-[130px]"
                 style="padding: 12px 16px; border-radius: 9999px; font-size: 14px; font-weight: 700; min-height: 44px;"
                 title="{{ $user->status === 'Suspended' ? 'Unsuspend User' : 'Confirm Suspension' }}"
             >

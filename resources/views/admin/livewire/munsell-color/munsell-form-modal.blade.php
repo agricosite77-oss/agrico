@@ -3,10 +3,10 @@
 
 <div
     class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
-    style="background: rgba(0,0,0,0.20); backdrop-filter: blur(20px); padding: 32px 16px;"
+    style="background: rgba(0,0,0,0.20); backdrop-filter: blur(20px); padding: 16px 12px;"
 >
 
-    <div style="background:#fff; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; width:100%; max-width:680px; height:75vh; max-height:75vh; margin:auto; display:flex; flex-direction:column; overflow:hidden;">
+    <div class="munsell-form-modal-container" style="background:#fff; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; width:100%; max-width:680px; height:auto; max-height:calc(100dvh - 24px); margin:auto; display:flex; flex-direction:column; overflow:hidden;">
 
 
         {{-- HEADER --}}

@@ -6,16 +6,16 @@
     x-init="document.body.classList.add('overflow-hidden')"
     x-on:unmount="document.body.classList.remove('overflow-hidden')"
     class="fixed inset-0 z-50 flex items-center justify-center"
-    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100001; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box;"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100001; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 12px; box-sizing: border-box;"
     wire:click.self="closeAddStudentModal"
 >
-    {{-- MODAL CARD CONTAINER (MATCHING SOIL SCAN HISTORY & MAPPING DETAILS POP UP EXACTLY) --}}
-    <div style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 28px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); width: 100%; max-width: 680px; margin: auto; display: flex; flex-direction: column; height: 75vh; max-height: 75vh; overflow: hidden; position: relative;">
+    {{-- MODAL CARD CONTAINER --}}
+    <div style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); width: 100%; max-width: 680px; margin: auto; display: flex; flex-direction: column; height: auto; max-height: calc(100dvh - 24px); overflow: hidden; position: relative; box-sizing: border-box;">
 
         {{-- 1. FIXED MODAL HEADER --}}
-        <div style="padding: 20px 26px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #ffffff; flex-shrink: 0;">
+        <div style="padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #ffffff; flex-shrink: 0;">
             <div>
-                <h3 style="margin: 0; font-size: 17.5px; font-weight: 800; color: #0f172a; letter-spacing: -0.01em;">
+                <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #0f172a; letter-spacing: -0.01em;">
                     Add Student to Records
                 </h3>
                 <p style="font-size: 11.5px; color: #94a3b8; margin: 2px 0 0 0; font-weight: 500;">
@@ -26,11 +26,11 @@
         </div>
 
         {{-- 2. SCROLLABLE BODY CONTENT --}}
-        <div style="padding: 18px 24px 20px; overflow-y: auto; flex: 1 1 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9;">
+        <div style="padding: 14px 18px 16px; overflow-y: auto; flex: 1 1 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;">
 
             {{-- SEARCH BAR + SECTION FILTER ROW --}}
-            <div style="display: flex; gap: 10px;">
-                <div style="position: relative; flex: 1;">
+            <div class="flex flex-col sm:flex-row gap-2.5">
+                <div style="position: relative; flex: 1; min-width: 0;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;">
                         <path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                     </svg>
@@ -47,7 +47,8 @@
                 </div>
                 <select
                     wire:model.live="modalSectionFilter"
-                    style="width: 130px; height: 42px; padding: 0 10px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 13px; color: #0f172a; outline: none; background: #ffffff; font-family: inherit; flex-shrink: 0;"
+                    class="w-full sm:w-[130px] flex-shrink-0"
+                    style="height: 42px; padding: 0 10px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 13px; color: #0f172a; outline: none; background: #ffffff; font-family: inherit; box-sizing: border-box;"
                 >
                     <option value="">All Sections</option>
                     @foreach($modalAvailableSections as $section)

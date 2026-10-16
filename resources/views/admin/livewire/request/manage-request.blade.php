@@ -580,20 +580,20 @@
     {{-- REVIEW REQUEST DETAIL MODAL --}}
     @if ($showViewModal && $selectedRequest)
 
-        <div style="position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; background:rgba(15,23,42,0.45); backdrop-filter:blur(4px); padding: 24px 16px; overflow:hidden;" class="animate-in fade-in duration-200">
-            <div style="background:#ffffff; border-radius:28px; max-width:680px; width:100%; height:75vh; max-height:75vh; margin:auto; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; position:relative;" class="animate-in zoom-in-95 duration-200">
+        <div style="position:fixed; inset:0; z-index:100002; display:flex; align-items:center; justify-content:center; background:rgba(15,23,42,0.45); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); padding: 12px; box-sizing: border-box; overflow:hidden;" class="animate-in fade-in duration-200">
+            <div style="background:#ffffff; border-radius:24px; max-width:680px; width:100%; height:auto; max-height:calc(100dvh - 24px); margin:auto; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; position:relative; box-sizing: border-box;" class="animate-in zoom-in-95 duration-200">
 
                 {{-- MODAL HEADER --}}
-                <div style="padding: 20px 26px 16px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; background: #ffffff; flex-shrink: 0; position: relative;">
+                <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; background: #ffffff; flex-shrink: 0; position: relative;">
                     <div style="display:flex; align-items:center; gap:12px;">
-                        <div style="width:42px; height:42px; border-radius:12px; background:#dcfce7; color:#22c55e; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <div style="width:40px; height:40px; border-radius:12px; background:#dcfce7; color:#22c55e; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
                             </svg>
                         </div>
                         <div>
-                            <h2 style="font-size:18px; font-weight:800; color:#0f172a; margin:0; line-height:1.2;">
+                            <h2 style="font-size:17px; font-weight:800; color:#0f172a; margin:0; line-height:1.2;">
                                 Review User Request
                             </h2>
                             <span style="font-family:monospace; font-size:12px; font-weight:700; color:#64748b; margin-top:2px; display:inline-block;">
@@ -605,10 +605,10 @@
                 </div>
 
                 {{-- MODAL BODY --}}
-                <div style="padding: 20px 26px; overflow-y: auto; flex: 1 1 auto; box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9;">
+                <div style="padding: 16px 20px; overflow-y: auto; flex: 1 1 auto; box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;">
 
                     {{-- REQUEST DETAILS GRID --}}
-                    <div style="background:#f8fafc; border-radius:16px; border:1px solid #f1f5f9; padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" style="background:#f8fafc; border-radius:16px; border:1px solid #f1f5f9; padding:16px; margin-bottom:16px;">
                         <div>
                             <span style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em; display:block;">Requested By</span>
                             <span style="font-size:14px; font-weight:800; color:#0f172a; display:block; margin-top:4px;">{{ $selectedRequest->user_name }}</span>
@@ -734,11 +734,11 @@
                 </div>
 
                 {{-- MODAL FOOTER ACTION BUTTONS --}}
-                <div style="padding: 16px 26px 20px; background: #ffffff; border-top: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; flex-shrink: 0; width: 100%; box-sizing: border-box;">
+                <div style="padding: 14px 20px 16px; background: #ffffff; border-top: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; flex-shrink: 0; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
                     <button
                         type="button"
                         wire:click="closeViewModal"
-                        class="flex-1 py-3 rounded-full border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition cursor-pointer text-center"
+                        class="flex-1 min-w-[90px] py-2.5 sm:py-3 rounded-full border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition cursor-pointer text-center"
                         title="Cancel"
                     >
                         Cancel
@@ -748,7 +748,7 @@
                             type="button"
                             wire:click="disapprove({{ $selectedRequest->user_request_id ?? $selectedRequest->id }})"
                             wire:loading.attr="disabled"
-                            class="flex-1 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white font-bold text-sm shadow-md shadow-red-500/35 transition cursor-pointer text-center disabled:opacity-50"
+                            class="flex-1 min-w-[110px] py-2.5 sm:py-3 rounded-full bg-red-500 hover:bg-red-600 text-white font-bold text-sm shadow-md shadow-red-500/35 transition cursor-pointer text-center disabled:opacity-50"
                             style="box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);"
                             title="Disapprove"
                         >
@@ -759,7 +759,7 @@
                             type="button"
                             wire:click="approve({{ $selectedRequest->user_request_id ?? $selectedRequest->id }})"
                             wire:loading.attr="disabled"
-                            class="flex-1 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-sm shadow-md shadow-green-500/35 transition cursor-pointer text-center flex items-center justify-center gap-2 disabled:opacity-50"
+                            class="flex-1 min-w-[140px] py-2.5 sm:py-3 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-sm shadow-md shadow-green-500/35 transition cursor-pointer text-center flex items-center justify-center gap-2 disabled:opacity-50"
                             style="box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);"
                             title="Approve Request"
                         >
@@ -909,13 +909,13 @@
 
         /* Agrico Mobile More Actions Button & Dropdown Menu */
         .agrico-more-btn {
-            width: 36px !important;
-            height: 36px !important;
-            min-width: 36px !important;
-            max-width: 36px !important;
-            min-height: 36px !important;
-            max-height: 36px !important;
-            border-radius: 10px !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            max-width: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+            border-radius: 12px !important;
             background: #ffffff !important;
             border: 1px solid #e2e8f0 !important;
             display: inline-flex !important;

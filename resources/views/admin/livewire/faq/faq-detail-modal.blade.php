@@ -35,8 +35,8 @@
             margin: auto;
             display: flex;
             flex-direction: column;
-            height: 75vh;
-            max-height: 75vh;
+            height: auto;
+            max-height: min(85vh, calc(100dvh - 24px));
             overflow: hidden;
             position: relative;
         }
@@ -101,8 +101,8 @@
                 padding: 16px 14px !important;
             }
             .faq-detail-modal-container {
-                height: 75vh !important;
-                max-height: 75vh !important;
+                height: auto !important;
+                max-height: calc(100dvh - 20px) !important;
                 border-radius: 24px !important;
                 margin: auto !important;
                 box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;

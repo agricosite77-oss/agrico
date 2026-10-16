@@ -514,8 +514,8 @@
             border-radius: 28px;
             width: 100%;
             max-width: 680px;
-            height: 75vh;
-            max-height: 75vh;
+            height: auto;
+            max-height: min(85vh, calc(100dvh - 24px));
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
             border: 1px solid #f1f5f9;
             overflow: hidden;
@@ -612,8 +612,8 @@
             }
             .record-popup-card {
                 border-radius: 24px !important;
-                height: 75vh !important;
-                max-height: 75vh !important;
+                height: auto !important;
+                max-height: calc(100dvh - 20px) !important;
                 margin: auto !important;
                 box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
             }
@@ -1903,7 +1903,7 @@
                 wire:submit.prevent="saveUser"
                 wire:key="student-edit-modal-step-2"
                 class="modal-animated-card"
-                style="background:#ffffff; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; width:100%; max-width:680px; height:75vh; max-height:75vh; margin:auto; display:flex; flex-direction:column; overflow:hidden; position:relative;"
+                style="background:#ffffff; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; width:100%; max-width:680px; height:auto; max-height:calc(100dvh - 24px); margin:auto; display:flex; flex-direction:column; overflow:hidden; position:relative;"
             >
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 26px 16px; border-bottom:1px solid #f1f5f9; flex-shrink:0; background:#ffffff;">
                     <div>

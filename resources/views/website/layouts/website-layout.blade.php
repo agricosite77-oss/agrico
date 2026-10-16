@@ -140,9 +140,12 @@
         }
 
         /* â”€â”€ Universal Modal Close / Exit Circle Button â”€â”€ */
-        .modal-close-circle-btn {
-            width: var(--close-btn-size, 36px) !important;
-            height: var(--close-btn-size, 36px) !important;
+        .modal-close-circle-btn,
+        .agrico-close-btn {
+            width: var(--close-btn-size, 40px) !important;
+            height: var(--close-btn-size, 40px) !important;
+            min-width: 40px !important;
+            min-height: 40px !important;
             border-radius: 50% !important;
             display: inline-flex !important;
             align-items: center !important;
@@ -674,6 +677,9 @@
             position: fixed;
             top: var(--agrico-nav-h);
             left: 0; right: 0;
+            max-height: calc(100dvh - var(--agrico-nav-h));
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             background: var(--nav-bg, rgba(5, 31, 32, 0.95));
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);

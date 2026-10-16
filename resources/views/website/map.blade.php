@@ -529,8 +529,8 @@
             margin: auto;
             display: flex;
             flex-direction: column;
-            height: 75vh;
-            max-height: 75vh;
+            height: auto;
+            max-height: min(85vh, calc(100dvh - 24px));
             overflow: hidden;
             position: relative;
         }
@@ -584,8 +584,10 @@
             background: rgba(5, 31, 32, 0.7) !important;
             border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
             color: #8EB69B !important;
-            width: 36px !important;
-            height: 36px !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            min-height: 40px !important;
             border-radius: 50% !important;
             display: inline-flex !important;
             align-items: center !important;

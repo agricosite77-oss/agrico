@@ -1794,3 +1794,159 @@ html:not(.light-mode) .pin-search-box .agrico-search-clear-btn:focus-visible .ag
     box-shadow: 0 0 0 2px #0B2B26, 0 0 0 4px #22c55e !important;
 }
 
+/* ==========================================================================
+   Comprehensive Mobile & Responsive Pop-Up Architecture (AgriCo Design System)
+   ========================================================================== */
+
+/* Universal Modal Backdrop Architecture */
+.modal-backdrop,
+.user-view-backdrop,
+.soil-detail-backdrop,
+.soil-form-backdrop,
+.record-popup-backdrop,
+.munsell-modal-backdrop,
+.faq-form-backdrop,
+.faq-detail-backdrop {
+    padding: 16px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+}
+
+/* Universal Responsive Modal Cards across Website and Admin */
+html body .user-view-modal-container,
+html body .user-edit-modal-container,
+html body .soil-detail-modal-container,
+html body .soil-form-modal-container,
+html body .munsell-detail-modal-container,
+html body .munsell-form-modal-container,
+html body .munsell-edit-modal-container,
+html body .faq-detail-modal-container,
+html body .faq-form-modal-container,
+html body .pin-modal-container,
+html body .soil-modal-card,
+html body .record-popup-card,
+html body .admin-profile-modal-card,
+html body .admin-review-request-modal,
+html body .modal-animated-card {
+    box-sizing: border-box !important;
+    max-width: min(680px, calc(100vw - 24px)) !important;
+    height: auto !important;
+    max-height: min(85vh, calc(100dvh - 32px)) !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Modal Inner Body Smooth Touch Scrolling */
+html body .view-modal-scroll,
+html body .soil-detail-modal-body,
+html body .soil-form-modal-body,
+html body .munsell-modal-body,
+html body .faq-detail-modal-body,
+html body .faq-form-modal-body,
+html body .record-popup-body,
+html body .admin-profile-modal-body,
+html body .soil-modal-body,
+html body .pin-modal-body {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    flex: 1 1 auto !important;
+}
+
+/* Small screen & Landscape viewport mobile optimizations */
+@media (max-width: 640px), (max-height: 520px) {
+    html body .user-view-modal-container,
+    html body .user-edit-modal-container,
+    html body .soil-detail-modal-container,
+    html body .soil-form-modal-container,
+    html body .munsell-detail-modal-container,
+    html body .munsell-form-modal-container,
+    html body .munsell-edit-modal-container,
+    html body .faq-detail-modal-container,
+    html body .faq-form-modal-container,
+    html body .pin-modal-container,
+    html body .soil-modal-card,
+    html body .record-popup-card,
+    html body .admin-profile-modal-card,
+    html body .admin-review-request-modal,
+    html body .modal-animated-card {
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+        margin: auto !important;
+        height: auto !important;
+        max-height: calc(100dvh - 20px) !important;
+        border-radius: 20px !important;
+    }
+
+    html body .user-view-modal-header,
+    html body .soil-detail-modal-header,
+    html body .soil-form-modal-header,
+    html body .record-popup-header,
+    html body .pin-modal-header,
+    html body .faq-form-modal-header,
+    html body .faq-detail-modal-header {
+        padding: 14px 18px 12px !important;
+    }
+
+    html body .user-view-modal-footer,
+    html body .soil-detail-modal-footer,
+    html body .soil-form-modal-footer,
+    html body .record-popup-footer,
+    html body .pin-modal-footer,
+    html body .faq-form-modal-footer,
+    html body .faq-detail-modal-footer {
+        padding: 12px 16px 14px !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+}
+
+/* Touch Action Target Sizing Standards (Min 40x40px) */
+.agrico-more-btn {
+    min-width: 40px !important;
+    min-height: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 12px !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Action Dropdown Menu Containment */
+.agrico-mobile-dropdown {
+    max-width: calc(100vw - 32px) !important;
+    z-index: 90 !important;
+}
+
+.agrico-dropdown-item {
+    min-height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    touch-action: manipulation !important;
+}
+
+/* Universal Modal Close Button 40x40px Tap Target Standard */
+button.modal-close-circle-btn,
+button.admin-close-btn,
+button.agrico-close-btn,
+button.soil-modal-close-btn,
+button.pin-modal-close-btn,
+button.ba-zoom-close-btn,
+.soil-modal-close,
+.modal-close-circle-btn {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+}
+
+
+

@@ -623,9 +623,11 @@
         }
 
         .agrico-more-btn {
-            width: 36px !important;
-            height: 36px !important;
-            border-radius: 11px !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            min-height: 40px !important;
+            border-radius: 12px !important;
             background: #ffffff !important;
             border: 1px solid #e2e8f0 !important;
             display: inline-flex !important;

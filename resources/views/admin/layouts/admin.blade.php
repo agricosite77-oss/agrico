@@ -911,8 +911,10 @@
         /* ── Universal Modal Close / Exit Circle Button (Admin Standard) ── */
         .modal-close-circle-btn,
         .admin-close-btn {
-            width: 36px !important;
-            height: 36px !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            min-height: 40px !important;
             border-radius: 50% !important;
             display: inline-flex !important;
             align-items: center !important;
@@ -960,13 +962,15 @@
 
         .modal-close-circle-btn--sm,
         .admin-close-btn--sm {
-            width: 28px !important;
-            height: 28px !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            min-height: 40px !important;
         }
         .modal-close-circle-btn--sm svg,
         .admin-close-btn--sm svg {
-            width: 14px !important;
-            height: 14px !important;
+            width: 16px !important;
+            height: 16px !important;
         }
     </style>
 

@@ -25,8 +25,8 @@
         margin: auto;
         display: flex;
         flex-direction: column;
-        height: 75vh;
-        max-height: 75vh;
+        height: auto;
+        max-height: min(85vh, calc(100dvh - 24px));
         overflow: hidden;
         position: relative;
     }

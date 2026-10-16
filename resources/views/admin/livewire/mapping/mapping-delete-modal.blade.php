@@ -5,7 +5,10 @@
     style="z-index: 9999; background: rgba(0,0,0,0.30); backdrop-filter: blur(8px);"
     wire:click.self="closeModal"
 >
-    <div style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:440px; margin:0 16px; padding:24px; text-align:center; animation: modalScaleIn 0.2s ease-out;">
+    <div style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:440px; margin:0 16px; padding:24px; text-align:center; position:relative; animation: modalScaleIn 0.2s ease-out;">
+        <div style="position:absolute; top:16px; right:16px;">
+            <x-close-button wire:click="closeModal" />
+        </div>
 
         {{-- WARNING ICON --}}
         <div class="w-11 h-11 rounded-full bg-red-50 flex items-center justify-center shrink-0 mx-auto mb-4">

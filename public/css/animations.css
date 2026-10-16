@@ -1553,7 +1553,7 @@ html:not(.admin-portal):not(.light-mode):not(.light),
 body:not(.admin-portal):not(.light-mode):not(.light),
 [data-theme="dark"]:not(.admin-portal),
 .dark:not(.admin-portal) {
-    --close-btn-size: 36px;
+    --close-btn-size: 40px;
     --close-btn-icon-size: 18px;
     --close-btn-stroke: 2.2;
     --close-btn-border-width: 1.5px;
@@ -1735,10 +1735,10 @@ body.bg-\[\#E8F5E9\] .admin-close-btn,
 body.bg-\[\#E8F5E9\] .soil-modal-close,
 .modal-close-circle-btn,
 .admin-close-btn {
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
-    min-height: 36px !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
     border-radius: 50% !important;
     background: transparent !important;
     border: none !important;

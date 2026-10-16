@@ -5,12 +5,12 @@
     x-init="document.body.classList.add('overflow-hidden')"
     x-on:unmount="document.body.classList.remove('overflow-hidden')"
     class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
-    style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 99999; padding: 32px 16px;"
+    style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 99999; padding: 16px 12px;"
     wire:click.self="closeModal"
 >
     @if(!$isVerified)
         {{-- STEP 1: ADMIN VERIFICATION REQUIRED MODAL --}}
-        <div style="background:#ffffff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:440px; margin:auto; max-height:calc(100vh - 64px); overflow-y:auto; position:relative;" class="no-scrollbar animate-in fade-in zoom-in-95 duration-200">
+        <div style="background:#ffffff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:440px; margin:auto; max-height:calc(100dvh - 24px); overflow-y:auto; position:relative;" class="no-scrollbar animate-in fade-in zoom-in-95 duration-200">
             
             {{-- HEADER WITH LOCK BADGE AND CLOSE BUTTON --}}
             <div style="padding:28px 28px 12px 28px; display:flex; align-items:flex-start; justify-content:space-between;">
@@ -86,8 +86,7 @@
         </div>
 
     @else
-        {{-- STEP 2: EDIT USER DETAILS FORM MODAL --}}
-        <div style="background:#ffffff; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; width:100%; max-width:680px; height:75vh; max-height:75vh; margin:auto; display:flex; flex-direction:column; overflow:hidden; position:relative; padding:24px; box-sizing:border-box;" class="no-scrollbar animate-in fade-in zoom-in-95 duration-200" x-data="{
+        <div style="background:#ffffff; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; width:100%; max-width:680px; height:auto; max-height:calc(100dvh - 24px); margin:auto; display:flex; flex-direction:column; overflow:hidden; position:relative; padding:24px; box-sizing:border-box;" class="user-edit-modal-container no-scrollbar animate-in fade-in zoom-in-95 duration-200" x-data="{
             showPass: false,
             showConfirmPass: false,
             newPass: '',
