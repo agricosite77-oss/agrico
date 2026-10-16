@@ -254,6 +254,53 @@
         background: #94a3b8 !important;
     }
 
+    /* Modal Close Circle Button (Admin Standard) */
+    .modal-close-circle-btn,
+    .admin-close-btn {
+        background: transparent !important;
+        border: none !important;
+        color: #94a3b8 !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        border-radius: 50% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        padding: 0 !important;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        flex-shrink: 0 !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    .modal-close-circle-btn svg,
+    .admin-close-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+        stroke-width: 2.2 !important;
+        stroke: currentColor !important;
+        display: block !important;
+        transform: none !important;
+        transition: none !important;
+        pointer-events: none !important;
+    }
+    .modal-close-circle-btn:hover,
+    .admin-close-btn:hover {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: none !important;
+        transform: scale(1.06) !important;
+        box-shadow: none !important;
+    }
+    .modal-close-circle-btn:active,
+    .admin-close-btn:active {
+        background: #e2e8f0 !important;
+        color: #0f172a !important;
+        border: none !important;
+        transform: scale(0.95) !important;
+    }
 
     /* Swatch Banner */
     .soil-swatch-banner {

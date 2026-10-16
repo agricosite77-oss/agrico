@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_','-',app()->getLocale()) }}" class="light" style="color-scheme: light;">
+<html lang="{{ str_replace('_','-',app()->getLocale()) }}" class="light admin-portal" style="color-scheme: light;">
 
 <head>
     <meta charset="utf-8" />
@@ -12,14 +12,14 @@
             try {
                 document.documentElement.classList.remove('dark');
                 document.documentElement.classList.remove('light-mode');
-                document.documentElement.classList.add('light');
+                document.documentElement.classList.add('light', 'admin-portal');
                 document.documentElement.style.colorScheme = 'light';
                 document.documentElement.setAttribute('data-theme', 'light');
             } catch(e) {}
         })();
     </script>
 <script>document.documentElement.classList.add("ui-motion");</script>
-<link rel="stylesheet" href="{{ asset('css/animations.css') }}">
+<link rel="stylesheet" href="{{ asset('css/animations.css') }}?v={{ file_exists(public_path('css/animations.css')) ? filemtime(public_path('css/animations.css')) : time() }}">
 <script src="{{ asset('js/animations.js') }}" defer></script>
     <script>
         (function() {
@@ -920,50 +920,65 @@
           -ms-overflow-style: none !important;
           scrollbar-width: none !important;
         }
-        /* â”€â”€ Universal Modal Close / Exit Circle Button â”€â”€ */
-        .modal-close-circle-btn {
-            width: var(--close-btn-size, 36px);
-            height: var(--close-btn-size, 36px);
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: var(--close-btn-border-width, 1.5px) solid var(--close-btn-border, transparent);
-            background: var(--close-btn-bg, transparent);
-            color: var(--close-btn-color, #94a3b8);
-            outline: none;
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            user-select: none;
-            -webkit-user-select: none;
-            flex-shrink: 0;
+        /* ── Universal Modal Close / Exit Circle Button (Admin Standard) ── */
+        .modal-close-circle-btn,
+        .admin-close-btn {
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            border: none !important;
+            background: transparent !important;
+            color: #94a3b8 !important;
+            outline: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            flex-shrink: 0 !important;
+            transform: none !important;
+            box-shadow: none !important;
         }
-        .modal-close-circle-btn:hover {
-            background: var(--close-btn-bg-hover, #f1f5f9);
-            border-color: var(--close-btn-border-hover, #f1f5f9);
-            color: var(--close-btn-color-hover, #0f172a);
-            transform: scale(var(--close-btn-scale-hover, 1.06));
+        .modal-close-circle-btn svg,
+        .admin-close-btn svg {
+            width: 18px !important;
+            height: 18px !important;
+            stroke-width: 2.2 !important;
+            stroke: currentColor !important;
+            display: block !important;
+            pointer-events: none !important;
+            transition: none !important;
+            transform: none !important;
         }
-        .modal-close-circle-btn:active {
-            transform: scale(var(--close-btn-scale-active, 0.95));
+        .modal-close-circle-btn:hover,
+        .admin-close-btn:hover {
+            background: #f1f5f9 !important;
+            border: none !important;
+            color: #0f172a !important;
+            transform: scale(1.06) !important;
+            box-shadow: none !important;
+        }
+        .modal-close-circle-btn:active,
+        .admin-close-btn:active {
+            background: #e2e8f0 !important;
+            transform: scale(0.95) !important;
+            box-shadow: none !important;
         }
 
-        /* Dark Mode Overrides in Admin */
-        .dark .modal-close-circle-btn,
-        [data-theme="dark"] .modal-close-circle-btn {
-            background: rgba(5, 31, 32, 0.70) !important;
-            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
-            color: #8EB69B !important;
+        .modal-close-circle-btn--sm,
+        .admin-close-btn--sm {
+            width: 28px !important;
+            height: 28px !important;
         }
-        .dark .modal-close-circle-btn:hover,
-        [data-theme="dark"] .modal-close-circle-btn:hover {
-            background: rgba(35, 83, 71, 0.85) !important;
-            border-color: #DAF1DE !important;
-            color: #DAF1DE !important;
-            transform: scale(1.06) !important;
+        .modal-close-circle-btn--sm svg,
+        .admin-close-btn--sm svg {
+            width: 14px !important;
+            height: 14px !important;
         }
     </style>
 
@@ -979,7 +994,7 @@
 </head>
 
 
-<body class="overflow-x-hidden bg-[#E8F5E9] text-slate-900 transition-colors duration-200">
+<body class="admin-portal overflow-x-hidden bg-[#E8F5E9] text-slate-900 transition-colors duration-200">
 
 
     <div

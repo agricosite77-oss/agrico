@@ -1553,12 +1553,11 @@ html:not(.light-mode) .agri-pill-btn {
    Single Source of Truth across Modals, Windows, Popups, Toasts, and Search Clears
    ========================================================================== */
 
-/* Dark Mode Tokens (Default for AgriCo Dark Theme: Round Green Ring Design) */
-:root,
-html:not(.light-mode):not(.light),
-body:not(.light-mode):not(.light),
-[data-theme="dark"],
-.dark {
+/* Dark Mode Tokens (Used exclusively for Website Dark Theme: Round Green Ring Design) */
+html:not(.admin-portal):not(.light-mode):not(.light),
+body:not(.admin-portal):not(.light-mode):not(.light),
+[data-theme="dark"]:not(.admin-portal),
+.dark:not(.admin-portal) {
     --close-btn-size: 36px;
     --close-btn-icon-size: 18px;
     --close-btn-stroke: 2.2;
@@ -1583,12 +1582,12 @@ body:not(.light-mode):not(.light),
     --close-btn-focus-ring: rgba(142, 182, 155, 0.5);
 }
 
-/* Light Mode Tokens (Munsell Color Details Design: Exact Option A Thin Gray X) */
-html.light-mode,
-html.light,
-body.light-mode,
-[data-theme="light"],
-.light-mode {
+/* Light Mode Tokens (Website Light Mode Design: Exact Option A Thin Gray X) */
+html.light-mode:not(.admin-portal),
+html.light:not(.admin-portal),
+body.light-mode:not(.admin-portal),
+[data-theme="light"]:not(.admin-portal),
+.light-mode:not(.admin-portal) {
     --close-btn-bg: transparent;
     --close-btn-border: transparent;
     --close-btn-color: #94a3b8;
@@ -1600,9 +1599,8 @@ body.light-mode,
     --close-btn-focus-ring: rgba(148, 163, 184, 0.45);
 }
 
-/* Base button styles: .agrico-close-btn, .modal-close-circle-btn, .soil-modal-close */
+/* Base button styles: .agrico-close-btn, .soil-modal-close */
 .agrico-close-btn,
-.modal-close-circle-btn,
 .soil-modal-close {
     width: var(--close-btn-size) !important;
     height: var(--close-btn-size) !important;
@@ -1637,16 +1635,12 @@ body.light-mode,
 /* Ensure display:none inline or via helper always hides close buttons */
 .agrico-close-btn[style*="display: none"],
 .agrico-close-btn[style*="display:none"],
-.modal-close-circle-btn[style*="display: none"],
-.modal-close-circle-btn[style*="display:none"],
-.agrico-close-btn.is-hidden,
-.modal-close-circle-btn.is-hidden {
+.agrico-close-btn.is-hidden {
     display: none !important;
 }
 
 .agrico-close-btn svg,
 .agrico-close-btn .agrico-close-icon,
-.modal-close-circle-btn svg,
 .soil-modal-close svg {
     width: var(--close-btn-icon-size) !important;
     height: var(--close-btn-icon-size) !important;
@@ -1660,9 +1654,7 @@ body.light-mode,
 
 /* Small Variant (Search bars, inline toasts, filter chips) */
 .agrico-close-btn--sm,
-.agrico-close-btn.is-sm,
-.modal-close-circle-btn.is-sm,
-.modal-close-circle-btn--sm {
+.agrico-close-btn.is-sm {
     width: var(--close-btn-size-sm) !important;
     height: var(--close-btn-size-sm) !important;
     min-width: var(--close-btn-size-sm) !important;
@@ -1672,9 +1664,7 @@ body.light-mode,
 
 .agrico-close-btn--sm svg,
 .agrico-close-btn--sm .agrico-close-icon,
-.agrico-close-btn.is-sm svg,
-.modal-close-circle-btn.is-sm svg,
-.modal-close-circle-btn--sm svg {
+.agrico-close-btn.is-sm svg {
     width: var(--close-btn-icon-size-sm) !important;
     height: var(--close-btn-icon-size-sm) !important;
     stroke-width: var(--close-btn-stroke-sm) !important;
@@ -1682,7 +1672,6 @@ body.light-mode,
 
 /* 44x44px Touch Target Expansion via invisible hit area */
 .agrico-close-btn::after,
-.modal-close-circle-btn::after,
 .soil-modal-close::after {
     content: '';
     position: absolute;
@@ -1699,7 +1688,6 @@ body.light-mode,
 /* Hover effect on pointer-capable devices */
 @media (hover: hover) and (pointer: fine) {
     .agrico-close-btn:hover:not(:disabled),
-    .modal-close-circle-btn:hover:not(:disabled),
     .soil-modal-close:hover:not(:disabled) {
         background: var(--close-btn-bg-hover) !important;
         border-color: var(--close-btn-border-hover) !important;
@@ -1710,14 +1698,12 @@ body.light-mode,
 
 /* Active / Tap Feedback */
 .agrico-close-btn:active:not(:disabled),
-.modal-close-circle-btn:active:not(:disabled),
 .soil-modal-close:active:not(:disabled) {
     transform: scale(var(--close-btn-scale-active)) !important;
 }
 
 /* Focus Visible Accessible Ring */
 .agrico-close-btn:focus-visible,
-.modal-close-circle-btn:focus-visible,
 .soil-modal-close:focus-visible {
     outline: 2px solid var(--close-btn-focus-ring) !important;
     outline-offset: 2px !important;
@@ -1725,11 +1711,234 @@ body.light-mode,
 
 /* Disabled State */
 .agrico-close-btn:disabled,
-.modal-close-circle-btn:disabled,
 .soil-modal-close:disabled {
     opacity: 0.45 !important;
     cursor: not-allowed !important;
     transform: none !important;
+}
+
+/* ==========================================================================
+   Admin Portal Close Button System — Pure Light Mode (No dark mode in Admin)
+   Clean, light-gray circular button (#f1f5f9) with slate icon (#64748b)
+   No dark green background, no green ring, no scaling or spin animations
+   ========================================================================== */
+.admin-portal .agrico-close-btn,
+.admin-portal .modal-close-circle-btn,
+.admin-portal .admin-close-btn,
+.admin-portal .soil-modal-close,
+html.admin-portal .agrico-close-btn,
+html.admin-portal .modal-close-circle-btn,
+html.admin-portal .admin-close-btn,
+html.admin-portal .soil-modal-close,
+body.admin-portal .agrico-close-btn,
+body.admin-portal .modal-close-circle-btn,
+body.admin-portal .admin-close-btn,
+body.admin-portal .soil-modal-close,
+body.bg-\[\#E8F5E9\] .agrico-close-btn,
+body.bg-\[\#E8F5E9\] .modal-close-circle-btn,
+body.bg-\[\#E8F5E9\] .admin-close-btn,
+body.bg-\[\#E8F5E9\] .soil-modal-close,
+.modal-close-circle-btn,
+.admin-close-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    border: none !important;
+    color: #94a3b8 !important;
+    outline: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transform: none !important;
+    box-shadow: none !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+}
+
+.admin-portal .agrico-close-btn svg,
+.admin-portal .modal-close-circle-btn svg,
+.admin-portal .admin-close-btn svg,
+.admin-portal .soil-modal-close svg,
+html.admin-portal .agrico-close-btn svg,
+html.admin-portal .modal-close-circle-btn svg,
+html.admin-portal .admin-close-btn svg,
+html.admin-portal .soil-modal-close svg,
+body.admin-portal .agrico-close-btn svg,
+body.admin-portal .modal-close-circle-btn svg,
+body.admin-portal .admin-close-btn svg,
+body.admin-portal .soil-modal-close svg,
+body.bg-\[\#E8F5E9\] .agrico-close-btn svg,
+body.bg-\[\#E8F5E9\] .modal-close-circle-btn svg,
+body.bg-\[\#E8F5E9\] .admin-close-btn svg,
+body.bg-\[\#E8F5E9\] .soil-modal-close svg,
+.modal-close-circle-btn svg,
+.admin-close-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+    stroke-width: 2.2 !important;
+    stroke: currentColor !important;
+    display: block !important;
+    transform: none !important;
+    transition: none !important;
+    pointer-events: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .admin-portal .agrico-close-btn:hover:not(:disabled),
+    .admin-portal .modal-close-circle-btn:hover:not(:disabled),
+    .admin-portal .admin-close-btn:hover:not(:disabled),
+    .admin-portal .soil-modal-close:hover:not(:disabled),
+    html.admin-portal .agrico-close-btn:hover:not(:disabled),
+    html.admin-portal .modal-close-circle-btn:hover:not(:disabled),
+    html.admin-portal .admin-close-btn:hover:not(:disabled),
+    html.admin-portal .soil-modal-close:hover:not(:disabled),
+    body.admin-portal .agrico-close-btn:hover:not(:disabled),
+    body.admin-portal .modal-close-circle-btn:hover:not(:disabled),
+    body.admin-portal .admin-close-btn:hover:not(:disabled),
+    body.admin-portal .soil-modal-close:hover:not(:disabled),
+    body.bg-\[\#E8F5E9\] .agrico-close-btn:hover:not(:disabled),
+    body.bg-\[\#E8F5E9\] .modal-close-circle-btn:hover:not(:disabled),
+    body.bg-\[\#E8F5E9\] .admin-close-btn:hover:not(:disabled),
+    body.bg-\[\#E8F5E9\] .soil-modal-close:hover:not(:disabled),
+    .modal-close-circle-btn:hover:not(:disabled),
+    .admin-close-btn:hover:not(:disabled) {
+        background: #f1f5f9 !important;
+        border: none !important;
+        color: #0f172a !important;
+        transform: scale(1.06) !important;
+        box-shadow: none !important;
+    }
+}
+
+.admin-portal .agrico-close-btn:active:not(:disabled),
+.admin-portal .modal-close-circle-btn:active:not(:disabled),
+.admin-portal .admin-close-btn:active:not(:disabled),
+.admin-portal .soil-modal-close:active:not(:disabled),
+html.admin-portal .agrico-close-btn:active:not(:disabled),
+html.admin-portal .modal-close-circle-btn:active:not(:disabled),
+html.admin-portal .admin-close-btn:active:not(:disabled),
+html.admin-portal .soil-modal-close:active:not(:disabled),
+body.admin-portal .agrico-close-btn:active:not(:disabled),
+body.admin-portal .modal-close-circle-btn:active:not(:disabled),
+body.admin-portal .admin-close-btn:active:not(:disabled),
+body.admin-portal .soil-modal-close:active:not(:disabled),
+body.bg-\[\#E8F5E9\] .agrico-close-btn:active:not(:disabled),
+body.bg-\[\#E8F5E9\] .modal-close-circle-btn:active:not(:disabled),
+body.bg-\[\#E8F5E9\] .admin-close-btn:active:not(:disabled),
+body.bg-\[\#E8F5E9\] .soil-modal-close:active:not(:disabled),
+.modal-close-circle-btn:active:not(:disabled),
+.admin-close-btn:active:not(:disabled) {
+    background: #e2e8f0 !important;
+    border: none !important;
+    color: #0f172a !important;
+    transform: scale(0.95) !important;
+    box-shadow: none !important;
+}
+
+/* Small Variant for Admin (Search bars, inline date filter clears) */
+.admin-portal .agrico-close-btn--sm,
+.admin-portal .agrico-close-btn.is-sm,
+.admin-portal .modal-close-circle-btn--sm,
+.admin-portal .modal-close-circle-btn.is-sm,
+.admin-portal .admin-close-btn--sm,
+html.admin-portal .agrico-close-btn--sm,
+html.admin-portal .agrico-close-btn.is-sm,
+html.admin-portal .modal-close-circle-btn--sm,
+html.admin-portal .modal-close-circle-btn.is-sm,
+html.admin-portal .admin-close-btn--sm,
+body.admin-portal .agrico-close-btn--sm,
+body.admin-portal .agrico-close-btn.is-sm,
+body.admin-portal .modal-close-circle-btn--sm,
+body.admin-portal .modal-close-circle-btn.is-sm,
+body.admin-portal .admin-close-btn--sm,
+body.bg-\[\#E8F5E9\] .agrico-close-btn--sm,
+body.bg-\[\#E8F5E9\] .agrico-close-btn.is-sm,
+body.bg-\[\#E8F5E9\] .modal-close-circle-btn--sm,
+body.bg-\[\#E8F5E9\] .modal-close-circle-btn.is-sm,
+body.bg-\[\#E8F5E9\] .admin-close-btn--sm,
+.modal-close-circle-btn--sm,
+.modal-close-circle-btn.is-sm,
+.admin-close-btn--sm {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #64748b !important;
+    transform: none !important;
+}
+
+.admin-portal .agrico-close-btn--sm svg,
+.admin-portal .agrico-close-btn.is-sm svg,
+.admin-portal .modal-close-circle-btn--sm svg,
+.admin-portal .modal-close-circle-btn.is-sm svg,
+.admin-portal .admin-close-btn--sm svg,
+html.admin-portal .agrico-close-btn--sm svg,
+html.admin-portal .agrico-close-btn.is-sm svg,
+html.admin-portal .modal-close-circle-btn--sm svg,
+html.admin-portal .modal-close-circle-btn.is-sm svg,
+html.admin-portal .admin-close-btn--sm svg,
+body.admin-portal .agrico-close-btn--sm svg,
+body.admin-portal .agrico-close-btn.is-sm svg,
+body.admin-portal .modal-close-circle-btn--sm svg,
+body.admin-portal .modal-close-circle-btn.is-sm svg,
+body.admin-portal .admin-close-btn--sm svg,
+body.bg-\[\#E8F5E9\] .agrico-close-btn--sm svg,
+body.bg-\[\#E8F5E9\] .agrico-close-btn.is-sm svg,
+body.bg-\[\#E8F5E9\] .modal-close-circle-btn--sm svg,
+body.bg-\[\#E8F5E9\] .modal-close-circle-btn.is-sm svg,
+body.bg-\[\#E8F5E9\] .admin-close-btn--sm svg,
+.modal-close-circle-btn--sm svg,
+.modal-close-circle-btn.is-sm svg,
+.admin-close-btn--sm svg {
+    width: 12px !important;
+    height: 12px !important;
+    stroke-width: 2.2 !important;
+    transform: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .admin-portal .agrico-close-btn--sm:hover:not(:disabled),
+    .admin-portal .agrico-close-btn.is-sm:hover:not(:disabled),
+    .admin-portal .modal-close-circle-btn--sm:hover:not(:disabled),
+    .admin-portal .modal-close-circle-btn.is-sm:hover:not(:disabled),
+    .admin-portal .admin-close-btn--sm:hover:not(:disabled),
+    html.admin-portal .agrico-close-btn--sm:hover:not(:disabled),
+    html.admin-portal .agrico-close-btn.is-sm:hover:not(:disabled),
+    html.admin-portal .modal-close-circle-btn--sm:hover:not(:disabled),
+    html.admin-portal .modal-close-circle-btn.is-sm:hover:not(:disabled),
+    html.admin-portal .admin-close-btn--sm:hover:not(:disabled),
+    body.admin-portal .agrico-close-btn--sm:hover:not(:disabled),
+    body.admin-portal .agrico-close-btn.is-sm:hover:not(:disabled),
+    body.admin-portal .modal-close-circle-btn--sm:hover:not(:disabled),
+    body.admin-portal .modal-close-circle-btn.is-sm:hover:not(:disabled),
+    body.admin-portal .admin-close-btn--sm:hover:not(:disabled),
+    body.bg-\[\#E8F5E9\] .agrico-close-btn--sm:hover:not(:disabled),
+    body.bg-\[\#E8F5E9\] .agrico-close-btn.is-sm:hover:not(:disabled),
+    body.bg-\[\#E8F5E9\] .modal-close-circle-btn--sm:hover:not(:disabled),
+    body.bg-\[\#E8F5E9\] .modal-close-circle-btn.is-sm:hover:not(:disabled),
+    body.bg-\[\#E8F5E9\] .admin-close-btn--sm:hover:not(:disabled),
+    .modal-close-circle-btn--sm:hover:not(:disabled),
+    .modal-close-circle-btn.is-sm:hover:not(:disabled),
+    .admin-close-btn--sm:hover:not(:disabled) {
+        background: #e2e8f0 !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
+        transform: none !important;
+    }
 }
 
 /* Leaflet Map Popup Close Button Override */
