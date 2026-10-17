@@ -175,6 +175,9 @@
                         onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3px rgba(68,175,53,0.15)';"
                         onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none';"
                     ></textarea>
+                    <p style="font-size:11.5px; color:#94a3b8; margin-top:5px; margin-bottom:0;">
+                        Tip: You can use plain text or HTML links (e.g. &lt;a href="/scan"&gt;Soil Scanner&lt;/a&gt;).
+                    </p>
                     @error('answer') <span style="font-size:12px; color:#ef4444; margin-top:4px; display:block;">{{ $message }}</span> @enderror
                 </div>
 

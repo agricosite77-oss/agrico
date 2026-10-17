@@ -190,8 +190,8 @@
                                 <div class="text-sm font-bold text-gray-800 truncate" style="font-size: 14px; font-weight: 700; color: #374151; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $faq->question }}">
                                     {{ $faq->question }}
                                 </div>
-                                <div class="text-xs font-medium text-slate-400 truncate mt-0.5" style="font-size: 12px; font-weight: 500; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $faq->answer }}">
-                                    {{ $faq->answer }}
+                                <div class="text-xs font-medium text-slate-400 truncate mt-0.5" style="font-size: 12px; font-weight: 500; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ strip_tags($faq->answer) }}">
+                                    {{ strip_tags($faq->answer) }}
                                 </div>
                                 {{-- MOBILE ONLY: Show category badge under question --}}
                                 <div class="faq-mobile-category mt-1.5 hidden" style="max-width: 100%;">

@@ -127,6 +127,20 @@
             .faq-detail-modal-footer {
                 padding: 12px 18px 14px !important;
             }
+        .faq-modal-answer-card a {
+            color: #16a34a;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            transition: color 0.15s ease;
+        }
+        .faq-modal-answer-card a:hover {
+            color: #15803d;
+        }
+        .faq-modal-answer-card strong,
+        .faq-modal-answer-card b {
+            font-weight: 700;
+            color: #111827;
         }
     </style>
 
@@ -174,7 +188,7 @@
                     <label style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#6b7280; margin-bottom:6px;">
                         Answer
                     </label>
-                    <div style="background:#f9fafb; border:1px solid #f3f4f6; border-radius:14px; padding:16px 18px; font-size:13.5px; color:#374151; line-height:1.6; white-space:pre-line; word-break:break-word; overflow-wrap:anywhere;">{{ trim($faq->answer) }}</div>
+                    <div class="faq-modal-answer-card" style="background:#f9fafb; border:1px solid #f3f4f6; border-radius:14px; padding:16px 18px; font-size:13.5px; color:#374151; line-height:1.6; word-break:break-word; overflow-wrap:anywhere;">{!! nl2br($faq->answer) !!}</div>
                 </div>
 
                 {{-- LAST UPDATED AUDIT CARD --}}
