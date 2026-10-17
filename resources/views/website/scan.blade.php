@@ -323,12 +323,15 @@
             }
 
             /* ── MODAL MOBILE RESPONSIVE FIT ── */
-            #soilRecordModal {
+            #soilRecordModal:not([style*="display: none"]) {
                 padding: 24px 16px !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 box-sizing: border-box !important;
+            }
+            #soilRecordModal[style*="display: none"] {
+                display: none !important;
             }
             .soil-modal-card {
                 width: 100% !important;
@@ -3647,6 +3650,9 @@
             box-sizing: border-box;
             animation: fadeIn 0.2s ease-out;
         }
+        .pin-modal-backdrop[style*="display: none"] {
+            display: none !important;
+        }
         .pin-modal-overlay {
             position: absolute;
             inset: 0;
@@ -4057,32 +4063,6 @@
             background: #051F20;
             position: relative;
             flex-shrink: 0 !important;
-            border-radius: 0 0 12px 12px;
-            overflow: hidden;
-        }
-        .pin-map-loading {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: #8EB69B;
-            font-size: 11.5px;
-            font-weight: 600;
-            z-index: 100;
-            pointer-events: none;
-            background: rgba(5, 31, 32, 0.85);
-            transition: opacity 0.3s ease;
-        }
-        .pin-map-spinner {
-            width: 22px;
-            height: 22px;
-            border: 2.5px solid rgba(142, 182, 155, 0.25);
-            border-top-color: #22c55e;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
         }
         .pin-scrollable-fields {
             display: flex;
@@ -4337,14 +4317,6 @@
             background: #f1f5f9 !important;
             border: 1px solid #e2e8f0 !important;
         }
-        html.light-mode .pin-map-loading {
-            color: #64748b !important;
-            background: rgba(241, 245, 249, 0.9) !important;
-        }
-        html.light-mode .pin-map-spinner {
-            border-color: #cbd5e1 !important;
-            border-top-color: #16a34a !important;
-        }
         html.light-mode .pin-coverage-pill {
             background: #f8fafc !important;
             border: 1px solid #e2e8f0 !important;
@@ -4412,26 +4384,27 @@
         }
 
         /* ── RESPONSIVE MEDIA QUERIES FOR PIN LOCATION MODAL (MATCHES ADMIN MODALS) ── */
-        @media (max-width: 640px) {
-            .pin-modal-backdrop {
-                padding: 16px 12px !important;
+        @media (max-width: 540px) {
+            .pin-modal-backdrop:not([style*="display: none"]) {
+                padding: 24px 16px !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 box-sizing: border-box !important;
             }
+            .pin-modal-backdrop[style*="display: none"] {
+                display: none !important;
+            }
             .pin-modal-container {
                 width: 100% !important;
-                max-width: min(calc(100vw - 20px), 480px) !important;
+                max-width: min(calc(100vw - 32px), 420px) !important;
                 height: auto !important;
-                max-height: min(92vh, calc(100dvh - 20px)) !important;
-                border-radius: 20px !important;
+                max-height: min(80vh, 590px) !important;
+                border-radius: 24px !important;
                 margin: auto !important;
-                display: flex !important;
-                flex-direction: column !important;
             }
             .pin-modal-header {
-                padding: 14px 16px 12px !important;
+                padding: 14px 18px 12px !important;
             }
             .pin-modal-title {
                 font-size: 16px !important;
@@ -4441,52 +4414,26 @@
             }
             .pin-modal-body {
                 padding: 12px 14px 16px !important;
-                gap: 12px !important;
-                -webkit-overflow-scrolling: touch !important;
-                overscroll-behavior: contain !important;
-            }
-            .pin-search-row {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                gap: 8px !important;
-                width: 100% !important;
-            }
-            .pin-search-box {
-                width: 100% !important;
-            }
-            .pin-custom-select-wrapper {
-                width: 100% !important;
-                flex-shrink: 0 !important;
-            }
-            .pin-select-filter {
-                width: 100% !important;
-                min-width: 0 !important;
-                max-width: 100% !important;
-                font-size: 12.5px !important;
-                padding: 0 12px !important;
-                height: 38px !important;
-            }
-            .pin-custom-select-menu {
-                width: 100% !important;
-                left: 0 !important;
-                right: 0 !important;
-                max-height: 180px !important;
-            }
-            .pin-input-field {
-                height: 38px !important;
-                font-size: 12.5px !important;
-            }
-            .pin-leaflet-container {
-                height: 185px !important;
-                min-height: 185px !important;
-            }
-            .pin-scrollable-fields {
-                padding: 10px !important;
                 gap: 10px !important;
             }
-            .pin-coverage-pill {
-                padding: 6px 10px !important;
-                font-size: 11px !important;
+            .pin-leaflet-container {
+                height: 180px !important;
+                min-height: 180px !important;
+            }
+            .pin-select-filter {
+                min-width: 120px !important;
+                max-width: 145px !important;
+                font-size: 11.5px !important;
+                padding: 0 8px !important;
+                height: 36px !important;
+            }
+            .pin-custom-select-menu {
+                width: 175px !important;
+                max-height: 160px !important;
+            }
+            .pin-input-field {
+                height: 36px !important;
+                font-size: 12px !important;
             }
             .pin-modal-footer {
                 padding: 10px 14px 12px !important;
@@ -9700,7 +9647,7 @@
             }
 
             hidePinModalAlert();
-            modal.style.display = 'flex';
+            modal.style.setProperty('display', 'flex', 'important');
             document.body.style.overflow = 'hidden';
 
             const modalBody = modal.querySelector('.pin-modal-body');
@@ -9772,7 +9719,7 @@
         function closePinLocationModal() {
             hidePinModalAlert();
             const modal = document.getElementById('pinSoilLocationModal');
-            if (modal) modal.style.display = 'none';
+            if (modal) modal.style.setProperty('display', 'none', 'important');
             document.body.style.overflow = '';
             closePinBrgySelectDropdown();
         }
@@ -10162,16 +10109,6 @@
                     crossOrigin: true
                 }).addTo(pinLeafletMapInstance);
 
-                const hideLoadingSpinner = () => {
-                    const placeholder = document.getElementById('pinMapLoadingPlaceholder');
-                    if (placeholder) {
-                        placeholder.style.opacity = '0';
-                        setTimeout(() => { placeholder.style.display = 'none'; }, 300);
-                    }
-                };
-
-                tileLayer.on('load', hideLoadingSpinner);
-
                 // Add draggable marker with official AgriCo Map Pin
                 pinLeafletMarker = L.marker([currentPinLat, currentPinLng], {
                     icon: getAgricoPinIcon(),
@@ -10216,13 +10153,9 @@
                         pinBarangayGeoJsonLayer = layer;
                         if (pinLeafletCoverageCircle) pinLeafletCoverageCircle.bringToFront();
                         if (pinLeafletMarker) pinLeafletMarker.bringToFront();
-                        hideLoadingSpinner();
                     }).catch(err => {
                         console.log('Barangay boundary GeoJSON load note:', err);
-                        hideLoadingSpinner();
                     });
-                } else {
-                    hideLoadingSpinner();
                 }
 
                 // Attach ResizeObserver so Leaflet instantly recalibrates on device rotation or modal reflow
@@ -10245,8 +10178,6 @@
                 updatePinCoverageShape();
                 if (pinLeafletCoverageCircle) pinLeafletCoverageCircle.bringToFront();
                 if (pinLeafletMarker) pinLeafletMarker.bringToFront();
-                const placeholder = document.getElementById('pinMapLoadingPlaceholder');
-                if (placeholder) placeholder.style.display = 'none';
             }
         }
 
@@ -11411,7 +11342,7 @@
     </div>
 
     {{-- ── PIN SOIL LOCATION MODAL (DARK & LIGHT MODE READY) ── --}}
-    <div id="pinSoilLocationModal" class="pin-modal-backdrop" style="display: none;">
+    <div id="pinSoilLocationModal" class="pin-modal-backdrop" style="display: none !important;">
         <div class="pin-modal-overlay" onclick="closePinLocationModal()"></div>
         <div class="pin-modal-container">
             <!-- Header -->
@@ -11470,12 +11401,7 @@
                         <span class="pin-map-instruction">Drag marker or click map to pinpoint exact sample site</span>
                         <span id="pinCoordPill" class="pin-coord-pill" onclick="recenterPinMap()" style="cursor: pointer;" title="Center map on pin">18.1972, 121.6612</span>
                     </div>
-                    <div id="pinLeafletMap" class="pin-leaflet-container">
-                        <div id="pinMapLoadingPlaceholder" class="pin-map-loading">
-                            <div class="pin-map-spinner"></div>
-                            <span>Loading Lal-lo Interactive Map...</span>
-                        </div>
-                    </div>
+                    <div id="pinLeafletMap" class="pin-leaflet-container"></div>
                 </div>
 
                 <!-- Scrollable Container for Soil Covered Area (Sakop) and Scan Note -->
