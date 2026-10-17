@@ -522,7 +522,7 @@
             @media print {
                 @page {
                     size: A4 landscape;
-                    margin: 10mm;
+                    margin: 0 !important;
                 }
                 html, body {
                     background: #ffffff !important;
@@ -542,9 +542,10 @@
                     left: 0 !important;
                     top: 0 !important;
                     width: 100% !important;
+                    box-sizing: border-box !important;
                     background: #ffffff !important;
                     color: #000000 !important;
-                    padding: 0 !important;
+                    padding: 10mm 14mm !important;
                     margin: 0 !important;
                     font-family: Arial, sans-serif !important;
                     -webkit-print-color-adjust: exact !important;
@@ -616,7 +617,15 @@
                         {{-- OPTION 1: PRINT --}}
                         <button
                             type="button"
-                            @click="openMenu = false; setTimeout(() => window.print(), 100);"
+                            @click="
+                                openMenu = false;
+                                const origDocTitle = document.title;
+                                document.title = '';
+                                setTimeout(() => {
+                                    window.print();
+                                    setTimeout(() => { document.title = origDocTitle; }, 1000);
+                                }, 150);
+                            "
                             style="width: 100%; min-height: 40px; padding: 8px 14px; border-radius: 10px; border: none; background: transparent; color: #0f172a; font-size: 13px; font-weight: 600; text-align: left; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.15s ease; box-sizing: border-box;"
                             onmouseover="this.style.background='#f1f5f9';"
                             onmouseout="this.style.background='transparent';"
@@ -795,10 +804,10 @@
             </tbody>
         </table>
 
-        {{-- PRINT FOOTER (Left: Prepared by, Center: Date) --}}
+        {{-- PRINT FOOTER (Left: Prepared By, Center: Date) --}}
         <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 18px; font-size: 8.5pt; color: #000000; font-family: Arial, sans-serif; width: 100%;">
             <div style="flex: 1; text-align: left; font-weight: 500;">
-                Prepared by: <strong>{{ $loggedInAdminName ?? 'AgriCo Administrator' }}</strong>
+                Prepared By: <strong>{{ $loggedInAdminName ?? 'AgriCo Administrator' }}</strong>
             </div>
             <div style="flex: 1; text-align: center; font-weight: 500;">
                 {{ date('F j, Y') }}
