@@ -127,8 +127,10 @@ class StudentRecordsExportTest extends TestCase
         // Assert CSU Header & Republic
         $this->assertStringContainsString('REPUBLIC OF THE PHILIPPINES', $docXml, 'Docx must contain Republic of the Philippines');
         $this->assertStringContainsString('CAGAYAN STATE UNIVERSITY Lal-lo Campus', $docXml, 'Docx must contain Campus Title');
-        $this->assertStringContainsString('0945-0898-648', $docXml, 'Docx must contain Contact Phone');
-        $this->assertStringContainsString('cicspadayaperformingartsguild@gmail.com', $docXml, 'Docx must contain Contact Email');
+        $this->assertStringContainsString('Phone Number:', $docXml, 'Docx must contain Phone Number label');
+        $this->assertStringContainsString('Email Address:', $docXml, 'Docx must contain Email Address label');
+        $this->assertStringContainsString('Facebook page:', $docXml, 'Docx must contain Facebook page label');
+        $this->assertStringNotContainsString('0945-0898-648', $docXml, 'Docx must not contain phone number value');
 
         // Assert Document Title
         $this->assertStringContainsString('GENERAL ACTION PLAN FOR ACADEMIC YEAR 2025-2026', $docXml, 'Docx must contain Document Title');
@@ -204,8 +206,8 @@ class StudentRecordsExportTest extends TestCase
         $this->assertStringContainsString('REPUBLIC OF THE PHILIPPINES', $sheet->getCell('A1')->getValue());
         $this->assertEquals('CAGAYAN STATE UNIVERSITY Lal-lo Campus', $sheet->getCell('A2')->getValue());
 
-        // 3. Assert Document Title
-        $this->assertEquals('SPECIAL RESEARCH FIELD LAB', $sheet->getCell('A3')->getValue());
+        // 3. Assert Document Title (Row 3 is spacer after divider, Row 4 is title)
+        $this->assertEquals('SPECIAL RESEARCH FIELD LAB', $sheet->getCell('A4')->getValue());
 
         // 4. Assert Footer contains admin name and date
         $footerText = $sheet->getHeaderFooter()->getOddFooter();

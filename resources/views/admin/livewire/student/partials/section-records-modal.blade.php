@@ -708,11 +708,11 @@
                 @endif
             </div>
 
-            {{-- 3. Right: Contact Info --}}
-            <div style="flex: 1; text-align: right; font-size: 7pt; line-height: 1.45; color: #000000;">
-                <div><strong style="font-weight: bold;">Phone Number:</strong> 0945-0898-648</div>
-                <div><strong style="font-weight: bold;">Email Address:</strong> cicspadayaperformingartsguild@gmail.com</div>
-                <div><strong style="font-weight: bold;">Facebook page:</strong> CICS Padaya Performing Arts Guild</div>
+            {{-- 3. Right: Contact Info (labels only) --}}
+            <div style="flex: 1; text-align: right; font-size: 7.5pt; line-height: 1.45; color: #000000;">
+                <div><strong style="font-weight: bold;">Phone Number:</strong></div>
+                <div><strong style="font-weight: bold;">Email Address:</strong></div>
+                <div><strong style="font-weight: bold;">Facebook page:</strong></div>
             </div>
         </div>
 
@@ -722,13 +722,15 @@
         </div>
 
         {{-- HORIZONTAL DIVIDER LINE --}}
-        <div style="width: 100%; border-bottom: 2px solid #000000; margin-bottom: 10px;"></div>
+        <div style="width: 100%; border-bottom: 2px solid #000000; margin-bottom: 16px;"></div>
 
-        {{-- DOCUMENT TITLE (AFTER THE LINE) --}}
+        {{-- DOCUMENT TITLE (AFTER THE LINE, WITH SPACE BEFORE AND AFTER) --}}
         @if(!empty(trim($documentTitle)))
-            <div style="text-align: center; font-size: 11pt; font-weight: bold; color: #000000; margin-bottom: 12px; text-transform: uppercase; font-family: Arial, sans-serif;">
+            <div style="text-align: center; font-size: 11pt; font-weight: bold; color: #000000; margin-top: 16px; margin-bottom: 18px; text-transform: uppercase; font-family: Arial, sans-serif;">
                 {{ trim($documentTitle) }}
             </div>
+        @else
+            <div style="margin-bottom: 14px;"></div>
         @endif
 
         {{-- PRINT TABLE --}}

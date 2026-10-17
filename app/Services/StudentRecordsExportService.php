@@ -85,7 +85,12 @@ class StudentRecordsExportService
             'bold'  => true,
             'color' => '000000',
         ], ['spaceAfter' => 10]);
-        $leftCell->addText("Andrews Campus, Tuguegarao City, Cagayan (Central Office)\nCSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)", [
+        $leftCell->addText('Andrews Campus, Tuguegarao City, Cagayan (Central Office)', [
+            'name'  => 'Arial',
+            'size'  => 7,
+            'color' => '000000',
+        ], ['spaceAfter' => 10]);
+        $leftCell->addText('CSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)', [
             'name'  => 'Arial',
             'size'  => 7,
             'color' => '000000',
@@ -104,20 +109,12 @@ class StudentRecordsExportService
             } catch (\Throwable $e) {}
         }
 
-        // 3. Right Column: Contact info
+        // 3. Right Column: Contact info (labels only)
         $rightCellWidth = Converter::inchToTwip(4.2);
         $rightCell = $headerRow->addCell($rightCellWidth, ['valign' => 'center']);
-        $p1 = $rightCell->addTextRun(['spaceAfter' => 10]);
-        $p1->addText('Phone Number: ', ['name' => 'Arial', 'size' => 7, 'bold' => true, 'color' => '000000']);
-        $p1->addText('0945-0898-648', ['name' => 'Arial', 'size' => 7, 'color' => '000000']);
-
-        $p2 = $rightCell->addTextRun(['spaceAfter' => 10]);
-        $p2->addText('Email Address: ', ['name' => 'Arial', 'size' => 7, 'bold' => true, 'color' => '000000']);
-        $p2->addText('cicspadayaperformingartsguild@gmail.com', ['name' => 'Arial', 'size' => 7, 'color' => '000000']);
-
-        $p3 = $rightCell->addTextRun(['spaceAfter' => 0]);
-        $p3->addText('Facebook page: ', ['name' => 'Arial', 'size' => 7, 'bold' => true, 'color' => '000000']);
-        $p3->addText('CICS Padaya Performing Arts Guild', ['name' => 'Arial', 'size' => 7, 'color' => '000000']);
+        $rightCell->addText('Phone Number:', ['name' => 'Arial', 'size' => 7.5, 'bold' => true, 'color' => '000000'], ['spaceAfter' => 10]);
+        $rightCell->addText('Email Address:', ['name' => 'Arial', 'size' => 7.5, 'bold' => true, 'color' => '000000'], ['spaceAfter' => 10]);
+        $rightCell->addText('Facebook page:', ['name' => 'Arial', 'size' => 7.5, 'bold' => true, 'color' => '000000'], ['spaceAfter' => 0]);
 
         // CAMPUS MAIN TITLE
         $section->addText('CAGAYAN STATE UNIVERSITY Lal-lo Campus', [
@@ -139,7 +136,7 @@ class StudentRecordsExportService
             'borderBottomColor' => '000000',
         ]);
 
-        // DOCUMENT TITLE (if provided)
+        // DOCUMENT TITLE (with space after the line, next title, then space again)
         $trimmedTitle = trim($documentTitle);
         if ($trimmedTitle !== '') {
             $section->addText($trimmedTitle, [
@@ -149,11 +146,11 @@ class StudentRecordsExportService
                 'color' => '000000',
             ], [
                 'alignment'   => Jc::CENTER,
-                'spaceBefore' => 80,
-                'spaceAfter'  => 120,
+                'spaceBefore' => 180, // Space after the line
+                'spaceAfter'  => 180, // Space again before table
             ]);
         } else {
-            $section->addTextBreak(1, ['size' => 6]);
+            $section->addTextBreak(1, ['size' => 12]);
         }
 
         // CALCULATE TABLE COLUMNS & SIZING
@@ -438,10 +435,10 @@ class StudentRecordsExportService
             } catch (\Throwable $e) {}
         }
 
-        // 3. RIGHT HEADER BLOCK: Contact Info
+        // 3. RIGHT HEADER BLOCK: Contact Info (labels only)
         if ($rightStartCol <= $totalColumnCount) {
             $sheet->mergeCells("{$rightStartLetter}1:{$lastColLetter}1");
-            $sheet->setCellValue("{$rightStartLetter}1", "Phone Number: 0945-0898-648\nEmail Address: cicspadayaperformingartsguild@gmail.com\nFacebook page: CICS Padaya Performing Arts Guild");
+            $sheet->setCellValue("{$rightStartLetter}1", "Phone Number:\nEmail Address:\nFacebook page:");
             $sheet->getStyle("{$rightStartLetter}1")->getFont()->setName('Arial')->setSize(7.5)->getColor()->setRGB('000000');
             $sheet->getStyle("{$rightStartLetter}1")->getAlignment()->setWrapText(true)->setHorizontal(Alignment::HORIZONTAL_LEFT)->setVertical(Alignment::VERTICAL_CENTER);
         }
@@ -458,6 +455,10 @@ class StudentRecordsExportService
         $sheet->getRowDimension($currentRow)->setRowHeight(24);
         $currentRow++;
 
+        // SPACE AFTER THE LINE
+        $sheet->getRowDimension($currentRow)->setRowHeight(12);
+        $currentRow++;
+
         // DOCUMENT TITLE ROW (if provided)
         $trimmedTitle = trim($documentTitle);
         if ($trimmedTitle !== '') {
@@ -467,11 +468,11 @@ class StudentRecordsExportService
             $sheet->getStyle("A{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
             $sheet->getRowDimension($currentRow)->setRowHeight(22);
             $currentRow++;
-        }
 
-        // Spacer row
-        $sheet->getRowDimension($currentRow)->setRowHeight(6);
-        $currentRow++;
+            // SPACE AGAIN BEFORE TABLE
+            $sheet->getRowDimension($currentRow)->setRowHeight(12);
+            $currentRow++;
+        }
 
         // TABLE HEADER: Row 1 & Row 2
         $tableHeaderRow1 = $currentRow;
