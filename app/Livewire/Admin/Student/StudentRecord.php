@@ -70,6 +70,7 @@ class StudentRecord extends Component
     public $sectionRecordsShowScans = true;
     public $sectionRecordsShowPins = true;
     public $activityCards = [];
+    public $documentTitle = 'GENERAL ACTION PLAN FOR ACADEMIC YEAR 2025-2026';
 
     // EDIT MODAL STATE
     public $showEditModal = false;
@@ -401,6 +402,33 @@ class StudentRecord extends Component
         $this->sectionRecordsShowScans = true;
         $this->sectionRecordsShowPins = true;
         $this->activityCards = [];
+        $this->documentTitle = 'GENERAL ACTION PLAN FOR ACADEMIC YEAR 2025-2026';
+    }
+
+    public function exportSectionDocx(\App\Services\StudentRecordsExportService $exportService)
+    {
+        $students = $this->sectionRecords;
+        $adminName = $this->getLoggedInAdminName();
+        return $exportService->exportDocx(
+            $students,
+            $this->activityCards,
+            $this->sectionRecordsSectionFilter ?: 'All',
+            $this->documentTitle ?: '',
+            $adminName
+        );
+    }
+
+    public function exportSectionXlsx(\App\Services\StudentRecordsExportService $exportService)
+    {
+        $students = $this->sectionRecords;
+        $adminName = $this->getLoggedInAdminName();
+        return $exportService->exportXlsx(
+            $students,
+            $this->activityCards,
+            $this->sectionRecordsSectionFilter ?: 'All',
+            $this->documentTitle ?: '',
+            $adminName
+        );
     }
 
     public function getSectionRecordsProperty()
@@ -1478,6 +1506,7 @@ class StudentRecord extends Component
             'sectionRecordsShowPins' => $this->sectionRecordsShowPins,
             'sectionRecords' => $this->showSectionRecordsModal ? $this->sectionRecords : collect(),
             'activityCards' => $this->activityCards,
+            'documentTitle' => $this->documentTitle,
             'showViewModal' => $this->showViewModal,
             'addedStudentIds' => $this->addedStudentIds,
             'searchResults' => $this->searchResults,

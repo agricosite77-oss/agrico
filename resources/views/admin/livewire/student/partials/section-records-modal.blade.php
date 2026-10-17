@@ -24,7 +24,7 @@
     wire:click.self="closeSectionRecordsModal"
 >
     {{-- MODAL CARD CONTAINER (LIGHT MODE MATCHING ADMIN THEME) --}}
-    <div class="section-records-dialog" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 28px; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.25); width: 96%; max-width: 1080px; margin: auto; display: flex; flex-direction: column; height: 88vh; max-height: 88vh; overflow: hidden; position: relative;">
+    <div class="section-records-dialog" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 28px; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.25); width: 100%; max-width: 680px; margin: auto; display: flex; flex-direction: column; height: auto; max-height: min(85vh, calc(100dvh - 24px)); overflow: hidden; position: relative;">
 
         {{-- 1. FIXED MODAL HEADER (LIGHT MODE) --}}
         <div class="section-records-header" style="padding: 20px 28px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #ffffff; flex-shrink: 0;">
@@ -327,6 +327,21 @@
                 </button>
             </div>
 
+            {{-- DOCUMENT TITLE INPUT (DIRECTLY AFTER FILTER SECTION) --}}
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 14px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 6px;">
+                <label style="display: block; font-size: 11.5px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.03em;">
+                    Document Title
+                </label>
+                <input
+                    type="text"
+                    wire:model.live.debounce.300ms="documentTitle"
+                    placeholder="GENERAL ACTION PLAN FOR ACADEMIC YEAR 2025-2026"
+                    style="width: 100%; min-height: 42px; padding: 0 14px; border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 13.5px; font-weight: 600; color: #0f172a; outline: none; background: #ffffff; font-family: inherit; box-sizing: border-box; transition: all 0.15s ease;"
+                    onfocus="this.style.borderColor='#16a34a'; this.style.boxShadow='0 0 0 3px rgba(34, 197, 94, 0.2)';"
+                    onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';"
+                />
+            </div>
+
             {{-- SUMMARY PILLS BAR --}}
             <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 12px 16px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; font-size: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
@@ -452,12 +467,20 @@
             .xl-pin  { color: #d97706 !important; }
             .xl-metric-pill { transition: all 0.15s ease !important; }
             .xl-metric-pill:hover { filter: brightness(0.98) !important; transform: translateY(-1px) !important; }
+            .section-records-dialog {
+                width: 100% !important;
+                max-width: 680px !important;
+                height: auto !important;
+                max-height: min(85vh, calc(100dvh - 24px)) !important;
+                border-radius: 28px !important;
+                margin: auto !important;
+            }
             @media (max-width: 640px) {
                 .section-records-dialog {
                     width: 100% !important;
-                    max-width: min(calc(100vw - 32px), 420px) !important;
+                    max-width: calc(100vw - 24px) !important;
                     height: auto !important;
-                    max-height: min(80vh, 590px) !important;
+                    max-height: calc(100dvh - 20px) !important;
                     border-radius: 24px !important;
                     margin: auto !important;
                 }
@@ -484,40 +507,281 @@
                     justify-content: center !important;
                 }
             }
-            @media print { .xl-wrap { max-height: none !important; overflow: visible !important; border: none !important; } .xl-table th, .xl-table td { border: 1px solid #64748b !important; } }
+            @media (max-height: 500px) and (orientation: landscape) {
+                .section-records-dialog {
+                    width: 100% !important;
+                    max-width: 680px !important;
+                    height: auto !important;
+                    max-height: calc(100dvh - 20px) !important;
+                    border-radius: 24px !important;
+                }
+            }
+            #sectionRecordsPrintArea {
+                display: none !important;
+            }
+            @media print {
+                @page {
+                    size: A4 landscape;
+                    margin: 10mm;
+                }
+                html, body {
+                    background: #ffffff !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    width: 100% !important;
+                }
+                body * {
+                    visibility: hidden !important;
+                }
+                #sectionRecordsPrintArea, #sectionRecordsPrintArea * {
+                    visibility: visible !important;
+                }
+                #sectionRecordsPrintArea {
+                    display: block !important;
+                    position: absolute !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    width: 100% !important;
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    font-family: Arial, sans-serif !important;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+                #sectionRecordsPrintArea table {
+                    width: 100% !important;
+                    border-collapse: collapse !important;
+                    page-break-inside: auto !important;
+                }
+                #sectionRecordsPrintArea thead {
+                    display: table-header-group !important;
+                }
+                #sectionRecordsPrintArea tr {
+                    page-break-inside: avoid !important;
+                    page-break-after: auto !important;
+                }
+                #sectionRecordsPrintArea th,
+                #sectionRecordsPrintArea td {
+                    border: 1px solid #000000 !important;
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                    padding: 6px 8px !important;
+                }
+                #sectionRecordsPrintArea th {
+                    font-weight: bold !important;
+                }
+            }
             </style>
         </div>
 
         {{-- 3. FIXED MODAL FOOTER (LIGHT MODE) --}}
-        <div class="section-records-footer" style="padding: 16px 28px 20px; background: #ffffff; border-top: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; width: 100%; box-sizing: border-box;">
+        <div class="section-records-footer" style="padding: 16px 28px 20px; background: #ffffff; border-top: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; width: 100%; box-sizing: border-box; position: relative;">
             <div style="font-size: 12.5px; color: #64748b;">
                 Showing <strong style="color: #0f172a;">{{ $sectionRecords->count() }}</strong> active student record{{ $sectionRecords->count() !== 1 ? 's' : '' }}
             </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <button
-                    type="button"
-                    onclick="window.print()"
-                    style="height: 42px; padding: 0 20px; border-radius: 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; color: #0f172a; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease;"
-                    onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#94a3b8';"
-                    onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1';"
-                    title="Print or Save as PDF"
-                >
-                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                        <rect x="6" y="14" width="12" height="8"></rect>
-                    </svg>
-                    <span>Print / Save Copy</span>
-                </button>
+            <div style="display: flex; align-items: center; gap: 12px; position: relative;">
+                {{-- 3-OPTION MENU FOR PRINT / SAVE COPY --}}
+                <div x-data="{ openMenu: false }" style="position: relative;" @click.outside="openMenu = false" @keydown.escape.window="openMenu = false">
+                    <button
+                        type="button"
+                        @click="openMenu = !openMenu"
+                        style="min-height: 42px; min-width: 40px; padding: 0 16px; border-radius: 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; color: #0f172a; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; box-sizing: border-box;"
+                        onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#94a3b8';"
+                        onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1';"
+                        title="Print or Save Copy"
+                    >
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                        <span>Print / Save Copy</span>
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transition: transform 0.2s ease;" :style="openMenu ? 'transform: rotate(180deg)' : ''">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+
+                    <div
+                        x-show="openMenu"
+                        x-transition:enter="transition ease-out duration-150"
+                        x-transition:enter-start="opacity-0 transform scale-95 -translate-y-2"
+                        x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 transform scale-95 -translate-y-2"
+                        style="display: none; position: absolute; bottom: calc(100% + 8px); right: 0; min-width: 210px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1); padding: 6px; z-index: 10000; box-sizing: border-box;"
+                    >
+                        {{-- OPTION 1: PRINT --}}
+                        <button
+                            type="button"
+                            @click="openMenu = false; setTimeout(() => window.print(), 100);"
+                            style="width: 100%; min-height: 40px; padding: 8px 14px; border-radius: 10px; border: none; background: transparent; color: #0f172a; font-size: 13px; font-weight: 600; text-align: left; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.15s ease; box-sizing: border-box;"
+                            onmouseover="this.style.background='#f1f5f9';"
+                            onmouseout="this.style.background='transparent';"
+                        >
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="color: #475569;">
+                                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                <rect x="6" y="14" width="12" height="8"></rect>
+                            </svg>
+                            <span>Print</span>
+                        </button>
+
+                        {{-- OPTION 2: MS WORD (.docx) --}}
+                        <button
+                            type="button"
+                            wire:click="exportSectionDocx"
+                            @click="openMenu = false"
+                            style="width: 100%; min-height: 40px; padding: 8px 14px; border-radius: 10px; border: none; background: transparent; color: #0f172a; font-size: 13px; font-weight: 600; text-align: left; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.15s ease; box-sizing: border-box;"
+                            onmouseover="this.style.background='#f1f5f9';"
+                            onmouseout="this.style.background='transparent';"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <span>MS Word (.docx)</span>
+                        </button>
+
+                        {{-- OPTION 3: MS EXCEL (.xlsx) --}}
+                        <button
+                            type="button"
+                            wire:click="exportSectionXlsx"
+                            @click="openMenu = false"
+                            style="width: 100%; min-height: 40px; padding: 8px 14px; border-radius: 10px; border: none; background: transparent; color: #0f172a; font-size: 13px; font-weight: 600; text-align: left; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.15s ease; box-sizing: border-box;"
+                            onmouseover="this.style.background='#f1f5f9';"
+                            onmouseout="this.style.background='transparent';"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path d="M8 13h8M8 17h8M10 9h4"></path>
+                            </svg>
+                            <span>MS Excel (.xlsx)</span>
+                        </button>
+                    </div>
+                </div>
+
                 <button
                     wire:click="closeSectionRecordsModal"
                     type="button"
-                    style="height: 42px; padding: 0 24px; border-radius: 12px; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: #ffffff; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);"
+                    style="height: 42px; min-width: 40px; padding: 0 24px; border-radius: 12px; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: #ffffff; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); box-sizing: border-box;"
                     onmouseover="this.style.background='#16a34a';"
                     onmouseout="this.style.background='linear-gradient(135deg, #22c55e, #16a34a)';"
                 >
                     Done
                 </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- DEDICATED PRINT-ONLY LAYOUT (LANDSCAPE, BLACK & WHITE ONLY, CSU HEADER, DOCUMENT TITLE, TABLE, FOOTER) --}}
+    <div id="sectionRecordsPrintArea">
+        {{-- CSU HEADER --}}
+        <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 12px; text-align: center;">
+            @if(file_exists(public_path('images/csu-logo.png')))
+                <img src="{{ asset('images/csu-logo.png') }}" alt="CSU Logo" style="height: 48px; width: auto; object-fit: contain;" />
+            @endif
+            <div style="font-size: 16pt; font-weight: bold; color: #000000; letter-spacing: 0.02em;">
+                CSU - Lal-lo Campus
+            </div>
+        </div>
+
+        {{-- DOCUMENT TITLE --}}
+        @if(!empty(trim($documentTitle)))
+            <div style="text-align: center; font-size: 11.5pt; font-weight: bold; color: #000000; margin-bottom: 14px; text-transform: uppercase;">
+                {{ trim($documentTitle) }}
+            </div>
+        @endif
+
+        {{-- PRINT TABLE --}}
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 9pt; color: #000000;">
+            <thead>
+                <tr style="page-break-inside: avoid;">
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 6px 8px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 40px;">#</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 6px 8px; text-align: left; font-weight: bold; background: #ffffff; color: #000000;">Student Name</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 6px 8px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 90px;">Section</th>
+                    @foreach($cards as $i => $card)
+                        @php
+                            $cols = (!empty($card['show_scans']) ? 1 : 0) + (!empty($card['show_pins']) ? 1 : 0);
+                            $dateLabel = !empty($card['all_dates'])
+                                ? 'All Dates'
+                                : (!empty($card['date']) ? \Carbon\Carbon::parse($card['date'])->format('m/d/Y') : 'All Dates');
+                            $start = !empty($card['start_time']) ? \Carbon\Carbon::parse($card['start_time'])->format('g:i A') : null;
+                            $end   = !empty($card['end_time'])   ? \Carbon\Carbon::parse($card['end_time'])->format('g:i A')   : null;
+                            $timeLabel = $start && $end ? "{$start} – {$end}"
+                                       : ($start ? "From {$start}" : ($end ? "Until {$end}" : 'All Day'));
+                        @endphp
+                        @if($cols)
+                            <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 6px 8px; text-align: center; font-weight: bold; background: #ffffff; color: #000000;">
+                                <div>{{ !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1)) }}</div>
+                                <div style="font-size: 7.5pt; font-weight: normal; margin-top: 2px;">{{ trim($dateLabel . ' · ' . $timeLabel, ' ·') }}</div>
+                            </th>
+                        @endif
+                    @endforeach
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 6px 8px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 60px;">Total</th>
+                </tr>
+                <tr style="page-break-inside: avoid;">
+                    @foreach($cards as $i => $card)
+                        @if(!empty($card['show_scans']))
+                            <th style="border: 1px solid #000000; padding: 5px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 8pt;">
+                                {{ $card['scan_name'] ?? 'Scan' }}
+                            </th>
+                        @endif
+                        @if(!empty($card['show_pins']))
+                            <th style="border: 1px solid #000000; padding: 5px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 8pt;">
+                                {{ $card['pin_name'] ?? 'Pin Location' }}
+                            </th>
+                        @endif
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($sectionRecords as $n => $student)
+                    @php $rowTotal = 0; @endphp
+                    <tr style="page-break-inside: avoid;">
+                        <td style="border: 1px solid #000000; padding: 6px 8px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
+                        <td style="border: 1px solid #000000; padding: 6px 8px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
+                        <td style="border: 1px solid #000000; padding: 6px 8px; text-align: center; color: #000000;">{{ $student->section }}</td>
+                        @foreach($cards as $i => $card)
+                            @if(!empty($card['show_scans']))
+                                @php $s = (int) ($student->{"card_{$i}_scans_count"} ?? 0); $rowTotal += $s; @endphp
+                                <td style="border: 1px solid #000000; padding: 6px 8px; text-align: center; color: #000000;">
+                                    {{ $s }}
+                                </td>
+                            @endif
+                            @if(!empty($card['show_pins']))
+                                @php $p = (int) ($student->{"card_{$i}_pins_count"} ?? 0); $rowTotal += $p; @endphp
+                                <td style="border: 1px solid #000000; padding: 6px 8px; text-align: center; color: #000000;">
+                                    {{ $p }}
+                                </td>
+                            @endif
+                        @endforeach
+                        <td style="border: 1px solid #000000; padding: 6px 8px; text-align: center; font-weight: bold; color: #000000;">{{ $rowTotal }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="99" style="border: 1px solid #000000; text-align: center; color: #000000; padding: 20px;">No students found.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+
+        {{-- PRINT FOOTER --}}
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 18px; font-size: 8.5pt; color: #000000; font-family: Arial, sans-serif;">
+            <div style="font-weight: 500;">
+                Prepared by: <strong>{{ $loggedInAdminName ?? 'Admin' }}</strong>
+            </div>
+            <div>
+                {{ date('F j, Y') }}
+            </div>
+            <div>
+                {{-- Paged media numbering --}}
             </div>
         </div>
     </div>
