@@ -457,7 +457,7 @@
                     width: 100% !important;
                     max-width: min(calc(100vw - 32px), 420px) !important;
                     height: auto !important;
-                    max-height: min(72vh, 520px) !important;
+                    max-height: min(80vh, 590px) !important;
                     border-radius: 24px !important;
                     margin: auto !important;
                 }

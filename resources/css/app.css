@@ -1975,7 +1975,7 @@ html body .section-records-body::-webkit-scrollbar-thumb {
         max-width: min(calc(100vw - 32px), 420px) !important;
         margin: auto !important;
         height: auto !important;
-        max-height: min(72vh, 520px) !important;
+        max-height: min(80vh, 590px) !important;
         border-radius: 24px !important;
         overflow: hidden !important;
     }

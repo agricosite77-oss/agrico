@@ -99,7 +99,7 @@
             width: 100% !important;
             max-width: min(calc(100vw - 32px), 420px) !important;
             height: auto !important;
-            max-height: min(72vh, 520px) !important;
+            max-height: min(80vh, 590px) !important;
             border-radius: 24px !important;
             margin: auto !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;

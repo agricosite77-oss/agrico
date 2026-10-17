@@ -122,6 +122,85 @@
         width: 100%;
         box-sizing: border-box;
     }
+    /* Munsell Detail Swatch Card */
+    .munsell-detail-swatch-card {
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+        box-sizing: border-box;
+        width: 100%;
+    }
+    .munsell-detail-swatch-box {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        border-radius: 14px;
+        flex-shrink: 0;
+        border: 1px solid rgba(0,0,0,0.12);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+    .munsell-detail-swatch-content {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .munsell-detail-swatch-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        width: 100%;
+        min-width: 0;
+    }
+    .munsell-detail-swatch-code {
+        font-size: 20px;
+        font-weight: 900;
+        color: #0f172a;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .munsell-detail-swatch-sub {
+        font-size: 12px;
+        font-weight: 500;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 1px;
+    }
+    .munsell-detail-status-pill {
+        background: #dcfce7;
+        color: #16a34a;
+        border-radius: 9999px;
+        padding: 4px 10px;
+        font-size: 11.5px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        flex-shrink: 0;
+        white-space: nowrap;
+        box-sizing: border-box;
+    }
+    .munsell-detail-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 6px #22c55e;
+        flex-shrink: 0;
+    }
+
     @media (max-width: 540px) {
         .munsell-detail-backdrop {
             padding: 24px 16px !important;
@@ -134,7 +213,7 @@
             width: 100% !important;
             max-width: min(calc(100vw - 32px), 420px) !important;
             height: auto !important;
-            max-height: min(72vh, 520px) !important;
+            max-height: min(80vh, 590px) !important;
             border-radius: 24px !important;
             margin: auto !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
@@ -149,6 +228,26 @@
         .munsell-detail-modal-body {
             padding: 14px 18px 16px !important;
             gap: 10px !important;
+        }
+        .munsell-detail-swatch-card {
+            padding: 12px 14px !important;
+            gap: 12px !important;
+        }
+        .munsell-detail-swatch-box {
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
+            border-radius: 12px !important;
+        }
+        .munsell-detail-swatch-code {
+            font-size: 18px !important;
+        }
+        .munsell-detail-swatch-sub {
+            font-size: 11px !important;
+        }
+        .munsell-detail-status-pill {
+            padding: 3px 8px !important;
+            font-size: 10.5px !important;
         }
         .munsell-detail-modal-footer {
             padding: 12px 18px 14px !important;
@@ -180,23 +279,22 @@
         <div class="munsell-detail-modal-body">
 
             {{-- 1. COLOR SWATCH HEADER CARD --}}
-            <div style="background:#ffffff; border:1.5px solid #e2e8f0; border-radius:20px; padding:18px 22px; display:flex; align-items:center; justify-content:space-between; gap:18px; box-shadow:0 4px 16px rgba(0,0,0,0.02);">
-                <div style="display:flex; align-items:center; gap:16px;">
-                    <div style="width:56px; height:56px; border-radius:16px; background-color:{{ $swatchColor }}; flex-shrink:0; border:1px solid rgba(0,0,0,0.12); box-shadow:0 6px 18px rgba(0,0,0,0.15);"></div>
+            <div class="munsell-detail-swatch-card">
+                <div class="munsell-detail-swatch-box" style="background-color:{{ $swatchColor }};"></div>
 
-                    <div>
-                        <div style="font-size:22px; font-weight:900; color:#0f172a; line-height:1.1; letter-spacing:-0.02em;">
+                <div class="munsell-detail-swatch-content">
+                    <div class="munsell-detail-swatch-title-row">
+                        <div class="munsell-detail-swatch-code">
                             {{ $color->full_code }}
                         </div>
-                        <div style="font-size:13px; font-weight:500; color:#94a3b8; margin-top:3px;">
-                            Munsell Soil Color Notation
+                        <div class="munsell-detail-status-pill">
+                            <span class="munsell-detail-status-dot"></span>
+                            <span>Active Standard</span>
                         </div>
                     </div>
-                </div>
-
-                <div style="background:#dcfce7; color:#16a34a; border-radius:9999px; padding:5px 14px; font-size:12.5px; font-weight:700; display:inline-flex; align-items:center; gap:6px; flex-shrink:0;">
-                    <span style="width:7px; height:7px; border-radius:50%; background:#22c55e; box-shadow:0 0 6px #22c55e;"></span>
-                    <span>Active Standard</span>
+                    <div class="munsell-detail-swatch-sub">
+                        Munsell Soil Color Notation
+                    </div>
                 </div>
             </div>
 
