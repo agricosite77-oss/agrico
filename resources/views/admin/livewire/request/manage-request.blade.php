@@ -581,7 +581,7 @@
     @if ($showViewModal && $selectedRequest)
 
         <div style="position:fixed; inset:0; z-index:100002; display:flex; align-items:center; justify-content:center; background:rgba(15,23,42,0.45); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); padding: 12px; box-sizing: border-box; overflow:hidden;" class="animate-in fade-in duration-200">
-            <div style="background:#ffffff; border-radius:24px; max-width:680px; width:100%; height:auto; max-height:calc(100dvh - 24px); margin:auto; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; position:relative; box-sizing: border-box;" class="animate-in zoom-in-95 duration-200">
+            <div style="background:#ffffff; border-radius:24px; max-width:680px; width:100%; height:auto; max-height:calc(100dvh - 24px); margin:auto; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; position:relative; box-sizing: border-box;" class="admin-review-request-modal agrico-standard-popup animate-in zoom-in-95 duration-200">
 
                 {{-- MODAL HEADER --}}
                 <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; background: #ffffff; flex-shrink: 0; position: relative;">

@@ -991,7 +991,7 @@
             <form
                 wire:submit.prevent="verifyAdminPassword"
                 wire:key="edit-modal-step-1"
-                class="modal-animated-card"
+                class="modal-animated-card agrico-standard-popup"
                 x-transition:enter="transition ease-out duration-300 transform"
                 x-transition:enter-start="opacity-0 scale-90 translate-y-4"
                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
@@ -1491,7 +1491,7 @@
         class="fixed inset-0 z-50 flex items-center justify-center modal-animated-backdrop"
         style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999;"
     >
-        <div class="modal-animated-card" style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); width:100%; max-width:480px; margin:0 16px; overflow:hidden;">
+        <div class="modal-animated-card agrico-standard-popup" style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); width:100%; max-width:480px; margin:0 16px; overflow:hidden;">
             <div style="padding:28px 28px 12px 28px; display:flex; align-items:flex-start; justify-content:space-between;">
                 <div style="display:flex; align-items:center; gap:14px;">
                     <div style="width:44px; height:44px; border-radius:14px; background:#FEF3C7; display:flex; align-items:center; justify-content:center; flex-shrink:0;">

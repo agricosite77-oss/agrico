@@ -622,12 +622,14 @@
         color: #15803d !important;
     }
 
-    /* Mobile Overrides (<= 540px, matching Student Records popup) */
+    /* Mobile Overrides (<= 540px) */
     @media (max-width: 540px) {
         .soil-detail-backdrop {
-            padding: 16px 14px !important;
+            padding: 10px 12px !important;
         }
         .soil-detail-modal-container {
+            width: 100% !important;
+            max-width: calc(100vw - 24px) !important;
             height: auto !important;
             max-height: calc(100dvh - 20px) !important;
             border-radius: 24px !important;
@@ -642,60 +644,100 @@
             font-weight: 800 !important;
         }
         .soil-detail-modal-body {
-            padding: 14px 18px 16px !important;
+            padding: 14px 16px 16px !important;
             gap: 10px !important;
             flex: 1 1 auto !important;
             max-height: none !important;
         }
         .soil-swatch-banner {
-            padding: 12px 16px !important;
-            gap: 12px !important;
-            min-height: 68px !important;
+            padding: 10px 14px !important;
+            gap: 10px !important;
+            min-height: 64px !important;
             border-radius: 16px !important;
             margin-bottom: 8px !important;
+            flex-wrap: wrap !important;
         }
         .soil-swatch-avatar {
-            width: 48px !important;
-            height: 48px !important;
-            min-width: 48px !important;
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
         }
         .soil-swatch-code {
-            font-size: 22px !important;
+            font-size: 20px !important;
             font-weight: 900 !important;
         }
         .soil-swatch-hex-pill {
             font-size: 11px !important;
-            padding: 4px 10px !important;
+            padding: 4px 8px !important;
+            white-space: nowrap !important;
         }
         .soil-modal-grid-3 {
-            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
             gap: 8px !important;
             margin-bottom: 8px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
         }
-        .soil-modal-grid-3 > div:nth-child(3) {
-            grid-column: auto !important;
+        .soil-modal-grid-3 > div:nth-child(3),
+        .soil-modal-grid-3 > div:last-child:nth-child(odd) {
+            grid-column: 1 / -1 !important;
         }
         .soil-modal-grid-2 {
-            grid-template-columns: 1fr 1fr !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
             gap: 8px !important;
             margin-bottom: 8px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
         }
         .soil-metric-card {
-            padding: 10px 10px !important;
+            min-width: 0 !important;
+            padding: 10px 12px !important;
             border-radius: 14px !important;
+            box-sizing: border-box !important;
         }
         .soil-metric-card-label {
             font-size: 11px !important;
             margin-bottom: 3px !important;
-            font-weight: 600 !important;
+            font-weight: 700 !important;
         }
         .soil-metric-card-val {
-            font-size: 13.5px !important;
-            line-height: 1.3 !important;
+            font-size: 14px !important;
+            line-height: 1.35 !important;
             font-weight: 700 !important;
+            overflow-wrap: anywhere !important;
+            word-break: break-word !important;
+            min-width: 0 !important;
+        }
+        .soil-metric-card-text {
+            font-size: 14px !important;
+            overflow-wrap: anywhere !important;
+            word-break: break-word !important;
+            min-width: 0 !important;
         }
         .soil-detail-modal-footer {
             padding: 12px 18px 14px !important;
+        }
+    }
+
+    @media (max-width: 340px) {
+        .soil-modal-grid-3,
+        .soil-modal-grid-2 {
+            grid-template-columns: 1fr !important;
+        }
+        .soil-modal-grid-3 > div:nth-child(3),
+        .soil-modal-grid-3 > div:last-child:nth-child(odd) {
+            grid-column: auto !important;
+        }
+    }
+
+    @media (max-height: 520px) and (orientation: landscape) {
+        .soil-detail-modal-container {
+            width: 100% !important;
+            max-width: 680px !important;
+            height: auto !important;
+            max-height: calc(100dvh - 20px) !important;
+            border-radius: 24px !important;
+            margin: auto !important;
         }
     }
 </style>

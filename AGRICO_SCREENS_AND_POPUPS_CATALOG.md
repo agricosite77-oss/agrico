@@ -134,11 +134,18 @@
 
 ## Part 3: Pop-up Dimensions & Responsive Standards
 
-### Exact Dimensions for Soil Scan Records Pop-ups
+### Standard Pop-up Sizing Specification
+All system dialogs and modal cards (with the exception of Admin Delete Modals which remain in their legacy isolation) follow this unified specification across devices:
+
 ```css
-/* Desktop & Tablet (> 540px) */
+/* 1. Desktop (1280px+) & Tablet (768px) */
+.agrico-standard-popup,
 .record-popup-card,
-.soil-detail-modal-container {
+.soil-detail-modal-container,
+.mapping-detail-modal-container,
+.admin-review-request-modal,
+.user-view-modal-container,
+.user-edit-modal-container {
     width: 100% !important;
     max-width: 680px !important;
     height: auto !important;
@@ -147,21 +154,57 @@
     margin: auto !important;
 }
 
-/* Mobile Screens (≤ 540px) */
-@media (max-width: 540px) {
-    .record-popup-backdrop {
-        padding: 16px 14px !important;
-    }
+/* 2. Mobile Viewports (320px – 375px) */
+@media (max-width: 640px) {
+    .agrico-standard-popup,
     .record-popup-card,
-    .soil-detail-modal-container {
+    .soil-detail-modal-container,
+    .mapping-detail-modal-container,
+    .admin-review-request-modal,
+    .user-view-modal-container,
+    .user-edit-modal-container,
+    .section-records-dialog {
         width: 100% !important;
-        max-width: calc(100vw - 28px) !important;
+        max-width: calc(100vw - 24px) !important;
+        height: auto !important;
+        max-height: calc(100dvh - 20px) !important;
+        border-radius: 24px !important;
+        margin: auto !important;
+    }
+}
+
+/* 3. Landscape Phone (e.g. 812×375px) */
+@media (max-height: 480px) and (orientation: landscape) {
+    .agrico-standard-popup,
+    .record-popup-card,
+    .soil-detail-modal-container,
+    .mapping-detail-modal-container,
+    .admin-review-request-modal,
+    .user-view-modal-container,
+    .user-edit-modal-container {
+        width: 100% !important;
+        max-width: 680px !important;
         height: auto !important;
         max-height: calc(100dvh - 20px) !important;
         border-radius: 24px !important;
     }
 }
 ```
+
+### Scope Isolation & Exceptions
+1. **Admin Delete Confirmation Pop-ups (Protected & Unchanged):**
+   - User Delete Confirmation Modal (`user-delete-modal.blade.php`)
+   - Soil Scan Delete Modal (`soil-delete-modal.blade.php`)
+   - Mapping History Delete Modal (`mapping-delete-modal.blade.php`)
+   - Munsell Color Delete Modal (`munsell-delete-modal.blade.php`)
+   - FAQ Delete Confirmation Modal (`faq-delete-modal.blade.php`)
+   - Student Delete Confirmation Modal (`student-record.blade.php`, `showDeleteModal`)
+   *These modals strictly maintain their original CSS rules and are scoped out from `.agrico-standard-popup`.*
+2. **Student Section Records Table Exception:**
+   - Outer modal dialog respects `max-width: calc(100vw - 24px)` and `border-radius: 24px` on mobile.
+   - Internal horizontal scrolling is exclusively permitted within `.xl-wrap` for the multi-column data table.
+3. **Close Buttons:**
+   - Standardized to minimum touch target of $\ge 40\times 40\text{ px}$ across web and React Native mobile app (`PinSoilLocationModal.js`, `ScanSoilScreen.js`, `HomeScreen.js`).
 
 ---
 

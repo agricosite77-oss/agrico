@@ -324,50 +324,65 @@
 
             /* ── MODAL MOBILE RESPONSIVE FIT ── */
             #soilRecordModal {
-                padding: 10px !important;
+                padding: 10px 12px !important;
             }
             .soil-modal-card {
+                width: 100% !important;
+                max-width: calc(100vw - 24px) !important;
+                height: auto !important;
+                max-height: calc(100dvh - 20px) !important;
                 border-radius: 24px !important;
-                max-width: 100% !important;
-                height: 80vh !important;
-                max-height: 80vh !important;
+                margin: auto !important;
             }
             .soil-modal-header {
                 padding: 14px 16px !important;
             }
             .soil-modal-body-container {
-                padding: 14px 10px !important;
+                padding: 14px 14px !important;
             }
             .soil-modal-grid-3 {
-                gap: 5px !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 8px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
             }
-            .soil-modal-grid-3 > div {
-                padding: 8px 5px !important;
+            .soil-modal-grid-3 > div:nth-child(3),
+            .soil-modal-grid-3 > div:last-child:nth-child(odd) {
+                grid-column: 1 / -1 !important;
+            }
+            .soil-modal-grid-3 > div,
+            .soil-modal-grid-card {
+                padding: 10px 12px !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
             }
             .soil-modal-grid-3 .soil-modal-label {
-                font-size: 9.5px !important;
-                letter-spacing: -0.03em !important;
-                gap: 2px !important;
+                font-size: 11px !important;
+                letter-spacing: 0.03em !important;
+                gap: 4px !important;
             }
             .soil-modal-grid-3 .soil-modal-label svg {
-                width: 11px !important;
-                height: 11px !important;
+                width: 12px !important;
+                height: 12px !important;
             }
             .soil-modal-grid-3 .soil-modal-value {
-                font-size: 13px !important;
+                font-size: 14px !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                min-width: 0 !important;
             }
             .soil-modal-user-card {
-                padding: 10px 10px !important;
+                padding: 10px 12px !important;
                 gap: 8px !important;
             }
             .soil-modal-user-name {
-                font-size: 12.5px !important;
+                font-size: 13px !important;
             }
             .soil-modal-user-email {
-                font-size: 10.5px !important;
+                font-size: 11px !important;
             }
             .soil-modal-grid-2 {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                 gap: 8px !important;
             }
         }
@@ -11190,7 +11205,7 @@
 
                 <!-- Soil Pin Location & Covered Area Card (Modal - Placed BEFORE Soil Normalization) -->
                 <div id="modalSoilLocationCard" class="soil-modal-grid-card" style="margin-bottom: 12px; padding: 13px 16px 15px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
                         <div class="soil-modal-label" style="font-size: 11px; font-weight: 700; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.03em;">
                             SOIL PIN LOCATION &amp; COVERED AREA
                         </div>

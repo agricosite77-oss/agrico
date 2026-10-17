@@ -1816,10 +1816,20 @@ html:not(.light-mode) .pin-search-box .agrico-search-clear-btn:focus-visible .ag
     overscroll-behavior: contain !important;
 }
 
-/* Universal Responsive Modal Cards across Website and Admin */
+/* =====================================================================
+   AGRICO POP-UP STANDARD SIZING SYSTEM
+   - Mobile (320px-375px): width: 100%, max-width: calc(100vw - 24px), height: auto, max-height: calc(100dvh - 20px), border-radius: 24px
+   - Desktop (1280px+) & Tablet (768px): width: 100%, max-width: 680px, max-height: min(85vh, calc(100dvh - 24px)), border-radius: 28px
+   - Landscape Phone (812x375): width: 100%, max-width: 680px, max-height: calc(100dvh - 20px), border-radius: 24px
+   - Admin delete confirmation modals are strictly excluded and keep their original look/size
+   ===================================================================== */
+
+/* 1. Desktop (1280px+) & Tablet (768px) Default */
+html body .agrico-standard-popup,
+html body .soil-modal-card,
+html body .soil-detail-modal-container,
 html body .user-view-modal-container,
 html body .user-edit-modal-container,
-html body .soil-detail-modal-container,
 html body .soil-form-modal-container,
 html body .munsell-detail-modal-container,
 html body .munsell-form-modal-container,
@@ -1827,18 +1837,19 @@ html body .munsell-edit-modal-container,
 html body .faq-detail-modal-container,
 html body .faq-form-modal-container,
 html body .pin-modal-container,
-html body .soil-modal-card,
 html body .record-popup-card,
 html body .admin-profile-modal-card,
-html body .admin-review-request-modal,
-html body .modal-animated-card {
+html body .admin-review-request-modal {
     box-sizing: border-box !important;
-    max-width: min(680px, calc(100vw - 24px)) !important;
+    width: 100% !important;
+    max-width: 680px !important;
     height: auto !important;
-    max-height: min(85vh, calc(100dvh - 32px)) !important;
+    max-height: min(85vh, calc(100dvh - 24px)) !important;
+    border-radius: 28px !important;
     overflow: hidden !important;
     display: flex !important;
     flex-direction: column !important;
+    margin: auto !important;
 }
 
 /* Modal Inner Body Smooth Touch Scrolling */
@@ -1858,11 +1869,13 @@ html body .pin-modal-body {
     flex: 1 1 auto !important;
 }
 
-/* Small screen & Landscape viewport mobile optimizations */
-@media (max-width: 640px), (max-height: 520px) {
+/* 2. Mobile (320px - 375px or <= 640px) */
+@media (max-width: 640px) {
+    html body .agrico-standard-popup,
+    html body .soil-modal-card,
+    html body .soil-detail-modal-container,
     html body .user-view-modal-container,
     html body .user-edit-modal-container,
-    html body .soil-detail-modal-container,
     html body .soil-form-modal-container,
     html body .munsell-detail-modal-container,
     html body .munsell-form-modal-container,
@@ -1870,17 +1883,16 @@ html body .pin-modal-body {
     html body .faq-detail-modal-container,
     html body .faq-form-modal-container,
     html body .pin-modal-container,
-    html body .soil-modal-card,
     html body .record-popup-card,
     html body .admin-profile-modal-card,
     html body .admin-review-request-modal,
-    html body .modal-animated-card {
-        width: calc(100vw - 20px) !important;
-        max-width: calc(100vw - 20px) !important;
+    html body .section-records-dialog {
+        width: 100% !important;
+        max-width: calc(100vw - 24px) !important;
         margin: auto !important;
         height: auto !important;
         max-height: calc(100dvh - 20px) !important;
-        border-radius: 20px !important;
+        border-radius: 24px !important;
     }
 
     html body .user-view-modal-header,
@@ -1903,6 +1915,33 @@ html body .pin-modal-body {
         padding: 12px 16px 14px !important;
         flex-wrap: wrap !important;
         gap: 8px !important;
+    }
+}
+
+/* 3. Landscape Phone (e.g. 812x375, height <= 520px in landscape) */
+@media (max-height: 520px) and (orientation: landscape) {
+    html body .agrico-standard-popup,
+    html body .soil-modal-card,
+    html body .soil-detail-modal-container,
+    html body .user-view-modal-container,
+    html body .user-edit-modal-container,
+    html body .soil-form-modal-container,
+    html body .munsell-detail-modal-container,
+    html body .munsell-form-modal-container,
+    html body .munsell-edit-modal-container,
+    html body .faq-detail-modal-container,
+    html body .faq-form-modal-container,
+    html body .pin-modal-container,
+    html body .record-popup-card,
+    html body .admin-profile-modal-card,
+    html body .admin-review-request-modal,
+    html body .section-records-dialog {
+        width: 100% !important;
+        max-width: 680px !important;
+        margin: auto !important;
+        height: auto !important;
+        max-height: calc(100dvh - 20px) !important;
+        border-radius: 24px !important;
     }
 }
 
