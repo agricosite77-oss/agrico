@@ -46,6 +46,7 @@ class LocationMapping extends Model
         'scan_platform',
         'scan_note_text',
         'is_single_soil_pin',
+        'region_thumbnail',
     ];
 
     public static function resolveNearestBarangay(float $lat, float $lng): string
@@ -280,27 +281,59 @@ class LocationMapping extends Model
 
         $mCode = $meta['munsell_code'] ?? ($meta['munsell'] ?? ($sSoil?->full_code ?: ($sMColor?->full_code ?: '—')));
         $label = $meta['label'] ?? ($meta['color_name'] ?? ($sSoil?->soil_name ?: ($sMColor?->color_name ?: 'Soil Color')));
+        $rThumb = $this->region_thumbnail;
 
         return [[
-            'scan_id'        => $this->soil_scan_id ?: $this->location_mapping_id,
-            'is_primary'     => true,
-            'munsell'        => $mCode,
-            'munsell_code'   => $mCode,
-            'label'          => $label,
-            'color_name'     => $label,
-            'hex'            => $sHex,
-            'percent'        => $pctVal,
-            'proportion'     => $pctVal / 100,
-            'confidence'     => $conf,
-            'near_match'     => $meta['near_match'] ?? $conf,
-            'organic_matter' => $meta['organic_matter'] ?? ($sSoil?->effective_organic_matter ?: 'Moderate (2.2% – 3.7%)'),
-            'soil_name'      => $meta['soil_name'] ?? ($sSoil?->soil_type_label ?: ($sSoil?->soil_type ?: 'Unspecified')),
-            'description'    => $sSoil?->description ?: ($meta['description'] ?? ($scan?->scan_note ?: '')),
-            'box'            => $box,
-            'bounding_box'   => $box,
-            'image'          => $scan ? \App\Helpers\SoilImageHelper::scanImageUrl($scan) : null,
-            'pinned_index'   => $this->pinned_soil_index,
+            'scan_id'          => $this->soil_scan_id ?: $this->location_mapping_id,
+            'is_primary'       => true,
+            'munsell'          => $mCode,
+            'munsell_code'     => $mCode,
+            'label'            => $label,
+            'color_name'       => $label,
+            'hex'              => $sHex,
+            'percent'          => $pctVal,
+            'proportion'       => $pctVal / 100,
+            'confidence'       => $conf,
+            'near_match'       => $meta['near_match'] ?? $conf,
+            'organic_matter'   => $meta['organic_matter'] ?? ($sSoil?->effective_organic_matter ?: 'Moderate (2.2% – 3.7%)'),
+            'soil_name'        => $meta['soil_name'] ?? ($sSoil?->soil_type_label ?: ($sSoil?->soil_type ?: 'Unspecified')),
+            'description'      => $sSoil?->description ?: ($meta['description'] ?? ($scan?->scan_note ?: '')),
+            'box'              => $box,
+            'bounding_box'     => $box,
+            'image'            => $scan ? \App\Helpers\SoilImageHelper::scanImageUrl($scan) : null,
+            'region_thumbnail' => $rThumb,
+            'pinned_index'     => $this->pinned_soil_index,
         ]];
+    }
+
+    public function getRegionThumbnailAttribute(): ?string
+    {
+        $meta = is_array($this->soil_layer_meta) ? $this->soil_layer_meta : json_decode($this->soil_layer_meta ?? '[]', true);
+        if (!empty($meta['region_thumbnail'])) {
+            return $meta['region_thumbnail'];
+        }
+        $scan = $this->soilScan;
+        if ($scan && !empty($scan->regions_data)) {
+            $rd = is_array($scan->regions_data) ? $scan->regions_data : json_decode($scan->regions_data, true);
+            if (is_array($rd)) {
+                if ($this->pinned_soil_index !== null && isset($rd[$this->pinned_soil_index]['region_thumbnail'])) {
+                    return $rd[$this->pinned_soil_index]['region_thumbnail'];
+                }
+                foreach ($rd as $r) {
+                    if (!empty($r['region_thumbnail'])) {
+                        if ((isset($r['soil_id']) && $r['soil_id'] == $this->soil_id) ||
+                            (isset($r['munsell']) && $r['munsell'] == ($this->soil?->full_code ?? '')) ||
+                            (isset($r['munsell_code']) && $r['munsell_code'] == ($this->soil?->full_code ?? ''))) {
+                            return $r['region_thumbnail'];
+                        }
+                    }
+                }
+                if (!empty($rd[0]['region_thumbnail'])) {
+                    return $rd[0]['region_thumbnail'];
+                }
+            }
+        }
+        return null;
     }
 
     public function getScanNoteTextAttribute(): string

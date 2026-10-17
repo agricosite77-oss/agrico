@@ -25,32 +25,47 @@ class SoilImageHelper
         // Check if thumbnail was requested
         $isThumbRequest = ($typeOrFallback === 'thumb' || $typeOrFallback === true);
 
-        // 1. Direct thumbnail_image column if present and thumbnail requested
+        // 1. Embedded Region Thumbnail (From Stage 3 & 4 detected soil patch)
+        if ($isThumbRequest) {
+            if ($scan instanceof LocationMapping && !empty($scan->region_thumbnail)) {
+                $thumb = $scan->region_thumbnail;
+                return str_starts_with($thumb, 'data:') ? $thumb : ('data:image/png;base64,' . $thumb);
+            }
+            if ($soilScan) {
+                $regs = $soilScan->regions ?? [];
+                if ($scan instanceof LocationMapping && $scan->pinned_soil_index !== null && !empty($regs[$scan->pinned_soil_index]['region_thumbnail'])) {
+                    $thumb = $regs[$scan->pinned_soil_index]['region_thumbnail'];
+                    return str_starts_with($thumb, 'data:') ? $thumb : ('data:image/png;base64,' . $thumb);
+                }
+                if (!empty($regs[0]['region_thumbnail'])) {
+                    $thumb = $regs[0]['region_thumbnail'];
+                    return str_starts_with($thumb, 'data:') ? $thumb : ('data:image/png;base64,' . $thumb);
+                }
+                foreach ($regs as $r) {
+                    if (!empty($r['region_thumbnail'])) {
+                        $thumb = $r['region_thumbnail'];
+                        return str_starts_with($thumb, 'data:') ? $thumb : ('data:image/png;base64,' . $thumb);
+                    }
+                }
+                // If the scan's image is a specific region crop file, use it
+                if (!empty($soilScan->scan_image) && str_contains($soilScan->scan_image, 'region_')) {
+                    $rUrl = static::normalizeUrl($soilScan->scan_image, $cloudStorage);
+                    if ($rUrl) return $rUrl;
+                }
+            }
+        }
+
+        // 2. Direct thumbnail_image column if present and thumbnail requested
         if ($isThumbRequest && $soilScan && !empty($soilScan->thumbnail_image)) {
             $thumbUrl = static::normalizeUrl($soilScan->thumbnail_image, $cloudStorage);
             if ($thumbUrl) return $thumbUrl;
         }
 
-        // 2. Main scan_image
+        // 3. Main scan_image
         $raw = $soilScan?->scan_image ?? ($scan->soil_photo_path ?? ($scan->scan_image ?? null));
         if (!empty($raw)) {
             $photoUrl = static::normalizeUrl($raw, $cloudStorage);
             if ($photoUrl) return $photoUrl;
-        }
-
-        // 3. Embedded Region Thumbnail fallback (From database JSON column with green ROI square)
-        if ($isThumbRequest && $soilScan) {
-            $regs = $soilScan->regions ?? [];
-            if (!empty($regs[0]['region_thumbnail'])) {
-                $thumb = $regs[0]['region_thumbnail'];
-                return str_starts_with($thumb, 'data:') ? $thumb : ('data:image/png;base64,' . $thumb);
-            }
-            foreach ($regs as $r) {
-                if (!empty($r['region_thumbnail'])) {
-                    $thumb = $r['region_thumbnail'];
-                    return str_starts_with($thumb, 'data:') ? $thumb : ('data:image/png;base64,' . $thumb);
-                }
-            }
         }
 
         // 4. Sibling scan with photo for the same soil

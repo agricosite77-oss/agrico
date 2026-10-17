@@ -1839,7 +1839,9 @@
                         soil_name: pDrain,
                         soil_type: pDrain,
                         description: pDesc,
-                        box: pBox
+                        box: pBox,
+                        region_thumbnail: p.region_thumbnail || pMeta.region_thumbnail || (p.regions && p.regions[0] ? p.regions[0].region_thumbnail : null),
+                        image: p.scan_image_url || p.image || null
                     });
                 });
             } else {
@@ -1895,8 +1897,10 @@
             let bodyHtml = '';
 
             // 1. DUAL-PREVIEW BANNER SWATCH CARD (Matching Admin Modal Header)
-            const fallbackThumb = (regions[0] && regions[0].region_thumbnail) ? (regions[0].region_thumbnail.startsWith('data:') ? regions[0].region_thumbnail : 'data:image/png;base64,' + regions[0].region_thumbnail) : '';
-            const effectiveAvatarUrl = scanImgUrl || fallbackThumb;
+            const domThumb = (dominant && dominant.region_thumbnail)
+                ? (dominant.region_thumbnail.startsWith('data:') ? dominant.region_thumbnail : 'data:image/png;base64,' + dominant.region_thumbnail)
+                : ((m.region_thumbnail) ? (m.region_thumbnail.startsWith('data:') ? m.region_thumbnail : 'data:image/png;base64,' + m.region_thumbnail) : '');
+            const effectiveAvatarUrl = domThumb || scanImgUrl;
 
             bodyHtml += `
                 <div class="soil-swatch-banner" style="background: ${domHex};">
@@ -2045,11 +2049,16 @@
                             <div id="wsLayerBody_${idx}" class="layer-accordion-body" style="display: none; padding: 14px;">
                                 <!-- Swatch Banner with ROI Crop Box -->
                                 <div class="soil-swatch-banner" style="background: ${subHex}; margin-bottom: 10px; min-height: 64px; padding: 12px 16px;">
-                                    ${scanImgUrl ? `
-                                        <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; position: relative; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.18);">
-                                             <img src="${scanImgUrl}" alt="Soil Sample" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;" />
-                                        </div>
-                                    ` : ''}
+                                    ${(() => {
+                                        const subThumb = (sub && sub.region_thumbnail)
+                                            ? (sub.region_thumbnail.startsWith('data:') ? sub.region_thumbnail : 'data:image/png;base64,' + sub.region_thumbnail)
+                                            : (sub.image || scanImgUrl);
+                                        return subThumb ? `
+                                            <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; position: relative; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.18);">
+                                                 <img src="${subThumb}" alt="Soil Sample" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;" />
+                                            </div>
+                                        ` : '';
+                                    })()}
                                     <div class="soil-swatch-center">
                                         <span class="soil-swatch-code" style="font-size: 20px;">${subCode}</span>
                                         <div class="soil-swatch-sub">Soil Percentage (${subPct}%)</div>
