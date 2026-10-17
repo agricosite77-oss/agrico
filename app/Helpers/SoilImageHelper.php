@@ -53,23 +53,40 @@ class SoilImageHelper
             }
         }
 
-        // 4. Munsell Reference Image fallback
-        if ($soilScan?->munsell_color?->image) {
-            $mImg = ltrim($soilScan->munsell_color->image, '/');
-            if (!str_starts_with($mImg, 'storage/')) $mImg = 'storage/' . $mImg;
-            if (file_exists(public_path($mImg))) {
-                return asset($mImg);
+        // 4. Sibling scan with photo for the same soil
+        $soil = $soilScan?->soil ?? ($scan->soil ?? null);
+        if ($soil) {
+            $sibling = SoilScan::where('soil_id', $soil->soil_id)
+                ->where(function ($q) {
+                    $q->whereNotNull('scan_image')->where('scan_image', '!=', '')
+                      ->orWhereNotNull('thumbnail_image')->where('thumbnail_image', '!=', '');
+                })
+                ->where('soil_scan_id', '!=', $soilScan?->soil_scan_id ?? 0)
+                ->latest('soil_scan_id')
+                ->first();
+            if ($sibling) {
+                if ($isThumbRequest && !empty($sibling->thumbnail_image)) {
+                    $thumbUrl = static::normalizeUrl($sibling->thumbnail_image, $cloudStorage);
+                    if ($thumbUrl) return $thumbUrl;
+                }
+                if (!empty($sibling->scan_image)) {
+                    $photoUrl = static::normalizeUrl($sibling->scan_image, $cloudStorage);
+                    if ($photoUrl) return $photoUrl;
+                }
             }
         }
 
-        // 5. Soil Reference Image fallback
-        $soil = $soilScan?->soil ?? ($scan->soil ?? null);
+        // 5. Munsell Reference Image fallback
+        $mColor = $soilScan?->munsellColor ?? ($soil?->munsellColor ?? null);
+        if ($mColor?->image) {
+            $mImg = static::normalizeUrl($mColor->image, $cloudStorage);
+            if ($mImg) return $mImg;
+        }
+
+        // 6. Soil Reference Image fallback
         if ($soil?->image) {
-            $sImg = ltrim($soil->image, '/');
-            if (!str_starts_with($sImg, 'storage/')) $sImg = 'storage/' . $sImg;
-            if (file_exists(public_path($sImg))) {
-                return asset($sImg);
-            }
+            $sImg = static::normalizeUrl($soil->image, $cloudStorage);
+            if ($sImg) return $sImg;
         }
 
         return null;
@@ -109,6 +126,21 @@ class SoilImageHelper
             $cloudUrl = $cloudStorage->publicUrl($rel);
             if ($cloudUrl && !str_contains($cloudUrl, 'localhost')) {
                 return $cloudUrl;
+            }
+        }
+
+        // 3. Sibling scan with Before & After image for the same soil
+        $soil = $soilScan?->soil ?? ($scan->soil ?? null);
+        if ($soil) {
+            $sibling = SoilScan::where('soil_id', $soil->soil_id)
+                ->whereNotNull('before_after_image')
+                ->where('before_after_image', '!=', '')
+                ->where('soil_scan_id', '!=', $soilScan?->soil_scan_id ?? 0)
+                ->latest('soil_scan_id')
+                ->first();
+            if ($sibling && !empty($sibling->before_after_image)) {
+                $url = static::normalizeUrl($sibling->before_after_image, $cloudStorage);
+                if ($url) return $url;
             }
         }
 
