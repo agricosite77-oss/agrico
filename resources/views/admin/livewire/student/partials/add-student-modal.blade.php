@@ -10,7 +10,7 @@
     wire:click.self="closeAddStudentModal"
 >
     {{-- MODAL CARD CONTAINER --}}
-    <div style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); width: 100%; max-width: 680px; margin: auto; display: flex; flex-direction: column; height: auto; max-height: calc(100dvh - 24px); overflow: hidden; position: relative; box-sizing: border-box;">
+    <div class="add-student-dialog agrico-standard-popup" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); width: 100%; max-width: 680px; margin: auto; display: flex; flex-direction: column; height: auto; max-height: calc(100dvh - 20px); overflow: hidden; position: relative; box-sizing: border-box;">
 
         {{-- 1. FIXED MODAL HEADER --}}
         <div style="padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #ffffff; flex-shrink: 0;">
@@ -26,7 +26,7 @@
         </div>
 
         {{-- 2. SCROLLABLE BODY CONTENT --}}
-        <div style="padding: 14px 18px 16px; overflow-y: auto; flex: 1 1 auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;">
+        <div class="add-student-modal-body" style="padding: 14px 18px 16px; overflow-y: auto; flex: 1 1 auto; min-height: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;">
 
             {{-- SEARCH BAR + SECTION FILTER ROW --}}
             <div class="flex flex-col sm:flex-row gap-2.5">

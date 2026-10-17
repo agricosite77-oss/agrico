@@ -1828,8 +1828,11 @@ html:not(.light-mode) .pin-search-box .agrico-search-clear-btn:focus-visible .ag
 html body .agrico-standard-popup,
 html body .soil-modal-card,
 html body .soil-detail-modal-container,
+html body .mapping-detail-modal-container,
 html body .user-view-modal-container,
 html body .user-edit-modal-container,
+html body .user-password-modal-container,
+html body .user-suspend-modal-container,
 html body .soil-form-modal-container,
 html body .munsell-detail-modal-container,
 html body .munsell-form-modal-container,
@@ -1839,7 +1842,12 @@ html body .faq-form-modal-container,
 html body .pin-modal-container,
 html body .record-popup-card,
 html body .admin-profile-modal-card,
-html body .admin-review-request-modal {
+html body .admin-review-request-modal,
+html body .add-student-dialog,
+html body .section-records-dialog,
+html body .profile-modal-card,
+html body .global-login-modal-card,
+html body .global-pending-modal-card {
     box-sizing: border-box !important;
     width: 100% !important;
     max-width: 680px !important;
@@ -1852,9 +1860,10 @@ html body .admin-review-request-modal {
     margin: auto !important;
 }
 
-/* Modal Inner Body Smooth Touch Scrolling */
+/* Modal Inner Body Smooth Touch Scrolling (Vertical Scrollbar) */
 html body .view-modal-scroll,
 html body .soil-detail-modal-body,
+html body .mapping-detail-modal-body,
 html body .soil-form-modal-body,
 html body .munsell-modal-body,
 html body .faq-detail-modal-body,
@@ -1862,11 +1871,62 @@ html body .faq-form-modal-body,
 html body .record-popup-body,
 html body .admin-profile-modal-body,
 html body .soil-modal-body,
-html body .pin-modal-body {
+html body .soil-modal-body-container,
+html body .pin-modal-body,
+html body .profile-modal-body,
+html body .user-edit-modal-body,
+html body .add-student-modal-body,
+html body .admin-review-request-body,
+html body .section-records-body {
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
     overscroll-behavior: contain !important;
     flex: 1 1 auto !important;
+    min-height: 0 !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: #cbd5e1 transparent !important;
+}
+
+html body .view-modal-scroll::-webkit-scrollbar,
+html body .soil-detail-modal-body::-webkit-scrollbar,
+html body .mapping-detail-modal-body::-webkit-scrollbar,
+html body .soil-form-modal-body::-webkit-scrollbar,
+html body .munsell-modal-body::-webkit-scrollbar,
+html body .faq-detail-modal-body::-webkit-scrollbar,
+html body .faq-form-modal-body::-webkit-scrollbar,
+html body .record-popup-body::-webkit-scrollbar,
+html body .admin-profile-modal-body::-webkit-scrollbar,
+html body .soil-modal-body::-webkit-scrollbar,
+html body .soil-modal-body-container::-webkit-scrollbar,
+html body .pin-modal-body::-webkit-scrollbar,
+html body .profile-modal-body::-webkit-scrollbar,
+html body .user-edit-modal-body::-webkit-scrollbar,
+html body .add-student-modal-body::-webkit-scrollbar,
+html body .admin-review-request-body::-webkit-scrollbar,
+html body .section-records-body::-webkit-scrollbar {
+    width: 6px !important;
+    display: block !important;
+}
+
+html body .view-modal-scroll::-webkit-scrollbar-thumb,
+html body .soil-detail-modal-body::-webkit-scrollbar-thumb,
+html body .mapping-detail-modal-body::-webkit-scrollbar-thumb,
+html body .soil-form-modal-body::-webkit-scrollbar-thumb,
+html body .munsell-modal-body::-webkit-scrollbar-thumb,
+html body .faq-detail-modal-body::-webkit-scrollbar-thumb,
+html body .faq-form-modal-body::-webkit-scrollbar-thumb,
+html body .record-popup-body::-webkit-scrollbar-thumb,
+html body .admin-profile-modal-body::-webkit-scrollbar-thumb,
+html body .soil-modal-body::-webkit-scrollbar-thumb,
+html body .soil-modal-body-container::-webkit-scrollbar-thumb,
+html body .pin-modal-body::-webkit-scrollbar-thumb,
+html body .profile-modal-body::-webkit-scrollbar-thumb,
+html body .user-edit-modal-body::-webkit-scrollbar-thumb,
+html body .add-student-modal-body::-webkit-scrollbar-thumb,
+html body .admin-review-request-body::-webkit-scrollbar-thumb,
+html body .section-records-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
+    border-radius: 9999px !important;
 }
 
 /* 2. Mobile (320px - 375px or <= 640px) */
@@ -1874,8 +1934,11 @@ html body .pin-modal-body {
     html body .agrico-standard-popup,
     html body .soil-modal-card,
     html body .soil-detail-modal-container,
+    html body .mapping-detail-modal-container,
     html body .user-view-modal-container,
     html body .user-edit-modal-container,
+    html body .user-password-modal-container,
+    html body .user-suspend-modal-container,
     html body .soil-form-modal-container,
     html body .munsell-detail-modal-container,
     html body .munsell-form-modal-container,
@@ -1886,13 +1949,19 @@ html body .pin-modal-body {
     html body .record-popup-card,
     html body .admin-profile-modal-card,
     html body .admin-review-request-modal,
-    html body .section-records-dialog {
+    html body .add-student-dialog,
+    html body .section-records-dialog,
+    html body .profile-modal-card,
+    html body .global-login-modal-card,
+    html body .global-pending-modal-card {
+        box-sizing: border-box !important;
         width: 100% !important;
         max-width: calc(100vw - 24px) !important;
         margin: auto !important;
         height: auto !important;
         max-height: calc(100dvh - 20px) !important;
         border-radius: 24px !important;
+        overflow: hidden !important;
     }
 
     html body .user-view-modal-header,
@@ -1901,7 +1970,8 @@ html body .pin-modal-body {
     html body .record-popup-header,
     html body .pin-modal-header,
     html body .faq-form-modal-header,
-    html body .faq-detail-modal-header {
+    html body .faq-detail-modal-header,
+    html body .munsell-detail-modal-header {
         padding: 14px 18px 12px !important;
     }
 
@@ -1911,7 +1981,8 @@ html body .pin-modal-body {
     html body .record-popup-footer,
     html body .pin-modal-footer,
     html body .faq-form-modal-footer,
-    html body .faq-detail-modal-footer {
+    html body .faq-detail-modal-footer,
+    html body .munsell-detail-modal-footer {
         padding: 12px 16px 14px !important;
         flex-wrap: wrap !important;
         gap: 8px !important;
@@ -1923,8 +1994,11 @@ html body .pin-modal-body {
     html body .agrico-standard-popup,
     html body .soil-modal-card,
     html body .soil-detail-modal-container,
+    html body .mapping-detail-modal-container,
     html body .user-view-modal-container,
     html body .user-edit-modal-container,
+    html body .user-password-modal-container,
+    html body .user-suspend-modal-container,
     html body .soil-form-modal-container,
     html body .munsell-detail-modal-container,
     html body .munsell-form-modal-container,
@@ -1935,13 +2009,19 @@ html body .pin-modal-body {
     html body .record-popup-card,
     html body .admin-profile-modal-card,
     html body .admin-review-request-modal,
-    html body .section-records-dialog {
+    html body .add-student-dialog,
+    html body .section-records-dialog,
+    html body .profile-modal-card,
+    html body .global-login-modal-card,
+    html body .global-pending-modal-card {
+        box-sizing: border-box !important;
         width: 100% !important;
         max-width: 680px !important;
         margin: auto !important;
         height: auto !important;
         max-height: calc(100dvh - 20px) !important;
         border-radius: 24px !important;
+        overflow: hidden !important;
     }
 }
 

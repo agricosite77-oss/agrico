@@ -605,7 +605,7 @@
                 </div>
 
                 {{-- MODAL BODY --}}
-                <div style="padding: 16px 20px; overflow-y: auto; flex: 1 1 auto; box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;">
+                <div class="admin-review-request-body" style="padding: 16px 20px; overflow-y: auto; flex: 1 1 auto; min-height: 0; box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;">
 
                     {{-- REQUEST DETAILS GRID --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" style="background:#f8fafc; border-radius:16px; border:1px solid #f1f5f9; padding:16px; margin-bottom:16px;">

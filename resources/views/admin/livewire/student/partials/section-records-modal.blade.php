@@ -455,9 +455,11 @@
             @media (max-width: 640px) {
                 .section-records-dialog {
                     width: 100% !important;
-                    height: 94vh !important;
-                    max-height: 94vh !important;
-                    border-radius: 20px !important;
+                    max-width: calc(100vw - 24px) !important;
+                    height: auto !important;
+                    max-height: calc(100dvh - 20px) !important;
+                    border-radius: 24px !important;
+                    margin: auto !important;
                 }
                 .section-records-header {
                     padding: 14px 16px !important;

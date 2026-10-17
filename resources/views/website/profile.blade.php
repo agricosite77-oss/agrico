@@ -762,9 +762,10 @@
             }
             .profile-modal-card {
                 border-radius: 24px !important;
-                max-width: 100% !important;
-                height: 80vh !important;
-                max-height: 80vh !important;
+                width: 100% !important;
+                max-width: calc(100vw - 24px) !important;
+                height: auto !important;
+                max-height: calc(100dvh - 20px) !important;
                 margin: auto !important;
             }
             .profile-modal-header {

@@ -2905,13 +2905,15 @@
         /* ── RESPONSIVE MEDIA QUERIES FOR SOIL RECORD MODAL ── */
         @media (max-width: 540px) {
             #soilRecordModal {
-                padding: 10px !important;
+                padding: 16px 12px !important;
             }
             .soil-modal-card {
-                height: 80vh !important;
-                max-height: 80vh !important;
-                border-radius: 24px !important;
                 width: 100% !important;
+                max-width: calc(100vw - 24px) !important;
+                height: auto !important;
+                max-height: calc(100dvh - 20px) !important;
+                border-radius: 24px !important;
+                margin: auto !important;
             }
             .soil-modal-header {
                 padding: 14px 16px 12px !important;
@@ -4369,10 +4371,11 @@
                 padding: 12px 10px !important;
             }
             .pin-modal-container {
-                height: 80vh !important;
-                max-height: 80vh !important;
-                border-radius: 24px !important;
                 width: 100% !important;
+                max-width: calc(100vw - 24px) !important;
+                height: auto !important;
+                max-height: calc(100dvh - 20px) !important;
+                border-radius: 24px !important;
                 margin: auto !important;
             }
             .pin-modal-header {

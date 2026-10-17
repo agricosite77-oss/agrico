@@ -92,10 +92,11 @@
             z-index: 9999 !important;
         }
         .munsell-form-modal-container {
+            width: 100% !important;
+            max-width: calc(100vw - 24px) !important;
             height: auto !important;
-            max-height: calc(100dvh - 28px) !important;
-            max-height: calc(100vh - 28px) !important;
-            border-radius: 22px !important;
+            max-height: calc(100dvh - 20px) !important;
+            border-radius: 24px !important;
             margin: auto !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
         }

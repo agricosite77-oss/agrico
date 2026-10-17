@@ -2104,7 +2104,7 @@
     {{-- ======================================================== --}}
     @if($showViewSuspendModal && $viewSuspendTargetUser)
     <div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:16px;" wire:click.self="closeViewSuspendModal">
-        <div class="modal-animated-card" style="background:#ffffff; border-radius:24px; width:100%; max-width:440px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid #f1f5f9; overflow:hidden;">
+        <div class="modal-animated-card agrico-standard-popup" style="background:#ffffff; border-radius:24px; width:100%; max-width:440px; max-height:calc(100dvh - 20px); overflow-y:auto; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid #f1f5f9;">
             <div style="padding:22px 28px 12px 28px; display:flex; align-items:center; justify-content:space-between;">
                 <div style="display:flex; align-items:center; gap:12px;">
                     <div style="width:40px; height:40px; border-radius:12px; background:#fee2e2; display:flex; align-items:center; justify-content:center; color:#ef4444;">

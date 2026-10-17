@@ -1925,6 +1925,8 @@
                 padding: 16px 14px !important;
             }
             .user-view-modal-container {
+                width: 100% !important;
+                max-width: calc(100vw - 24px) !important;
                 height: auto !important;
                 max-height: calc(100dvh - 20px) !important;
                 border-radius: 24px !important;

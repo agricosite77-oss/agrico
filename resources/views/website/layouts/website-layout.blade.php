@@ -1732,6 +1732,21 @@
         box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45) !important;
         color: #ffffff !important;
     }
+
+    @media (max-width: 640px) {
+        .global-login-modal-card,
+        .global-pending-modal-card {
+            width: 100% !important;
+            max-width: calc(100vw - 24px) !important;
+            height: auto !important;
+            max-height: calc(100dvh - 20px) !important;
+            border-radius: 24px !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            margin: auto !important;
+            padding: 28px 20px 22px !important;
+        }
+    }
 </style>
 
 <script>

@@ -10,7 +10,7 @@
 >
     @if(!$isVerified)
         {{-- STEP 1: ADMIN VERIFICATION REQUIRED MODAL --}}
-        <div style="background:#ffffff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:440px; margin:auto; max-height:calc(100dvh - 24px); overflow-y:auto; position:relative;" class="no-scrollbar animate-in fade-in zoom-in-95 duration-200">
+        <div style="background:#ffffff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:440px; margin:auto; max-height:calc(100dvh - 20px); overflow-y:auto; position:relative;" class="user-edit-modal-container agrico-standard-popup no-scrollbar animate-in fade-in zoom-in-95 duration-200">
             
             {{-- HEADER WITH LOCK BADGE AND CLOSE BUTTON --}}
             <div style="padding:28px 28px 12px 28px; display:flex; align-items:flex-start; justify-content:space-between;">
@@ -86,7 +86,7 @@
         </div>
 
     @else
-        <div style="background:#ffffff; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; width:100%; max-width:680px; height:auto; max-height:calc(100dvh - 24px); margin:auto; display:flex; flex-direction:column; overflow:hidden; position:relative; padding:24px; box-sizing:border-box;" class="user-edit-modal-container no-scrollbar animate-in fade-in zoom-in-95 duration-200" x-data="{
+        <div style="background:#ffffff; border-radius:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); border:1px solid #f1f5f9; width:100%; max-width:680px; height:auto; max-height:calc(100dvh - 20px); margin:auto; display:flex; flex-direction:column; overflow:hidden; position:relative; padding:24px; box-sizing:border-box;" class="user-edit-modal-container agrico-standard-popup no-scrollbar animate-in fade-in zoom-in-95 duration-200" x-data="{
             showPass: false,
             showConfirmPass: false,
             newPass: '',
@@ -120,7 +120,7 @@
                 </p>
             </div>
 
-            <form wire:submit.prevent="save" style="overflow-y: auto; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; padding-right: 4px; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9;">
+            <form class="user-edit-modal-body" wire:submit.prevent="save" style="overflow-y: auto; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; padding-right: 4px; scrollbar-width: thin; scrollbar-color: #cbd5e1 #f1f5f9;">
                 
                 {{-- PROFILE PHOTO UPLOAD PICKER --}}
                 <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 18px;">
