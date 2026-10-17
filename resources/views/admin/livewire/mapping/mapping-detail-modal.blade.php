@@ -159,7 +159,8 @@
         return null;
     };
 
-    $dominantPercent = $dominant ? ($dominant['percent'] ?? round(($dominant['proportion'] ?? 0.6) * 100, 1)) : 100;
+    $rawDomPercent = $dominant ? ($dominant['percent'] ?? ($dominant['proportion'] ? ($dominant['proportion'] * 100) : 100)) : 100;
+    $dominantPercent = is_numeric($rawDomPercent) ? ((float)$rawDomPercent == (int)$rawDomPercent ? (int)$rawDomPercent : number_format((float)$rawDomPercent, 1)) : $rawDomPercent;
     $domScoreFromDelta = $calcNearMatchRating($dominant);
     if ($domScoreFromDelta) {
         $dominantConf = $domScoreFromDelta;
@@ -829,22 +830,13 @@
                 {{-- Center Code & Subtitle --}}
                 <div class="soil-swatch-center">
                     <div style="display: flex; align-items: center; gap: 6px;">
-                        @if($isMulti)
-                            <span style="font-size: 12px; color: #ffffff; opacity: 0.9;">▼</span>
-                        @endif
                         <span class="soil-swatch-code">
                             {{ $displayCode }}
                         </span>
                     </div>
-                    @if($isMulti)
-                        <div class="soil-swatch-sub">
-                            Soil Percentage ({{ $dominantPercent }}%)
-                        </div>
-                    @else
-                        <div class="soil-swatch-sub">
-                            {{ $displayName }}
-                        </div>
-                    @endif
+                    <div class="soil-swatch-sub">
+                        Soil Percentage ({{ $dominantPercent }}%)
+                    </div>
                 </div>
 
                 {{-- Right HEX Pill --}}

@@ -1871,7 +1871,8 @@
             let domHex = dominant.hex || hexColor;
             if (domHex && !domHex.startsWith('#')) domHex = '#' + domHex;
             const domName = dominant.label || dominant.color_name || soilName;
-            const domPct = dominant.percent !== undefined ? Math.round(dominant.percent) : (dominant.proportion !== undefined ? Math.round(dominant.proportion * 100) : 100);
+            const rawPct = dominant.percent !== undefined ? parseFloat(dominant.percent) : (dominant.proportion !== undefined ? parseFloat(dominant.proportion) * 100 : 100);
+            const domPct = (rawPct % 1 !== 0) ? rawPct.toFixed(1) : Math.round(rawPct);
             const domConf = calcNearMatchRating(dominant);
             const domOrganic = dominant.organic_matter || organic;
             const domDrainage = dominant.soil_name || drainage;
@@ -1928,10 +1929,9 @@
                     </div>
                     <div class="soil-swatch-center" style="min-width: 0;">
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            ${isMulti ? '<span style="font-size: 12px; color: #ffffff; opacity: 0.9;">▼</span>' : ''}
                             <span class="soil-swatch-code">${domCode}</span>
                         </div>
-                        <div class="soil-swatch-sub" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${isMulti ? `Soil Percentage (${domPct}%)` : domName}</div>
+                        <div class="soil-swatch-sub" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Soil Percentage (${domPct}%)</div>
                     </div>
                     <span class="soil-swatch-hex-pill" style="white-space: nowrap; flex-shrink: 0;">${domHex.toUpperCase()}</span>
                 </div>
