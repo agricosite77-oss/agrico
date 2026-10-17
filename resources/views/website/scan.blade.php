@@ -3019,7 +3019,10 @@
         /* ── RESPONSIVE MEDIA QUERIES FOR SOIL RECORD MODAL ── */
         @media (max-width: 540px) {
             #soilRecordModal {
-                padding: 16px 12px !important;
+                padding: 24px 16px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
                 box-sizing: border-box !important;
             }
             #soilRecordModal[style*="display:none"],
@@ -3028,66 +3031,193 @@
             }
             .soil-modal-card {
                 width: 100% !important;
-                max-width: min(calc(100vw - 28px), 360px) !important;
+                max-width: min(calc(100vw - 32px), 420px) !important;
                 height: auto !important;
-                max-height: min(70dvh, 430px) !important;
-                border-radius: 20px !important;
+                max-height: min(80vh, 590px) !important;
+                border-radius: 24px !important;
                 margin: auto !important;
                 display: flex !important;
                 flex-direction: column !important;
                 overflow: hidden !important;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2) !important;
+                background: #ffffff !important;
+                border: 1px solid #e2e8f0 !important;
+            }
+            .soil-modal-header {
+                padding: 16px 20px 14px !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                background: #ffffff !important;
+            }
+            .soil-modal-title {
+                font-size: 17.5px !important;
+                font-weight: 800 !important;
+                color: #0f172a !important;
+                letter-spacing: -0.01em !important;
             }
             .soil-modal-body-container {
-                padding: 8px 12px 10px !important;
-                gap: 6px !important;
+                padding: 14px 16px 16px !important;
+                gap: 10px !important;
                 flex: 1 1 auto !important;
-                min-height: 0 !important;
+                max-height: none !important;
                 overflow-y: auto !important;
+                background: #ffffff !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            .soil-modal-banner {
+                padding: 10px 14px !important;
+                gap: 10px !important;
+                min-height: 64px !important;
+                border-radius: 16px !important;
+                margin-bottom: 8px !important;
+                flex-wrap: wrap !important;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+            }
+            #modalSoilSnippetAvatarContainer {
+                width: 44px !important;
+                height: 44px !important;
+                min-width: 44px !important;
+                border-radius: 10px !important;
+            }
+            #modalCodeDisplay {
+                font-size: 20px !important;
+                font-weight: 900 !important;
+                color: #ffffff !important;
+            }
+            #modalSoilPercentageDisplay {
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                color: rgba(255, 255, 255, 0.95) !important;
+            }
+            #modalHexPill {
+                font-size: 11px !important;
+                padding: 4px 8px !important;
+                white-space: nowrap !important;
             }
             .soil-metrics-container {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .soil-modal-grid-3 {
                 display: grid !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 6px !important;
-                margin-bottom: 6px !important;
+                gap: 8px !important;
+                margin-bottom: 8px !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
-            .soil-modal-grid-3,
-            .soil-metrics-row-1,
-            .soil-metrics-row-2 {
-                display: contents !important;
+            .soil-modal-grid-3 > div:nth-child(3),
+            .soil-modal-grid-3 > div:last-child:nth-child(odd) {
+                grid-column: 1 / -1 !important;
             }
-            .soil-card-color-name { order: 1 !important; }
-            .soil-card-full-code  { order: 2 !important; }
-            .soil-card-organic    { order: 3 !important; }
-            .soil-card-soil-type  { order: 4 !important; }
-            .soil-card-scan-count { order: 5 !important; }
-            .soil-card-confidence { order: 6 !important; }
-            .soil-card-proportion { order: 5 !important; }
-            .soil-modal-footer {
-                padding: 8px 14px 10px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: flex-end !important;
-                flex-shrink: 0 !important;
+            .soil-modal-grid-2 {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 8px !important;
+                margin-bottom: 8px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
             }
-            .btn-save-hardcopy {
-                display: none !important;
+            .soil-modal-grid-card {
+                background: #ffffff !important;
+                border: 1.5px solid #f1f5f9 !important;
+                border-radius: 14px !important;
+                padding: 10px 12px !important;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+                box-sizing: border-box !important;
+                min-width: 0 !important;
             }
-            .btn-modal-cancel {
-                flex: none !important;
-                width: auto !important;
-                padding: 4px 18px !important;
-                border-radius: 9999px !important;
+            .soil-modal-label {
+                font-size: 11px !important;
+                margin-bottom: 3px !important;
+                font-weight: 700 !important;
+                color: #475569 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.03em !important;
+            }
+            .soil-modal-value {
+                font-size: 14px !important;
+                line-height: 1.35 !important;
+                font-weight: 700 !important;
+                color: #0f172a !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                min-width: 0 !important;
+            }
+            .card-near-match .soil-modal-value,
+            #modalCardConfidence {
+                color: #10b981 !important;
+                font-weight: 800 !important;
+            }
+            .soil-platform-badge {
                 font-size: 12px !important;
                 font-weight: 700 !important;
-                height: 32px !important;
-                min-height: 32px !important;
                 color: #475569 !important;
+                background: none !important;
+                border: none !important;
+                padding: 0 !important;
+                display: inline !important;
+            }
+            .soil-modal-desc-card .soil-modal-value {
+                font-size: 14px !important;
+                font-weight: 600 !important;
+                color: #334155 !important;
+                line-height: 1.5 !important;
+            }
+            .soil-modal-footer {
+                padding: 12px 18px 14px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: 10px !important;
+                flex-shrink: 0 !important;
                 background: #ffffff !important;
-                border: 1.5px solid #e2e8f0 !important;
+                border-top: 1px solid #f1f5f9 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .btn-modal-cancel {
+                display: inline-flex !important;
+                flex: 1 !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                height: 38px !important;
+                min-height: 38px !important;
+                padding: 0 16px !important;
+                border-radius: 9999px !important;
+                font-size: 12.5px !important;
+                font-weight: 700 !important;
+                color: #475569 !important;
+                background: #f8fafc !important;
+                border: 1.5px solid #cbd5e1 !important;
                 box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+                align-items: center !important;
+                justify-content: center !important;
+                cursor: pointer !important;
+                text-align: center !important;
+            }
+            .btn-save-hardcopy {
+                display: inline-flex !important;
+                flex: 1 !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                height: 38px !important;
+                min-height: 38px !important;
+                padding: 0 16px !important;
+                border-radius: 9999px !important;
+                font-size: 12.5px !important;
+                font-weight: 700 !important;
+                color: #ffffff !important;
+                background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+                border: none !important;
+                box-shadow: 0 2px 8px rgba(34, 197, 94, 0.35) !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 6px !important;
+                cursor: pointer !important;
+                text-align: center !important;
             }
         }
 

@@ -1026,100 +1026,95 @@
             }
             .soil-detail-modal-container {
                 width: 100% !important;
-                max-width: min(calc(100vw - 28px), 360px) !important;
+                max-width: min(calc(100vw - 32px), 420px) !important;
                 height: auto !important;
-                max-height: min(70dvh, 430px) !important;
-                border-radius: 20px !important;
+                max-height: min(80vh, 590px) !important;
+                border-radius: 24px !important;
                 margin: auto !important;
                 display: flex !important;
                 flex-direction: column !important;
                 overflow: hidden !important;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2) !important;
             }
             .soil-detail-modal-header {
-                padding: 10px 14px 8px !important;
+                padding: 16px 20px 14px !important;
             }
             .soil-detail-modal-header h3 {
-                font-size: 15px !important;
+                font-size: 17.5px !important;
                 font-weight: 800 !important;
             }
             .soil-detail-modal-body {
-                padding: 8px 12px 10px !important;
-                gap: 6px !important;
+                padding: 14px 16px 16px !important;
+                gap: 10px !important;
                 flex: 1 1 auto !important;
-                min-height: 0 !important;
+                max-height: none !important;
                 overflow-y: auto !important;
             }
             .soil-swatch-banner {
-                padding: 6px 10px !important;
-                gap: 8px !important;
-                min-height: 44px !important;
-                border-radius: 12px !important;
-                margin-bottom: 6px !important;
+                padding: 10px 14px !important;
+                gap: 10px !important;
+                min-height: 64px !important;
+                border-radius: 16px !important;
+                margin-bottom: 8px !important;
                 flex-wrap: wrap !important;
             }
             .soil-swatch-avatar {
-                width: 34px !important;
-                height: 34px !important;
-                min-width: 34px !important;
-                border-radius: 8px !important;
+                width: 44px !important;
+                height: 44px !important;
+                min-width: 44px !important;
+                border-radius: 10px !important;
             }
             .soil-swatch-code {
-                font-size: 16px !important;
+                font-size: 20px !important;
                 font-weight: 900 !important;
             }
             .soil-swatch-hex-pill {
-                font-size: 9.5px !important;
-                padding: 3px 6px !important;
+                font-size: 11px !important;
+                padding: 4px 8px !important;
                 white-space: nowrap !important;
-                border-radius: 9999px !important;
             }
             .soil-metrics-container {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .soil-modal-grid-3 {
                 display: grid !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 6px !important;
-                margin-bottom: 6px !important;
+                gap: 8px !important;
+                margin-bottom: 8px !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
-            .soil-modal-grid-3 {
-                display: contents !important;
-            }
-            .soil-card-color-name { order: 1 !important; }
-            .soil-card-full-code  { order: 2 !important; }
-            .soil-card-organic    { order: 3 !important; }
-            .soil-card-soil-type  { order: 4 !important; }
-            .soil-card-scan-count { order: 5 !important; }
-            .soil-card-confidence { order: 6 !important; }
-            .soil-card-proportion { order: 5 !important; }
-            .soil-modal-grid-3 > div,
-            .soil-modal-grid-2 > div {
-                min-width: 0 !important;
+            .soil-modal-grid-3 > div:nth-child(3),
+            .soil-modal-grid-3 > div:last-child:nth-child(odd) {
+                grid-column: 1 / -1 !important;
             }
             .soil-modal-grid-2 {
+                display: grid !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 6px !important;
-                margin-bottom: 6px !important;
+                gap: 8px !important;
+                margin-bottom: 8px !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
             .soil-metric-card {
                 min-width: 0 !important;
-                padding: 5px 9px !important;
-                border-radius: 10px !important;
-                min-height: 40px !important;
+                padding: 10px 12px !important;
+                border-radius: 14px !important;
                 box-sizing: border-box !important;
             }
             .soil-metric-card-label {
-                font-size: 8.5px !important;
-                margin-bottom: 2px !important;
+                font-size: 11px !important;
+                margin-bottom: 3px !important;
                 font-weight: 700 !important;
                 text-transform: uppercase !important;
                 letter-spacing: 0.03em !important;
             }
             .soil-metric-card-val {
-                font-size: 11.5px !important;
-                line-height: 1.2 !important;
+                font-size: 14px !important;
+                line-height: 1.35 !important;
                 font-weight: 700 !important;
                 overflow-wrap: anywhere !important;
                 word-break: break-word !important;
@@ -1131,7 +1126,7 @@
                 text-overflow: ellipsis !important;
             }
             .soil-metric-card-text {
-                font-size: 11.5px !important;
+                font-size: 14px !important;
                 overflow-wrap: anywhere !important;
                 word-break: break-word !important;
                 min-width: 0 !important;
