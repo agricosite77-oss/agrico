@@ -24,66 +24,72 @@
     {{-- 2. STATS CARDS GRID --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         {{-- CARD 1: PENDING --}}
-        <div
-            wire:click="$set('statusFilter', 'Pending')"
-            title="Filter by Pending"
-            class="ui-reveal agri-hover-card"
-            style="--i:1; background:#ffffff; border-radius:20px; padding:18px 20px; border:1px solid rgba(241, 245, 249, 0.9); box-shadow:0 2px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02); display:flex; align-items:center; gap:14px; width:100%; box-sizing:border-box; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer;"
-            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.06)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.03)';"
-        >
-            <div class="ui-reveal-text" style="--i:1; width:46px; height:46px; border-radius:14px; background:#fef3c7; color:#d97706; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                </svg>
-            </div>
-            <div>
-                <span class="ui-reveal-num" style="--i:1; font-size:26px; font-weight:900; color:#0f172a; line-height:1; display:block;" x-data x-init="animateCount($el, {{ (int) $pendingCount }}, { delay: 600 })">{{ $pendingCount }}</span>
-                <span class="ui-reveal-text" style="--i:1; font-size:12px; font-weight:600; color:#94a3b8; margin-top:4px; display:block;">Pending</span>
+        <div class="ui-reveal" style="--i:1" wire:key="req-stat-pending-wrap">
+            <div
+                wire:click="$set('statusFilter', '{{ $statusFilter === 'Pending' ? '' : 'Pending' }}')"
+                wire:key="req-stat-pending-card"
+                title="Filter by Pending"
+                style="background:#ffffff; border-radius:20px; padding:18px 20px; border:1.5px solid {{ $statusFilter === 'Pending' ? '#d97706' : 'rgba(241, 245, 249, 0.9)' }}; box-shadow:{{ $statusFilter === 'Pending' ? '0 4px 18px rgba(217, 119, 6, 0.15)' : '0 2px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02)' }}; display:flex; align-items:center; gap:14px; width:100%; height:100%; box-sizing:border-box; transition:transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; cursor:pointer;"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.06)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='{{ $statusFilter === 'Pending' ? '0 4px 18px rgba(217, 119, 6, 0.15)' : '0 2px 12px rgba(0,0,0,0.03)' }}';"
+            >
+                <div class="ui-reveal-text" style="width:46px; height:46px; border-radius:14px; background:#fef3c7; color:#d97706; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                </div>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center;">
+                    <div class="ui-reveal-num" style="font-size:28px; font-weight:800; color:#0f172a; line-height:1.1; letter-spacing:-0.02em; margin-bottom:2px;" x-data x-init="animateCount($el, {{ (int) $pendingCount }}, { delay: 600 })">{{ $pendingCount }}</div>
+                    <div class="ui-reveal-text" style="font-size:12px; font-weight:600; color:#94a3b8; line-height:1.2;">Pending</div>
+                </div>
             </div>
         </div>
 
         {{-- CARD 2: APPROVED --}}
-        <div
-            wire:click="$set('statusFilter', 'Approved')"
-            title="Filter by Approved"
-            class="ui-reveal agri-hover-card"
-            style="--i:2; background:#ffffff; border-radius:20px; padding:18px 20px; border:1px solid rgba(241, 245, 249, 0.9); box-shadow:0 2px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02); display:flex; align-items:center; gap:14px; width:100%; box-sizing:border-box; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer;"
-            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.06)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.03)';"
-        >
-            <div class="ui-reveal-text" style="--i:2; width:46px; height:46px; border-radius:14px; background:#dcfce7; color:#22c55e; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-            </div>
-            <div>
-                <span class="ui-reveal-num" style="--i:2; font-size:26px; font-weight:900; color:#0f172a; line-height:1; display:block;" x-data x-init="animateCount($el, {{ (int) $approvedCount }}, { delay: 800 })">{{ $approvedCount }}</span>
-                <span class="ui-reveal-text" style="--i:2; font-size:12px; font-weight:600; color:#94a3b8; margin-top:4px; display:block;">Approved</span>
+        <div class="ui-reveal" style="--i:2" wire:key="req-stat-approved-wrap">
+            <div
+                wire:click="$set('statusFilter', '{{ $statusFilter === 'Approved' ? '' : 'Approved' }}')"
+                wire:key="req-stat-approved-card"
+                title="Filter by Approved"
+                style="background:#ffffff; border-radius:20px; padding:18px 20px; border:1.5px solid {{ $statusFilter === 'Approved' ? '#22c55e' : 'rgba(241, 245, 249, 0.9)' }}; box-shadow:{{ $statusFilter === 'Approved' ? '0 4px 18px rgba(34, 197, 94, 0.15)' : '0 2px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02)' }}; display:flex; align-items:center; gap:14px; width:100%; height:100%; box-sizing:border-box; transition:transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; cursor:pointer;"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.06)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='{{ $statusFilter === 'Approved' ? '0 4px 18px rgba(34, 197, 94, 0.15)' : '0 2px 12px rgba(0,0,0,0.03)' }}';"
+            >
+                <div class="ui-reveal-text" style="width:46px; height:46px; border-radius:14px; background:#dcfce7; color:#22c55e; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center;">
+                    <div class="ui-reveal-num" style="font-size:28px; font-weight:800; color:#0f172a; line-height:1.1; letter-spacing:-0.02em; margin-bottom:2px;" x-data x-init="animateCount($el, {{ (int) $approvedCount }}, { delay: 800 })">{{ $approvedCount }}</div>
+                    <div class="ui-reveal-text" style="font-size:12px; font-weight:600; color:#94a3b8; line-height:1.2;">Approved</div>
+                </div>
             </div>
         </div>
 
         {{-- CARD 3: DISAPPROVED --}}
-        <div
-            wire:click="$set('statusFilter', 'Disapproved')"
-            title="Filter by Disapproved"
-            class="ui-reveal agri-hover-card"
-            style="--i:3; background:#ffffff; border-radius:20px; padding:18px 20px; border:1px solid rgba(241, 245, 249, 0.9); box-shadow:0 2px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02); display:flex; align-items:center; gap:14px; width:100%; box-sizing:border-box; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer;"
-            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.06)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.03)';"
-        >
-            <div class="ui-reveal-text" style="--i:3; width:46px; height:46px; border-radius:14px; background:#fee2e2; color:#dc2626; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
-                </svg>
-            </div>
-            <div>
-                <span class="ui-reveal-num" style="--i:3; font-size:26px; font-weight:900; color:#0f172a; line-height:1; display:block;" x-data x-init="animateCount($el, {{ (int) $disapprovedCount }}, { delay: 1000 })">{{ $disapprovedCount }}</span>
-                <span class="ui-reveal-text" style="--i:3; font-size:12px; font-weight:600; color:#94a3b8; margin-top:4px; display:block;">Disapproved</span>
+        <div class="ui-reveal" style="--i:3" wire:key="req-stat-disapproved-wrap">
+            <div
+                wire:click="$set('statusFilter', '{{ $statusFilter === 'Disapproved' ? '' : 'Disapproved' }}')"
+                wire:key="req-stat-disapproved-card"
+                title="Filter by Disapproved"
+                style="background:#ffffff; border-radius:20px; padding:18px 20px; border:1.5px solid {{ $statusFilter === 'Disapproved' ? '#dc2626' : 'rgba(241, 245, 249, 0.9)' }}; box-shadow:{{ $statusFilter === 'Disapproved' ? '0 4px 18px rgba(220, 38, 38, 0.15)' : '0 2px 12px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02)' }}; display:flex; align-items:center; gap:14px; width:100%; height:100%; box-sizing:border-box; transition:transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; cursor:pointer;"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.06)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='{{ $statusFilter === 'Disapproved' ? '0 4px 18px rgba(220, 38, 38, 0.15)' : '0 2px 12px rgba(0,0,0,0.03)' }}';"
+            >
+                <div class="ui-reveal-text" style="width:46px; height:46px; border-radius:14px; background:#fee2e2; color:#dc2626; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                </div>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center;">
+                    <div class="ui-reveal-num" style="font-size:28px; font-weight:800; color:#0f172a; line-height:1.1; letter-spacing:-0.02em; margin-bottom:2px;" x-data x-init="animateCount($el, {{ (int) $disapprovedCount }}, { delay: 1000 })">{{ $disapprovedCount }}</div>
+                    <div class="ui-reveal-text" style="font-size:12px; font-weight:600; color:#94a3b8; line-height:1.2;">Disapproved</div>
+                </div>
             </div>
         </div>
     </div>
