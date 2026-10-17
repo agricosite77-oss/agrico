@@ -520,10 +520,10 @@
             animation: wsMapFadeIn 0.2s ease-out;
         }
         .soil-detail-modal-container {
-            background: linear-gradient(145deg, #0B2B26 0%, #163832 100%);
-            border: 1px solid rgba(142, 182, 155, 0.25);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 28px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             width: 100%;
             max-width: 680px;
             margin: auto;
@@ -536,18 +536,18 @@
         }
         .soil-detail-modal-header {
             padding: 20px 26px 16px;
-            border-bottom: 1px solid rgba(142, 182, 155, 0.25);
+            border-bottom: 1px solid #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #0B2B26;
+            background: #ffffff;
             flex-shrink: 0;
         }
         .soil-detail-modal-header h3 {
             margin: 0;
             font-size: 17.5px;
             font-weight: 800;
-            color: #DAF1DE;
+            color: #0f172a;
             letter-spacing: -0.01em;
         }
         .soil-detail-modal-body {
@@ -559,7 +559,7 @@
             flex-direction: column;
             gap: 12px;
             scrollbar-width: thin;
-            scrollbar-color: rgba(142, 182, 155, 0.35) rgba(11, 43, 38, 0.8);
+            scrollbar-color: #cbd5e1 #f1f5f9;
             scrollbar-gutter: stable;
             -webkit-overflow-scrolling: touch;
         }
@@ -568,22 +568,22 @@
             display: block !important;
         }
         .soil-detail-modal-body::-webkit-scrollbar-track {
-            background: rgba(11, 43, 38, 0.8);
+            background: #f1f5f9;
             border-radius: 9999px;
             margin: 4px 0;
         }
         .soil-detail-modal-body::-webkit-scrollbar-thumb {
-            background: rgba(142, 182, 155, 0.35);
+            background: #cbd5e1;
             border-radius: 9999px;
         }
         .soil-detail-modal-body::-webkit-scrollbar-thumb:hover {
-            background: rgba(142, 182, 155, 0.6);
+            background: #94a3b8;
         }
 
         .modal-close-circle-btn {
-            background: rgba(5, 31, 32, 0.7) !important;
-            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
-            color: #8EB69B !important;
+            background: transparent !important;
+            border: none !important;
+            color: #94a3b8 !important;
             width: 40px !important;
             height: 40px !important;
             min-width: 40px !important;
@@ -596,11 +596,12 @@
             padding: 0 !important;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
             flex-shrink: 0 !important;
+            box-shadow: none !important;
         }
         .modal-close-circle-btn:hover {
-            background: rgba(35, 83, 71, 0.8) !important;
-            color: #DAF1DE !important;
-            border-color: #DAF1DE !important;
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+            border: none !important;
             transform: scale(1.06) !important;
         }
         .modal-close-circle-btn:active {
@@ -701,17 +702,17 @@
             margin-bottom: 10px;
         }
         .soil-metric-card {
-            background: #163832;
-            border: 1px solid rgba(142, 182, 155, 0.25);
+            background: #ffffff;
+            border: 1.5px solid #f1f5f9;
             border-radius: 16px;
             padding: 12px 16px;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
             box-sizing: border-box;
         }
         .soil-metric-card-label {
             font-size: 11px;
             font-weight: 700;
-            color: #8EB69B;
+            color: #475569;
             margin-bottom: 4px;
             letter-spacing: 0.03em;
             text-transform: uppercase;
@@ -719,7 +720,7 @@
         .soil-metric-card-val {
             font-size: 13.5px;
             font-weight: 700;
-            color: #DAF1DE;
+            color: #0f172a;
             word-break: break-word;
         }
 
@@ -730,59 +731,59 @@
             box-shadow: none !important;
             border-radius: 0 !important;
             display: inline !important;
-            color: #DAF1DE;
+            color: #0f172a;
             font-size: 13.5px;
             font-weight: 700;
         }
 
         .layer-accordion-item {
-            border: 1px solid rgba(142, 182, 155, 0.25) !important;
+            border: 1px solid #e2e8f0 !important;
             border-radius: 14px !important;
             overflow: hidden !important;
-            background: #163832 !important;
+            background: #ffffff !important;
             margin-bottom: 8px;
         }
         .layer-accordion-header {
-            background: #0B2B26 !important;
-            color: #DAF1DE !important;
+            background: #f8fafc !important;
+            color: #0f172a !important;
         }
         .layer-accordion-body {
-            background: #163832 !important;
-            border-top: 1px solid rgba(142, 182, 155, 0.25) !important;
+            background: #ffffff !important;
+            border-top: 1px solid #f1f5f9 !important;
         }
 
         .soil-detail-modal-footer {
             padding: 16px 24px 20px;
-            background: #0B2B26;
-            border-top: 1px solid rgba(142, 182, 155, 0.25);
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
             display: flex;
             gap: 12px;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end;
             flex-shrink: 0;
             width: 100%;
             box-sizing: border-box;
         }
         .modal-cancel-btn {
-            background: rgba(11, 43, 38, 0.8) !important;
-            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
-            color: #DAF1DE !important;
-            padding: 12px 24px;
-            border-radius: 12px !important;
-            font-weight: 700;
-            font-size: 14px;
+            background: #f8fafc !important;
+            border: 1.5px solid #cbd5e1 !important;
+            color: #334155 !important;
+            padding: 10px 24px !important;
+            border-radius: 9999px !important;
+            font-weight: 700 !important;
+            font-size: 13.5px !important;
             cursor: pointer;
-            transition: all 0.25s ease;
-            width: 100%;
+            transition: all 0.2s ease;
+            width: auto !important;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         .modal-cancel-btn:hover {
-            background: rgba(35, 83, 71, 0.5) !important;
-            border-color: #DAF1DE !important;
-            color: #DAF1DE !important;
+            background: #e2e8f0 !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
             transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.35);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         .modal-cancel-btn:active {
             transform: translateY(0);
@@ -836,13 +837,13 @@
         }
 
         .soil-metric-card-text {
-            color: #DAF1DE;
+            color: #334155;
         }
         .layer-accordion-header-title {
-            color: #DAF1DE;
+            color: #0f172a;
         }
         .layer-accordion-arrow {
-            color: #8EB69B;
+            color: #475569;
         }
         .soil-platform-badge {
             font-size: 12px;
@@ -852,7 +853,7 @@
             padding: 0 !important;
             border-radius: 0 !important;
             box-shadow: none !important;
-            color: #8EB69B;
+            color: #475569;
             display: inline !important;
         }
 
@@ -1079,18 +1080,7 @@
                 margin: 0 !important;
                 padding: 0 !important;
             }
-            .soil-modal-grid-3 {
-                display: grid !important;
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 8px !important;
-                margin-bottom: 8px !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-            }
-            .soil-modal-grid-3 > div:nth-child(3),
-            .soil-modal-grid-3 > div:last-child:nth-child(odd) {
-                grid-column: 1 / -1 !important;
-            }
+            .soil-modal-grid-3,
             .soil-modal-grid-2 {
                 display: grid !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -1938,10 +1928,11 @@
                 </div>
             `;
 
-            // 2. METRICS (Color Name, Full Code, Scan Count, Soil Organic, Soil Type, Near-Match)
+            // 2. METRICS (Color Name, Full Code, Soil Organic, Soil Type, Scan Count, Near-Match)
             bodyHtml += `
                 <div class="soil-metrics-container">
-                    <div class="soil-modal-grid-3">
+                    <!-- Row 1: Color Name & Full Code (2 cols) -->
+                    <div class="soil-modal-grid-2">
                         <div class="soil-metric-card soil-card-color-name">
                             <div class="soil-metric-card-label">Color Name</div>
                             <div class="soil-metric-card-val truncate" title="${domName}">${domName}</div>
@@ -1950,13 +1941,10 @@
                             <div class="soil-metric-card-label">Full Code</div>
                             <div class="soil-metric-card-val">${domCode}</div>
                         </div>
-                        <div class="soil-metric-card soil-card-scan-count">
-                            <div class="soil-metric-card-label">Scan Count</div>
-                            <div class="soil-metric-card-val">${scanCount}</div>
-                        </div>
                     </div>
 
-                    <div class="soil-modal-grid-3">
+                    <!-- Row 2: Soil Organic & Soil Type (2 cols) -->
+                    <div class="soil-modal-grid-2">
                         <div class="soil-metric-card soil-card-organic">
                             <div class="soil-metric-card-label">Soil Organic</div>
                             <div class="soil-metric-card-val">${domOrganic}</div>
@@ -1964,6 +1952,14 @@
                         <div class="soil-metric-card soil-card-soil-type">
                             <div class="soil-metric-card-label">Soil Type</div>
                             <div class="soil-metric-card-val truncate" title="${soilType}">${soilType}</div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Scan Count & Near-Match (2 cols) -->
+                    <div class="soil-modal-grid-2">
+                        <div class="soil-metric-card soil-card-scan-count">
+                            <div class="soil-metric-card-label">Scan Count</div>
+                            <div class="soil-metric-card-val">${scanCount}</div>
                         </div>
                         <div class="soil-metric-card soil-card-confidence">
                             <div class="soil-metric-card-label">Near-Match</div>
@@ -2060,9 +2056,10 @@
                                     <span class="soil-swatch-hex-pill">${subHex.toUpperCase()}</span>
                                 </div>
 
-                                <!-- Sub-Layer Metrics (Color Name, Full Code, Proportion, Soil Organic, Soil Type, Near-Match) -->
+                                <!-- Sub-Layer Metrics (Color Name, Full Code, Soil Organic, Soil Type, Proportion, Near-Match) -->
                                 <div class="soil-metrics-container">
-                                    <div class="soil-modal-grid-3">
+                                    <!-- Row 1: Color Name & Full Code (2 cols) -->
+                                    <div class="soil-modal-grid-2">
                                         <div class="soil-metric-card soil-card-color-name">
                                             <div class="soil-metric-card-label">Color Name</div>
                                             <div class="soil-metric-card-val truncate" title="${subName}">${subName}</div>
@@ -2071,13 +2068,10 @@
                                             <div class="soil-metric-card-label">Full Code</div>
                                             <div class="soil-metric-card-val">${subCode}</div>
                                         </div>
-                                        <div class="soil-metric-card soil-card-proportion">
-                                            <div class="soil-metric-card-label">Proportion</div>
-                                            <div class="soil-metric-card-val">${subPct}%</div>
-                                        </div>
                                     </div>
 
-                                    <div class="soil-modal-grid-3">
+                                    <!-- Row 2: Soil Organic & Soil Type (2 cols) -->
+                                    <div class="soil-modal-grid-2">
                                         <div class="soil-metric-card soil-card-organic">
                                             <div class="soil-metric-card-label">Soil Organic</div>
                                             <div class="soil-metric-card-val">${subOrganic}</div>
@@ -2085,6 +2079,14 @@
                                         <div class="soil-metric-card soil-card-soil-type">
                                             <div class="soil-metric-card-label">Soil Type</div>
                                             <div class="soil-metric-card-val truncate" title="${subSoilType}">${subSoilType}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 3: Proportion & Near-Match (2 cols) -->
+                                    <div class="soil-modal-grid-2">
+                                        <div class="soil-metric-card soil-card-proportion">
+                                            <div class="soil-metric-card-label">Proportion</div>
+                                            <div class="soil-metric-card-val">${subPct}%</div>
                                         </div>
                                         <div class="soil-metric-card soil-card-confidence">
                                             <div class="soil-metric-card-label">Near-Match</div>

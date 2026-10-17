@@ -853,8 +853,8 @@
                 </span>
             </div>
 
-            {{-- 2. METRICS ROW 1 (Color Name, Full Code, Scan Count) (Matching Screenshot 2 & 4) --}}
-            <div class="soil-modal-grid-3">
+            {{-- 2. METRICS ROW 1 (Color Name & Full Code) --}}
+            <div class="soil-modal-grid-2">
                 <div class="soil-metric-card">
                     <div class="soil-metric-card-label">Color Name</div>
                     <div class="soil-metric-card-val truncate" title="{{ $displayName }}">{{ $displayName }}</div>
@@ -863,14 +863,10 @@
                     <div class="soil-metric-card-label">Full Code</div>
                     <div class="soil-metric-card-val">{{ $displayCode }}</div>
                 </div>
-                <div class="soil-metric-card">
-                    <div class="soil-metric-card-label">Scan Count</div>
-                    <div class="soil-metric-card-val">{{ $soil?->scan_count ?? ($mapping->soil_scan_id ? 4 : 1) }}</div>
-                </div>
             </div>
 
-            {{-- 3. METRICS ROW 2 (Soil Organic, Soil Type, Near-Match) (Matching Screenshot 2 & 4) --}}
-            <div class="soil-modal-grid-3">
+            {{-- 3. METRICS ROW 2 (Soil Organic & Soil Type) --}}
+            <div class="soil-modal-grid-2">
                 <div class="soil-metric-card">
                     <div class="soil-metric-card-label">Soil Organic</div>
                     <div class="soil-metric-card-val">{{ $dominantOrganic }}</div>
@@ -878,6 +874,14 @@
                 <div class="soil-metric-card">
                     <div class="soil-metric-card-label">Soil Type</div>
                     <div class="soil-metric-card-val truncate" title="{{ $dominantSoilType }}">{{ $dominantSoilType }}</div>
+                </div>
+            </div>
+
+            {{-- 4. METRICS ROW 3 (Scan Count & Near-Match) --}}
+            <div class="soil-modal-grid-2">
+                <div class="soil-metric-card">
+                    <div class="soil-metric-card-label">Scan Count</div>
+                    <div class="soil-metric-card-val">{{ $soil?->scan_count ?? ($mapping->soil_scan_id ? 4 : 1) }}</div>
                 </div>
                 <div class="soil-metric-card">
                     <div class="soil-metric-card-label">Near-Match</div>
