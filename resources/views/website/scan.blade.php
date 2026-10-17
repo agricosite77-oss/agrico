@@ -324,8 +324,11 @@
 
             /* ── MODAL MOBILE RESPONSIVE FIT ── */
             #soilRecordModal {
-                padding: 24px 16px !important;
+                padding: 16px 12px !important;
                 box-sizing: border-box !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
             }
             #soilRecordModal[style*="display:none"],
             #soilRecordModal[style*="display: none"] {
@@ -333,84 +336,109 @@
             }
             .soil-modal-card {
                 width: 100% !important;
-                max-width: min(calc(100vw - 32px), 420px) !important;
+                max-width: min(calc(100vw - 28px), 360px) !important;
                 height: auto !important;
-                max-height: min(80vh, 590px) !important;
-                border-radius: 24px !important;
+                max-height: min(70dvh, 430px) !important;
+                border-radius: 20px !important;
                 margin: auto !important;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: hidden !important;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
             }
             .soil-modal-header {
-                padding: 16px 20px 14px !important;
+                padding: 10px 14px 8px !important;
             }
             .soil-modal-title {
-                font-size: 17.5px !important;
+                font-size: 15px !important;
                 font-weight: 800 !important;
             }
+            .soil-modal-close,
+            .modal-close-circle-btn {
+                width: 32px !important;
+                height: 32px !important;
+                min-width: 32px !important;
+                min-height: 32px !important;
+            }
             .soil-modal-body-container {
-                padding: 14px 16px 16px !important;
-                gap: 10px !important;
+                padding: 8px 12px 10px !important;
+                gap: 6px !important;
+                flex: 1 1 auto !important;
+                min-height: 0 !important;
+                overflow-y: auto !important;
             }
             #modalSoilDualPreviewBadge {
-                padding: 10px 14px !important;
-                gap: 10px !important;
-                min-height: 64px !important;
-                border-radius: 16px !important;
-                margin-bottom: 8px !important;
+                padding: 6px 10px !important;
+                gap: 8px !important;
+                min-height: 44px !important;
+                border-radius: 12px !important;
+                margin-bottom: 6px !important;
             }
             #modalSoilSnippetAvatarContainer {
-                width: 44px !important;
-                height: 44px !important;
-                min-width: 44px !important;
-                border-radius: 10px !important;
+                width: 34px !important;
+                height: 34px !important;
+                min-width: 34px !important;
+                border-radius: 8px !important;
             }
             #modalCodeDisplay {
-                font-size: 20px !important;
+                font-size: 16px !important;
                 font-weight: 900 !important;
                 white-space: nowrap !important;
             }
             #modalHexPill {
-                font-size: 11px !important;
-                padding: 4px 8px !important;
+                font-size: 9.5px !important;
+                padding: 3px 6px !important;
                 white-space: nowrap !important;
                 flex-shrink: 0 !important;
+                border-radius: 9999px !important;
             }
             #modalSoilPercentageDisplay {
                 white-space: nowrap !important;
-                font-size: 11px !important;
+                font-size: 10px !important;
                 overflow: hidden !important;
                 text-overflow: ellipsis !important;
+            }
+            .soil-metrics-container {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 6px !important;
+                margin-bottom: 6px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
             }
             .soil-modal-grid-3,
             .soil-metrics-row-1,
             .soil-metrics-row-2 {
-                display: grid !important;
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 8px !important;
-                margin-bottom: 8px !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
+                display: contents !important;
             }
+            .soil-card-color-name { order: 1 !important; }
+            .soil-card-full-code  { order: 2 !important; }
+            .soil-card-organic    { order: 3 !important; }
+            .soil-card-soil-type  { order: 4 !important; }
+            .soil-card-scan-count { order: 5 !important; }
+            .soil-card-confidence { order: 6 !important; }
+            .soil-card-proportion { order: 5 !important; }
             .soil-modal-grid-3 > div,
             .soil-modal-grid-2 > div,
             .soil-modal-grid-card {
-                padding: 10px 12px !important;
-                border-radius: 14px !important;
+                padding: 5px 9px !important;
+                border-radius: 10px !important;
+                min-height: 40px !important;
                 min-width: 0 !important;
                 box-sizing: border-box !important;
             }
             .soil-modal-grid-3 .soil-modal-label,
             .soil-modal-grid-card .soil-modal-label {
-                font-size: 11px !important;
-                margin-bottom: 3px !important;
+                font-size: 8.5px !important;
+                margin-bottom: 2px !important;
                 font-weight: 700 !important;
                 text-transform: uppercase !important;
                 letter-spacing: 0.03em !important;
             }
             .soil-modal-grid-3 .soil-modal-value,
             .soil-modal-grid-card .soil-modal-value {
-                font-size: 14px !important;
-                line-height: 1.35 !important;
+                font-size: 11.5px !important;
+                line-height: 1.2 !important;
                 font-weight: 700 !important;
                 overflow-wrap: anywhere !important;
                 word-break: break-word !important;
@@ -423,25 +451,25 @@
                 text-overflow: ellipsis !important;
             }
             .soil-modal-user-card {
-                padding: 10px 12px !important;
-                gap: 8px !important;
+                padding: 5px 9px !important;
+                gap: 6px !important;
             }
             .soil-modal-user-name {
-                font-size: 13px !important;
+                font-size: 11.5px !important;
             }
             .soil-modal-user-email {
-                font-size: 11px !important;
+                font-size: 9.5px !important;
             }
             .soil-modal-grid-2 {
                 display: grid !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 8px !important;
-                margin-bottom: 8px !important;
+                gap: 6px !important;
+                margin-bottom: 6px !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
             .soil-platform-badge {
-                font-size: 12px !important;
+                font-size: 11px !important;
                 font-weight: 700 !important;
                 background: none !important;
                 border: none !important;
@@ -2991,7 +3019,7 @@
         /* ── RESPONSIVE MEDIA QUERIES FOR SOIL RECORD MODAL ── */
         @media (max-width: 540px) {
             #soilRecordModal {
-                padding: 16px !important;
+                padding: 16px 12px !important;
                 box-sizing: border-box !important;
             }
             #soilRecordModal[style*="display:none"],
@@ -3000,18 +3028,49 @@
             }
             .soil-modal-card {
                 width: 100% !important;
-                max-width: min(calc(100vw - 32px), 420px) !important;
+                max-width: min(calc(100vw - 28px), 360px) !important;
                 height: auto !important;
-                max-height: min(80vh, 590px) !important;
-                border-radius: 24px !important;
+                max-height: min(70dvh, 430px) !important;
+                border-radius: 20px !important;
                 margin: auto !important;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: hidden !important;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
             }
+            .soil-modal-body-container {
+                padding: 8px 12px 10px !important;
+                gap: 6px !important;
+                flex: 1 1 auto !important;
+                min-height: 0 !important;
+                overflow-y: auto !important;
+            }
+            .soil-metrics-container {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 6px !important;
+                margin-bottom: 6px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .soil-modal-grid-3,
+            .soil-metrics-row-1,
+            .soil-metrics-row-2 {
+                display: contents !important;
+            }
+            .soil-card-color-name { order: 1 !important; }
+            .soil-card-full-code  { order: 2 !important; }
+            .soil-card-organic    { order: 3 !important; }
+            .soil-card-soil-type  { order: 4 !important; }
+            .soil-card-scan-count { order: 5 !important; }
+            .soil-card-confidence { order: 6 !important; }
+            .soil-card-proportion { order: 5 !important; }
             .soil-modal-footer {
-                padding: 12px 18px 14px !important;
+                padding: 8px 14px 10px !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: flex-end !important;
+                flex-shrink: 0 !important;
             }
             .btn-save-hardcopy {
                 display: none !important;
@@ -3019,10 +3078,12 @@
             .btn-modal-cancel {
                 flex: none !important;
                 width: auto !important;
-                padding: 8px 24px !important;
+                padding: 4px 18px !important;
                 border-radius: 9999px !important;
-                font-size: 13.5px !important;
+                font-size: 12px !important;
                 font-weight: 700 !important;
+                height: 32px !important;
+                min-height: 32px !important;
                 color: #475569 !important;
                 background: #ffffff !important;
                 border: 1.5px solid #e2e8f0 !important;
@@ -3085,11 +3146,6 @@
         }
 
         @media (max-width: 380px) {
-            .soil-metrics-row-1,
-            .soil-metrics-row-2 {
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 8px !important;
-            }
             .soil-modal-footer {
                 padding: 10px 12px 12px !important;
                 gap: 8px !important;
@@ -11316,57 +11372,60 @@
                     </div>
                 </div>
 
-                <!-- Row 1: Code Details (Color Name, Full Code, Scan Count) -->
-                <div class="soil-modal-grid-3 soil-metrics-row-1" style="margin-bottom: 8px;">
-                    <!-- Color Name Card -->
-                    <div class="soil-modal-grid-card">
-                        <div class="soil-modal-label">
-                            Color Name
+                <!-- Metrics Container (Color Name, Full Code, Scan Count, Soil Organic, Soil Type, Near-Match) -->
+                <div class="soil-metrics-container">
+                    <!-- Row 1: Code Details (Color Name, Full Code, Scan Count) -->
+                    <div class="soil-modal-grid-3 soil-metrics-row-1" style="margin-bottom: 8px;">
+                        <!-- Color Name Card -->
+                        <div class="soil-modal-grid-card soil-card-color-name">
+                            <div class="soil-modal-label">
+                                Color Name
+                            </div>
+                            <div id="modalCardColorName" class="soil-modal-value" style="font-size: 13px; font-weight: 700;">Brown</div>
                         </div>
-                        <div id="modalCardColorName" class="soil-modal-value" style="font-size: 13px; font-weight: 700;">Brown</div>
+
+                        <!-- Full Code Card -->
+                        <div class="soil-modal-grid-card soil-card-full-code">
+                            <div class="soil-modal-label">
+                                Full Code
+                            </div>
+                            <div id="modalCardFullCode" class="soil-modal-value" style="font-size: 13px; font-weight: 700;">7.5YR 5/3</div>
+                        </div>
+
+                        <!-- Scan Count Card -->
+                        <div class="soil-modal-grid-card soil-card-scan-count">
+                            <div class="soil-modal-label">
+                                Scan Count
+                            </div>
+                            <div id="modalCardScanCount" class="soil-modal-value" style="font-size: 13px; font-weight: 700;">1</div>
+                        </div>
                     </div>
 
-                    <!-- Full Code Card -->
-                    <div class="soil-modal-grid-card">
-                        <div class="soil-modal-label">
-                            Full Code
+                    <!-- Row 2: Soil Properties (Soil Organic, Soil Type, Near-Match Emerald #10b981) -->
+                    <div class="soil-modal-grid-3 soil-metrics-row-2" style="margin-bottom: 12px;">
+                        <!-- Soil Organic Card -->
+                        <div class="soil-modal-grid-card soil-card-organic">
+                            <div class="soil-modal-label">
+                                Soil Organic
+                            </div>
+                            <div id="modalCardOrganic" class="soil-modal-value" style="font-size:13px; font-weight:700;">Moderate (2.2% – 3.7%)</div>
                         </div>
-                        <div id="modalCardFullCode" class="soil-modal-value" style="font-size: 13px; font-weight: 700;">7.5YR 5/3</div>
-                    </div>
 
-                    <!-- Scan Count Card -->
-                    <div class="soil-modal-grid-card">
-                        <div class="soil-modal-label">
-                            Scan Count
+                        <!-- Soil Type Card -->
+                        <div class="soil-modal-grid-card soil-card-soil-type">
+                            <div class="soil-modal-label">
+                                Soil Type
+                            </div>
+                            <div id="modalCardDrainage" class="soil-modal-value" style="font-size:13px; font-weight:700;">Well-Drained Clay / Latosol</div>
                         </div>
-                        <div id="modalCardScanCount" class="soil-modal-value" style="font-size: 13px; font-weight: 700;">1</div>
-                    </div>
-                </div>
 
-                <!-- Row 2: Soil Properties (Soil Organic, Soil Type, Near-Match Emerald #10b981) -->
-                <div class="soil-modal-grid-3 soil-metrics-row-2" style="margin-bottom: 12px;">
-                    <!-- Soil Organic Card -->
-                    <div class="soil-modal-grid-card">
-                        <div class="soil-modal-label">
-                            Soil Organic
+                        <!-- Near-Match Rating Card -->
+                        <div class="soil-modal-grid-card card-near-match soil-card-confidence">
+                            <div class="soil-modal-label">
+                                Near-Match
+                            </div>
+                            <div id="modalCardConfidence" class="soil-modal-value" style="font-size: 13.5px; font-weight: 800; color: #10b981 !important;">97.4%</div>
                         </div>
-                        <div id="modalCardOrganic" class="soil-modal-value" style="font-size:13px; font-weight:700;">Moderate (2.2% – 3.7%)</div>
-                    </div>
-
-                    <!-- Soil Type Card -->
-                    <div class="soil-modal-grid-card">
-                        <div class="soil-modal-label">
-                            Soil Type
-                        </div>
-                        <div id="modalCardDrainage" class="soil-modal-value" style="font-size:13px; font-weight:700;">Well-Drained Clay / Latosol</div>
-                    </div>
-
-                    <!-- Near-Match Rating Card -->
-                    <div class="soil-modal-grid-card card-near-match">
-                        <div class="soil-modal-label">
-                            Near-Match
-                        </div>
-                        <div id="modalCardConfidence" class="soil-modal-value" style="font-size: 13.5px; font-weight: 800; color: #10b981 !important;">97.4%</div>
                     </div>
                 </div>
 

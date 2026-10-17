@@ -1018,7 +1018,7 @@
         /* Standard Pop-up Mobile Responsiveness for Website Soil Detail Modal */
         @media (max-width: 640px) {
             .soil-detail-backdrop {
-                padding: 24px 16px !important;
+                padding: 16px 12px !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
@@ -1026,79 +1026,100 @@
             }
             .soil-detail-modal-container {
                 width: 100% !important;
-                max-width: min(calc(100vw - 32px), 420px) !important;
+                max-width: min(calc(100vw - 28px), 360px) !important;
                 height: auto !important;
-                max-height: min(80vh, 590px) !important;
-                border-radius: 24px !important;
+                max-height: min(70dvh, 430px) !important;
+                border-radius: 20px !important;
                 margin: auto !important;
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: hidden !important;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
             }
             .soil-detail-modal-header {
-                padding: 16px 20px 14px !important;
+                padding: 10px 14px 8px !important;
             }
             .soil-detail-modal-header h3 {
-                font-size: 17.5px !important;
+                font-size: 15px !important;
                 font-weight: 800 !important;
             }
             .soil-detail-modal-body {
-                padding: 14px 16px 16px !important;
-                gap: 10px !important;
+                padding: 8px 12px 10px !important;
+                gap: 6px !important;
+                flex: 1 1 auto !important;
+                min-height: 0 !important;
+                overflow-y: auto !important;
             }
             .soil-swatch-banner {
-                padding: 10px 14px !important;
-                gap: 10px !important;
-                min-height: 64px !important;
-                border-radius: 16px !important;
-                margin-bottom: 8px !important;
+                padding: 6px 10px !important;
+                gap: 8px !important;
+                min-height: 44px !important;
+                border-radius: 12px !important;
+                margin-bottom: 6px !important;
                 flex-wrap: wrap !important;
             }
             .soil-swatch-avatar {
-                width: 44px !important;
-                height: 44px !important;
-                min-width: 44px !important;
+                width: 34px !important;
+                height: 34px !important;
+                min-width: 34px !important;
+                border-radius: 8px !important;
             }
             .soil-swatch-code {
-                font-size: 20px !important;
+                font-size: 16px !important;
                 font-weight: 900 !important;
             }
             .soil-swatch-hex-pill {
-                font-size: 11px !important;
-                padding: 4px 8px !important;
+                font-size: 9.5px !important;
+                padding: 3px 6px !important;
                 white-space: nowrap !important;
+                border-radius: 9999px !important;
             }
-            .soil-modal-grid-3 {
+            .soil-metrics-container {
+                display: grid !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 8px !important;
-                margin-bottom: 8px !important;
+                gap: 6px !important;
+                margin-bottom: 6px !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
+            .soil-modal-grid-3 {
+                display: contents !important;
+            }
+            .soil-card-color-name { order: 1 !important; }
+            .soil-card-full-code  { order: 2 !important; }
+            .soil-card-organic    { order: 3 !important; }
+            .soil-card-soil-type  { order: 4 !important; }
+            .soil-card-scan-count { order: 5 !important; }
+            .soil-card-confidence { order: 6 !important; }
+            .soil-card-proportion { order: 5 !important; }
             .soil-modal-grid-3 > div,
             .soil-modal-grid-2 > div {
                 min-width: 0 !important;
             }
             .soil-modal-grid-2 {
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 8px !important;
-                margin-bottom: 8px !important;
+                gap: 6px !important;
+                margin-bottom: 6px !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
             .soil-metric-card {
                 min-width: 0 !important;
-                padding: 10px 12px !important;
-                border-radius: 14px !important;
+                padding: 5px 9px !important;
+                border-radius: 10px !important;
+                min-height: 40px !important;
                 box-sizing: border-box !important;
             }
             .soil-metric-card-label {
-                font-size: 11px !important;
-                margin-bottom: 3px !important;
+                font-size: 8.5px !important;
+                margin-bottom: 2px !important;
                 font-weight: 700 !important;
                 text-transform: uppercase !important;
                 letter-spacing: 0.03em !important;
             }
             .soil-metric-card-val {
-                font-size: 14px !important;
-                line-height: 1.35 !important;
+                font-size: 11.5px !important;
+                line-height: 1.2 !important;
                 font-weight: 700 !important;
                 overflow-wrap: anywhere !important;
                 word-break: break-word !important;
@@ -1110,23 +1131,26 @@
                 text-overflow: ellipsis !important;
             }
             .soil-metric-card-text {
-                font-size: 14px !important;
+                font-size: 11.5px !important;
                 overflow-wrap: anywhere !important;
                 word-break: break-word !important;
                 min-width: 0 !important;
             }
             .soil-detail-modal-footer {
-                padding: 12px 18px 14px !important;
+                padding: 8px 14px 10px !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: flex-end !important;
+                flex-shrink: 0 !important;
             }
             .modal-cancel-btn {
                 width: auto !important;
-                padding: 8px 24px !important;
+                padding: 4px 18px !important;
                 border-radius: 9999px !important;
-                font-size: 13.5px !important;
+                font-size: 12px !important;
                 font-weight: 700 !important;
+                height: 32px !important;
+                min-height: 32px !important;
                 color: #475569 !important;
                 background: #ffffff !important;
                 border: 1.5px solid #e2e8f0 !important;
@@ -1919,38 +1943,37 @@
                 </div>
             `;
 
-            // 2. METRICS ROW 1 (Color Name, Full Code, Scan Count) (Matching Admin Mobile Layout)
+            // 2. METRICS (Color Name, Full Code, Scan Count, Soil Organic, Soil Type, Near-Match)
             bodyHtml += `
-                <div class="soil-modal-grid-3">
-                    <div class="soil-metric-card">
-                        <div class="soil-metric-card-label">Color Name</div>
-                        <div class="soil-metric-card-val truncate" title="${domName}">${domName}</div>
+                <div class="soil-metrics-container">
+                    <div class="soil-modal-grid-3">
+                        <div class="soil-metric-card soil-card-color-name">
+                            <div class="soil-metric-card-label">Color Name</div>
+                            <div class="soil-metric-card-val truncate" title="${domName}">${domName}</div>
+                        </div>
+                        <div class="soil-metric-card soil-card-full-code">
+                            <div class="soil-metric-card-label">Full Code</div>
+                            <div class="soil-metric-card-val">${domCode}</div>
+                        </div>
+                        <div class="soil-metric-card soil-card-scan-count">
+                            <div class="soil-metric-card-label">Scan Count</div>
+                            <div class="soil-metric-card-val">${scanCount}</div>
+                        </div>
                     </div>
-                    <div class="soil-metric-card">
-                        <div class="soil-metric-card-label">Full Code</div>
-                        <div class="soil-metric-card-val">${domCode}</div>
-                    </div>
-                    <div class="soil-metric-card">
-                        <div class="soil-metric-card-label">Scan Count</div>
-                        <div class="soil-metric-card-val">${scanCount}</div>
-                    </div>
-                </div>
-            `;
 
-            // 4. METRICS ROW 2 (Soil Organic, Soil Type, Near-Match) (Matching Screenshot 2 & 4)
-            bodyHtml += `
-                <div class="soil-modal-grid-3">
-                    <div class="soil-metric-card">
-                        <div class="soil-metric-card-label">Soil Organic</div>
-                        <div class="soil-metric-card-val">${domOrganic}</div>
-                    </div>
-                    <div class="soil-metric-card">
-                        <div class="soil-metric-card-label">Soil Type</div>
-                        <div class="soil-metric-card-val truncate" title="${soilType}">${soilType}</div>
-                    </div>
-                    <div class="soil-metric-card">
-                        <div class="soil-metric-card-label">Near-Match</div>
-                        <div class="soil-metric-card-val" style="color: #10b981; font-weight: 800;">${domConf}</div>
+                    <div class="soil-modal-grid-3">
+                        <div class="soil-metric-card soil-card-organic">
+                            <div class="soil-metric-card-label">Soil Organic</div>
+                            <div class="soil-metric-card-val">${domOrganic}</div>
+                        </div>
+                        <div class="soil-metric-card soil-card-soil-type">
+                            <div class="soil-metric-card-label">Soil Type</div>
+                            <div class="soil-metric-card-val truncate" title="${soilType}">${soilType}</div>
+                        </div>
+                        <div class="soil-metric-card soil-card-confidence">
+                            <div class="soil-metric-card-label">Near-Match</div>
+                            <div class="soil-metric-card-val" style="color: #10b981; font-weight: 800;">${domConf}</div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2042,35 +2065,36 @@
                                     <span class="soil-swatch-hex-pill">${subHex.toUpperCase()}</span>
                                 </div>
 
-                                <!-- Row 1: Color Name, Full Code, Proportion -->
-                                <div class="soil-modal-grid-3">
-                                    <div class="soil-metric-card">
-                                        <div class="soil-metric-card-label">Color Name</div>
-                                        <div class="soil-metric-card-val truncate" title="${subName}">${subName}</div>
+                                <!-- Sub-Layer Metrics (Color Name, Full Code, Proportion, Soil Organic, Soil Type, Near-Match) -->
+                                <div class="soil-metrics-container">
+                                    <div class="soil-modal-grid-3">
+                                        <div class="soil-metric-card soil-card-color-name">
+                                            <div class="soil-metric-card-label">Color Name</div>
+                                            <div class="soil-metric-card-val truncate" title="${subName}">${subName}</div>
+                                        </div>
+                                        <div class="soil-metric-card soil-card-full-code">
+                                            <div class="soil-metric-card-label">Full Code</div>
+                                            <div class="soil-metric-card-val">${subCode}</div>
+                                        </div>
+                                        <div class="soil-metric-card soil-card-proportion">
+                                            <div class="soil-metric-card-label">Proportion</div>
+                                            <div class="soil-metric-card-val">${subPct}%</div>
+                                        </div>
                                     </div>
-                                    <div class="soil-metric-card">
-                                        <div class="soil-metric-card-label">Full Code</div>
-                                        <div class="soil-metric-card-val">${subCode}</div>
-                                    </div>
-                                    <div class="soil-metric-card">
-                                        <div class="soil-metric-card-label">Proportion</div>
-                                        <div class="soil-metric-card-val">${subPct}%</div>
-                                    </div>
-                                </div>
 
-                                <!-- Row 2: Soil Organic, Soil Type, Near-Match -->
-                                <div class="soil-modal-grid-3">
-                                    <div class="soil-metric-card">
-                                        <div class="soil-metric-card-label">Soil Organic</div>
-                                        <div class="soil-metric-card-val">${subOrganic}</div>
-                                    </div>
-                                    <div class="soil-metric-card">
-                                        <div class="soil-metric-card-label">Soil Type</div>
-                                        <div class="soil-metric-card-val truncate" title="${subSoilType}">${subSoilType}</div>
-                                    </div>
-                                    <div class="soil-metric-card">
-                                        <div class="soil-metric-card-label">Near-Match</div>
-                                        <div class="soil-metric-card-val" style="color: #10b981; font-weight: 800;">${subConf}</div>
+                                    <div class="soil-modal-grid-3">
+                                        <div class="soil-metric-card soil-card-organic">
+                                            <div class="soil-metric-card-label">Soil Organic</div>
+                                            <div class="soil-metric-card-val">${subOrganic}</div>
+                                        </div>
+                                        <div class="soil-metric-card soil-card-soil-type">
+                                            <div class="soil-metric-card-label">Soil Type</div>
+                                            <div class="soil-metric-card-val truncate" title="${subSoilType}">${subSoilType}</div>
+                                        </div>
+                                        <div class="soil-metric-card soil-card-confidence">
+                                            <div class="soil-metric-card-label">Near-Match</div>
+                                            <div class="soil-metric-card-val" style="color: #10b981; font-weight: 800;">${subConf}</div>
+                                        </div>
                                     </div>
                                 </div>
 
