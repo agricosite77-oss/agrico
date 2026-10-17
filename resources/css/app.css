@@ -1961,7 +1961,6 @@ html body .section-records-body::-webkit-scrollbar-thumb {
     html body .munsell-edit-modal-container,
     html body .faq-detail-modal-container,
     html body .faq-form-modal-container,
-    html body .pin-modal-container,
     html body .record-popup-card,
     html body .admin-profile-modal-card,
     html body .admin-review-request-modal,
@@ -1977,6 +1976,17 @@ html body .section-records-body::-webkit-scrollbar-thumb {
         height: auto !important;
         max-height: min(80vh, 590px) !important;
         border-radius: 24px !important;
+        overflow: hidden !important;
+    }
+
+    html body .pin-modal-container {
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: min(calc(100vw - 20px), 480px) !important;
+        margin: auto !important;
+        height: auto !important;
+        max-height: min(92vh, calc(100dvh - 20px)) !important;
+        border-radius: 20px !important;
         overflow: hidden !important;
     }
 
