@@ -500,8 +500,639 @@
             border-color: var(--close-btn-border-hover, #DAF1DE) !important;
             transform: scale(1.06) !important;
         }
+        .agrico-custom-popup a.leaflet-popup-close-button:active {
+            transform: scale(0.95) !important;
+        }
+
+        /* Soil Record Details Modal (Matching Screenshots 1, 2, 3, 4) */
+        .soil-detail-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 100001;
+            background: rgba(5, 31, 32, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+            animation: wsMapFadeIn 0.2s ease-out;
+        }
+        .soil-detail-modal-container {
+            background: linear-gradient(145deg, #0B2B26 0%, #163832 100%);
+            border: 1px solid rgba(142, 182, 155, 0.25);
+            border-radius: 28px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 680px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            height: auto;
+            max-height: min(85vh, calc(100dvh - 24px));
+            overflow: hidden;
+            position: relative;
+        }
+        .soil-detail-modal-header {
+            padding: 20px 26px 16px;
+            border-bottom: 1px solid rgba(142, 182, 155, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0B2B26;
+            flex-shrink: 0;
+        }
+        .soil-detail-modal-header h3 {
+            margin: 0;
+            font-size: 17.5px;
+            font-weight: 800;
+            color: #DAF1DE;
+            letter-spacing: -0.01em;
+        }
+        .soil-detail-modal-body {
+            padding: 18px 24px 20px;
+            overflow-y: auto;
+            flex: 1 1 auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(142, 182, 155, 0.35) rgba(11, 43, 38, 0.8);
+            scrollbar-gutter: stable;
+            -webkit-overflow-scrolling: touch;
+        }
+        .soil-detail-modal-body::-webkit-scrollbar {
+            width: 6px;
+            display: block !important;
+        }
+        .soil-detail-modal-body::-webkit-scrollbar-track {
+            background: rgba(11, 43, 38, 0.8);
+            border-radius: 9999px;
+            margin: 4px 0;
+        }
+        .soil-detail-modal-body::-webkit-scrollbar-thumb {
+            background: rgba(142, 182, 155, 0.35);
+            border-radius: 9999px;
+        }
+        .soil-detail-modal-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(142, 182, 155, 0.6);
+        }
+
+        .modal-close-circle-btn {
+            background: rgba(5, 31, 32, 0.7) !important;
+            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
+            color: #8EB69B !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            min-height: 40px !important;
+            border-radius: 50% !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            padding: 0 !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            flex-shrink: 0 !important;
+        }
+        .modal-close-circle-btn:hover {
+            background: rgba(35, 83, 71, 0.8) !important;
+            color: #DAF1DE !important;
+            border-color: #DAF1DE !important;
+            transform: scale(1.06) !important;
+        }
+        .modal-close-circle-btn:active {
+            transform: scale(0.95) !important;
+        }
+
+        /* Swatch Banner */
+        .soil-swatch-banner {
+            position: relative;
+            margin-top: 2px;
+            margin-bottom: 12px;
+            width: 100%;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 20px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            min-height: 78px;
+        }
+        .soil-swatch-avatar {
+            width: 56px;
+            height: 56px;
+            min-width: 56px;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            border: none;
+            outline: none;
+            box-shadow: none;
+            background: transparent;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .soil-swatch-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 0;
+        }
+        .soil-swatch-center {
+            flex: 1;
+            min-width: 0;
+        }
+        .soil-swatch-code {
+            font-size: 24px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: none;
+            letter-spacing: -0.01em;
+            line-height: 1.15;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .soil-swatch-sub {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.95);
+            margin-top: 3px;
+            letter-spacing: 0.02em;
+        }
+        .soil-swatch-hex-pill {
+            font-size: 11px;
+            font-weight: 800;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.58);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            padding: 5px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            user-select: none;
+            line-height: 1;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        /* Grids for Metric Cards */
+        .soil-modal-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .soil-modal-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .soil-metric-card {
+            background: #163832;
+            border: 1px solid rgba(142, 182, 155, 0.25);
+            border-radius: 16px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+        }
+        .soil-metric-card-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #8EB69B;
+            margin-bottom: 4px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .soil-metric-card-val {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #DAF1DE;
+            word-break: break-word;
+        }
+
+        .covered-area-highlight {
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            display: inline !important;
+            color: #DAF1DE;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+
+        .layer-accordion-item {
+            border: 1px solid rgba(142, 182, 155, 0.25) !important;
+            border-radius: 14px !important;
+            overflow: hidden !important;
+            background: #163832 !important;
+            margin-bottom: 8px;
+        }
+        .layer-accordion-header {
+            background: #0B2B26 !important;
+            color: #DAF1DE !important;
+        }
+        .layer-accordion-body {
+            background: #163832 !important;
+            border-top: 1px solid rgba(142, 182, 155, 0.25) !important;
+        }
+
+        .soil-detail-modal-footer {
+            padding: 16px 24px 20px;
+            background: #0B2B26;
+            border-top: 1px solid rgba(142, 182, 155, 0.25);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .modal-cancel-btn {
+            background: rgba(11, 43, 38, 0.8) !important;
+            border: 1.5px solid rgba(142, 182, 155, 0.35) !important;
+            color: #DAF1DE !important;
+            padding: 12px 24px;
+            border-radius: 12px !important;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .modal-cancel-btn:hover {
+            background: rgba(35, 83, 71, 0.5) !important;
+            border-color: #DAF1DE !important;
+            color: #DAF1DE !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(35, 83, 71, 0.35);
+        }
+        .modal-cancel-btn:active {
+            transform: translateY(0);
+        }
+
+        .soil-normalization-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(142, 182, 155, 0.25);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .soil-normalization-meta-title {
+            color: #4ade80;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+        }
+        .soil-normalization-meta-info {
+            color: #CBD5E1;
+            font-weight: 600;
+        }
+
+        .soil-swatch-capsule-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 13px;
+            background: #0B2B26;
+            border: 1px solid rgba(74, 222, 128, 0.25);
+            border-radius: 9999px;
+            box-shadow: none;
+            font-size: 11.5px;
+            cursor: default;
+            user-select: none;
+        }
+        .soil-swatch-capsule-pill:hover {
+            border-color: rgba(74, 222, 128, 0.35);
+        }
+        .soil-swatch-capsule-pill .capsule-pill-hex {
+            color: #FFFFFF;
+        }
+        .soil-swatch-capsule-pill .capsule-pill-code {
+            color: #8EB69B;
+        }
+        .soil-swatch-capsule-pill .capsule-pill-pct {
+            color: #00DC82;
+        }
+
+        .soil-metric-card-text {
+            color: #DAF1DE;
+        }
+        .layer-accordion-header-title {
+            color: #DAF1DE;
+        }
+        .layer-accordion-arrow {
+            color: #8EB69B;
+        }
+        .soil-platform-badge {
+            font-size: 12px;
+            font-weight: 700;
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #8EB69B;
+            display: inline !important;
+        }
+
+        /* Light Mode Overrides */
+        html.light-mode .soil-detail-modal-container {
+            background: #ffffff;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+        }
+        html.light-mode .soil-detail-modal-header {
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        html.light-mode .soil-detail-modal-header h3 {
+            color: #0f172a;
+        }
+        html.light-mode .modal-close-circle-btn {
+            background: transparent !important;
+            border: 1.5px solid transparent !important;
+            color: #94a3b8 !important;
+        }
+        html.light-mode .modal-close-circle-btn:hover {
+            background: #f1f5f9 !important;
+            border-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            transform: scale(1.06) !important;
+        }
+        html.light-mode .soil-detail-modal-body {
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+        html.light-mode .soil-metric-card {
+            background: #ffffff;
+            border: 1.5px solid #f1f5f9;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+        html.light-mode .soil-metric-card-label {
+            color: #475569 !important;
+            font-weight: 800 !important;
+        }
+        html.light-mode .soil-metric-card-val,
+        html.light-mode .soil-metric-card-text,
+        html.light-mode .layer-accordion-header-title,
+        html.light-mode .layer-accordion-header-title span,
+        html.light-mode .soil-metric-card [style*="#DAF1DE"],
+        html.light-mode .soil-metric-card [style*="color: #DAF1DE"],
+        html.light-mode .soil-metric-card [style*="color:#DAF1DE"],
+        html.light-mode .layer-accordion-item [style*="#DAF1DE"],
+        html.light-mode .layer-accordion-item [style*="color: #DAF1DE"],
+        html.light-mode .layer-accordion-item [style*="color:#DAF1DE"],
+        html.light-mode #wsSoilDetailModal [style*="#DAF1DE"],
+        html.light-mode #wsSoilDetailModal [style*="color: #DAF1DE"],
+        html.light-mode #wsSoilDetailModal [style*="color:#DAF1DE"] {
+            color: #0f172a !important;
+        }
+        html.light-mode #wsSoilDetailModal [style*="#8EB69B"],
+        html.light-mode #wsSoilDetailModal [style*="color: #8EB69B"],
+        html.light-mode #wsSoilDetailModal [style*="color:#8EB69B"] {
+            color: #475569 !important;
+        }
+        html.light-mode .layer-accordion-arrow,
+        html.light-mode [id^="wsLayerArrow_"] {
+            color: #475569 !important;
+        }
+        html.light-mode .soil-platform-badge {
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #000000 !important;
+        }
+        html.light-mode .soil-swatch-capsule-pill {
+            background: #f8fafc !important;
+            border: 1.5px solid #cbd5e1 !important;
+            box-shadow: none !important;
+            cursor: default;
+            user-select: none;
+        }
+        html.light-mode .soil-swatch-capsule-pill:hover {
+            background: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+        html.light-mode .soil-swatch-capsule-pill .capsule-pill-hex,
+        html.light-mode .soil-swatch-capsule-pill span[style*="monospace"] {
+            color: #0f172a !important;
+        }
+        html.light-mode .soil-swatch-capsule-pill .capsule-pill-code,
+        html.light-mode .soil-swatch-capsule-pill span[style*="#8EB69B"] {
+            color: #475569 !important;
+        }
+        html.light-mode .soil-swatch-capsule-pill .capsule-pill-pct,
+        html.light-mode .soil-swatch-capsule-pill span[style*="#00DC82"] {
+            color: #15803d !important;
+        }
+        html.light-mode .soil-swatch-capsule-pill .capsule-pill-swatch,
+        html.light-mode .soil-swatch-capsule-pill span[style*="border-radius: 3.5px"] {
+            border: 1px solid rgba(0, 0, 0, 0.15) !important;
+            box-shadow: none !important;
+        }
+        html.light-mode .soil-normalization-meta-row {
+            border-top: 1px solid #e2e8f0 !important;
+        }
+        html.light-mode .soil-normalization-meta-title {
+            color: #0f172a !important;
+            font-weight: 800 !important;
+        }
+        html.light-mode .soil-normalization-meta-info {
+            color: #475569 !important;
+            font-weight: 600 !important;
+        }
+        html.light-mode .layer-accordion-item {
+            border: 1px solid #e2e8f0 !important;
+            background: #ffffff !important;
+        }
+        html.light-mode .layer-accordion-header {
+            background: #f8fafc !important;
+            color: #0f172a !important;
+        }
+        html.light-mode .layer-accordion-body {
+            background: #ffffff !important;
+            border-top: 1px solid #f1f5f9 !important;
+        }
+        html.light-mode .soil-detail-modal-footer {
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+        }
+        html.light-mode .modal-cancel-btn {
+            background: #f1f5f9 !important;
+            border: 1.5px solid #cbd5e1 !important;
+            color: #1e293b !important;
+            border-radius: 12px !important;
+            font-weight: 800 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s ease !important;
+        }
+        html.light-mode .modal-cancel-btn:hover {
+            background: #e2e8f0 !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        html.light-mode .modal-cancel-btn:active {
+            transform: translateY(0);
+        }
+        html.light-mode .covered-area-highlight {
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            color: #000000 !important;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+
         #mapSearchInput {
             color: #DAF1DE;
+        }
+
+        /* Standard Pop-up Mobile Responsiveness for Website Soil Detail Modal */
+        @media (max-width: 640px) {
+            .soil-detail-backdrop {
+                padding: 24px 16px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-sizing: border-box !important;
+            }
+            .soil-detail-modal-container {
+                width: 100% !important;
+                max-width: min(calc(100vw - 32px), 420px) !important;
+                height: auto !important;
+                max-height: min(80vh, 590px) !important;
+                border-radius: 24px !important;
+                margin: auto !important;
+            }
+            .soil-detail-modal-header {
+                padding: 16px 20px 14px !important;
+            }
+            .soil-detail-modal-header h3 {
+                font-size: 17.5px !important;
+                font-weight: 800 !important;
+            }
+            .soil-detail-modal-body {
+                padding: 14px 16px 16px !important;
+                gap: 10px !important;
+            }
+            .soil-swatch-banner {
+                padding: 10px 14px !important;
+                gap: 10px !important;
+                min-height: 64px !important;
+                border-radius: 16px !important;
+                margin-bottom: 8px !important;
+                flex-wrap: wrap !important;
+            }
+            .soil-swatch-avatar {
+                width: 44px !important;
+                height: 44px !important;
+                min-width: 44px !important;
+            }
+            .soil-swatch-code {
+                font-size: 20px !important;
+                font-weight: 900 !important;
+            }
+            .soil-swatch-hex-pill {
+                font-size: 11px !important;
+                padding: 4px 8px !important;
+                white-space: nowrap !important;
+            }
+            .soil-modal-grid-3 {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 8px !important;
+                margin-bottom: 8px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .soil-modal-grid-3 > div:nth-child(3),
+            .soil-modal-grid-3 > div:last-child:nth-child(odd) {
+                grid-column: 1 / -1 !important;
+            }
+            .soil-modal-grid-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 8px !important;
+                margin-bottom: 8px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .soil-metric-card {
+                min-width: 0 !important;
+                padding: 10px 12px !important;
+                border-radius: 14px !important;
+                box-sizing: border-box !important;
+            }
+            .soil-metric-card-label {
+                font-size: 11px !important;
+                margin-bottom: 3px !important;
+                font-weight: 700 !important;
+            }
+            .soil-metric-card-val {
+                font-size: 14px !important;
+                line-height: 1.35 !important;
+                font-weight: 700 !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                min-width: 0 !important;
+            }
+            .soil-metric-card-text {
+                font-size: 14px !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                min-width: 0 !important;
+            }
+            .soil-detail-modal-footer {
+                padding: 12px 18px 14px !important;
+            }
+        }
+
+        @media (max-width: 340px) {
+            .soil-modal-grid-3,
+            .soil-modal-grid-2 {
+                grid-template-columns: 1fr !important;
+            }
+            .soil-modal-grid-3 > div:nth-child(3),
+            .soil-modal-grid-3 > div:last-child:nth-child(odd) {
+                grid-column: auto !important;
+            }
+        }
+
+        @media (max-height: 520px) and (orientation: landscape) {
+            .soil-detail-modal-container {
+                width: 100% !important;
+                max-width: 540px !important;
+                height: auto !important;
+                max-height: min(85vh, calc(100dvh - 20px)) !important;
+                border-radius: 24px !important;
+                margin: auto !important;
+            }
         }
     </style>
 
@@ -580,9 +1211,9 @@
     <script src="{{ asset('js/lallo-boundary.js') }}"></script>
     <script src="{{ asset('js/agrico-map-focus.js') }}"></script>
     <script src="{{ asset('js/agrico-pin.js') }}"></script>
+
     <script>
-        window.mappingsData = @json($mappings);
-        const mappingsData = window.mappingsData;
+        const mappingsData = @json($mappings);
 
         // Initialize map — complete Lal-lo, Cagayan Municipality view [18.1972, 121.6612] at zoom 12
         const defaultLat = 18.1972, defaultLng = 121.6612, defaultZoom = 12;
@@ -1126,14 +1757,12 @@
             }
         };
 
-        let modalSoilDetailMapInstance = null;
-
-        // View Details Modal Handler (Using Shared Soil Record Modal Partial)
+        // View Details Modal Handler (Matching Screenshots 1, 2, 3, 4 without Save Copy / Pin Location buttons)
         window.viewWebsitePinDetails = function(locId, clusterKey = null) {
-            const m = (typeof locId === 'object' && locId !== null) ? locId : (window.mappingsData || mappingsData).find(item => (item.location_mapping_id || item.id) == locId);
+            const m = mappingsData.find(item => (item.location_mapping_id || item.id) == locId);
             if (!m) return;
 
-            const modal = document.getElementById('soilRecordModal');
+            const modal = document.getElementById('websiteSoilDetailModal');
             if (!modal) return;
 
             let clusterPins = (clusterKey && window._agricoPinClusters && window._agricoPinClusters[clusterKey])
@@ -1232,247 +1861,151 @@
             const scanCount = soil.scan_count || (m.soil_scan_id ? 4 : 1);
             const noteText = m.scan_note_text || (m.soil_scan && m.soil_scan.scan_note ? m.soil_scan.scan_note : 'No scan note available for this record.');
 
-            // 1. Header Title
-            const modalRecordTitle = document.getElementById('modalRecordTitle');
-            if (modalRecordTitle) {
-                if (isCluster) {
-                    modalRecordTitle.textContent = `Soil Record Details (${regions.length} PINNED SOILS)`;
-                } else if (isMulti) {
-                    modalRecordTitle.textContent = `Soil Record Details (${regions.length} DETECTED)`;
-                } else {
-                    modalRecordTitle.textContent = 'Soil Record Details';
-                }
+            // Update Header Title
+            if (isCluster) {
+                document.getElementById('wsModalHeaderTitle').textContent = `Soil Record Details (${regions.length} PINNED SOILS)`;
+            } else if (isMulti) {
+                document.getElementById('wsModalHeaderTitle').textContent = `Soil Record Details (${regions.length} DETECTED)`;
+            } else {
+                document.getElementById('wsModalHeaderTitle').textContent = 'Soil Record Details';
             }
 
-            // 2. Photo Thumbnail Avatar (Single clean box, no nested frames or ROI boxes)
-            const avatarHost = document.getElementById('modalSoilSnippetAvatarContainer');
-            if (avatarHost) {
-                const oldRoi = avatarHost.querySelectorAll('.soil-roi-box, .soil-avatar-box');
-                oldRoi.forEach(el => el.remove());
-            }
-            const modalSoilCircleSnippet = document.getElementById('modalSoilCircleSnippet');
-            const modalSoilSnippetFallback = document.getElementById('modalSoilSnippetFallback');
+            let bodyHtml = '';
+
+            // 1. LOCATION METRICS (Barangay Location, Coordinates, Covered Area) (One by One Cards on Top After Header)
+            bodyHtml += `
+                <div class="soil-modal-grid-3">
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Barangay Location</div>
+                        <div class="soil-metric-card-val truncate" title="${brgy}">${brgy}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Coordinates</div>
+                        <div class="soil-metric-card-val" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px;">${lt.toFixed(4)}, ${ln.toFixed(4)}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Covered Area</div>
+                        <div class="soil-metric-card-val"><span class="covered-area-highlight">${covStr}</span></div>
+                    </div>
+                </div>
+            `;
+
+            // 2. DUAL-PREVIEW BANNER SWATCH CARD (Matching Screenshot 2 & 4)
             const fallbackThumb = (regions[0] && regions[0].region_thumbnail) ? (regions[0].region_thumbnail.startsWith('data:') ? regions[0].region_thumbnail : 'data:image/png;base64,' + regions[0].region_thumbnail) : '';
             const effectiveAvatarUrl = scanImgUrl || fallbackThumb;
 
-            if (effectiveAvatarUrl && modalSoilCircleSnippet) {
-                modalSoilCircleSnippet.style.display = 'none';
-                if (modalSoilSnippetFallback) modalSoilSnippetFallback.style.display = 'flex';
-                modalSoilCircleSnippet.onload = function() {
-                    modalSoilCircleSnippet.style.display = 'block';
-                    if (modalSoilSnippetFallback) modalSoilSnippetFallback.style.display = 'none';
-                };
-                modalSoilCircleSnippet.onerror = function() {
-                    modalSoilCircleSnippet.style.display = 'none';
-                    if (modalSoilSnippetFallback) modalSoilSnippetFallback.style.display = 'flex';
-                };
-                modalSoilCircleSnippet.src = effectiveAvatarUrl;
-                if (modalSoilCircleSnippet.complete && modalSoilCircleSnippet.naturalWidth > 0) {
-                    modalSoilCircleSnippet.style.display = 'block';
-                    if (modalSoilSnippetFallback) modalSoilSnippetFallback.style.display = 'none';
-                }
-            } else {
-                if (modalSoilCircleSnippet) modalSoilCircleSnippet.style.display = 'none';
-                if (modalSoilSnippetFallback) modalSoilSnippetFallback.style.display = 'flex';
-            }
+            bodyHtml += `
+                <div class="soil-swatch-banner" style="background: ${domHex};">
+                    <div class="soil-swatch-avatar" style="position: relative; overflow: hidden; width: 68px; height: 68px; min-width: 68px; border-radius: 14px; background: rgba(0,0,0,0.18);">
+                        ${effectiveAvatarUrl ? `
+                            <img src="${effectiveAvatarUrl}" alt="Soil sample photo" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 14px;"
+                                 onload="var b = this.parentElement.querySelector('.soil-avatar-box'); if(b) b.style.display='block';"
+                                 onerror="
+                                     var p = this.parentElement;
+                                     this.style.display='none';
+                                     var b = p.querySelector('.soil-avatar-box');
+                                     if(b) b.style.display='none';
+                                     var f = p.querySelector('.soil-avatar-placeholder');
+                                     if(f) f.style.display='flex';
+                                 " />
+                            <div class="soil-avatar-box" style="display: none; position: absolute; left: ${domBox.left}%; top: ${domBox.top}%; width: ${domBox.width}%; height: ${domBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                        ` : ''}
+                        <div class="soil-avatar-placeholder" style="display: ${effectiveAvatarUrl ? 'none' : 'flex'}; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.24); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;" title="Image not available for this record">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span style="font-size: 7.5px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; opacity: 0.95; text-transform: uppercase;">Image Not Available</span>
+                        </div>
+                    </div>
+                    <div class="soil-swatch-center">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            ${isMulti ? '<span style="font-size: 12px; color: #ffffff; opacity: 0.9;">▼</span>' : ''}
+                            <span class="soil-swatch-code">${domCode}</span>
+                        </div>
+                        <div class="soil-swatch-sub">${isMulti ? `Soil Percentage (${domPct}%)` : domName}</div>
+                    </div>
+                    <span class="soil-swatch-hex-pill">${domHex.toUpperCase()}</span>
+                </div>
+            `;
 
-            // 3. Dual-Preview Swatch Banner (Word-break safe, hex pill never squeezed)
-            const heroBadge = document.getElementById('modalSoilDualPreviewBadge');
-            const modalCodeDisplay = document.getElementById('modalCodeDisplay');
-            const modalSoilPercentageDisplay = document.getElementById('modalSoilPercentageDisplay');
-            const modalHexPill = document.getElementById('modalHexPill');
-            const modalDominantChevron = document.getElementById('modalDominantChevron');
-            const modalSwatchBlock = document.getElementById('modalSwatchBlock');
+            // 3. METRICS ROW 1 (Color Name, Full Code, Scan Count) (Matching Screenshot 2 & 4)
+            bodyHtml += `
+                <div class="soil-modal-grid-3">
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Color Name</div>
+                        <div class="soil-metric-card-val truncate" title="${domName}">${domName}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Full Code</div>
+                        <div class="soil-metric-card-val">${domCode}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Scan Count</div>
+                        <div class="soil-metric-card-val">${scanCount}</div>
+                    </div>
+                </div>
+            `;
 
-            if (heroBadge) {
-                heroBadge.style.setProperty('background', domHex, 'important');
-                heroBadge.style.setProperty('background-color', domHex, 'important');
-            }
-            const mTheme = window.getContrastColor ? window.getContrastColor(domHex) : { text: '#ffffff', subtext: '#ffffff', chevron: '#ffffff', pillBg: 'rgba(0,0,0,0.6)', pillBorder: 'rgba(255,255,255,0.2)', pillText: '#ffffff' };
-            if (modalCodeDisplay) {
-                modalCodeDisplay.textContent = domCode;
-                modalCodeDisplay.style.color = mTheme.text;
-            }
-            if (modalHexPill) {
-                modalHexPill.textContent = domHex.toUpperCase();
-                modalHexPill.style.backgroundColor = mTheme.pillBg;
-                modalHexPill.style.borderColor = mTheme.pillBorder;
-                modalHexPill.style.color = mTheme.pillText;
-            }
-            if (modalDominantChevron) modalDominantChevron.style.color = mTheme.chevron;
+            // 4. METRICS ROW 2 (Soil Organic, Soil Type, Near-Match) (Matching Screenshot 2 & 4)
+            bodyHtml += `
+                <div class="soil-modal-grid-3">
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Soil Organic</div>
+                        <div class="soil-metric-card-val">${domOrganic}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Soil Type</div>
+                        <div class="soil-metric-card-val truncate" title="${soilType}">${soilType}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Near-Match</div>
+                        <div class="soil-metric-card-val" style="color: #10b981; font-weight: 800;">${domConf}</div>
+                    </div>
+                </div>
+            `;
+
+            // 5. SCAN DATE & SCANNED BY
+            bodyHtml += `
+                <div class="soil-modal-grid-2">
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Scan Date</div>
+                        <div class="soil-metric-card-val">${recordedDate}</div>
+                    </div>
+                    <div class="soil-metric-card">
+                        <div class="soil-metric-card-label">Scanned By</div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;">
+                            <span class="soil-metric-card-val">${scannedBy}</span>
+                            <span class="soil-platform-badge">
+                                ${scanPlatform}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="soil-metric-card" style="margin-bottom: 10px;">
+                    <div class="soil-metric-card-label">Scan Note</div>
+                    <div class="soil-metric-card-text" style="font-size: 13px; font-weight: 700; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
+                        ${noteText}
+                    </div>
+                </div>
+
+                <div class="soil-metric-card" style="margin-bottom: 12px;">
+                    <div class="soil-metric-card-label">Description</div>
+                    <div class="soil-metric-card-text" style="font-size: 13px; font-weight: 700; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
+                        ${isMulti ? domDesc : desc}
+                    </div>
+                </div>
+            `;
 
             if (isMulti) {
-                if (modalDominantChevron) modalDominantChevron.style.display = 'inline';
-                if (modalSoilPercentageDisplay) {
-                    modalSoilPercentageDisplay.style.display = 'block';
-                    modalSoilPercentageDisplay.style.color = mTheme.subtext;
-                    modalSoilPercentageDisplay.textContent = `Soil Percentage (${domPct}%)`;
-                }
-            } else {
-                if (modalDominantChevron) modalDominantChevron.style.display = 'none';
-                if (modalSoilPercentageDisplay && domPct && domPct < 100) {
-                    modalSoilPercentageDisplay.style.display = 'block';
-                    modalSoilPercentageDisplay.style.color = mTheme.subtext;
-                    modalSoilPercentageDisplay.textContent = `Soil Percentage (${domPct}%)`;
-                } else if (modalSoilPercentageDisplay) {
-                    modalSoilPercentageDisplay.style.display = 'none';
-                }
-            }
+                // 5. SECONDARY DETECTED SOIL LAYERS ACCORDIONS (Screenshot 3)
+                bodyHtml += `
+                    <div style="margin-bottom: 12px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                `;
 
-            // Interactive Dropdown Menu for detected soil layers
-            function toggleMapModalLayerDropdown(ev) {
-                if (ev) ev.stopPropagation();
-                const menu = document.getElementById('modalLayerDropdownMenu');
-                const chevron = document.getElementById('modalDominantChevron');
-                if (!menu) return;
-                const isOpen = menu.style.display === 'block';
-                menu.style.display = isOpen ? 'none' : 'block';
-                if (chevron) {
-                    chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
-                }
-            }
-
-            if (isMulti && modalSwatchBlock) {
-                modalSwatchBlock.onclick = toggleMapModalLayerDropdown;
-                modalSwatchBlock.style.cursor = 'pointer';
-            } else if (modalSwatchBlock) {
-                modalSwatchBlock.onclick = null;
-                modalSwatchBlock.style.cursor = 'default';
-            }
-
-            window.selectActiveMapModalLayer = function(layerIdx) {
-                if (!regions || !regions[layerIdx]) return;
-                const r = regions[layerIdx];
-                const rPct = r.percent !== undefined ? r.percent : Math.round((r.proportion || 0.2) * 100);
-                const rCode = r.munsell || r.munsell_code || fullCode;
-                let rHex = r.hex || hexColor;
-                if (rHex && !rHex.startsWith('#')) rHex = '#' + rHex;
-                const rLabel = r.label || r.color_name || soilName;
-                const rOrganic = r.organic_matter || organic;
-                const rDrainage = r.soil_type || r.soil_name || drainage;
-                const rConf = calcNearMatchRating(r);
-                let rDesc = r.description || `${rCode} - ${rLabel}`;
-
-                const rTheme = window.getContrastColor ? window.getContrastColor(rHex) : { text: '#ffffff', subtext: '#ffffff', chevron: '#ffffff', pillBg: 'rgba(0,0,0,0.6)', pillBorder: 'rgba(255,255,255,0.2)', pillText: '#ffffff' };
-                if (heroBadge) {
-                    heroBadge.style.setProperty('background', rHex, 'important');
-                    heroBadge.style.setProperty('background-color', rHex, 'important');
-                }
-                if (modalCodeDisplay) {
-                    modalCodeDisplay.textContent = rCode;
-                    modalCodeDisplay.style.color = rTheme.text;
-                }
-                if (modalHexPill) {
-                    modalHexPill.textContent = rHex.toUpperCase();
-                    modalHexPill.style.backgroundColor = rTheme.pillBg;
-                    modalHexPill.style.borderColor = rTheme.pillBorder;
-                    modalHexPill.style.color = rTheme.pillText;
-                }
-                if (modalDominantChevron) modalDominantChevron.style.color = rTheme.chevron;
-                if (modalSoilPercentageDisplay) {
-                    modalSoilPercentageDisplay.style.display = 'block';
-                    modalSoilPercentageDisplay.style.color = rTheme.subtext;
-                    modalSoilPercentageDisplay.textContent = `Soil Percentage (${rPct}%)`;
-                }
-
-                if (modalCardColorName) modalCardColorName.textContent = rLabel;
-                if (modalCardFullCode) modalCardFullCode.textContent = rCode;
-                if (modalCardOrganic) modalCardOrganic.textContent = rOrganic;
-                if (modalCardDrainage) modalCardDrainage.textContent = rDrainage;
-                if (modalCardConfidence) modalCardConfidence.textContent = rConf;
-                if (modalCardDesc) modalCardDesc.textContent = rDesc;
-
-                const dropdownItems = document.querySelectorAll('#modalLayerDropdownList .res-layer-dropdown-item');
-                dropdownItems.forEach((it, idx) => {
-                    if (idx === layerIdx) it.classList.add('is-selected');
-                    else it.classList.remove('is-selected');
-                });
-
-                const menu = document.getElementById('modalLayerDropdownMenu');
-                const chevron = document.getElementById('modalDominantChevron');
-                if (menu) menu.style.display = 'none';
-                if (chevron) chevron.style.transform = 'rotate(0deg)';
-            };
-
-            const modalLayerDropdownList = document.getElementById('modalLayerDropdownList');
-            const modalLayerDropdownCount = document.getElementById('modalLayerDropdownCount');
-            if (modalLayerDropdownList) {
-                modalLayerDropdownList.innerHTML = '';
-                if (isMulti) {
-                    if (modalLayerDropdownCount) modalLayerDropdownCount.textContent = `${regions.length} DETECTED`;
-                    regions.forEach((r, idx) => {
-                        const rPct = r.percent !== undefined ? r.percent : Math.round((r.proportion || 0.2) * 100);
-                        const rCode = r.munsell || r.munsell_code || domCode;
-                        let rHex = r.hex || domHex;
-                        if (rHex && !rHex.startsWith('#')) rHex = '#' + rHex;
-                        const rLabel = r.label || r.color_name || domName;
-                        const isDom = idx === 0;
-
-                        const item = document.createElement('div');
-                        item.className = 'res-layer-dropdown-item' + (idx === 0 ? ' is-selected' : '');
-                        item.innerHTML = `
-                            <div style="display: flex; align-items: center; gap: 9px; min-width: 0;">
-                                <span class="res-dropdown-swatch-dot" style="background: ${rHex};"></span>
-                                <div style="min-width: 0; line-height: 1.25;">
-                                    <div class="res-dropdown-item-code">${rCode}</div>
-                                    <div class="res-dropdown-item-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rLabel}</div>
-                                </div>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-                                <span class="res-dropdown-item-pct">${rPct}%</span>
-                                ${isDom ? '<span style="font-size: 8.5px; font-weight: 800; background: rgba(34, 197, 94, 0.2); color: #22c55e; padding: 2px 6px; border-radius: 9999px;">DOMINANT</span>' : `<span style="font-size: 8.5px; font-weight: 700; color: #8EB69B;">#${idx+1}</span>`}
-                            </div>
-                        `;
-                        item.addEventListener('click', (ev) => {
-                            ev.stopPropagation();
-                            window.selectActiveMapModalLayer(idx);
-                        });
-                        modalLayerDropdownList.appendChild(item);
-                    });
-                }
-            }
-
-            // 4. Row 1: Code Details (Color Name, Full Code, Scan Count)
-            const modalCardColorName = document.getElementById('modalCardColorName');
-            const modalCardFullCode = document.getElementById('modalCardFullCode');
-            const modalCardScanCount = document.getElementById('modalCardScanCount');
-            if (modalCardColorName) modalCardColorName.textContent = domName;
-            if (modalCardFullCode) modalCardFullCode.textContent = domCode;
-            if (modalCardScanCount) modalCardScanCount.textContent = scanCount;
-
-            // 5. Row 2: Soil Properties (Soil Organic, Soil Type, Near-Match)
-            const modalCardOrganic = document.getElementById('modalCardOrganic');
-            const modalCardDrainage = document.getElementById('modalCardDrainage');
-            const modalCardConfidence = document.getElementById('modalCardConfidence');
-            if (modalCardOrganic) modalCardOrganic.textContent = domOrganic;
-            if (modalCardDrainage) modalCardDrainage.textContent = soilType || domDrainage;
-            if (modalCardConfidence) modalCardConfidence.textContent = domConf;
-
-            // 6. Row 3: Scan Date & Scanned By
-            const modalCardDate = document.getElementById('modalCardDate');
-            const modalCardDateContainer = document.getElementById('modalCardDateContainer');
-            const modalCardScannedBy = document.getElementById('modalCardScannedBy');
-            const modalCardPlatform = document.getElementById('modalCardPlatform');
-            if (modalCardDate) modalCardDate.textContent = recordedDate;
-            if (modalCardDateContainer) modalCardDateContainer.style.display = 'block';
-            if (modalCardScannedBy) modalCardScannedBy.textContent = scannedBy;
-            if (modalCardPlatform) {
-                modalCardPlatform.textContent = scanPlatform;
-                modalCardPlatform.style.display = 'inline-block';
-            }
-
-            // 7. Scan Note & Description Cards
-            const modalCardScanNote = document.getElementById('modalCardScanNote');
-            const modalCardDesc = document.getElementById('modalCardDesc');
-            if (modalCardScanNote) modalCardScanNote.textContent = noteText;
-            if (modalCardDesc) modalCardDesc.textContent = isMulti ? domDesc : desc;
-
-            // 8. Multi-Layer Accordions (Secondary & Tertiary Detected Soils)
-            const modalMultiLayerSection = document.getElementById('modalMultiLayerSection');
-            const modalMultiLayerItems = document.getElementById('modalMultiLayerItems');
-            if (isMulti && modalMultiLayerSection && modalMultiLayerItems) {
-                modalMultiLayerSection.style.display = 'block';
-                modalMultiLayerItems.innerHTML = '';
                 regions.slice(1).forEach((sub, subIdx) => {
                     const idx = subIdx + 1;
                     const subPct = sub.percent !== undefined ? Math.round(sub.percent) : (sub.proportion !== undefined ? Math.round(sub.proportion * 100) : 18);
@@ -1485,134 +2018,102 @@
                     const subSoilType = sub.soil_type || sub.soil_name || soilType;
                     const subDrainage = sub.soil_name || drainage;
                     const subDesc = sub.description || `${subCode} - ${subName}`;
+                    const subBox = normalizeBox(sub);
 
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'layer-accordion-item';
-                    itemDiv.innerHTML = `
-                        <button
-                            type="button"
-                            class="layer-accordion-header"
-                            style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;"
-                        >
-                            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px;">
-                                <span class="layer-chevron" style="font-size: 11px; transition: transform 0.2s ease;">▶</span>
-                                <span>${subCode} (Soil Percentage - ${subPct}%)</span>
-                            </div>
-                            <span style="font-size: 11px; font-weight: 800; color: #ffffff; background: ${subHex}; padding: 3px 10px; border-radius: 12px; font-family: monospace; text-shadow: none; flex-shrink: 0;">
-                                ${subHex.toUpperCase()}
-                            </span>
-                        </button>
-                        <div class="layer-accordion-body" style="display: none; padding: 14px;">
-                            <div class="soil-swatch-banner" style="background: ${subHex}; border-radius: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.18); display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin-bottom: 10px; box-sizing: border-box; min-height: 64px;">
-                                ${effectiveAvatarUrl ? `
-                                    <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; border-radius: 10px; overflow: hidden; background: rgba(0,0,0,0.2); position: relative; flex-shrink: 0;">
-                                        <img src="${effectiveAvatarUrl}" alt="Soil sample photo" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
-                                    </div>
-                                ` : ''}
-                                <div style="flex: 1; min-width: 0;">
-                                    <span style="font-size: 18px; font-weight: 900; color: #ffffff; text-shadow: none;">${subCode}</span>
-                                    <div style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.95); margin-top: 2px;">Soil Percentage (${subPct}%)</div>
+                    bodyHtml += `
+                        <div class="layer-accordion-item">
+                            <button
+                                type="button"
+                                class="layer-accordion-header"
+                                onclick="toggleWebsiteLayerAccordion(${idx})"
+                                style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;"
+                            >
+                                <div class="layer-accordion-header-title" style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px;">
+                                    <span id="wsLayerArrow_${idx}" class="layer-accordion-arrow" style="font-size: 11px;">▶</span>
+                                    <span>${subCode} (Soil Percentage - ${subPct}%)</span>
                                 </div>
-                                <span style="font-size: 11px; font-weight: 800; color: #ffffff; background: rgba(0,0,0,0.58); border: 1px solid rgba(255,255,255,0.25); padding: 4px 10px; border-radius: 20px; font-family: monospace; flex-shrink: 0;">${subHex.toUpperCase()}</span>
-                            </div>
-                            <div class="soil-modal-grid-3" style="margin-bottom: 8px;">
-                                <div class="soil-modal-grid-card"><div class="soil-modal-label">Color Name</div><div class="soil-modal-value truncate" title="${subName}">${subName}</div></div>
-                                <div class="soil-modal-grid-card"><div class="soil-modal-label">Full Code</div><div class="soil-modal-value">${subCode}</div></div>
-                                <div class="soil-modal-grid-card"><div class="soil-modal-label">Proportion</div><div class="soil-modal-value">${subPct}%</div></div>
-                            </div>
-                            <div class="soil-modal-grid-3" style="margin-bottom: 8px;">
-                                <div class="soil-modal-grid-card"><div class="soil-modal-label">Soil Organic</div><div class="soil-modal-value">${subOrganic}</div></div>
-                                <div class="soil-modal-grid-card"><div class="soil-modal-label">Soil Type</div><div class="soil-modal-value truncate" title="${subSoilType}">${subSoilType}</div></div>
-                                <div class="soil-modal-grid-card"><div class="soil-modal-label">Near-Match</div><div class="soil-modal-value" style="color: #10b981; font-weight: 800;">${subConf}</div></div>
-                            </div>
-                            <div class="soil-modal-grid-card" style="margin-bottom: 8px; padding: 12px 16px;">
-                                <div class="soil-modal-label">Scan Note</div>
-                                <div class="soil-modal-value" style="font-size: 13px; font-weight: 700; line-height: 1.5;">No scan note available for this record.</div>
-                            </div>
-                            <div class="soil-modal-grid-card" style="padding: 12px 16px;">
-                                <div class="soil-modal-label">Description</div>
-                                <div class="soil-modal-value" style="font-size: 13px; font-weight: 700; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">${subDesc}</div>
+                                <span style="font-size: 11px; font-weight: 800; color: #ffffff; background: ${subHex}; padding: 3px 10px; border-radius: 12px; font-family: monospace; text-shadow: none;">
+                                    ${subHex.toUpperCase()}
+                                </span>
+                            </button>
+
+                            <div id="wsLayerBody_${idx}" class="layer-accordion-body" style="display: none; padding: 14px;">
+                                <!-- Swatch Banner with ROI Crop Box -->
+                                <div class="soil-swatch-banner" style="background: ${subHex}; margin-bottom: 10px; min-height: 64px; padding: 12px 16px;">
+                                    ${scanImgUrl ? `
+                                        <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; position: relative;">
+                                             <img src="${scanImgUrl}" alt="Soil Sample" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                                            <div style="position: absolute; left: ${subBox.left}%; top: ${subBox.top}%; width: ${subBox.width}%; height: ${subBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                                        </div>
+                                    ` : ''}
+                                    <div class="soil-swatch-center">
+                                        <span class="soil-swatch-code" style="font-size: 20px;">${subCode}</span>
+                                        <div class="soil-swatch-sub">Soil Percentage (${subPct}%)</div>
+                                    </div>
+                                    <span class="soil-swatch-hex-pill">${subHex.toUpperCase()}</span>
+                                </div>
+
+                                <!-- Row 1: Color Name, Full Code, Proportion -->
+                                <div class="soil-modal-grid-3">
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Color Name</div>
+                                        <div class="soil-metric-card-val truncate" title="${subName}">${subName}</div>
+                                    </div>
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Full Code</div>
+                                        <div class="soil-metric-card-val">${subCode}</div>
+                                    </div>
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Proportion</div>
+                                        <div class="soil-metric-card-val">${subPct}%</div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 2: Soil Organic, Soil Type, Near-Match -->
+                                <div class="soil-modal-grid-3">
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Soil Organic</div>
+                                        <div class="soil-metric-card-val">${subOrganic}</div>
+                                    </div>
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Soil Type</div>
+                                        <div class="soil-metric-card-val truncate" title="${subSoilType}">${subSoilType}</div>
+                                    </div>
+                                    <div class="soil-metric-card">
+                                        <div class="soil-metric-card-label">Near-Match</div>
+                                        <div class="soil-metric-card-val" style="color: #10b981; font-weight: 800;">${subConf}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 3: Scan Note -->
+                                <div class="soil-metric-card" style="margin-bottom: 10px;">
+                                    <div class="soil-metric-card-label">Scan Note</div>
+                                    <div class="soil-metric-card-text" style="font-size: 13px; font-weight: 700; line-height: 1.5;">
+                                        No scan note available for this record.
+                                    </div>
+                                </div>
+
+                                <!-- Row 4: Description -->
+                                <div class="soil-metric-card">
+                                    <div class="soil-metric-card-label">Description</div>
+                                    <div class="soil-metric-card-text" style="font-size: 13px; font-weight: 700; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
+                                        ${subDesc}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
-                    const headerBtn = itemDiv.querySelector('.layer-accordion-header');
-                    const bodyEl = itemDiv.querySelector('.layer-accordion-body');
-                    const chevronEl = itemDiv.querySelector('.layer-chevron');
-                    headerBtn.addEventListener('click', () => {
-                        const willOpen = bodyEl.style.display !== 'block';
-                        bodyEl.style.display = willOpen ? 'block' : 'none';
-                        chevronEl.textContent = willOpen ? '▼' : '▶';
-                    });
-                    modalMultiLayerItems.appendChild(itemDiv);
                 });
-            } else if (modalMultiLayerSection) {
-                modalMultiLayerSection.style.display = 'none';
+
+                bodyHtml += `
+                        </div>
+                    </div>
+                `;
             }
 
-            // 9. Soil Pin Location & Covered Area Preview Card
-            const modalSoilLocationCard = document.getElementById('modalSoilLocationCard');
-            const modalLocStatusBadge = document.getElementById('modalLocStatusBadge');
-            const modalLocBrgyBadge = document.getElementById('modalLocBrgyBadge');
-            const modalLocCoverageBadge = document.getElementById('modalLocCoverageBadge');
-            const modalLocCoordsBadge = document.getElementById('modalLocCoordsBadge');
-
-            if (modalSoilLocationCard && lt && ln) {
-                modalSoilLocationCard.style.display = 'block';
-                if (modalLocStatusBadge) {
-                    modalLocStatusBadge.textContent = (m.status || 'VERIFIED').toUpperCase();
-                    modalLocStatusBadge.style.display = 'inline-block';
-                }
-                if (modalLocBrgyBadge) modalLocBrgyBadge.textContent = brgy;
-                if (modalLocCoordsBadge) modalLocCoordsBadge.textContent = `${lt.toFixed(4)}, ${ln.toFixed(4)}`;
-                if (modalLocCoverageBadge) {
-                    modalLocCoverageBadge.textContent = covStr;
-                    modalLocCoverageBadge.style.display = 'inline-block';
-                }
-                setTimeout(() => {
-                    const mapEl = document.getElementById('modalSoilDetailMap');
-                    if (!mapEl || typeof L === 'undefined') return;
-                    if (modalSoilDetailMapInstance) {
-                        try { modalSoilDetailMapInstance.remove(); } catch(e) {}
-                        modalSoilDetailMapInstance = null;
-                    }
-                    modalSoilDetailMapInstance = L.map(mapEl, {
-                        zoomControl: true,
-                        attributionControl: false
-                    }).setView([lt, ln], 15);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(modalSoilDetailMapInstance);
-                    const marker = L.marker([lt, ln]).addTo(modalSoilDetailMapInstance);
-
-                    // Optional coverage polygon
-                    let boxW = 85, boxH = 85, cornerR = 20;
-                    if (covStr.includes('50 m')) { boxW = 35; boxH = 35; cornerR = 8; }
-                    else if (covStr.includes('250 m')) { boxW = 55; boxH = 55; cornerR = 13; }
-                    else if (covStr.includes('500 m')) { boxW = 75; boxH = 75; cornerR = 18; }
-                    else if (covStr.includes('1,000') || covStr.includes('1000')) { boxW = 100; boxH = 100; cornerR = 24; }
-                    else if (covStr.includes('2,500') || covStr.includes('2500')) { boxW = 130; boxH = 130; cornerR = 30; }
-                    else if (covStr.includes('5,000') || covStr.includes('5000')) { boxW = 160; boxH = 160; cornerR = 36; }
-                    else if (covStr.toLowerCase().includes('hectare')) { boxW = 190; boxH = 190; cornerR = 42; }
-
-                    if (typeof getRoundedBoxCoords === 'function') {
-                        const roundedCoords = getRoundedBoxCoords(lt, ln, boxW, boxH, cornerR);
-                        if (roundedCoords && roundedCoords.length > 0) {
-                            const poly = L.polygon(roundedCoords, {
-                                color: '#16a34a',
-                                fillColor: '#22c55e',
-                                fillOpacity: 0.25,
-                                weight: 2.5
-                            }).addTo(modalSoilDetailMapInstance);
-                            poly.bindTooltip(`Covered Area (Sakop): ${covStr}`, { sticky: true });
-                        }
-                    }
-
-                    setTimeout(() => { if (modalSoilDetailMapInstance) modalSoilDetailMapInstance.invalidateSize(); }, 150);
-                    setTimeout(() => { if (modalSoilDetailMapInstance) modalSoilDetailMapInstance.invalidateSize(); }, 350);
-                }, 80);
-            } else if (modalSoilLocationCard) {
-                modalSoilLocationCard.style.display = 'none';
-            }
-
-            // 10. Soil Normalization: Before & After Card
+            // 6. SOIL NORMALIZATION: BEFORE / AFTER CARD (Matching Screenshot 1)
+            // USER CONSTRAINT: "bat remove the Button Save Copy and Pin Location"
+            // 6. SOIL NORMALIZATION: BEFORE / AFTER CARD (Matching Screenshot 1)
             const ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
             let overlayBoxesHtml = '';
             let swatchPillsHtml = '';
@@ -1652,93 +2153,66 @@
                 `;
             });
 
-            const modalBeforeAfterCard = document.getElementById('modalBeforeAfterCard');
-            const modalBeforeAfterImg = document.getElementById('modalBeforeAfterImg');
-            const modalBeforeAfterBoxes = document.getElementById('modalBeforeAfterBoxes');
-            const modalBeforeAfterPlaceholder = document.getElementById('modalBeforeAfterPlaceholder');
-            const modalBeforeAfterSwatches = document.getElementById('modalBeforeAfterSwatches');
-            const modalBeforeAfterMetaText = document.getElementById('modalBeforeAfterMetaText');
+            bodyHtml += `
+                <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div class="soil-metric-card-label" style="margin-bottom: 0;">
+                            SOIL NORMALIZATION
+                        </div>
+                        <span style="font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
+                            BEFORE / AFTER
+                        </span>
+                    </div>
+                    <div class="soil-norm-container" style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25);">
+                        ${baImgUrl ? `
+                            <img src="${baImgUrl}" alt="Soil Before & After Normalization" loading="lazy" style="width: 100%; height: auto; display: block; border-radius: 8px;"
+                                 onload="var p = this.parentElement; if(p) { p.classList.add('image-loaded'); var o = p.querySelector('.soil-norm-overlays'); if(o) o.style.display='block'; }"
+                                 onerror="
+                                     var p = this.parentElement;
+                                     this.style.display = 'none';
+                                     var o = p.querySelector('.soil-norm-overlays');
+                                     if (o) o.style.display = 'none';
+                                     var fb = p.querySelector('.soil-norm-missing-placeholder');
+                                     if (fb) fb.style.display = 'flex';
+                                 " />
+                            <div class="soil-norm-overlays" style="display: none; position: absolute; inset: 0; pointer-events: none;">
+                                ${overlayBoxesHtml}
+                            </div>
+                        ` : ''}
+                        <div class="soil-norm-missing-placeholder" style="display: ${baImgUrl ? 'none' : 'flex'}; flex-direction: column; align-items: center; justify-content: center; padding: 28px 16px; background: rgba(12, 26, 23, 0.95); text-align: center; border-radius: 8px;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.02em;">Image not available</span>
+                            <span style="font-size: 10.5px; color: rgba(255,255,255,0.5); margin-top: 3px;">Normalization comparison image was not retained for this record</span>
+                        </div>
+                    </div>
 
-            if (modalBeforeAfterCard) {
-                modalBeforeAfterCard.style.display = 'block';
-                if (modalBeforeAfterMetaText) {
-                    modalBeforeAfterMetaText.textContent = `CREATED: ${recordedDate}  |  DETECTED COLORS: ${regions.length}`;
-                }
-                if (modalBeforeAfterSwatches) {
-                    modalBeforeAfterSwatches.style.display = 'flex';
-                    modalBeforeAfterSwatches.innerHTML = swatchPillsHtml;
-                }
-                if (baImgUrl && modalBeforeAfterImg) {
-                    modalBeforeAfterImg.onload = function() {
-                        modalBeforeAfterImg.style.display = 'block';
-                        if (modalBeforeAfterPlaceholder) modalBeforeAfterPlaceholder.style.display = 'none';
-                        if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = overlayBoxesHtml;
-                    };
-                    modalBeforeAfterImg.onerror = function() {
-                        modalBeforeAfterImg.style.display = 'none';
-                        if (modalBeforeAfterPlaceholder) modalBeforeAfterPlaceholder.style.display = 'flex';
-                        if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = '';
-                    };
-                    modalBeforeAfterImg.src = baImgUrl;
-                    if (modalBeforeAfterImg.complete && modalBeforeAfterImg.naturalWidth > 0) {
-                        modalBeforeAfterImg.style.display = 'block';
-                        if (modalBeforeAfterPlaceholder) modalBeforeAfterPlaceholder.style.display = 'none';
-                        if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = overlayBoxesHtml;
-                    }
-                } else {
-                    if (modalBeforeAfterImg) modalBeforeAfterImg.style.display = 'none';
-                    if (modalBeforeAfterPlaceholder) modalBeforeAfterPlaceholder.style.display = 'flex';
-                    if (modalBeforeAfterBoxes) modalBeforeAfterBoxes.innerHTML = '';
-                }
-            }
+                    <!-- Detected Soil Color Swatch Pills (Matching Screenshot 2 Capsule Design) -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+                        ${swatchPillsHtml}
+                    </div>
 
-            modal.style.setProperty('display', 'flex', 'important');
+                    <!-- METADATA Line (High Contrast for Dark & Light Mode) -->
+                    <div class="soil-normalization-meta-row">
+                        <div><strong class="soil-normalization-meta-title">METADATA</strong></div>
+                        <div class="soil-normalization-meta-info">CREATED: ${recordedDate} &nbsp;|&nbsp; DETECTED COLORS: ${regions.length}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('wsModalBodyContent').innerHTML = bodyHtml;
+
+            modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         };
 
-        window.closeSoilRecordModal = function() {
-            const modal = document.getElementById('soilRecordModal');
-            if (modal) modal.style.setProperty('display', 'none', 'important');
+        window.closeWebsiteSoilDetailModal = function() {
+            const modal = document.getElementById('websiteSoilDetailModal');
+            if (modal) modal.style.display = 'none';
             document.body.style.overflow = '';
-            if (modalSoilDetailMapInstance) {
-                try { modalSoilDetailMapInstance.remove(); } catch(e) {}
-                modalSoilDetailMapInstance = null;
-            }
-            const menu = document.getElementById('modalLayerDropdownMenu');
-            if (menu) menu.style.display = 'none';
-            const chevron = document.getElementById('modalDominantChevron');
-            if (chevron) chevron.style.transform = 'rotate(0deg)';
-        };
-
-        window.closeWebsiteSoilDetailModal = window.closeSoilRecordModal;
-
-        window.downloadSoilRecordHardCopy = function() {
-            const btn = document.querySelector('#soilRecordModal .btn-save-hardcopy');
-            if (btn) {
-                const originalHtml = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML = `
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    <span>Saved Copy ✓</span>
-                `;
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = originalHtml;
-                }, 2200);
-            }
-
-            const title = document.getElementById('modalRecordTitle')?.textContent || 'Soil Record Details';
-            const code = document.getElementById('modalCardFullCode')?.textContent || '—';
-            const name = document.getElementById('modalCardColorName')?.textContent || '—';
-            const date = document.getElementById('modalCardDate')?.textContent || '—';
-            const desc = document.getElementById('modalCardDesc')?.textContent || '—';
-            const summaryText = `AgriCo Soil Record\nTitle: ${title}\nSoil Name: ${name}\nMunsell Code: ${code}\nDate: ${date}\nDescription: ${desc}`;
-
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(summaryText).catch(() => {});
-            }
         };
 
         // Force Leaflet to recalculate container size & render tiles instantly without blank canvas
@@ -1751,7 +2225,27 @@
         });
     </script>
 
-    {{-- Unified Single Source of Truth Soil Record Details Pop-up Modal --}}
-    @include('website.partials.soil-record-modal')
+    <!-- Website Soil Detail Modal (Matching Screenshots 1, 2, 3, 4 without Save Copy or Pin Location buttons) -->
+    <div id="websiteSoilDetailModal" class="soil-detail-backdrop" style="display: none;" onclick="if(event.target === this) closeWebsiteSoilDetailModal()">
+        <div class="soil-detail-modal-container">
+            <!-- Header (Screenshot 2 & 4) -->
+            <div class="soil-detail-modal-header">
+                <h3 id="wsModalHeaderTitle">Soil Record Details</h3>
+                <x-close-button onclick="closeWebsiteSoilDetailModal()" title="Close details" ariaLabel="Close details" />
+            </div>
+
+            <!-- Scrollable Body -->
+            <div id="wsModalBodyContent" class="soil-detail-modal-body">
+                <!-- Content dynamically populated via viewWebsitePinDetails -->
+            </div>
+
+            <!-- Footer -->
+            <div class="soil-detail-modal-footer">
+                <button type="button" class="modal-cancel-btn" onclick="closeWebsiteSoilDetailModal()">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
 
 </x-website-layout>

@@ -2988,11 +2988,10 @@
         @media (max-width: 380px) {
             .soil-metrics-row-1,
             .soil-metrics-row-2 {
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                grid-template-columns: 1fr !important;
             }
-            .soil-metrics-row-1 > div:nth-child(3),
             .soil-metrics-row-2 .card-near-match {
-                grid-column: 1 / -1 !important;
+                grid-column: span 1 !important;
             }
             .soil-modal-footer {
                 padding: 10px 12px 12px !important;
@@ -5776,13 +5775,8 @@
                 }
 
                 // Render vector-sharp CSS green bounding box on top of the avatar (never blurred!)
-                // The thumbnail avatar is kept as a single clean image box without nested frames or inner boxes
                 if (boxHost) {
                     let roiBox = boxHost.querySelector('.soil-roi-box');
-                    if (zoomImg && (zoomImg.id === 'modalSoilCircleSnippet' || zoomImg.id === 'resSoilCircleSnippet')) {
-                        if (roiBox) roiBox.style.display = 'none';
-                        return;
-                    }
                     if (!roiBox) {
                         roiBox = document.createElement('div');
                         roiBox.className = 'soil-roi-box';
@@ -8614,15 +8608,6 @@
                 if (modalCardDesc) modalCardDesc.textContent = cleanDesc;
 
                 if (modalCardDate) modalCardDate.textContent = data.date || '—';
-                const modalCardScannedBy = document.getElementById('modalCardScannedBy');
-                const modalCardPlatform = document.getElementById('modalCardPlatform');
-                if (modalCardScannedBy) {
-                    modalCardScannedBy.textContent = data.userName || data.scanned_by || 'Admin Analyst';
-                }
-                if (modalCardPlatform) {
-                    modalCardPlatform.textContent = data.platform || data.scan_platform || 'Web';
-                    modalCardPlatform.style.display = 'inline-block';
-                }
 
                 // Modal Before & After Card Display (With Detected Soil Color Boxes & Swatches)
                 const modalBeforeAfterCard = document.getElementById('modalBeforeAfterCard');
@@ -11163,8 +11148,231 @@
         }
     </script>
 
-    {{-- Soil Record Details Pop-up Modal (Shared Single Source of Truth) --}}
-    @include('website.partials.soil-record-modal')
+    <!-- Soil Record Details Pop-up Modal -->
+    <div id="soilRecordModal" onclick="if (event.target === this) closeSoilRecordModal()" style="display: none !important; position:fixed; inset:0; z-index:99999; background:rgba(5, 31, 32, 0.8); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
+        <div class="soil-modal-card" style="font-family: inherit;">
+            
+            <!-- Modal Header -->
+            <div class="soil-modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+                <h3 class="soil-modal-title" id="modalRecordTitle">Soil Record Details</h3>
+                <x-close-button onclick="closeSoilRecordModal()" title="Close details" ariaLabel="Close details" />
+            </div>
+
+            <!-- Modal Body Container -->
+            <div class="soil-modal-body-container">
+                
+                {{-- Dual-Preview Soil Badge Banner (Inline Avatar + Center Code + Right Hex Pill) --}}
+                <div id="modalSoilDualPreviewBadge" class="soil-modal-banner" style="position: relative; margin-top: 2px; margin-bottom: 16px; width: 100%; border-radius: 18px; display: flex; align-items: center; gap: 14px; padding: 14px 18px; box-sizing: border-box; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); min-height: 76px; transition: background-color 0.3s ease;">
+                    {{-- Inline Avatar (matches admin soil-swatch-avatar) --}}
+                    <div id="modalSoilSnippetAvatarContainer" 
+                         style="position: relative; width: 60px; height: 60px; min-width: 60px; border-radius: 12px; overflow: hidden; flex-shrink: 0; box-shadow: none !important; background: transparent; pointer-events: none; border: none; outline: none;">
+                        <img id="modalSoilCircleSnippet" src="" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;" />
+                        <div id="modalSoilSnippetFallback" style="position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.24); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;" title="Image not available for this record">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span style="font-size: 7px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; opacity: 0.95; text-transform: uppercase;">Image Not Available</span>
+                        </div>
+                    </div>
+
+                    {{-- Center Code & Percentage --}}
+                    <div id="modalSwatchBlock" style="flex: 1; min-width: 0; cursor: pointer;" title="Click to view all detected soil results">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span id="modalDominantChevron" style="display: none; font-size: 12px; color: #ffffff; opacity: 0.9; transition: transform 0.2s ease;">▼</span>
+                            <span id="modalCodeDisplay" style="font-size: 24px; font-weight: 900; color: #ffffff; text-shadow: none; letter-spacing: -0.01em; line-height: 1.15;">
+                                7.5YR 5/3
+                            </span>
+                        </div>
+                        <div id="modalSoilPercentageDisplay" style="display: none; font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,0.95); margin-top: 3px; letter-spacing: 0.02em;">
+                            Soil Percentage (60%)
+                        </div>
+                    </div>
+
+                    {{-- Right Hex Pill --}}
+                    <span id="modalHexPill" style="font-size: 11px; font-weight: 800; color: #ffffff; background: rgba(0,0,0,0.58); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 5px 12px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; border: 1px solid rgba(255,255,255,0.25); user-select: none; line-height: 1; flex-shrink: 0; white-space: nowrap;">
+                        #8F694E
+                    </span>
+
+                    <!-- Interactive Dropdown Menu for all detected soil layers in Record Modal -->
+                    <div id="modalLayerDropdownMenu" class="res-layer-dropdown-menu" style="display: none;">
+                        <div class="res-layer-dropdown-header">
+                            <span>Detected Soil Layers</span>
+                            <span id="modalLayerDropdownCount" class="res-layer-dropdown-count">0 DETECTED</span>
+                        </div>
+                        <div id="modalLayerDropdownList" class="res-layer-dropdown-list"></div>
+                    </div>
+                </div>
+
+                <!-- Row 1: Code Details (Color Name, Full Code, Scan Count) -->
+                <div class="soil-modal-grid-3 soil-metrics-row-1" style="margin-bottom: 8px;">
+                    <!-- Color Name Card -->
+                    <div class="soil-modal-grid-card">
+                        <div class="soil-modal-label">
+                            Color Name
+                        </div>
+                        <div id="modalCardColorName" class="soil-modal-value" style="font-size: 13px; font-weight: 700;">Brown</div>
+                    </div>
+
+                    <!-- Full Code Card -->
+                    <div class="soil-modal-grid-card">
+                        <div class="soil-modal-label">
+                            Full Code
+                        </div>
+                        <div id="modalCardFullCode" class="soil-modal-value" style="font-size: 13px; font-weight: 700;">7.5YR 5/3</div>
+                    </div>
+
+                    <!-- Scan Count Card -->
+                    <div class="soil-modal-grid-card">
+                        <div class="soil-modal-label">
+                            Scan Count
+                        </div>
+                        <div id="modalCardScanCount" class="soil-modal-value" style="font-size: 13px; font-weight: 700;">1</div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Soil Properties (Soil Organic, Soil Type, Near-Match Emerald #10b981) -->
+                <div class="soil-modal-grid-3 soil-metrics-row-2" style="margin-bottom: 12px;">
+                    <!-- Soil Organic Card -->
+                    <div class="soil-modal-grid-card">
+                        <div class="soil-modal-label">
+                            Soil Organic
+                        </div>
+                        <div id="modalCardOrganic" class="soil-modal-value" style="font-size:13px; font-weight:700;">Moderate (2.2% – 3.7%)</div>
+                    </div>
+
+                    <!-- Soil Type Card -->
+                    <div class="soil-modal-grid-card">
+                        <div class="soil-modal-label">
+                            Soil Type
+                        </div>
+                        <div id="modalCardDrainage" class="soil-modal-value" style="font-size:13px; font-weight:700;">Well-Drained Clay / Latosol</div>
+                    </div>
+
+                    <!-- Near-Match Rating Card -->
+                    <div class="soil-modal-grid-card card-near-match">
+                        <div class="soil-modal-label">
+                            Near-Match
+                        </div>
+                        <div id="modalCardConfidence" class="soil-modal-value" style="font-size: 13.5px; font-weight: 800; color: #10b981 !important;">97.4%</div>
+                    </div>
+                </div>
+
+                <!-- Scan Date Card (Shown only for single record fallback) -->
+                <div id="modalCardDateContainer" class="soil-modal-grid-card" style="margin-bottom: 10px;">
+                    <div class="soil-modal-label">
+                        SCAN DATE
+                    </div>
+                    <div id="modalCardDate" class="soil-modal-value">08/21/2026</div>
+                </div>
+
+                <!-- Scan Note Card (Full Width 100%) -->
+                <div id="modalScanNoteCard" class="soil-modal-grid-card soil-modal-desc-card" style="margin-bottom: 10px; padding: 12px 16px; overflow: hidden; max-width: 100%; box-sizing: border-box;">
+                    <div class="soil-modal-label">
+                        Scan Note
+                    </div>
+                    <div id="modalCardScanNote" class="soil-modal-value" style="font-size: 13px; font-weight: 700; margin: 0; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
+                        No scan note available for this record.
+                    </div>
+                </div>
+
+                <!-- Description Card (Full Width 100%) -->
+                <div id="modalDescCard" class="soil-modal-grid-card soil-modal-desc-card" style="margin-bottom: 10px; padding: 12px 16px; overflow: hidden; max-width: 100%; box-sizing: border-box;">
+                    <div class="soil-modal-label">
+                        Description
+                    </div>
+                    <div id="modalCardDesc" class="soil-modal-value" style="font-size: 13px; font-weight: 700; margin: 0; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
+                        7.5YR 5/3 - brown
+                    </div>
+                </div>
+
+                <!-- Multi-Layer Accordion Section (Secondary & Tertiary Layers) -->
+                <div id="modalMultiLayerSection" style="display: none; margin-bottom: 12px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
+                    <div id="modalMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+
+                <!-- Soil Pin Location & Covered Area Card (Modal - Placed BEFORE Soil Normalization) -->
+                <div id="modalSoilLocationCard" class="soil-modal-grid-card" style="margin-bottom: 12px; padding: 13px 16px 15px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                        <div class="soil-modal-label" style="font-size: 11px; font-weight: 700; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.03em;">
+                            SOIL PIN LOCATION &amp; COVERED AREA
+                        </div>
+                        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                            <span id="modalLocStatusBadge" class="modal-loc-badge-status" style="display: none; padding: 2px 8px; border-radius: 9999px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.03em;">
+                                --
+                            </span>
+                            <span id="modalLocBrgyBadge" class="modal-loc-badge-brgy">
+                                --
+                            </span>
+                            <span id="modalLocCoverageBadge" class="modal-loc-badge-coverage" style="display: none;">
+                                --
+                            </span>
+                            <span id="modalLocCoordsBadge" class="modal-loc-badge-coords">
+                                --
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-soil-map-wrapper">
+                        <div id="modalSoilDetailMap" style="height: 220px; width: 100%;"></div>
+                        <div class="modal-soil-map-watermark">
+                            AgriCo Soil GPS Preview
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Soil Normalization: Before & After Card (Modal - Placed AFTER the last soil layer result) -->
+                <div id="modalBeforeAfterCard" class="soil-modal-grid-card" style="margin-bottom: 12px; padding: 13px 16px 15px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div class="soil-modal-label" style="font-size: 11px; font-weight: 700; color: #8EB69B; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.03em;">
+                            SOIL NORMALIZATION
+                        </div>
+                        <span class="before-after-badge" style="font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">
+                            BEFORE / AFTER
+                        </span>
+                    </div>
+                    <div id="modalBeforeAfterContainer" style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; cursor: pointer;" onclick="openBeforeAfterLightbox('modalBeforeAfterImg')" title="Click to view full resolution comparison">
+                        <img id="modalBeforeAfterImg" src="" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 8px;">
+
+                        <!-- Replaces the single static modalBeforeAfterBox -->
+                        <div id="modalBeforeAfterBoxes" style="position: absolute; inset: 0; pointer-events: none; z-index: 10;"></div>
+                        <div id="modalBeforeAfterPlaceholder" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 28px 16px; background: rgba(12, 26, 23, 0.95); text-align: center; border-radius: 8px;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            <span style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85);">Image not available</span>
+                            <span style="font-size: 10.5px; color: rgba(255,255,255,0.5); margin-top: 3px;">Normalization comparison image was not retained for this record</span>
+                        </div>
+                    </div>
+                    <div id="modalBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(142, 182, 155, 0.25); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;">
+                        <strong>METADATA</strong>
+                        <span id="modalBeforeAfterMetaText" style="font-weight: 600; opacity: 0.8;">CREATED: — | DETECTED COLORS: 1</span>
+                    </div>
+                </div>
+
+                <!-- Metadata Footer -->
+                <div id="modalMetadataFooter" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(142, 182, 155, 0.2); font-size: 11.5px; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 0.04em;">
+                    <div>Created: <span id="modalMetaCreated" style="font-weight: 700;">--</span></div>
+                    <div>Total Layers: <span id="modalMetaLayers" style="font-weight: 700;">1</span></div>
+                </div>
+
+            </div>
+
+            <!-- Fixed Modal Footer: Cancel and Save Copy Buttons -->
+            <div class="soil-modal-footer">
+                <button type="button" class="btn-modal-cancel" onclick="closeSoilRecordModal()" title="Cancel">
+                    <span>Cancel</span>
+                </button>
+                <button type="button" class="btn-save-hardcopy" onclick="downloadSoilRecordHardCopy()" title="Save Copy">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Save Copy</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     {{-- ── PIN SOIL LOCATION MODAL (DARK & LIGHT MODE READY) ── --}}
     <div id="pinSoilLocationModal" class="pin-modal-backdrop" style="display: none !important;">
