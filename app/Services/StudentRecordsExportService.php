@@ -60,56 +60,100 @@ class StudentRecordsExportService
         // Total usable printable width ~15390 twips (10.69 inches * 1440)
         $usableWidthTwips = 15390;
 
-        // HEADER (CSU Logo & "CSU - Lal-lo Campus")
+        // TOP 3-COLUMN HEADER TABLE (Left: Republic & CSU info, Center: Logo, Right: Contact info)
         $logoPath = public_path('images/csu-logo.png');
         $hasLogo = file_exists($logoPath);
 
         $headerTable = $section->addTable([
             'alignment' => JcTable::CENTER,
-            'cellMargin' => 50,
+            'cellMargin' => 30,
         ]);
         $headerRow = $headerTable->addRow();
 
+        // 1. Left Column: Republic & CSU Addresses
+        $leftCellWidth = Converter::inchToTwip(4.2);
+        $leftCell = $headerRow->addCell($leftCellWidth, ['valign' => 'center']);
+        $leftCell->addText('REPUBLIC OF THE PHILIPPINES', [
+            'name'  => 'Arial',
+            'size'  => 7.5,
+            'bold'  => true,
+            'color' => '000000',
+        ], ['spaceAfter' => 10]);
+        $leftCell->addText('CAGAYAN STATE UNIVERSITY', [
+            'name'  => 'Arial',
+            'size'  => 9,
+            'bold'  => true,
+            'color' => '000000',
+        ], ['spaceAfter' => 10]);
+        $leftCell->addText("Andrews Campus, Tuguegarao City, Cagayan (Central Office)\nCSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)", [
+            'name'  => 'Arial',
+            'size'  => 7,
+            'color' => '000000',
+        ], ['spaceAfter' => 0]);
+
+        // 2. Center Column: CSU Logo
+        $centerCellWidth = Converter::inchToTwip(2.29);
+        $centerCell = $headerRow->addCell($centerCellWidth, ['valign' => 'center']);
         if ($hasLogo) {
-            $logoCell = $headerRow->addCell(Converter::inchToTwip(1.2));
             try {
-                $logoCell->addImage($logoPath, [
-                    'width'         => 48,
-                    'height'        => 48,
-                    'alignment'     => Jc::CENTER,
+                $centerCell->addImage($logoPath, [
+                    'height'          => 48,
+                    'alignment'       => Jc::CENTER,
                     'keepAspectRatio' => true,
                 ]);
-            } catch (\Throwable $e) {
-                // If image fails to parse, proceed without crash
-            }
+            } catch (\Throwable $e) {}
         }
 
-        $titleHeaderCell = $headerRow->addCell(Converter::inchToTwip(8.5));
-        $titleHeaderCell->addText('CSU - Lal-lo Campus', [
+        // 3. Right Column: Contact info
+        $rightCellWidth = Converter::inchToTwip(4.2);
+        $rightCell = $headerRow->addCell($rightCellWidth, ['valign' => 'center']);
+        $p1 = $rightCell->addTextRun(['spaceAfter' => 10]);
+        $p1->addText('Phone Number: ', ['name' => 'Arial', 'size' => 7, 'bold' => true, 'color' => '000000']);
+        $p1->addText('0945-0898-648', ['name' => 'Arial', 'size' => 7, 'color' => '000000']);
+
+        $p2 = $rightCell->addTextRun(['spaceAfter' => 10]);
+        $p2->addText('Email Address: ', ['name' => 'Arial', 'size' => 7, 'bold' => true, 'color' => '000000']);
+        $p2->addText('cicspadayaperformingartsguild@gmail.com', ['name' => 'Arial', 'size' => 7, 'color' => '000000']);
+
+        $p3 = $rightCell->addTextRun(['spaceAfter' => 0]);
+        $p3->addText('Facebook page: ', ['name' => 'Arial', 'size' => 7, 'bold' => true, 'color' => '000000']);
+        $p3->addText('CICS Padaya Performing Arts Guild', ['name' => 'Arial', 'size' => 7, 'color' => '000000']);
+
+        // CAMPUS MAIN TITLE
+        $section->addText('CAGAYAN STATE UNIVERSITY Lal-lo Campus', [
             'name'  => 'Arial',
-            'size'  => 13,
+            'size'  => 11,
             'bold'  => true,
             'color' => '000000',
         ], [
-            'alignment'  => $hasLogo ? Jc::LEFT : Jc::CENTER,
-            'spaceAfter' => 20,
+            'alignment'   => Jc::CENTER,
+            'spaceBefore' => 80,
+            'spaceAfter'  => 40,
         ]);
 
-        // Small vertical gap
-        $section->addTextBreak(1, ['size' => 4]);
+        // HORIZONTAL DIVIDER LINE
+        $lineTable = $section->addTable(['alignment' => JcTable::CENTER]);
+        $lineRow = $lineTable->addRow(1);
+        $lineRow->addCell($usableWidthTwips, [
+            'borderBottomSize'  => 12, // 1.5 pt solid black line
+            'borderBottomColor' => '000000',
+        ]);
 
         // DOCUMENT TITLE (if provided)
         $trimmedTitle = trim($documentTitle);
         if ($trimmedTitle !== '') {
             $section->addText($trimmedTitle, [
                 'name'  => 'Arial',
-                'size'  => 11,
+                'size'  => 10.5,
                 'bold'  => true,
                 'color' => '000000',
             ], [
-                'alignment'  => Jc::CENTER,
-                'spaceAfter' => 120,
+                'alignment'   => Jc::CENTER,
+                'spaceBefore' => 80,
+                'spaceAfter'  => 120,
             ]);
+        } else {
+            $section->addTextBreak(1, ['size' => 6]);
         }
 
         // CALCULATE TABLE COLUMNS & SIZING
@@ -291,7 +335,7 @@ class StudentRecordsExportService
             }
         }
 
-        // FOOTER ON EVERY PAGE
+        // FOOTER ON EVERY PAGE (Left: Prepared by, Center: Date)
         $footer = $section->addFooter();
         $footerTable = $footer->addTable([
             'alignment' => JcTable::CENTER,
@@ -300,7 +344,7 @@ class StudentRecordsExportService
         $footerRow = $footerTable->addRow();
 
         // Left: Prepared by
-        $preparedCell = $footerRow->addCell(Converter::inchToTwip(4.0));
+        $preparedCell = $footerRow->addCell(Converter::inchToTwip(5.34));
         $preparedCell->addText("Prepared by: {$adminName}", [
             'name'  => 'Arial',
             'size'  => 8.5,
@@ -308,20 +352,12 @@ class StudentRecordsExportService
         ], ['alignment' => Jc::LEFT]);
 
         // Center: Date
-        $dateCell = $footerRow->addCell(Converter::inchToTwip(3.5));
+        $dateCell = $footerRow->addCell(Converter::inchToTwip(5.34));
         $dateCell->addText(date('F j, Y'), [
             'name'  => 'Arial',
             'size'  => 8.5,
             'color' => '000000',
         ], ['alignment' => Jc::CENTER]);
-
-        // Right: Page numbers
-        $pageCell = $footerRow->addCell(Converter::inchToTwip(3.2));
-        $pageRun = $pageCell->addTextRun(['alignment' => Jc::RIGHT]);
-        $pageRun->addText('Page ', ['name' => 'Arial', 'size' => 8.5, 'color' => '000000']);
-        $pageRun->addField('PAGE');
-        $pageRun->addText(' of ', ['name' => 'Arial', 'size' => 8.5, 'color' => '000000']);
-        $pageRun->addField('NUMPAGES');
 
         // Stream download
         $filename = self::buildFilename($sectionFilter, 'docx');
@@ -370,15 +406,23 @@ class StudentRecordsExportService
 
         $currentRow = 1;
 
-        // HEADER ROW: CSU - Lal-lo Campus
-        $sheet->mergeCells("A{$currentRow}:{$lastColLetter}{$currentRow}");
-        $sheet->setCellValue("A{$currentRow}", 'CSU - Lal-lo Campus');
-        $sheet->getStyle("A{$currentRow}")->getFont()->setName('Arial')->setSize(14)->setBold(true)->getColor()->setRGB('000000');
-        $sheet->getStyle("A{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
-        $sheet->getRowDimension($currentRow)->setRowHeight(26);
-        $currentRow++;
+        // Column indices for 3-column header
+        $leftEndCol = max(1, (int)floor($totalColumnCount * 0.4));
+        $leftEndLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($leftEndCol);
 
-        // Add Logo if exists
+        $midCol = min($totalColumnCount, $leftEndCol + 1);
+        $midLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($midCol);
+
+        $rightStartCol = min($totalColumnCount, $midCol + 1);
+        $rightStartLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($rightStartCol);
+
+        // 1. LEFT HEADER BLOCK: Republic & CSU Addresses
+        $sheet->mergeCells("A1:{$leftEndLetter}1");
+        $sheet->setCellValue("A1", "REPUBLIC OF THE PHILIPPINES\nCAGAYAN STATE UNIVERSITY\nAndrews Campus, Tuguegarao City, Cagayan (Central Office)\nCSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)");
+        $sheet->getStyle("A1")->getFont()->setName('Arial')->setSize(7.5)->getColor()->setRGB('000000');
+        $sheet->getStyle("A1")->getAlignment()->setWrapText(true)->setHorizontal(Alignment::HORIZONTAL_LEFT)->setVertical(Alignment::VERTICAL_CENTER);
+
+        // 2. CENTER: CSU LOGO
         $logoPath = public_path('images/csu-logo.png');
         if (file_exists($logoPath)) {
             try {
@@ -386,27 +430,47 @@ class StudentRecordsExportService
                 $drawing->setName('CSU Logo');
                 $drawing->setDescription('CSU Logo');
                 $drawing->setPath($logoPath);
-                $drawing->setHeight(36);
-                $drawing->setCoordinates('A1');
+                $drawing->setHeight(46);
+                $drawing->setCoordinates("{$midLetter}1");
+                $drawing->setOffsetX(8);
+                $drawing->setOffsetY(4);
                 $drawing->setWorksheet($sheet);
-            } catch (\Throwable $e) {
-                // proceed if drawing fails
-            }
+            } catch (\Throwable $e) {}
         }
+
+        // 3. RIGHT HEADER BLOCK: Contact Info
+        if ($rightStartCol <= $totalColumnCount) {
+            $sheet->mergeCells("{$rightStartLetter}1:{$lastColLetter}1");
+            $sheet->setCellValue("{$rightStartLetter}1", "Phone Number: 0945-0898-648\nEmail Address: cicspadayaperformingartsguild@gmail.com\nFacebook page: CICS Padaya Performing Arts Guild");
+            $sheet->getStyle("{$rightStartLetter}1")->getFont()->setName('Arial')->setSize(7.5)->getColor()->setRGB('000000');
+            $sheet->getStyle("{$rightStartLetter}1")->getAlignment()->setWrapText(true)->setHorizontal(Alignment::HORIZONTAL_LEFT)->setVertical(Alignment::VERTICAL_CENTER);
+        }
+
+        $sheet->getRowDimension(1)->setRowHeight(58);
+        $currentRow = 2;
+
+        // CAMPUS MAIN TITLE WITH DIVIDER LINE
+        $sheet->mergeCells("A{$currentRow}:{$lastColLetter}{$currentRow}");
+        $sheet->setCellValue("A{$currentRow}", 'CAGAYAN STATE UNIVERSITY Lal-lo Campus');
+        $sheet->getStyle("A{$currentRow}")->getFont()->setName('Arial')->setSize(11)->setBold(true)->getColor()->setRGB('000000');
+        $sheet->getStyle("A{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle("A{$currentRow}:{$lastColLetter}{$currentRow}")->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM)->getColor()->setRGB('000000');
+        $sheet->getRowDimension($currentRow)->setRowHeight(24);
+        $currentRow++;
 
         // DOCUMENT TITLE ROW (if provided)
         $trimmedTitle = trim($documentTitle);
         if ($trimmedTitle !== '') {
             $sheet->mergeCells("A{$currentRow}:{$lastColLetter}{$currentRow}");
             $sheet->setCellValue("A{$currentRow}", $trimmedTitle);
-            $sheet->getStyle("A{$currentRow}")->getFont()->setName('Arial')->setSize(11)->setBold(true)->getColor()->setRGB('000000');
+            $sheet->getStyle("A{$currentRow}")->getFont()->setName('Arial')->setSize(10.5)->setBold(true)->getColor()->setRGB('000000');
             $sheet->getStyle("A{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
             $sheet->getRowDimension($currentRow)->setRowHeight(22);
             $currentRow++;
         }
 
         // Spacer row
-        $sheet->getRowDimension($currentRow)->setRowHeight(8);
+        $sheet->getRowDimension($currentRow)->setRowHeight(6);
         $currentRow++;
 
         // TABLE HEADER: Row 1 & Row 2
@@ -546,10 +610,10 @@ class StudentRecordsExportService
             $sheet->getColumnDimension($colLetter)->setWidth(14);
         }
 
-        // FOOTER ON EVERY PAGE (Left: Admin Name, Center: Date, Right: Page X of Y)
+        // FOOTER ON EVERY PAGE (Left: Admin Name, Center: Date)
         $todayStr = date('F j, Y');
-        $sheet->getHeaderFooter()->setOddFooter("&LPrepared by: {$adminName}&C{$todayStr}&RPage &P of &N");
-        $sheet->getHeaderFooter()->setEvenFooter("&LPrepared by: {$adminName}&C{$todayStr}&RPage &P of &N");
+        $sheet->getHeaderFooter()->setOddFooter("&LPrepared by: {$adminName}&C{$todayStr}&R");
+        $sheet->getHeaderFooter()->setEvenFooter("&LPrepared by: {$adminName}&C{$todayStr}&R");
 
         $filename = self::buildFilename($sectionFilter, 'xlsx');
 

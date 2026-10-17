@@ -124,8 +124,11 @@ class StudentRecordsExportTest extends TestCase
         // Assert landscape orientation
         $this->assertStringContainsString('w:orient="landscape"', $docXml, 'Docx must be landscape oriented');
 
-        // Assert CSU Header
-        $this->assertStringContainsString('CSU - Lal-lo Campus', $docXml, 'Docx must contain CSU Header');
+        // Assert CSU Header & Republic
+        $this->assertStringContainsString('REPUBLIC OF THE PHILIPPINES', $docXml, 'Docx must contain Republic of the Philippines');
+        $this->assertStringContainsString('CAGAYAN STATE UNIVERSITY Lal-lo Campus', $docXml, 'Docx must contain Campus Title');
+        $this->assertStringContainsString('0945-0898-648', $docXml, 'Docx must contain Contact Phone');
+        $this->assertStringContainsString('cicspadayaperformingartsguild@gmail.com', $docXml, 'Docx must contain Contact Email');
 
         // Assert Document Title
         $this->assertStringContainsString('GENERAL ACTION PLAN FOR ACADEMIC YEAR 2025-2026', $docXml, 'Docx must contain Document Title');
@@ -135,9 +138,10 @@ class StudentRecordsExportTest extends TestCase
         $this->assertStringContainsString('Maria Clara de los Santos', $docXml, 'Docx must contain student name Maria Clara');
         $this->assertStringContainsString('BSIT-4A', $docXml, 'Docx must contain student section');
 
-        // Assert Footer Admin Name
+        // Assert Footer Admin Name & Centered Date
         $combinedXml = $docXml . $footerXml;
         $this->assertStringContainsString('Prof. Maria Santos', $combinedXml, 'Docx must contain Admin full name in footer');
+        $this->assertStringContainsString(date('F j, Y'), $combinedXml, 'Docx must contain Date in footer');
     }
 
     public function test_xlsx_export_is_landscape_and_contains_header_title_and_footer()
@@ -197,14 +201,16 @@ class StudentRecordsExportTest extends TestCase
         $this->assertEquals(PageSetup::ORIENTATION_LANDSCAPE, $orientation, 'Excel sheet must be landscape');
 
         // 2. Assert Header text
-        $this->assertEquals('CSU - Lal-lo Campus', $sheet->getCell('A1')->getValue());
+        $this->assertStringContainsString('REPUBLIC OF THE PHILIPPINES', $sheet->getCell('A1')->getValue());
+        $this->assertEquals('CAGAYAN STATE UNIVERSITY Lal-lo Campus', $sheet->getCell('A2')->getValue());
 
         // 3. Assert Document Title
-        $this->assertEquals('SPECIAL RESEARCH FIELD LAB', $sheet->getCell('A2')->getValue());
+        $this->assertEquals('SPECIAL RESEARCH FIELD LAB', $sheet->getCell('A3')->getValue());
 
-        // 4. Assert Footer contains admin name
+        // 4. Assert Footer contains admin name and date
         $footerText = $sheet->getHeaderFooter()->getOddFooter();
         $this->assertStringContainsString('Dr. Josefa Llanes Escoda', $footerText, 'Excel footer must contain Admin name');
+        $this->assertStringContainsString(date('F j, Y'), $footerText, 'Excel footer must contain Date');
 
         // 5. Assert Table contains student
         $foundStudent = false;

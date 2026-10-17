@@ -682,19 +682,42 @@
 
     {{-- DEDICATED PRINT-ONLY LAYOUT (LANDSCAPE, BLACK & WHITE ONLY, CSU HEADER, DOCUMENT TITLE, TABLE, FOOTER) --}}
     <div id="sectionRecordsPrintArea">
-        {{-- CSU HEADER --}}
-        <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 12px; text-align: center;">
-            @if(file_exists(public_path('images/csu-logo.png')))
-                <img src="{{ asset('images/csu-logo.png') }}" alt="CSU Logo" style="height: 48px; width: auto; object-fit: contain;" />
-            @endif
-            <div style="font-size: 16pt; font-weight: bold; color: #000000; letter-spacing: 0.02em;">
-                CSU - Lal-lo Campus
+        {{-- TOP 3-COLUMN HEADER TABLE (Left: Republic & CSU info, Center: Logo, Right: Contact info) --}}
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; font-family: Arial, sans-serif;">
+            {{-- 1. Left: Republic & CSU Addresses --}}
+            <div style="flex: 1; text-align: left; font-size: 7.5pt; line-height: 1.35; color: #000000;">
+                <div style="font-weight: bold; font-size: 8pt; letter-spacing: 0.02em;">REPUBLIC OF THE PHILIPPINES</div>
+                <div style="font-weight: bold; font-size: 9.5pt; margin-top: 1px;">CAGAYAN STATE UNIVERSITY</div>
+                <div style="font-size: 7pt; margin-top: 2px;">Andrews Campus, Tuguegarao City, Cagayan (Central Office)</div>
+                <div style="font-size: 7pt;">CSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)</div>
+            </div>
+
+            {{-- 2. Center: CSU Logo --}}
+            <div style="flex: 0 0 auto; text-align: center; padding: 0 16px;">
+                @if(file_exists(public_path('images/csu-logo.png')))
+                    <img src="{{ asset('images/csu-logo.png') }}" alt="CSU Logo" style="height: 52px; width: auto; object-fit: contain; display: inline-block;" />
+                @endif
+            </div>
+
+            {{-- 3. Right: Contact Info --}}
+            <div style="flex: 1; text-align: right; font-size: 7pt; line-height: 1.45; color: #000000;">
+                <div><strong style="font-weight: bold;">Phone Number:</strong> 0945-0898-648</div>
+                <div><strong style="font-weight: bold;">Email Address:</strong> cicspadayaperformingartsguild@gmail.com</div>
+                <div><strong style="font-weight: bold;">Facebook page:</strong> CICS Padaya Performing Arts Guild</div>
             </div>
         </div>
 
-        {{-- DOCUMENT TITLE --}}
+        {{-- CAMPUS MAIN TITLE --}}
+        <div style="text-align: center; font-size: 11pt; font-weight: bold; color: #000000; margin-top: 10px; margin-bottom: 6px; letter-spacing: 0.02em; font-family: Arial, sans-serif;">
+            CAGAYAN STATE UNIVERSITY Lal-lo Campus
+        </div>
+
+        {{-- HORIZONTAL DIVIDER LINE --}}
+        <div style="width: 100%; border-bottom: 2px solid #000000; margin-bottom: 10px;"></div>
+
+        {{-- DOCUMENT TITLE (AFTER THE LINE) --}}
         @if(!empty(trim($documentTitle)))
-            <div style="text-align: center; font-size: 11.5pt; font-weight: bold; color: #000000; margin-bottom: 14px; text-transform: uppercase;">
+            <div style="text-align: center; font-size: 11pt; font-weight: bold; color: #000000; margin-bottom: 12px; text-transform: uppercase; font-family: Arial, sans-serif;">
                 {{ trim($documentTitle) }}
             </div>
         @endif
@@ -772,16 +795,15 @@
             </tbody>
         </table>
 
-        {{-- PRINT FOOTER --}}
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 18px; font-size: 8.5pt; color: #000000; font-family: Arial, sans-serif;">
-            <div style="font-weight: 500;">
-                Prepared by: <strong>{{ $loggedInAdminName ?? 'Admin' }}</strong>
+        {{-- PRINT FOOTER (Left: Prepared by, Center: Date) --}}
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 18px; font-size: 8.5pt; color: #000000; font-family: Arial, sans-serif; width: 100%;">
+            <div style="flex: 1; text-align: left; font-weight: 500;">
+                Prepared by: <strong>{{ $loggedInAdminName ?? 'AgriCo Administrator' }}</strong>
             </div>
-            <div>
+            <div style="flex: 1; text-align: center; font-weight: 500;">
                 {{ date('F j, Y') }}
             </div>
-            <div>
-                {{-- Paged media numbering --}}
+            <div style="flex: 1; text-align: right;">
             </div>
         </div>
     </div>
