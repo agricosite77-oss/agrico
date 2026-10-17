@@ -622,7 +622,7 @@ class SoilMLAnalysisService
                     'regions_data' => [$r], 'scan_date' => now(),
                     'scan_image' => $rImgPath,
                     'before_after_image' => $publicBaRelativePath,
-                    'thumbnail_image' => $rImgPath ?: ($publicThumbRelativePath ?: null),
+                    'thumbnail_image' => $publicThumbRelativePath ?: $rImgPath,
                 ]);
                 $subScansCreated[$i] = [
                     'scan_id' => $subScan->soil_scan_id,

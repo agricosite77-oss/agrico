@@ -22,26 +22,8 @@ class SoilImageHelper
         $soilScan = ($scan instanceof SoilScan) ? $scan : ($scan->soilScan ?? null);
         $cloudStorage = app(CloudStorageService::class);
 
-        // Check if thumbnail or clean image was requested
-        $isCleanRequest = ($typeOrFallback === 'clean' || $typeOrFallback === false);
-        $isThumbRequest = !$isCleanRequest && ($typeOrFallback === 'thumb' || $typeOrFallback === true);
-
-        // If a clean image without baked-in bounding box was requested, prioritize main scan_image
-        if ($isCleanRequest) {
-            $raw = $soilScan?->scan_image ?? ($scan->soil_photo_path ?? ($scan->scan_image ?? null));
-            if (!empty($raw)) {
-                $photoUrl = static::normalizeUrl($raw, $cloudStorage);
-                if ($photoUrl) return $photoUrl;
-            }
-        }
-
-        // If this record has its own dedicated cropped region image (region_*),
-        // prioritize it so secondary soil colors never inherit the dominant color's thumbnail!
-        $rawScanImage = $soilScan?->scan_image ?? '';
-        if ($rawScanImage && str_contains($rawScanImage, 'region_')) {
-            $regionUrl = static::normalizeUrl($rawScanImage, $cloudStorage);
-            if ($regionUrl) return $regionUrl;
-        }
+        // Check if thumbnail was requested
+        $isThumbRequest = ($typeOrFallback === 'thumb' || $typeOrFallback === true);
 
         // 1. Direct thumbnail_image column if present and thumbnail requested
         if ($isThumbRequest && $soilScan && !empty($soilScan->thumbnail_image)) {

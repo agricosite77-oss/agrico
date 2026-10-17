@@ -1894,7 +1894,6 @@
             // 1. DUAL-PREVIEW BANNER SWATCH CARD (Matching Admin Modal Header)
             const fallbackThumb = (regions[0] && regions[0].region_thumbnail) ? (regions[0].region_thumbnail.startsWith('data:') ? regions[0].region_thumbnail : 'data:image/png;base64,' + regions[0].region_thumbnail) : '';
             const effectiveAvatarUrl = scanImgUrl || fallbackThumb;
-            const hasBakedOrCrop = effectiveAvatarUrl && (effectiveAvatarUrl.includes('_thumb.') || effectiveAvatarUrl.includes('region_') || effectiveAvatarUrl.includes('thumbnail') || effectiveAvatarUrl.startsWith('data:'));
 
             bodyHtml += `
                 <div class="soil-swatch-banner" style="background: ${domHex};">
@@ -1907,7 +1906,7 @@
                                      var f = p.querySelector('.soil-avatar-placeholder');
                                      if(f) f.style.display='flex';
                                  " />
-                            ${(scanImgUrl && !hasBakedOrCrop) ? `<div class="soil-avatar-box" style="position: absolute; left: ${domBox.left}%; top: ${domBox.top}%; width: ${domBox.width}%; height: ${domBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>` : ''}
+                            ${scanImgUrl ? `<div class="soil-avatar-box" style="position: absolute; left: ${domBox.left}%; top: ${domBox.top}%; width: ${domBox.width}%; height: ${domBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>` : ''}
                         ` : ''}
                         <div class="soil-avatar-placeholder" style="display: ${effectiveAvatarUrl ? 'none' : 'flex'}; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.24); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;" title="Image not available for this record">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
@@ -2043,26 +2042,19 @@
 
                             <div id="wsLayerBody_${idx}" class="layer-accordion-body" style="display: none; padding: 14px;">
                                 <!-- Swatch Banner with ROI Crop Box -->
-                                ${(() => {
-                                    const subThumb = (sub && sub.region_thumbnail) ? (sub.region_thumbnail.startsWith('data:') ? sub.region_thumbnail : 'data:image/png;base64,' + sub.region_thumbnail) : '';
-                                    const subImgUrl = subThumb || scanImgUrl;
-                                    const subHasBaked = subImgUrl && (subImgUrl.includes('_thumb.') || subImgUrl.includes('region_') || subImgUrl.includes('thumbnail') || subImgUrl.startsWith('data:'));
-                                    return `
-                                    <div class="soil-swatch-banner" style="background: ${subHex}; margin-bottom: 10px; min-height: 64px; padding: 12px 16px;">
-                                        ${subImgUrl ? `
-                                            <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; position: relative; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.18);">
-                                                 <img src="${subImgUrl}" alt="Soil Sample" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;" />
-                                                ${!subHasBaked ? `<div style="position: absolute; left: ${subBox.left}%; top: ${subBox.top}%; width: ${subBox.width}%; height: ${subBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>` : ''}
-                                            </div>
-                                        ` : ''}
-                                        <div class="soil-swatch-center">
-                                            <span class="soil-swatch-code" style="font-size: 20px;">${subCode}</span>
-                                            <div class="soil-swatch-sub">Soil Percentage (${subPct}%)</div>
+                                <div class="soil-swatch-banner" style="background: ${subHex}; margin-bottom: 10px; min-height: 64px; padding: 12px 16px;">
+                                    ${scanImgUrl ? `
+                                        <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; position: relative;">
+                                             <img src="${scanImgUrl}" alt="Soil Sample" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                                            <div style="position: absolute; left: ${subBox.left}%; top: ${subBox.top}%; width: ${subBox.width}%; height: ${subBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                                         </div>
-                                        <span class="soil-swatch-hex-pill">${subHex.toUpperCase()}</span>
+                                    ` : ''}
+                                    <div class="soil-swatch-center">
+                                        <span class="soil-swatch-code" style="font-size: 20px;">${subCode}</span>
+                                        <div class="soil-swatch-sub">Soil Percentage (${subPct}%)</div>
                                     </div>
-                                    `;
-                                })()}
+                                    <span class="soil-swatch-hex-pill">${subHex.toUpperCase()}</span>
+                                </div>
 
                                 <!-- Sub-Layer Metrics (Color Name, Full Code, Soil Organic, Soil Type, Proportion, Near-Match) -->
                                 <div class="soil-metrics-container">
