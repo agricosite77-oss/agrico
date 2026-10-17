@@ -1072,9 +1072,9 @@
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
-            .soil-modal-grid-3 > div:nth-child(3),
-            .soil-modal-grid-3 > div:last-child:nth-child(odd) {
-                grid-column: 1 / -1 !important;
+            .soil-modal-grid-3 > div,
+            .soil-modal-grid-2 > div {
+                min-width: 0 !important;
             }
             .soil-modal-grid-2 {
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -1093,6 +1093,8 @@
                 font-size: 11px !important;
                 margin-bottom: 3px !important;
                 font-weight: 700 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.03em !important;
             }
             .soil-metric-card-val {
                 font-size: 14px !important;
@@ -1102,6 +1104,11 @@
                 word-break: break-word !important;
                 min-width: 0 !important;
             }
+            .soil-metric-card-val.truncate {
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
             .soil-metric-card-text {
                 font-size: 14px !important;
                 overflow-wrap: anywhere !important;
@@ -1110,17 +1117,20 @@
             }
             .soil-detail-modal-footer {
                 padding: 12px 18px 14px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-end !important;
             }
-        }
-
-        @media (max-width: 340px) {
-            .soil-modal-grid-3,
-            .soil-modal-grid-2 {
-                grid-template-columns: 1fr !important;
-            }
-            .soil-modal-grid-3 > div:nth-child(3),
-            .soil-modal-grid-3 > div:last-child:nth-child(odd) {
-                grid-column: auto !important;
+            .modal-cancel-btn {
+                width: auto !important;
+                padding: 8px 24px !important;
+                border-radius: 9999px !important;
+                font-size: 13.5px !important;
+                font-weight: 700 !important;
+                color: #475569 !important;
+                background: #ffffff !important;
+                border: 1.5px solid #e2e8f0 !important;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
             }
         }
 
@@ -1872,25 +1882,7 @@
 
             let bodyHtml = '';
 
-            // 1. LOCATION METRICS (Barangay Location, Coordinates, Covered Area) (One by One Cards on Top After Header)
-            bodyHtml += `
-                <div class="soil-modal-grid-3">
-                    <div class="soil-metric-card">
-                        <div class="soil-metric-card-label">Barangay Location</div>
-                        <div class="soil-metric-card-val truncate" title="${brgy}">${brgy}</div>
-                    </div>
-                    <div class="soil-metric-card">
-                        <div class="soil-metric-card-label">Coordinates</div>
-                        <div class="soil-metric-card-val" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px;">${lt.toFixed(4)}, ${ln.toFixed(4)}</div>
-                    </div>
-                    <div class="soil-metric-card">
-                        <div class="soil-metric-card-label">Covered Area</div>
-                        <div class="soil-metric-card-val"><span class="covered-area-highlight">${covStr}</span></div>
-                    </div>
-                </div>
-            `;
-
-            // 2. DUAL-PREVIEW BANNER SWATCH CARD (Matching Screenshot 2 & 4)
+            // 1. DUAL-PREVIEW BANNER SWATCH CARD (Matching Admin Modal Header)
             const fallbackThumb = (regions[0] && regions[0].region_thumbnail) ? (regions[0].region_thumbnail.startsWith('data:') ? regions[0].region_thumbnail : 'data:image/png;base64,' + regions[0].region_thumbnail) : '';
             const effectiveAvatarUrl = scanImgUrl || fallbackThumb;
 
@@ -1899,16 +1891,13 @@
                     <div class="soil-swatch-avatar" style="position: relative; overflow: hidden; width: 68px; height: 68px; min-width: 68px; border-radius: 14px; background: rgba(0,0,0,0.18);">
                         ${effectiveAvatarUrl ? `
                             <img src="${effectiveAvatarUrl}" alt="Soil sample photo" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 14px;"
-                                 onload="var b = this.parentElement.querySelector('.soil-avatar-box'); if(b) b.style.display='block';"
                                  onerror="
                                      var p = this.parentElement;
                                      this.style.display='none';
-                                     var b = p.querySelector('.soil-avatar-box');
-                                     if(b) b.style.display='none';
                                      var f = p.querySelector('.soil-avatar-placeholder');
                                      if(f) f.style.display='flex';
                                  " />
-                            <div class="soil-avatar-box" style="display: none; position: absolute; left: ${domBox.left}%; top: ${domBox.top}%; width: ${domBox.width}%; height: ${domBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                            ${scanImgUrl ? `<div class="soil-avatar-box" style="position: absolute; left: ${domBox.left}%; top: ${domBox.top}%; width: ${domBox.width}%; height: ${domBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>` : ''}
                         ` : ''}
                         <div class="soil-avatar-placeholder" style="display: ${effectiveAvatarUrl ? 'none' : 'flex'}; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.24); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;" title="Image not available for this record">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
@@ -1919,18 +1908,18 @@
                             <span style="font-size: 7.5px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; opacity: 0.95; text-transform: uppercase;">Image Not Available</span>
                         </div>
                     </div>
-                    <div class="soil-swatch-center">
+                    <div class="soil-swatch-center" style="min-width: 0;">
                         <div style="display: flex; align-items: center; gap: 6px;">
                             ${isMulti ? '<span style="font-size: 12px; color: #ffffff; opacity: 0.9;">▼</span>' : ''}
                             <span class="soil-swatch-code">${domCode}</span>
                         </div>
-                        <div class="soil-swatch-sub">${isMulti ? `Soil Percentage (${domPct}%)` : domName}</div>
+                        <div class="soil-swatch-sub" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${isMulti ? `Soil Percentage (${domPct}%)` : domName}</div>
                     </div>
-                    <span class="soil-swatch-hex-pill">${domHex.toUpperCase()}</span>
+                    <span class="soil-swatch-hex-pill" style="white-space: nowrap; flex-shrink: 0;">${domHex.toUpperCase()}</span>
                 </div>
             `;
 
-            // 3. METRICS ROW 1 (Color Name, Full Code, Scan Count) (Matching Screenshot 2 & 4)
+            // 2. METRICS ROW 1 (Color Name, Full Code, Scan Count) (Matching Admin Mobile Layout)
             bodyHtml += `
                 <div class="soil-modal-grid-3">
                     <div class="soil-metric-card">

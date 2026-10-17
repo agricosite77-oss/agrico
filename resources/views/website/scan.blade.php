@@ -333,48 +333,94 @@
             }
             .soil-modal-card {
                 width: 100% !important;
-                max-width: calc(100vw - 24px) !important;
+                max-width: min(calc(100vw - 32px), 420px) !important;
                 height: auto !important;
-                max-height: calc(100dvh - 20px) !important;
+                max-height: min(80vh, 590px) !important;
                 border-radius: 24px !important;
                 margin: auto !important;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2) !important;
             }
             .soil-modal-header {
-                padding: 14px 16px !important;
+                padding: 16px 20px 14px !important;
+            }
+            .soil-modal-title {
+                font-size: 17.5px !important;
+                font-weight: 800 !important;
             }
             .soil-modal-body-container {
-                padding: 14px 14px !important;
+                padding: 14px 16px 16px !important;
+                gap: 10px !important;
             }
-            .soil-modal-grid-3 {
+            #modalSoilDualPreviewBadge {
+                padding: 10px 14px !important;
+                gap: 10px !important;
+                min-height: 64px !important;
+                border-radius: 16px !important;
+                margin-bottom: 8px !important;
+            }
+            #modalSoilSnippetAvatarContainer {
+                width: 44px !important;
+                height: 44px !important;
+                min-width: 44px !important;
+                border-radius: 10px !important;
+            }
+            #modalCodeDisplay {
+                font-size: 20px !important;
+                font-weight: 900 !important;
+                white-space: nowrap !important;
+            }
+            #modalHexPill {
+                font-size: 11px !important;
+                padding: 4px 8px !important;
+                white-space: nowrap !important;
+                flex-shrink: 0 !important;
+            }
+            #modalSoilPercentageDisplay {
+                white-space: nowrap !important;
+                font-size: 11px !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            .soil-modal-grid-3,
+            .soil-metrics-row-1,
+            .soil-metrics-row-2 {
+                display: grid !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                 gap: 8px !important;
+                margin-bottom: 8px !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
-            .soil-modal-grid-3 > div:nth-child(3),
-            .soil-modal-grid-3 > div:last-child:nth-child(odd) {
-                grid-column: 1 / -1 !important;
-            }
             .soil-modal-grid-3 > div,
+            .soil-modal-grid-2 > div,
             .soil-modal-grid-card {
                 padding: 10px 12px !important;
+                border-radius: 14px !important;
                 min-width: 0 !important;
                 box-sizing: border-box !important;
             }
-            .soil-modal-grid-3 .soil-modal-label {
+            .soil-modal-grid-3 .soil-modal-label,
+            .soil-modal-grid-card .soil-modal-label {
                 font-size: 11px !important;
+                margin-bottom: 3px !important;
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
                 letter-spacing: 0.03em !important;
-                gap: 4px !important;
             }
-            .soil-modal-grid-3 .soil-modal-label svg {
-                width: 12px !important;
-                height: 12px !important;
-            }
-            .soil-modal-grid-3 .soil-modal-value {
+            .soil-modal-grid-3 .soil-modal-value,
+            .soil-modal-grid-card .soil-modal-value {
                 font-size: 14px !important;
+                line-height: 1.35 !important;
+                font-weight: 700 !important;
                 overflow-wrap: anywhere !important;
                 word-break: break-word !important;
                 min-width: 0 !important;
+            }
+            #modalCardColorName,
+            #modalCardDrainage {
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
             }
             .soil-modal-user-card {
                 padding: 10px 12px !important;
@@ -387,8 +433,23 @@
                 font-size: 11px !important;
             }
             .soil-modal-grid-2 {
+                display: grid !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                 gap: 8px !important;
+                margin-bottom: 8px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .soil-platform-badge {
+                font-size: 12px !important;
+                font-weight: 700 !important;
+                background: none !important;
+                border: none !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                color: #475569 !important;
+                display: inline !important;
             }
         }
 
@@ -2418,13 +2479,29 @@
             font-weight: 800 !important;
         }
         #modalCardDateContainer {
-            min-height: 54px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            flex-shrink: 0 !important;
-            background: #163832 !important;
-            border: 1px solid rgba(142, 182, 155, 0.25) !important;
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 10px !important;
+            margin-bottom: 8px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+        .soil-platform-badge {
+            font-size: 12px;
+            font-weight: 700;
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #8EB69B;
+            display: inline;
+        }
+        html.light-mode .soil-platform-badge {
+            color: #475569 !important;
         }
         .soil-modal-desc-card {
             min-height: 58px !important;
@@ -2651,8 +2728,8 @@
             color: #0f172a !important;
         }
         html.light-mode #modalCardDateContainer {
-            background: #ffffff !important;
-            border: 1.5px solid #f1f5f9 !important;
+            background: transparent !important;
+            border: none !important;
         }
         html.light-mode #modalScanNoteCard,
         html.light-mode #modalDescCard,
@@ -2914,7 +2991,7 @@
         /* ── RESPONSIVE MEDIA QUERIES FOR SOIL RECORD MODAL ── */
         @media (max-width: 540px) {
             #soilRecordModal {
-                padding: 24px 16px !important;
+                padding: 16px !important;
                 box-sizing: border-box !important;
             }
             #soilRecordModal[style*="display:none"],
@@ -2923,11 +3000,33 @@
             }
             .soil-modal-card {
                 width: 100% !important;
-                max-width: calc(100vw - 24px) !important;
+                max-width: min(calc(100vw - 32px), 420px) !important;
                 height: auto !important;
-                max-height: calc(100dvh - 20px) !important;
+                max-height: min(80vh, 590px) !important;
                 border-radius: 24px !important;
                 margin: auto !important;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2) !important;
+            }
+            .soil-modal-footer {
+                padding: 12px 18px 14px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-end !important;
+            }
+            .btn-save-hardcopy {
+                display: none !important;
+            }
+            .btn-modal-cancel {
+                flex: none !important;
+                width: auto !important;
+                padding: 8px 24px !important;
+                border-radius: 9999px !important;
+                font-size: 13.5px !important;
+                font-weight: 700 !important;
+                color: #475569 !important;
+                background: #ffffff !important;
+                border: 1.5px solid #e2e8f0 !important;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
             }
         }
 
@@ -2988,10 +3087,8 @@
         @media (max-width: 380px) {
             .soil-metrics-row-1,
             .soil-metrics-row-2 {
-                grid-template-columns: 1fr !important;
-            }
-            .soil-metrics-row-2 .card-near-match {
-                grid-column: span 1 !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 8px !important;
             }
             .soil-modal-footer {
                 padding: 10px 12px 12px !important;
@@ -5776,32 +5873,37 @@
 
                 // Render vector-sharp CSS green bounding box on top of the avatar (never blurred!)
                 if (boxHost) {
+                    const isPreCroppedOrThumb = (src && typeof src === 'string' && (src.includes('thumbnail') || src.includes('thumb') || src.includes('region_')));
                     let roiBox = boxHost.querySelector('.soil-roi-box');
-                    if (!roiBox) {
-                        roiBox = document.createElement('div');
-                        roiBox.className = 'soil-roi-box';
-                        boxHost.appendChild(roiBox);
-                    }
-                    const b = getNormalizedRegionBox(region);
-                    if (b) {
-                        const leftPct = Math.max(2, Math.min(88, (b.x || 0.25) * 100));
-                        const topPct = Math.max(2, Math.min(88, (b.y || 0.25) * 100));
-                        const widthPct = Math.max(6, Math.min(96 - leftPct, (b.w || 0.5) * 100));
-                        const heightPct = Math.max(6, Math.min(96 - topPct, (b.h || 0.5) * 100));
-                        roiBox.style.cssText = `
-                            position: absolute;
-                            left: ${leftPct.toFixed(2)}%;
-                            top: ${topPct.toFixed(2)}%;
-                            width: ${widthPct.toFixed(2)}%;
-                            height: ${heightPct.toFixed(2)}%;
-                            border: 1.5px solid #4ade80;
-                            border-radius: 0;
-                            pointer-events: none;
-                            box-sizing: border-box;
-                            z-index: 5;
-                            display: block;
-                        `;
-                    } else {
+                    if (!isPreCroppedOrThumb) {
+                        if (!roiBox) {
+                            roiBox = document.createElement('div');
+                            roiBox.className = 'soil-roi-box';
+                            boxHost.appendChild(roiBox);
+                        }
+                        const b = getNormalizedRegionBox(region);
+                        if (b) {
+                            const leftPct = Math.max(2, Math.min(88, (b.x || 0.25) * 100));
+                            const topPct = Math.max(2, Math.min(88, (b.y || 0.25) * 100));
+                            const widthPct = Math.max(6, Math.min(96 - leftPct, (b.w || 0.5) * 100));
+                            const heightPct = Math.max(6, Math.min(96 - topPct, (b.h || 0.5) * 100));
+                            roiBox.style.cssText = `
+                                position: absolute;
+                                left: ${leftPct.toFixed(2)}%;
+                                top: ${topPct.toFixed(2)}%;
+                                width: ${widthPct.toFixed(2)}%;
+                                height: ${heightPct.toFixed(2)}%;
+                                border: 1.5px solid #4ade80;
+                                border-radius: 0;
+                                pointer-events: none;
+                                box-sizing: border-box;
+                                z-index: 5;
+                                display: block;
+                            `;
+                        } else {
+                            if (roiBox) roiBox.style.display = 'none';
+                        }
+                    } else if (roiBox) {
                         roiBox.style.display = 'none';
                     }
                 }
@@ -8427,7 +8529,7 @@
                 // Only use window.currentCleanScanImage when viewing a LIVE scan result (data.image set)
                 // Do NOT bleed previous session's scan image into historical record views
                 const domRegionThumb = (regions && regions[0] && regions[0].region_thumbnail) ? regions[0].region_thumbnail : null;
-                let cleanSourceImg = data.thumbnail_image_url || data.thumbnail_image || data.normalized_image_url || data.stage2_normalized_url || data.image || data.scan_image || domRegionThumb || null;
+                let cleanSourceImg = data.raw_image_url || data.image || data.scan_image || data.normalized_image_url || data.stage2_normalized_url || data.thumbnail_image_url || data.thumbnail_image || domRegionThumb || null;
                 if (cleanSourceImg && typeof cleanSourceImg === 'string') {
                     if (cleanSourceImg.startsWith('storage/')) {
                         cleanSourceImg = '/' + cleanSourceImg;
@@ -8608,6 +8710,15 @@
                 if (modalCardDesc) modalCardDesc.textContent = cleanDesc;
 
                 if (modalCardDate) modalCardDate.textContent = data.date || '—';
+                const modalCardScannedBy = document.getElementById('modalCardScannedBy');
+                const modalCardPlatform = document.getElementById('modalCardPlatform');
+                if (modalCardScannedBy) {
+                    modalCardScannedBy.textContent = data.scanned_by || data.user_name || data.scan_user || 'ADM-001';
+                }
+                if (modalCardPlatform) {
+                    const isApp = (data.scan_platform === 'mobile' || data.platform === 'mobile' || data.platform === 'app');
+                    modalCardPlatform.textContent = isApp ? 'App' : 'Web';
+                }
 
                 // Modal Before & After Card Display (With Detected Soil Color Boxes & Swatches)
                 const modalBeforeAfterCard = document.getElementById('modalBeforeAfterCard');
@@ -8857,7 +8968,7 @@
                         if (modalMetaLayers) modalMetaLayers.textContent = regions.length;
                     }
                 } else {
-                    if (modalCardDateContainer) modalCardDateContainer.style.display = 'block';
+                    if (modalCardDateContainer) modalCardDateContainer.style.display = 'grid';
                     if (modalMetadataFooter) modalMetadataFooter.style.display = 'none';
                 }
 
@@ -11259,12 +11370,26 @@
                     </div>
                 </div>
 
-                <!-- Scan Date Card (Shown only for single record fallback) -->
-                <div id="modalCardDateContainer" class="soil-modal-grid-card" style="margin-bottom: 10px;">
-                    <div class="soil-modal-label">
-                        SCAN DATE
+                <!-- Row 3: Scan Date & Scanned By (Matching Admin Design) -->
+                <div id="modalCardDateContainer" class="soil-modal-grid-2" style="margin-bottom: 8px;">
+                    <!-- Scan Date Card -->
+                    <div class="soil-modal-grid-card">
+                        <div class="soil-modal-label">
+                            SCAN DATE
+                        </div>
+                        <div id="modalCardDate" class="soil-modal-value">08/21/2026</div>
                     </div>
-                    <div id="modalCardDate" class="soil-modal-value">08/21/2026</div>
+
+                    <!-- Scanned By Card -->
+                    <div class="soil-modal-grid-card">
+                        <div class="soil-modal-label">
+                            SCANNED BY
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;">
+                            <span id="modalCardScannedBy" class="soil-modal-value">ADM-001</span>
+                            <span id="modalCardPlatform" class="soil-platform-badge">Web</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Scan Note Card (Full Width 100%) -->
@@ -11357,10 +11482,10 @@
 
             </div>
 
-            <!-- Fixed Modal Footer: Cancel and Save Copy Buttons -->
+            <!-- Fixed Modal Footer: Close and Save Copy Buttons -->
             <div class="soil-modal-footer">
-                <button type="button" class="btn-modal-cancel" onclick="closeSoilRecordModal()" title="Cancel">
-                    <span>Cancel</span>
+                <button type="button" class="btn-modal-cancel" onclick="closeSoilRecordModal()" title="Close details">
+                    <span>Close</span>
                 </button>
                 <button type="button" class="btn-save-hardcopy" onclick="downloadSoilRecordHardCopy()" title="Save Copy">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
