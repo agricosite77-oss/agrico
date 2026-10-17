@@ -333,9 +333,9 @@
             }
             .soil-modal-card {
                 width: 100% !important;
-                max-width: min(calc(100vw - 32px), 420px) !important;
+                max-width: calc(100vw - 24px) !important;
                 height: auto !important;
-                max-height: min(80vh, 590px) !important;
+                max-height: calc(100dvh - 20px) !important;
                 border-radius: 24px !important;
                 margin: auto !important;
             }
@@ -2923,11 +2923,21 @@
             }
             .soil-modal-card {
                 width: 100% !important;
-                max-width: min(calc(100vw - 32px), 420px) !important;
+                max-width: calc(100vw - 24px) !important;
                 height: auto !important;
-                max-height: min(80vh, 590px) !important;
+                max-height: calc(100dvh - 20px) !important;
                 border-radius: 24px !important;
                 margin: auto !important;
+            }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .soil-modal-card {
+                width: 100% !important;
+                max-width: 680px !important;
+                height: auto !important;
+                max-height: calc(100dvh - 20px) !important;
+                border-radius: 24px !important;
             }
             .soil-modal-header {
                 padding: 14px 16px 12px !important;
@@ -9005,6 +9015,12 @@
                     if (typeof updatePinButtonStates === 'function') {
                         updatePinButtonStates();
                     }
+                    if (!window._soilModalHistoryPushed) {
+                        window._soilModalHistoryPushed = true;
+                        try {
+                            window.history.pushState({ agricoModal: 'soilRecordModal' }, '');
+                        } catch (e) {}
+                    }
                 }
             }
         }
@@ -9015,6 +9031,12 @@
                 modal.style.setProperty('display', 'none', 'important');
                 document.body.style.overflow = '';
             }
+            if (window._soilModalHistoryPushed) {
+                window._soilModalHistoryPushed = false;
+                if (window.history.state && window.history.state.agricoModal === 'soilRecordModal') {
+                    window.history.back();
+                }
+            }
             const menu = document.getElementById('modalLayerDropdownMenu');
             if (menu) menu.style.display = 'none';
             const chevron = document.getElementById('modalDominantChevron');
@@ -9024,6 +9046,14 @@
                 modalSoilDetailMapInstance = null;
             }
         }
+
+        window.addEventListener('popstate', function(e) {
+            window._soilModalHistoryPushed = false;
+            closeSoilRecordModal();
+            if (typeof closePinLocationModal === 'function') {
+                closePinLocationModal();
+            }
+        });
 
         function generateBeforeAfterCanvas(rawSrc, normSrc, label, regionOrCallback, callback) {
             let region = null;
@@ -11119,7 +11149,7 @@
     </script>
 
     <!-- Soil Record Details Pop-up Modal -->
-    <div id="soilRecordModal" style="display: none !important; position:fixed; inset:0; z-index:99999; background:rgba(5, 31, 32, 0.8); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
+    <div id="soilRecordModal" onclick="if (event.target === this) closeSoilRecordModal()" style="display: none !important; position:fixed; inset:0; z-index:99999; background:rgba(5, 31, 32, 0.8); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
         <div class="soil-modal-card" style="font-family: inherit;">
             
             <!-- Modal Header -->

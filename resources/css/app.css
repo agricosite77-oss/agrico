@@ -1968,7 +1968,6 @@ html body .section-records-body::-webkit-scrollbar-thumb {
     }
 
     html body .agrico-standard-popup,
-    html body .soil-modal-card,
     html body .soil-detail-modal-container,
     html body .mapping-detail-modal-container,
     html body .user-view-modal-container,
@@ -1996,6 +1995,17 @@ html body .section-records-body::-webkit-scrollbar-thumb {
         margin: auto !important;
         height: auto !important;
         max-height: min(80vh, 590px) !important;
+        border-radius: 24px !important;
+        overflow: hidden !important;
+    }
+
+    html body .soil-modal-card {
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: calc(100vw - 24px) !important;
+        margin: auto !important;
+        height: auto !important;
+        max-height: calc(100dvh - 20px) !important;
         border-radius: 24px !important;
         overflow: hidden !important;
     }
