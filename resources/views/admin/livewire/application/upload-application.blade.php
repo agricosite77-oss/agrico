@@ -1,7 +1,110 @@
 <div style="display:flex; flex-direction:column; gap:24px; width:100%;" class="animate-in fade-in duration-500">
 
+    <style>
+        .upload-app-grid {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 24px;
+            width: 100%;
+        }
+        .upload-app-card {
+            background: #ffffff;
+            border-radius: 24px;
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            padding: 28px 24px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .version-item-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f1f5f9;
+            box-sizing: border-box;
+        }
+        .version-item-card:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .version-header-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        .version-header-left {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            flex: 1 1 200px;
+            min-width: 0;
+        }
+        .version-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .app-maintenance-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid;
+            white-space: nowrap;
+        }
+        .version-release-notes {
+            width: 100%;
+            font-size: 13px;
+            color: #475569;
+            font-weight: 500;
+            line-height: 1.55;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px 14px;
+            border: 1px solid #f1f5f9;
+            box-sizing: border-box;
+        }
+        @media (max-width: 640px) {
+            .upload-app-grid {
+                gap: 16px !important;
+            }
+            .upload-app-card {
+                padding: 20px 16px !important;
+                border-radius: 20px !important;
+            }
+            .upload-app-header-controls {
+                width: 100% !important;
+                justify-content: flex-start !important;
+            }
+            .version-header-actions {
+                width: 100% !important;
+                justify-content: space-between !important;
+                margin-top: 4px !important;
+            }
+            .app-maintenance-btn {
+                flex: 1 1 auto !important;
+                justify-content: center !important;
+            }
+        }
+    </style>
+
     {{-- 1. TOP HEADER BAR --}}
-    <div class="ui-reveal" style="--i:0; display:flex; align-items:center; justify-content:space-between; width:100%; flex-wrap:wrap; gap:12px;">
+    <div class="ui-reveal upload-app-header" style="--i:0; display:flex; align-items:center; justify-content:space-between; width:100%; flex-wrap:wrap; gap:12px;">
         <div>
             <h1 class="ui-reveal-text" style="--i:0; font-size:24px; font-weight:900; color:#0f172a; margin:0; line-height:1; letter-spacing:-0.5px;">
                 Upload Application
@@ -11,7 +114,7 @@
             </p>
         </div>
 
-        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div class="upload-app-header-controls" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
             <a
                 href="{{ route('dashboard') }}"
                 class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold text-gray-700 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 hover:text-gray-900 transition"
@@ -67,10 +170,10 @@
     @endif
 
     {{-- 2. MAIN FULL-WIDTH RESPONSIVE FLEX LAYOUT --}}
-    <div style="display:flex; flex-wrap:wrap; align-items:flex-start; gap:24px; width:100%;">
+    <div class="upload-app-grid" style="display:flex; flex-wrap:wrap; align-items:flex-start; gap:24px; width:100%;">
 
         {{-- LEFT COLUMN: UPLOAD NEW VERSION FORM CARD --}}
-        <div class="ui-reveal" style="--i:1; flex:1 1 340px; width:100%; background:#ffffff; border-radius:24px; border:none; box-shadow:0 1px 3px rgba(0,0,0,0.02); padding:28px 24px; box-sizing:border-box;">
+        <div class="ui-reveal upload-app-card" style="--i:1; flex:1 1 340px; width:100%; background:#ffffff; border-radius:24px; border:none; box-shadow:0 1px 3px rgba(0,0,0,0.02); padding:28px 24px; box-sizing:border-box;">
             <h2 class="ui-reveal-text" style="--i:1; font-size:16px; font-weight:800; color:#0f172a; margin:0 0 20px 0;">
                 Upload New Version
             </h2>
@@ -238,7 +341,7 @@
         </div>
 
         {{-- RIGHT COLUMN: VERSION HISTORY CARD --}}
-        <div class="ui-reveal" style="--i:2; flex:1.4 1 400px; width:100%; background:#ffffff; border-radius:24px; border:none; box-shadow:0 1px 3px rgba(0,0,0,0.02); padding:28px 24px; box-sizing:border-box;">
+        <div class="ui-reveal upload-app-card" style="--i:2; flex:1.4 1 360px; width:100%; background:#ffffff; border-radius:24px; border:none; box-shadow:0 1px 3px rgba(0,0,0,0.02); padding:28px 24px; box-sizing:border-box;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
                 <h2 class="ui-reveal-text" style="--i:2; font-size:16px; font-weight:800; color:#0f172a; margin:0;">
                     Version History
@@ -249,124 +352,130 @@
             </div>
 
             {{-- VERSION LIST ITEMS --}}
-            <div style="display:flex; flex-direction:column; gap:24px; width:100%;">
+            <div style="display:flex; flex-direction:column; gap:20px; width:100%;">
                 @forelse ($applications as $app)
-                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; width:100%;">
+                    <div class="version-item-card">
 
-                        {{-- LEFT ICON & DETAILS --}}
-                        <div style="display:flex; align-items:flex-start; gap:14px; flex:1; min-width:0;">
-                            {{-- FILE ICON --}}
-                            @if($app->status === 'ACTIVE')
-                                <div style="width:40px; height:40px; border-radius:12px; background:#dcfce7; color:#22c55e; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                                        <polyline points="14 2 14 8 20 8"/>
-                                    </svg>
-                                </div>
-                            @else
-                                <div style="width:40px; height:40px; border-radius:12px; background:#f1f5f9; color:#94a3b8; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                                        <polyline points="14 2 14 8 20 8"/>
-                                    </svg>
-                                </div>
-                            @endif
+                        {{-- TOP ROW: ICON + TITLE/BADGES + ACTION BUTTONS --}}
+                        <div class="version-header-row">
 
-                            {{-- DETAILS --}}
-                            <div style="flex:1; min-width:0;">
-                                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                                    <span style="font-size:16px; font-weight:900; color:#0f172a; line-height:1.2;">
-                                        {{ $app->version }}
-                                    </span>
+                            {{-- LEFT: ICON + VERSION INFO --}}
+                            <div class="version-header-left">
+                                {{-- FILE ICON --}}
+                                @if($app->status === 'ACTIVE')
+                                    <div style="width:40px; height:40px; border-radius:12px; background:#dcfce7; color:#22c55e; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                            <polyline points="14 2 14 8 20 8"/>
+                                        </svg>
+                                    </div>
+                                @else
+                                    <div style="width:40px; height:40px; border-radius:12px; background:#f1f5f9; color:#94a3b8; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                            <polyline points="14 2 14 8 20 8"/>
+                                        </svg>
+                                    </div>
+                                @endif
 
-                                    @if($app->status === 'ACTIVE')
-                                        <span style="background:#dcfce7; color:#22c55e; font-size:10px; font-weight:800; border-radius:9999px; padding:2px 8px; border:1px solid #bbf7d0; text-transform:uppercase;">
-                                            ACTIVE
+                                {{-- DETAILS --}}
+                                <div style="flex:1; min-width:0;">
+                                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                        <span style="font-size:16px; font-weight:900; color:#0f172a; line-height:1.2;">
+                                            {{ $app->version }}
                                         </span>
-                                    @else
-                                        <span style="background:#f1f5f9; color:#64748b; font-size:10px; font-weight:800; border-radius:9999px; padding:2px 8px; border:1px solid #e2e8f0; text-transform:uppercase;">
-                                            ARCHIVED
-                                        </span>
-                                    @endif
 
-                                    @if(str_contains($app->file_path ?? '', 'github.com'))
-                                        <a href="{{ $app->file_path }}" target="_blank" rel="noopener noreferrer" style="background:#f8fafc; color:#0f172a; font-size:10px; font-weight:700; border-radius:9999px; padding:2px 8px; border:1px solid #e2e8f0; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:border-color 0.2s ease;" onmouseover="this.style.borderColor='#94a3b8';" onmouseout="this.style.borderColor='#e2e8f0';" title="View GitHub Release Asset">
-                                            <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                                            GitHub Release
-                                        </a>
-                                    @endif
+                                        @if($app->status === 'ACTIVE')
+                                            <span style="background:#dcfce7; color:#22c55e; font-size:10px; font-weight:800; border-radius:9999px; padding:2px 8px; border:1px solid #bbf7d0; text-transform:uppercase;">
+                                                ACTIVE
+                                            </span>
+                                        @else
+                                            <span style="background:#f1f5f9; color:#64748b; font-size:10px; font-weight:800; border-radius:9999px; padding:2px 8px; border:1px solid #e2e8f0; text-transform:uppercase;">
+                                                ARCHIVED
+                                            </span>
+                                        @endif
+
+                                        @if(str_contains($app->file_path ?? '', 'github.com'))
+                                            <a href="{{ $app->file_path }}" target="_blank" rel="noopener noreferrer" style="background:#f8fafc; color:#0f172a; font-size:10px; font-weight:700; border-radius:9999px; padding:2px 8px; border:1px solid #e2e8f0; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:border-color 0.2s ease;" onmouseover="this.style.borderColor='#94a3b8';" onmouseout="this.style.borderColor='#e2e8f0';" title="View GitHub Release Asset">
+                                                <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                                                GitHub Release
+                                            </a>
+                                        @endif
+                                    </div>
+
+                                    {{-- FILENAME & SIZE --}}
+                                    <p style="font-size:12px; color:#94a3b8; font-weight:500; margin:3px 0 0 0; word-break:break-all;">
+                                        {{ $app->filename ?: ('agrico-app-' . $app->version . '.apk') }} · {{ $app->file_size ?: '48.0 MB' }}
+                                    </p>
                                 </div>
+                            </div>
 
-                                {{-- FILENAME & SIZE --}}
-                                <p style="font-size:12px; color:#94a3b8; font-weight:500; margin:3px 0 0 0;">
-                                    {{ $app->filename ?: ('agrico-app-' . $app->version . '.apk') }} · {{ $app->file_size ?: '48.0 MB' }}
-                                </p>
+                            {{-- RIGHT ACTIONS CLUSTER --}}
+                            <div class="version-header-actions">
+                                {{-- MAINTENANCE TOGGLE BUTTON (ACTIVE ONLY) --}}
+                                @if($app->status === 'ACTIVE')
+                                    @php
+                                        $isMaintenanceActive = \App\Models\Application::isMaintenanceMode();
+                                    @endphp
+                                    <button
+                                        type="button"
+                                        wire:click="toggleMaintenance"
+                                        class="app-maintenance-btn"
+                                        style="{{ $isMaintenanceActive ? 'background:#fff7ed; color:#ea580c; border-color:#fed7aa; box-shadow:0 1px 3px rgba(234,88,12,0.15);' : 'background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;' }}"
+                                        title="{{ $isMaintenanceActive ? 'System currently in Maintenance / Updating mode. Click to Disable.' : 'System Active. Click to Enable Maintenance / Updating mode.' }}"
+                                    >
+                                        <span style="width:7px; height:7px; border-radius:50%; background:{{ $isMaintenanceActive ? '#ea580c' : '#22c55e' }}; display:inline-block; flex-shrink:0; {{ $isMaintenanceActive ? 'box-shadow:0 0 0 3px rgba(234,88,12,0.25);' : '' }}"></span>
+                                        <span>{{ $isMaintenanceActive ? 'Maintenance: Enabled' : 'Maintenance: Disabled' }}</span>
+                                    </button>
+                                @endif
 
-                                {{-- RELEASE NOTES --}}
-                                <p style="font-size:13px; color:#475569; font-weight:500; margin:4px 0 0 0; line-height:1.4;">
-                                    {{ $app->release_notes }}
-                                </p>
-
-                                {{-- METADATA --}}
-                                <div style="display:flex; align-items:center; gap:5px; font-size:11px; color:#94a3b8; font-weight:500; margin-top:6px;">
-                                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <path d="M12 6v6l4 2"/>
+                                {{-- DOWNLOAD BUTTON --}}
+                                <button
+                                    type="button"
+                                    wire:click="downloadFile({{ $app->application_id }})"
+                                    style="width:34px; height:34px; border-radius:10px; background:#f8fafc; border:1px solid #e2e8f0; color:#475569; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; flex-shrink:0;"
+                                    onmouseover="this.style.background='#f1f5f9'; this.style.color='#0f172a'; this.style.borderColor='#cbd5e1';"
+                                    onmouseout="this.style.background='#f8fafc'; this.style.color='#475569'; this.style.borderColor='#e2e8f0';"
+                                    title="Download File"
+                                >
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
                                     </svg>
-                                    <span>{{ $app->created_at ? $app->created_at->format('Y-m-d h:i A') : '2026-04-01 09:00 AM' }}</span>
-                                    <span style="margin:0 2px;">by</span>
-                                    <span style="font-weight:600; color:#64748b;">{{ $app->uploaded_by ?: 'Administrator' }}</span>
-                                </div>
+                                </button>
+
+                                {{-- DELETE BUTTON --}}
+                                @if($app->status !== 'ACTIVE')
+                                    <button
+                                        type="button"
+                                        wire:click="deleteVersion({{ $app->application_id }})"
+                                        style="width:34px; height:34px; border-radius:10px; background:#fef2f2; border:1px solid #fee2e2; color:#ef4444; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s ease; flex-shrink:0;"
+                                        onmouseover="this.style.background='#fee2e2'; this.style.color='#dc2626';"
+                                        onmouseout="this.style.background='#fef2f2'; this.style.color='#ef4444';"
+                                        title="Delete Version"
+                                    >
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                                        </svg>
+                                    </button>
+                                @endif
                             </div>
                         </div>
 
-                        {{-- RIGHT ACTIONS --}}
-                        <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
-                            {{-- MAINTENANCE TOGGLE BUTTON (BEFORE DOWNLOAD BUTTON) --}}
-                            @if($app->status === 'ACTIVE')
-                                @php
-                                    $isMaintenanceActive = \App\Models\Application::isMaintenanceMode();
-                                @endphp
-                                <button
-                                    type="button"
-                                    wire:click="toggleMaintenance"
-                                    style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:9999px; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border:1px solid; {{ $isMaintenanceActive ? 'background:#fff7ed; color:#ea580c; border-color:#fed7aa; box-shadow:0 1px 3px rgba(234,88,12,0.15);' : 'background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;' }}"
-                                    title="{{ $isMaintenanceActive ? 'System currently in Maintenance / Updating mode. Click to Disable.' : 'System Active. Click to Enable Maintenance / Updating mode.' }}"
-                                >
-                                    <span style="width:7px; height:7px; border-radius:50%; background:{{ $isMaintenanceActive ? '#ea580c' : '#22c55e' }}; display:inline-block; {{ $isMaintenanceActive ? 'box-shadow:0 0 0 3px rgba(234,88,12,0.25);' : '' }}"></span>
-                                    <span>{{ $isMaintenanceActive ? 'Maintenance: Enabled' : 'Maintenance: Disabled' }}</span>
-                                </button>
-                            @endif
+                        {{-- RELEASE NOTES: FULL 100% WIDTH --}}
+                        <div class="version-release-notes">
+                            {{ $app->release_notes }}
+                        </div>
 
-                            {{-- DOWNLOAD ICON --}}
-                            <button
-                                type="button"
-                                wire:click="downloadFile({{ $app->application_id }})"
-                                style="color:#94a3b8; background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; text-decoration:none; transition:color 0.2s ease;"
-                                onmouseover="this.style.color='#0f172a';"
-                                onmouseout="this.style.color='#94a3b8';"
-                                title="Download File"
-                            >
-                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-                                </svg>
-                            </button>
-
-                            {{-- DELETE ICON --}}
-                            @if($app->status !== 'ACTIVE')
-                                <button
-                                    wire:click="deleteVersion({{ $app->application_id }})"
-                                    style="color:#94a3b8; background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:color 0.2s ease;"
-                                    onmouseover="this.style.color='#ef4444';"
-                                    onmouseout="this.style.color='#94a3b8';"
-                                    title="Delete Version"
-                                >
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <polyline points="3 6 5 6 21 6"/>
-                                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                                    </svg>
-                                </button>
-                            @endif
+                        {{-- METADATA: DATE & UPLOADER --}}
+                        <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px; font-size:11px; color:#94a3b8; font-weight:500;">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="flex-shrink:0;">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                            <span>{{ $app->created_at ? $app->created_at->format('Y-m-d h:i A') : '2026-04-01 09:00 AM' }}</span>
+                            <span>by</span>
+                            <span style="font-weight:600; color:#64748b;">{{ $app->uploaded_by ?: 'Administrator' }}</span>
                         </div>
 
                     </div>
