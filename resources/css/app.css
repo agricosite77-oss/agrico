@@ -1931,30 +1931,38 @@ html body .section-records-body::-webkit-scrollbar-thumb {
 
 /* 2. Mobile (320px - 375px or <= 640px) */
 @media (max-width: 640px) {
-    html body .soil-detail-backdrop:not([style*="display: none"]),
-    html body .record-popup-backdrop:not([style*="display: none"]),
-    html body .pin-modal-backdrop:not([style*="display: none"]),
-    html body .user-view-backdrop:not([style*="display: none"]),
-    html body .soil-form-backdrop:not([style*="display: none"]),
-    html body #soilRecordModal:not([style*="display: none"]),
-    html body #wsSoilDetailModal:not([style*="display: none"]),
-    html body .profile-modal-overlay:not([style*="display: none"]),
-    html body .global-modal-backdrop:not([style*="display: none"]) {
+    html body .soil-detail-backdrop,
+    html body .record-popup-backdrop,
+    html body .pin-modal-backdrop,
+    html body .user-view-backdrop,
+    html body .soil-form-backdrop,
+    html body #soilRecordModal,
+    html body #wsSoilDetailModal,
+    html body .profile-modal-overlay,
+    html body .global-modal-backdrop {
         padding: 24px 16px !important;
         box-sizing: border-box !important;
-        display: flex !important;
         align-items: center !important;
         justify-content: center !important;
     }
 
+    html body .soil-detail-backdrop[style*="display:none"],
     html body .soil-detail-backdrop[style*="display: none"],
+    html body .record-popup-backdrop[style*="display:none"],
     html body .record-popup-backdrop[style*="display: none"],
+    html body .pin-modal-backdrop[style*="display:none"],
     html body .pin-modal-backdrop[style*="display: none"],
+    html body .user-view-backdrop[style*="display:none"],
     html body .user-view-backdrop[style*="display: none"],
+    html body .soil-form-backdrop[style*="display:none"],
     html body .soil-form-backdrop[style*="display: none"],
+    html body #soilRecordModal[style*="display:none"],
     html body #soilRecordModal[style*="display: none"],
+    html body #wsSoilDetailModal[style*="display:none"],
     html body #wsSoilDetailModal[style*="display: none"],
+    html body .profile-modal-overlay[style*="display:none"],
     html body .profile-modal-overlay[style*="display: none"],
+    html body .global-modal-backdrop[style*="display:none"],
     html body .global-modal-backdrop[style*="display: none"] {
         display: none !important;
     }

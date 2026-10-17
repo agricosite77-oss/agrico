@@ -323,13 +323,11 @@
             }
 
             /* ── MODAL MOBILE RESPONSIVE FIT ── */
-            #soilRecordModal:not([style*="display: none"]) {
+            #soilRecordModal {
                 padding: 24px 16px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
                 box-sizing: border-box !important;
             }
+            #soilRecordModal[style*="display:none"],
             #soilRecordModal[style*="display: none"] {
                 display: none !important;
             }
@@ -2254,6 +2252,10 @@
             padding: 16px;
             box-sizing: border-box;
         }
+        #soilRecordModal[style*="display:none"],
+        #soilRecordModal[style*="display: none"] {
+            display: none !important;
+        }
         .soil-modal-card {
             background: linear-gradient(145deg, #0B2B26 0%, #163832 100%) !important;
             border: 1px solid rgba(142, 182, 155, 0.25) !important;
@@ -2913,10 +2915,11 @@
         @media (max-width: 540px) {
             #soilRecordModal {
                 padding: 24px 16px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
                 box-sizing: border-box !important;
+            }
+            #soilRecordModal[style*="display:none"],
+            #soilRecordModal[style*="display: none"] {
+                display: none !important;
             }
             .soil-modal-card {
                 width: 100% !important;
@@ -8997,7 +9000,7 @@
             } finally {
                 const modal = document.getElementById('soilRecordModal');
                 if (modal) {
-                    modal.style.display = 'flex';
+                    modal.style.setProperty('display', 'flex', 'important');
                     document.body.style.overflow = 'hidden';
                     if (typeof updatePinButtonStates === 'function') {
                         updatePinButtonStates();
@@ -9009,7 +9012,7 @@
         function closeSoilRecordModal() {
             const modal = document.getElementById('soilRecordModal');
             if (modal) {
-                modal.style.display = 'none';
+                modal.style.setProperty('display', 'none', 'important');
                 document.body.style.overflow = '';
             }
             const menu = document.getElementById('modalLayerDropdownMenu');
@@ -11116,7 +11119,7 @@
     </script>
 
     <!-- Soil Record Details Pop-up Modal -->
-    <div id="soilRecordModal" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(5, 31, 32, 0.8); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
+    <div id="soilRecordModal" style="display: none !important; position:fixed; inset:0; z-index:99999; background:rgba(5, 31, 32, 0.8); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
         <div class="soil-modal-card" style="font-family: inherit;">
             
             <!-- Modal Header -->
