@@ -5,7 +5,7 @@
     style="position: fixed; inset: 0; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; min-width: 100%; height: 100vh; height: 100dvh; min-height: 100%; margin: 0; box-sizing: border-box; background: rgba(0,0,0,0.35); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999;"
     wire:click.self="closeModal"
 >
-    <div class="user-password-modal-container agrico-standard-popup" style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:460px; max-height: calc(100dvh - 20px); overflow-y: auto; -webkit-overflow-scrolling: touch; margin: auto; animation: modalFadeIn 0.2s ease-out;">
+    <div class="user-password-modal-container agrico-standard-popup" style="background:#fff; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); width:100%; max-width:460px; max-height: min(85vh, calc(100dvh - 24px)); overflow-y: auto; -webkit-overflow-scrolling: touch; margin: auto; animation: modalFadeIn 0.2s ease-out;">
 
         @if(! $isVerified)
         {{-- STEP 1: ADMIN PASSWORD SECURITY VERIFICATION --}}

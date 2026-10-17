@@ -625,13 +625,17 @@
     /* Mobile Overrides (<= 540px) */
     @media (max-width: 540px) {
         .soil-detail-backdrop {
-            padding: 10px 12px !important;
+            padding: 24px 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
         }
         .soil-detail-modal-container {
             width: 100% !important;
-            max-width: calc(100vw - 24px) !important;
+            max-width: min(calc(100vw - 32px), 420px) !important;
             height: auto !important;
-            max-height: calc(100dvh - 20px) !important;
+            max-height: min(72vh, 520px) !important;
             border-radius: 24px !important;
             margin: auto !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2) !important;
@@ -733,9 +737,9 @@
     @media (max-height: 520px) and (orientation: landscape) {
         .soil-detail-modal-container {
             width: 100% !important;
-            max-width: 680px !important;
+            max-width: 540px !important;
             height: auto !important;
-            max-height: calc(100dvh - 20px) !important;
+            max-height: min(85vh, calc(100dvh - 20px)) !important;
             border-radius: 24px !important;
             margin: auto !important;
         }

@@ -6,11 +6,11 @@
     x-init="document.body.classList.add('overflow-hidden')"
     x-on:unmount="document.body.classList.remove('overflow-hidden')"
     class="fixed inset-0 z-50 flex items-center justify-center"
-    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100001; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 12px; box-sizing: border-box;"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100001; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 24px 16px; box-sizing: border-box;"
     wire:click.self="closeAddStudentModal"
 >
     {{-- MODAL CARD CONTAINER --}}
-    <div class="add-student-dialog agrico-standard-popup" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); width: 100%; max-width: 680px; margin: auto; display: flex; flex-direction: column; height: auto; max-height: calc(100dvh - 20px); overflow: hidden; position: relative; box-sizing: border-box;">
+    <div class="add-student-dialog agrico-standard-popup" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); width: 100%; max-width: 680px; margin: auto; display: flex; flex-direction: column; height: auto; max-height: min(85vh, calc(100dvh - 24px)); overflow: hidden; position: relative; box-sizing: border-box;">
 
         {{-- 1. FIXED MODAL HEADER --}}
         <div style="padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; background: #ffffff; flex-shrink: 0;">

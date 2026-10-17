@@ -22,7 +22,7 @@
                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                 x-transition:leave-end="opacity-0 scale-95 translate-y-2"
                 class="admin-profile-modal-card agrico-standard-popup"
-                style="background: #ffffff; border-radius: 28px; width: 100%; max-width: 390px; margin: auto; max-height: calc(100dvh - 20px); overflow-y: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.25); padding: 18px; box-sizing: border-box; position: relative;"
+                style="background: #ffffff; border-radius: 28px; width: 100%; max-width: 390px; margin: auto; max-height: min(85vh, calc(100dvh - 24px)); overflow-y: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.25); padding: 18px; box-sizing: border-box; position: relative;"
             >
 
                 {{-- FLASH MESSAGE NOTIFICATION --}}

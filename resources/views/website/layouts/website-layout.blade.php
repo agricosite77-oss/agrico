@@ -1737,14 +1737,14 @@
         .global-login-modal-card,
         .global-pending-modal-card {
             width: 100% !important;
-            max-width: calc(100vw - 24px) !important;
+            max-width: min(calc(100vw - 32px), 420px) !important;
             height: auto !important;
-            max-height: calc(100dvh - 20px) !important;
+            max-height: min(72vh, 520px) !important;
             border-radius: 24px !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch !important;
             margin: auto !important;
-            padding: 28px 20px 22px !important;
+            padding: 24px 20px 20px !important;
         }
     }
 </style>

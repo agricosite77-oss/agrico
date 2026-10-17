@@ -1931,6 +1931,22 @@ html body .section-records-body::-webkit-scrollbar-thumb {
 
 /* 2. Mobile (320px - 375px or <= 640px) */
 @media (max-width: 640px) {
+    html body .soil-detail-backdrop,
+    html body .record-popup-backdrop,
+    html body .pin-modal-backdrop,
+    html body .user-view-backdrop,
+    html body .soil-form-backdrop,
+    html body #soilRecordModal,
+    html body #wsSoilDetailModal,
+    html body .profile-modal-overlay,
+    html body .global-modal-backdrop {
+        padding: 24px 16px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
     html body .agrico-standard-popup,
     html body .soil-modal-card,
     html body .soil-detail-modal-container,
@@ -1956,10 +1972,10 @@ html body .section-records-body::-webkit-scrollbar-thumb {
     html body .global-pending-modal-card {
         box-sizing: border-box !important;
         width: 100% !important;
-        max-width: calc(100vw - 24px) !important;
+        max-width: min(calc(100vw - 32px), 420px) !important;
         margin: auto !important;
         height: auto !important;
-        max-height: calc(100dvh - 20px) !important;
+        max-height: min(72vh, 520px) !important;
         border-radius: 24px !important;
         overflow: hidden !important;
     }

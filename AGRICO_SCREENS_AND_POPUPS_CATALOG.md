@@ -156,6 +156,21 @@ All system dialogs and modal cards (with the exception of Admin Delete Modals wh
 
 /* 2. Mobile Viewports (320px – 375px) */
 @media (max-width: 640px) {
+    .soil-detail-backdrop,
+    .record-popup-backdrop,
+    .pin-modal-backdrop,
+    .user-view-backdrop,
+    .soil-form-backdrop,
+    #soilRecordModal,
+    #wsSoilDetailModal,
+    .profile-modal-overlay {
+        padding: 24px 16px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
     .agrico-standard-popup,
     .record-popup-card,
     .soil-detail-modal-container,
@@ -165,9 +180,9 @@ All system dialogs and modal cards (with the exception of Admin Delete Modals wh
     .user-edit-modal-container,
     .section-records-dialog {
         width: 100% !important;
-        max-width: calc(100vw - 24px) !important;
+        max-width: min(calc(100vw - 32px), 420px) !important;
         height: auto !important;
-        max-height: calc(100dvh - 20px) !important;
+        max-height: min(72vh, 520px) !important;
         border-radius: 24px !important;
         margin: auto !important;
     }
@@ -183,9 +198,9 @@ All system dialogs and modal cards (with the exception of Admin Delete Modals wh
     .user-view-modal-container,
     .user-edit-modal-container {
         width: 100% !important;
-        max-width: 680px !important;
+        max-width: 540px !important;
         height: auto !important;
-        max-height: calc(100dvh - 20px) !important;
+        max-height: min(85vh, calc(100dvh - 20px)) !important;
         border-radius: 24px !important;
     }
 }

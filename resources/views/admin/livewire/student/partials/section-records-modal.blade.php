@@ -455,9 +455,9 @@
             @media (max-width: 640px) {
                 .section-records-dialog {
                     width: 100% !important;
-                    max-width: calc(100vw - 24px) !important;
+                    max-width: min(calc(100vw - 32px), 420px) !important;
                     height: auto !important;
-                    max-height: calc(100dvh - 20px) !important;
+                    max-height: min(72vh, 520px) !important;
                     border-radius: 24px !important;
                     margin: auto !important;
                 }
