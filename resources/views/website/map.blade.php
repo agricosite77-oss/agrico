@@ -505,19 +505,22 @@
         }
 
         /* Soil Record Details Modal (Matching Screenshots 1, 2, 3, 4) */
-        .soil-detail-backdrop {
+        .ws-soil-detail-backdrop {
             position: fixed;
             inset: 0;
             z-index: 100001;
             background: rgba(5, 31, 32, 0.8);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            display: flex;
+            display: none !important;
             align-items: center;
             justify-content: center;
             padding: 16px;
             box-sizing: border-box;
             animation: wsMapFadeIn 0.2s ease-out;
+        }
+        .ws-soil-detail-backdrop.active {
+            display: flex !important;
         }
         .soil-detail-modal-container {
             background: #ffffff;
@@ -1018,7 +1021,7 @@
 
         /* Standard Pop-up Mobile Responsiveness for Website Soil Detail Modal */
         @media (max-width: 640px) {
-            .soil-detail-backdrop {
+            .ws-soil-detail-backdrop.active {
                 padding: 16px 12px !important;
                 display: flex !important;
                 align-items: center !important;
@@ -2213,13 +2216,17 @@
 
             document.getElementById('wsModalBodyContent').innerHTML = bodyHtml;
 
-            modal.style.display = 'flex';
+            modal.classList.add('active');
+            modal.style.setProperty('display', 'flex', 'important');
             document.body.style.overflow = 'hidden';
         };
 
         window.closeWebsiteSoilDetailModal = function() {
             const modal = document.getElementById('websiteSoilDetailModal');
-            if (modal) modal.style.display = 'none';
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.setProperty('display', 'none', 'important');
+            }
             document.body.style.overflow = '';
         };
 
@@ -2234,7 +2241,7 @@
     </script>
 
     <!-- Website Soil Detail Modal (Matching Screenshots 1, 2, 3, 4 without Save Copy or Pin Location buttons) -->
-    <div id="websiteSoilDetailModal" class="soil-detail-backdrop" style="display: none;" onclick="if(event.target === this) closeWebsiteSoilDetailModal()">
+    <div id="websiteSoilDetailModal" class="ws-soil-detail-backdrop" style="display: none !important;" onclick="if(event.target === this) closeWebsiteSoilDetailModal()">
         <div class="soil-detail-modal-container">
             <!-- Header (Screenshot 2 & 4) -->
             <div class="soil-detail-modal-header">
