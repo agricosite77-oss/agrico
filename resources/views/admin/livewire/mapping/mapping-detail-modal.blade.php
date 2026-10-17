@@ -796,16 +796,12 @@
                             alt="Soil sample photo"
                             loading="lazy"
                             style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 14px;"
-                            onload="var b = this.parentElement.querySelector('.soil-bounding-box'); if(b) b.style.display='block';"
                             onerror="
                                 this.style.setProperty('display', 'none', 'important');
-                                var b = this.parentElement.querySelector('.soil-bounding-box');
-                                if(b) b.style.display='none';
                                 var fb = this.parentElement.querySelector('.soil-avatar-fallback');
                                 if(fb) fb.style.display='flex';
                             "
                         />
-                        <div class="soil-bounding-box" style="display: none; position: absolute; left: {{ $domBox['left'] }}%; top: {{ $domBox['top'] }}%; width: {{ $domBox['width'] }}%; height: {{ $domBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                         <div class="soil-avatar-fallback" style="display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.24); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;" title="Image not available for this record">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -973,8 +969,7 @@
                                                     data-fallback-sibling="{{ $siblingScanImg }}"
                                                     data-fallback-munsell="{{ $munsellFallback }}"
                                                     alt=""
-                                                    style="width: 100%; height: 100%; object-fit: cover; display: block;"
-                                                    onload="if(this.nextElementSibling) this.nextElementSibling.style.display='block';"
+                                                    style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;"
                                                     onerror="
                                                         var fbT = this.getAttribute('data-fallback-thumb');
                                                         var fbS = this.getAttribute('data-fallback-sibling');
@@ -983,10 +978,8 @@
                                                         if (fbS && this.src !== fbS) { this.src = fbS; return; }
                                                         if (fbM && this.src !== fbM) { this.src = fbM; return; }
                                                         this.style.setProperty('display', 'none', 'important');
-                                                        if(this.nextElementSibling) this.nextElementSibling.style.display='none';
                                                     "
                                                 />
-                                                <div style="display: none; position: absolute; left: {{ $subBox['left'] }}%; top: {{ $subBox['top'] }}%; width: {{ $subBox['width'] }}%; height: {{ $subBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                                             </div>
                                         @endif
                                         <div class="soil-swatch-center">
