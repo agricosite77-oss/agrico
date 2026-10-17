@@ -83,7 +83,7 @@
 
     $munsellFallback = $mColor?->image ? $formatImageUrl($mColor->image) : ($soil?->image ? $formatImageUrl($soil->image) : '');
 
-    $scanImg = \App\Helpers\SoilImageHelper::scanImageUrl($mapping ?: ($scan ?: $soil)) ?: $thumbFallback;
+    $scanImg = \App\Helpers\SoilImageHelper::scanImageUrl($mapping ?: ($scan ?: $soil), false) ?: $thumbFallback;
     $scanUser = $scan?->user?->name ?? 'Admin Analyst';
     $scanPlatform = $scan?->platform ?? 'website';
     $baImg = \App\Helpers\SoilImageHelper::beforeAfterImageUrl($mapping ?: ($scan ?: $soil));
@@ -805,7 +805,7 @@
                                 if(fb) fb.style.display='flex';
                             "
                         />
-                        <div class="soil-bounding-box" style="display: none; position: absolute; left: {{ $domBox['left'] }}%; top: {{ $domBox['top'] }}%; width: {{ $domBox['width'] }}%; height: {{ $domBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                        <div class="soil-bounding-box" style="position: absolute; left: {{ $domBox['left'] }}%; top: {{ $domBox['top'] }}%; width: {{ $domBox['width'] }}%; height: {{ $domBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                         <div class="soil-avatar-fallback" style="display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.24); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;" title="Image not available for this record">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -986,7 +986,7 @@
                                                         if(this.nextElementSibling) this.nextElementSibling.style.display='none';
                                                     "
                                                 />
-                                                <div style="display: none; position: absolute; left: {{ $subBox['left'] }}%; top: {{ $subBox['top'] }}%; width: {{ $subBox['width'] }}%; height: {{ $subBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
+                                                <div style="position: absolute; left: {{ $subBox['left'] }}%; top: {{ $subBox['top'] }}%; width: {{ $subBox['width'] }}%; height: {{ $subBox['height'] }}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                                             </div>
                                         @endif
                                         <div class="soil-swatch-center">

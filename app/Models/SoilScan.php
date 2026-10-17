@@ -246,7 +246,7 @@ class SoilScan extends Model
 
     public function getScanImageUrlAttribute(): ?string
     {
-        return \App\Helpers\SoilImageHelper::scanImageUrl($this);
+        return \App\Helpers\SoilImageHelper::scanImageUrl($this, false);
     }
 
     public function getBeforeAfterImageUrlAttribute(): ?string

@@ -1824,7 +1824,7 @@
                     const pOrg = pMeta.organic_matter || pSoil.effective_organic_matter || pMColor.organic_matter || 'Moderate (2.2% – 3.7%)';
                     const pDrain = pMeta.soil_name || pSoil.soil_type || 'Well-Drained Clay / Latosol';
                     const pDesc = pMeta.description || pSoil.description || `${pCode} - ${pLabel}`;
-                    const pBox = normalizeBox(pMeta.box || pMeta);
+                    const pBox = normalizeBox(pMeta.box || (p.regions && p.regions[0] ? p.regions[0].box : null) || pMeta);
 
                     regions.push({
                         munsell: pCode,
@@ -1896,11 +1896,11 @@
 
             let bodyHtml = '';
 
-            // 1. DUAL-PREVIEW BANNER SWATCH CARD (Matching Admin Modal Header)
             const domThumb = (dominant && dominant.region_thumbnail)
                 ? (dominant.region_thumbnail.startsWith('data:') ? dominant.region_thumbnail : 'data:image/png;base64,' + dominant.region_thumbnail)
                 : ((m.region_thumbnail) ? (m.region_thumbnail.startsWith('data:') ? m.region_thumbnail : 'data:image/png;base64,' + m.region_thumbnail) : '');
-            const effectiveAvatarUrl = domThumb || scanImgUrl;
+            const cleanScanUrl = scanImgUrl ? scanImgUrl.replace(/_thumb\.jpg$/i, '_normalized.jpg') : '';
+            const effectiveAvatarUrl = cleanScanUrl || scanImgUrl || (dominant && dominant.image ? dominant.image : '') || domThumb;
 
             bodyHtml += `
                 <div class="soil-swatch-banner" style="background: ${domHex};">
@@ -1910,9 +1910,12 @@
                                  onerror="
                                      var p = this.parentElement;
                                      this.style.display='none';
+                                     var b = p.querySelector('.soil-bounding-box');
+                                     if(b) b.style.display='none';
                                      var f = p.querySelector('.soil-avatar-placeholder');
                                      if(f) f.style.display='flex';
                                  " />
+                            <div class="soil-bounding-box" style="position: absolute; left: ${domBox.left}%; top: ${domBox.top}%; width: ${domBox.width}%; height: ${domBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                         ` : ''}
                         <div class="soil-avatar-placeholder" style="display: ${effectiveAvatarUrl ? 'none' : 'flex'}; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.24); color: rgba(255,255,255,0.85); text-align: center; padding: 4px; box-sizing: border-box;" title="Image not available for this record">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85; margin-bottom: 2px;">
@@ -2050,12 +2053,17 @@
                                 <!-- Swatch Banner with ROI Crop Box -->
                                 <div class="soil-swatch-banner" style="background: ${subHex}; margin-bottom: 10px; min-height: 64px; padding: 12px 16px;">
                                     ${(() => {
-                                        const subThumb = (sub && sub.region_thumbnail)
-                                            ? (sub.region_thumbnail.startsWith('data:') ? sub.region_thumbnail : 'data:image/png;base64,' + sub.region_thumbnail)
-                                            : (sub.image || scanImgUrl);
-                                        return subThumb ? `
+                                        const cleanSubUrl = scanImgUrl ? scanImgUrl.replace(/_thumb\.jpg$/i, '_normalized.jpg') : '';
+                                        const subAvatarUrl = cleanSubUrl || scanImgUrl || (sub && sub.image ? sub.image : '') || ((sub && sub.region_thumbnail) ? (sub.region_thumbnail.startsWith('data:') ? sub.region_thumbnail : 'data:image/png;base64,' + sub.region_thumbnail) : '');
+                                        return subAvatarUrl ? `
                                             <div class="soil-swatch-avatar" style="width: 48px; height: 48px; min-width: 48px; position: relative; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.18);">
-                                                 <img src="${subThumb}" alt="Soil Sample" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;" />
+                                                 <img src="${subAvatarUrl}" alt="Soil Sample" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;"
+                                                      onerror="
+                                                          this.style.display='none';
+                                                          var b = this.parentElement.querySelector('.soil-bounding-box');
+                                                          if(b) b.style.display='none';
+                                                      " />
+                                                 <div class="soil-bounding-box" style="position: absolute; left: ${subBox.left}%; top: ${subBox.top}%; width: ${subBox.width}%; height: ${subBox.height}%; border: 1.5px solid #4ade80; pointer-events: none; box-sizing: border-box; z-index: 5;"></div>
                                             </div>
                                         ` : '';
                                     })()}
@@ -2186,7 +2194,6 @@
                     <div class="soil-norm-container" style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25);">
                         ${baImgUrl ? `
                             <img src="${baImgUrl}" alt="Soil Before & After Normalization" loading="lazy" style="width: 100%; height: auto; display: block; border-radius: 8px;"
-                                 onload="var p = this.parentElement; if(p) { p.classList.add('image-loaded'); var o = p.querySelector('.soil-norm-overlays'); if(o) o.style.display='block'; }"
                                  onerror="
                                      var p = this.parentElement;
                                      this.style.display = 'none';
@@ -2195,7 +2202,7 @@
                                      var fb = p.querySelector('.soil-norm-missing-placeholder');
                                      if (fb) fb.style.display = 'flex';
                                  " />
-                            <div class="soil-norm-overlays" style="display: none; position: absolute; inset: 0; pointer-events: none;">
+                            <div class="soil-norm-overlays" style="position: absolute; inset: 0; pointer-events: none;">
                                 ${overlayBoxesHtml}
                             </div>
                         ` : ''}
