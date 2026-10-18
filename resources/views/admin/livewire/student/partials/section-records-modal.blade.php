@@ -548,7 +548,7 @@
                     box-sizing: border-box !important;
                     background: #ffffff !important;
                     color: #000000 !important;
-                    padding: 10mm 14mm !important;
+                    padding: 5mm 8mm !important;
                     margin: 0 !important;
                     font-family: Arial, sans-serif !important;
                     -webkit-print-color-adjust: exact !important;
@@ -571,7 +571,8 @@
                     border: 1px solid #000000 !important;
                     background: #ffffff !important;
                     color: #000000 !important;
-                    padding: 6px 8px !important;
+                    padding: 4px 6px !important;
+                    font-size: 8pt !important;
                 }
                 #sectionRecordsPrintArea th {
                     font-weight: bold !important;
@@ -690,22 +691,22 @@
         {{-- TOP 3-COLUMN HEADER TABLE (Left: Republic & CSU info, Center: Logo, Right: Contact info) --}}
         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; font-family: Arial, sans-serif;">
             {{-- 1. Left: Republic & CSU Addresses --}}
-            <div style="flex: 1; text-align: left; font-size: 7.5pt; line-height: 1.35; color: #000000;">
+            <div style="flex: 1; text-align: left; font-size: 7.5pt; line-height: 1.25; color: #000000;">
                 <div style="font-weight: bold; font-size: 8pt; letter-spacing: 0.02em;">REPUBLIC OF THE PHILIPPINES</div>
-                <div style="font-weight: bold; font-size: 9.5pt; margin-top: 1px;">CAGAYAN STATE UNIVERSITY</div>
-                <div style="font-size: 7pt; margin-top: 2px;">Andrews Campus, Tuguegarao City, Cagayan (Central Office)</div>
-                <div style="font-size: 7pt;">CSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)</div>
+                <div style="font-weight: bold; font-size: 9pt; margin-top: 1px;">CAGAYAN STATE UNIVERSITY</div>
+                <div style="font-size: 6.5pt; margin-top: 1px;">Andrews Campus, Tuguegarao City, Cagayan (Central Office)</div>
+                <div style="font-size: 6.5pt;">CSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)</div>
             </div>
 
             {{-- 2. Center: CSU Logo --}}
-            <div style="flex: 0 0 auto; text-align: center; padding: 0 16px;">
+            <div style="flex: 0 0 auto; text-align: center; padding: 0 10px;">
                 @if(file_exists(public_path('images/csu-logo.png')))
-                    <img src="{{ asset('images/csu-logo.png') }}" alt="CSU Logo" style="height: 52px; width: auto; object-fit: contain; display: inline-block;" />
+                    <img src="{{ asset('images/csu-logo.png') }}" alt="CSU Logo" style="height: 42px; width: auto; object-fit: contain; display: inline-block;" />
                 @endif
             </div>
 
             {{-- 3. Right: Contact Info (labels only) --}}
-            <div style="flex: 1; text-align: right; font-size: 7.5pt; line-height: 1.45; color: #000000;">
+            <div style="flex: 1; text-align: right; font-size: 7pt; line-height: 1.3; color: #000000;">
                 <div><strong style="font-weight: bold;">Phone Number:</strong></div>
                 <div><strong style="font-weight: bold;">Email Address:</strong></div>
                 <div><strong style="font-weight: bold;">Facebook page:</strong></div>
@@ -713,29 +714,29 @@
         </div>
 
         {{-- CAMPUS MAIN TITLE --}}
-        <div style="text-align: center; font-size: 11pt; font-weight: bold; color: #000000; margin-top: 10px; margin-bottom: 6px; letter-spacing: 0.02em; font-family: Arial, sans-serif;">
+        <div style="text-align: center; font-size: 10pt; font-weight: bold; color: #000000; margin-top: 4px; margin-bottom: 3px; letter-spacing: 0.02em; font-family: Arial, sans-serif;">
             CAGAYAN STATE UNIVERSITY Lal-lo Campus
         </div>
 
         {{-- HORIZONTAL DIVIDER LINE --}}
-        <div style="width: 100%; border-bottom: 2px solid #000000; margin-bottom: 16px;"></div>
+        <div style="width: 100%; border-bottom: 1.5px solid #000000; margin-bottom: 5px;"></div>
 
         {{-- DOCUMENT TITLE (AFTER THE LINE, WITH SPACE BEFORE AND AFTER) --}}
         @if(!empty(trim($documentTitle)))
-            <div style="text-align: center; font-size: 11pt; font-weight: bold; color: #000000; margin-top: 16px; margin-bottom: 18px; text-transform: uppercase; font-family: Arial, sans-serif;">
+            <div style="text-align: center; font-size: 10pt; font-weight: bold; color: #000000; margin-top: 5px; margin-bottom: 6px; text-transform: uppercase; font-family: Arial, sans-serif;">
                 {{ trim($documentTitle) }}
             </div>
         @else
-            <div style="margin-bottom: 14px;"></div>
+            <div style="margin-bottom: 4px;"></div>
         @endif
 
         {{-- PRINT TABLE --}}
-        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 9pt; color: #000000;">
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 8pt; color: #000000;">
             <thead>
                 <tr style="page-break-inside: avoid;">
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 6px 8px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 40px;">#</th>
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 6px 8px; text-align: left; font-weight: bold; background: #ffffff; color: #000000;">Student Name</th>
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 6px 8px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 90px;">Section</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 36px;">#</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 4px 6px; text-align: left; font-weight: bold; background: #ffffff; color: #000000;">Student Name</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 90px;">Section</th>
                     @foreach($cards as $i => $card)
                         @php
                             $cols = (!empty($card['show_scans']) ? 1 : 0) + (!empty($card['show_pins']) ? 1 : 0);
@@ -748,23 +749,23 @@
                                        : ($start ? "From {$start}" : ($end ? "Until {$end}" : 'All Day'));
                         @endphp
                         @if($cols)
-                            <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 6px 8px; text-align: center; font-weight: bold; background: #ffffff; color: #000000;">
+                            <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000;">
                                 <div>{{ !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1)) }}</div>
-                                <div style="font-size: 7.5pt; font-weight: normal; margin-top: 2px;">{{ trim($dateLabel . ' · ' . $timeLabel, ' ·') }}</div>
+                                <div style="font-size: 7pt; font-weight: normal; margin-top: 1px;">{{ trim($dateLabel . ' · ' . $timeLabel, ' ·') }}</div>
                             </th>
                         @endif
                     @endforeach
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 6px 8px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 60px;">Total</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 55px;">Total</th>
                 </tr>
                 <tr style="page-break-inside: avoid;">
                     @foreach($cards as $i => $card)
                         @if(!empty($card['show_scans']))
-                            <th style="border: 1px solid #000000; padding: 5px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 8pt;">
+                            <th style="border: 1px solid #000000; padding: 3px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 7.5pt;">
                                 {{ $card['scan_name'] ?? 'Scan' }}
                             </th>
                         @endif
                         @if(!empty($card['show_pins']))
-                            <th style="border: 1px solid #000000; padding: 5px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 8pt;">
+                            <th style="border: 1px solid #000000; padding: 3px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 7.5pt;">
                                 {{ $card['pin_name'] ?? 'Pin Location' }}
                             </th>
                         @endif
@@ -775,35 +776,35 @@
                 @forelse($sectionRecords as $n => $student)
                     @php $rowTotal = 0; @endphp
                     <tr style="page-break-inside: avoid;">
-                        <td style="border: 1px solid #000000; padding: 6px 8px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
-                        <td style="border: 1px solid #000000; padding: 6px 8px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
-                        <td style="border: 1px solid #000000; padding: 6px 8px; text-align: center; color: #000000;">{{ $student->section }}</td>
+                        <td style="border: 1px solid #000000; padding: 4px 6px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
+                        <td style="border: 1px solid #000000; padding: 4px 6px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
+                        <td style="border: 1px solid #000000; padding: 4px 6px; text-align: center; color: #000000;">{{ $student->section }}</td>
                         @foreach($cards as $i => $card)
                             @if(!empty($card['show_scans']))
                                 @php $s = (int) ($student->{"card_{$i}_scans_count"} ?? 0); $rowTotal += $s; @endphp
-                                <td style="border: 1px solid #000000; padding: 6px 8px; text-align: center; color: #000000;">
+                                <td style="border: 1px solid #000000; padding: 4px 6px; text-align: center; color: #000000;">
                                     {{ $s }}
                                 </td>
                             @endif
                             @if(!empty($card['show_pins']))
                                 @php $p = (int) ($student->{"card_{$i}_pins_count"} ?? 0); $rowTotal += $p; @endphp
-                                <td style="border: 1px solid #000000; padding: 6px 8px; text-align: center; color: #000000;">
+                                <td style="border: 1px solid #000000; padding: 4px 6px; text-align: center; color: #000000;">
                                     {{ $p }}
                                 </td>
                             @endif
                         @endforeach
-                        <td style="border: 1px solid #000000; padding: 6px 8px; text-align: center; font-weight: bold; color: #000000;">{{ $rowTotal }}</td>
+                        <td style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; color: #000000;">{{ $rowTotal }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="99" style="border: 1px solid #000000; text-align: center; color: #000000; padding: 20px;">No students found.</td>
+                        <td colspan="99" style="border: 1px solid #000000; text-align: center; color: #000000; padding: 12px;">No students found.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
 
         {{-- PRINT FOOTER (Left: Prepared By, Center: Date) --}}
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 18px; font-size: 8.5pt; color: #000000; font-family: Arial, sans-serif; width: 100%;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: 8pt; color: #000000; font-family: Arial, sans-serif; width: 100%;">
             <div style="flex: 1; text-align: left; font-weight: 500;">
                 Prepared By: <strong>{{ $loggedInAdminName ?? 'AgriCo Administrator' }}</strong>
             </div>
@@ -844,9 +845,9 @@ window.printSectionRecords = function() {
     doc.write('<style>');
     doc.write('@page { size: A4 landscape; margin: 0 !important; }');
     doc.write('html, body { margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; font-family: Arial, sans-serif !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }');
-    doc.write('.print-wrap { padding: 10mm 14mm; box-sizing: border-box; width: 100%; }');
-    doc.write('table { width: 100%; border-collapse: collapse; }');
-    doc.write('th, td { border: 1px solid #000000; padding: 6px 8px; }');
+    doc.write('.print-wrap { padding: 5mm 8mm; box-sizing: border-box; width: 100%; }');
+    doc.write('table { width: 100%; border-collapse: collapse; font-size: 8pt; }');
+    doc.write('th, td { border: 1px solid #000000; padding: 4px 6px; }');
     doc.write('thead { display: table-header-group; }');
     doc.write('tr { page-break-inside: avoid; }');
     doc.write('<\/style>');
