@@ -73,6 +73,7 @@
             line-height: 1.55;
             word-break: break-word;
             overflow-wrap: anywhere;
+            white-space: pre-line;
             background: #f8fafc;
             border-radius: 12px;
             padding: 12px 14px;
@@ -463,9 +464,7 @@
                         </div>
 
                         {{-- RELEASE NOTES: FULL 100% WIDTH --}}
-                        <div class="version-release-notes">
-                            {{ $app->release_notes }}
-                        </div>
+                        <div class="version-release-notes">{!! nl2br(e(str_replace('\n', "\n", $app->release_notes))) !!}</div>
 
                         {{-- METADATA: DATE & UPLOADER --}}
                         <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px; font-size:11px; color:#94a3b8; font-weight:500;">
