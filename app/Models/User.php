@@ -127,7 +127,10 @@ class User extends Authenticatable
     public function getProfilePhotoUrlAttribute(): ?string
     {
         if ($this->profile_photo_path) {
-            return asset('storage/' . $this->profile_photo_path);
+            if (str_starts_with($this->profile_photo_path, 'http://') || str_starts_with($this->profile_photo_path, 'https://')) {
+                return $this->profile_photo_path;
+            }
+            return asset('storage/' . ltrim($this->profile_photo_path, '/'));
         }
         return null;
     }

@@ -227,4 +227,96 @@ class AuthController extends Controller
             'message' => 'No valid photo uploaded',
         ], 422);
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user() ?? $request->user();
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'name'             => ['sometimes', 'required', 'string', 'max:255'],
+            'email'            => ['sometimes', 'required', 'email', 'max:255', \Illuminate\Validation\Rule::unique('users', 'email')->ignore($user->user_id, 'user_id')],
+            'student_id'       => ['nullable', 'string', 'max:50'],
+            'section'          => ['nullable', 'string', 'max:100'],
+            'current_password' => ['nullable', 'string'],
+            'password'         => ['nullable', 'string', 'min:8', 'confirmed'],
+            'photo'            => ['nullable', 'image', 'max:5120'],
+        ]);
+
+        $updateUserData = [];
+        $updateAdminData = [];
+
+        if ($request->boolean('remove_photo')) {
+            if ($user->profile_photo_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->profile_photo_path);
+            }
+            $updateUserData['profile_photo_path'] = null;
+            $updateAdminData['profile_photo_path'] = null;
+        } elseif ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            if ($user->profile_photo_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->profile_photo_path);
+            }
+            $photoPath = $request->file('photo')->store('profile-photos', 'public');
+            $updateUserData['profile_photo_path'] = $photoPath;
+            $updateAdminData['profile_photo_path'] = $photoPath;
+        }
+
+        if ($request->filled('name')) {
+            $updateUserData['name'] = trim($request->name);
+            $updateAdminData['full_name'] = trim($request->name);
+        }
+
+        if ($request->filled('email')) {
+            $newEmail = strtolower(trim($request->email));
+            $updateUserData['email'] = $newEmail;
+            $updateAdminData['email'] = $newEmail;
+        }
+
+        if ($request->has('student_id')) {
+            $updateUserData['student_id'] = $request->student_id ? trim($request->student_id) : null;
+        }
+
+        if ($request->has('section')) {
+            $updateUserData['section'] = $request->section ? trim($request->section) : null;
+        }
+
+        if ($request->filled('password')) {
+            $currentHashed = $user->password;
+            if (!empty($currentHashed) && (empty($request->current_password) || !\Illuminate\Support\Facades\Hash::check($request->current_password, $currentHashed))) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'The current password you entered is incorrect.',
+                    'errors' => ['current_password' => ['The current password is incorrect.']]
+                ], 422);
+            }
+            $newHash = \Illuminate\Support\Facades\Hash::make($request->password);
+            $updateUserData['password'] = $newHash;
+            $updateAdminData['password'] = $newHash;
+        }
+
+        $oldEmail = $user->email;
+
+        if (!empty($updateUserData)) {
+            $user->update($updateUserData);
+        }
+
+        $admin = \App\Models\Admin::where('admin_id', $user->user_id)
+            ->orWhere('email', $oldEmail)
+            ->orWhere('email', $user->email)
+            ->first();
+        if ($admin && !empty($updateAdminData)) {
+            $admin->update($updateAdminData);
+        }
+
+        $fresh = $user->fresh();
+
+        return response()->json([
+            'status'            => 'success',
+            'message'           => 'Profile updated successfully',
+            'profile_photo_url' => $fresh->profile_photo_url,
+            'user'              => new \App\Http\Resources\UserResource($fresh),
+        ]);
+    }
 }

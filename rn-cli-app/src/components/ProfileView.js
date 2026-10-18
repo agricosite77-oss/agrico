@@ -9,9 +9,12 @@ import {
   Alert,
   Platform,
   ActivityIndicator,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
-import api from '../services/api';
+import api, { getActiveBaseUrl } from '../services/api';
 import { ENV } from '../config/env';
 import { checkForAppUpdate, CURRENT_APP_VERSION } from '../services/updateService';
 import {
@@ -29,32 +32,38 @@ const resolvePhotoUrl = (rawPath) => {
   if (!rawPath || typeof rawPath !== 'string') return null;
   const trimmed = rawPath.trim();
   if (!trimmed) return null;
+
   if (
-    trimmed.startsWith('http://') ||
-    trimmed.startsWith('https://') ||
     trimmed.startsWith('file://') ||
     trimmed.startsWith('data:image') ||
     trimmed.startsWith('content://')
   ) {
     return trimmed;
   }
+
+  const activeApiUrl = typeof getActiveBaseUrl === 'function' ? getActiveBaseUrl() : ENV.API_URL;
+  const cleanBase = (activeApiUrl || 'http://10.0.2.2:8080/api').replace(/\/api\/?$/, '');
+
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    // If the server returned an internal localhost/127.0.0.1/10.0.2.2 URL, rewrite it to the active reachable base
+    if (/^https?:\/\/(localhost|127\.0\.0\.1|10\.0\.2\.2)(:\d+)?/i.test(trimmed)) {
+      return trimmed.replace(/^https?:\/\/(localhost|127\.0\.0\.1|10\.0\.2\.2)(:\d+)?/i, cleanBase);
+    }
+    return trimmed;
+  }
+
   const cleanPath = trimmed.replace(/^\/+/, '');
-  const cleanBase = (ENV.API_URL || 'http://10.0.2.2:8080/api').replace(/\/api\/?$/, '');
   if (cleanPath.startsWith('storage/')) {
     return `${cleanBase}/${cleanPath}`;
   }
   return `${cleanBase}/storage/${cleanPath}`;
 };
 
-// Compute user initials (1-2 uppercase letters)
+// Compute user initials (single uppercase letter matching website avatar style)
 const getUserInitial = (name) => {
   if (!name || typeof name !== 'string') return 'A';
   const trimmed = name.trim();
   if (!trimmed) return 'A';
-  const parts = trimmed.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
-  }
   return trimmed.charAt(0).toUpperCase();
 };
 
@@ -73,10 +82,112 @@ export default function ProfileView({
   const [imgError, setImgError] = useState(false);
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
 
+  // Edit Profile Modal States
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editName, setEditName] = useState(user?.name || '');
+  const [editEmail, setEditEmail] = useState(user?.email || '');
+  const [editStudentId, setEditStudentId] = useState(user?.student_id || '');
+  const [editSection, setEditSection] = useState(user?.section || '');
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [editError, setEditError] = useState('');
+
   useEffect(() => {
     setCustomPhotoUri(user?.profile_photo_url || user?.profile_photo_path || null);
     setImgError(false);
-  }, [user?.profile_photo_url, user?.profile_photo_path]);
+    setEditName(user?.name || '');
+    setEditEmail(user?.email || '');
+    setEditStudentId(user?.student_id || '');
+    setEditSection(user?.section || '');
+  }, [user?.profile_photo_url, user?.profile_photo_path, user?.name, user?.email, user?.student_id, user?.section]);
+
+  const openEditModal = () => {
+    setEditName(user?.name || '');
+    setEditEmail(user?.email || '');
+    setEditStudentId(user?.student_id || '');
+    setEditSection(user?.section || '');
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setShowPasswordFields(false);
+    setEditError('');
+    setShowEditModal(true);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!editName.trim()) {
+      setEditError('Full Name is required.');
+      return;
+    }
+    if (!editEmail.trim()) {
+      setEditError('Email address is required.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(editEmail.trim())) {
+      setEditError('Please enter a valid email address.');
+      return;
+    }
+
+    if (showPasswordFields && newPassword) {
+      if (newPassword.length < 8) {
+        setEditError('New password must be at least 8 characters.');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setEditError('New passwords do not match.');
+        return;
+      }
+    }
+
+    setIsSavingProfile(true);
+    setEditError('');
+
+    try {
+      const payload = {
+        name: editName.trim(),
+        email: editEmail.trim(),
+      };
+
+      if (user?.role === 'student') {
+        payload.student_id = editStudentId ? editStudentId.trim() : '';
+        payload.section = editSection ? editSection.trim() : '';
+      }
+
+      if (showPasswordFields && newPassword) {
+        payload.current_password = currentPassword;
+        payload.password = newPassword;
+        payload.password_confirmation = confirmPassword;
+      }
+
+      const res = await api.post('/user/profile', payload);
+
+      if (res.data?.status === 'success') {
+        setShowEditModal(false);
+        if (typeof onUpdateUser === 'function') {
+          onUpdateUser();
+        }
+        Alert.alert('Profile Updated', 'Your profile details have been saved and synchronized with the website database.');
+      } else {
+        setEditError(res.data?.message || 'Failed to update profile.');
+      }
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        (err.response?.data?.errors
+          ? Object.values(err.response.data.errors).flat().join('\n')
+          : null) ||
+        err.message ||
+        'Could not save profile changes.';
+      setEditError(errorMsg);
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
 
   // Format joined date based on database created_at
   const formatJoinedDate = (dateString) => {
@@ -227,11 +338,12 @@ export default function ProfileView({
   const activePhotoUrl = !imgError ? resolvePhotoUrl(customPhotoUri) : null;
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-    >
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
       {/* 1. Top Header (Back Button, Title, Log Out Icon Button) */}
       <View style={styles.topHeader}>
         <TouchableOpacity
@@ -293,14 +405,25 @@ export default function ProfileView({
         <Text style={styles.userName}>
           {user?.name || 'Account'}
         </Text>
+
+        {/* Edit Profile Pill Button */}
+        <TouchableOpacity
+          style={styles.editProfilePill}
+          onPress={openEditModal}
+          activeOpacity={0.75}
+          accessibilityLabel="Edit Profile Details"
+        >
+          <PencilEditIcon size={12} color="#15803d" />
+          <Text style={styles.editProfilePillText}>Edit Profile</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* 3. Rounded Info Card with Icon Rows (No Chevrons) */}
+      {/* 3. Rounded Info Card with Icon Rows */}
       <View style={styles.infoCard}>
         {/* Row 1: Email */}
         <TouchableOpacity
           style={styles.infoRow}
-          onPress={() => handleInfoRowPress('Email Address', user?.email || '—')}
+          onPress={openEditModal}
           activeOpacity={0.65}
         >
           <View style={styles.iconBox}>
@@ -311,6 +434,9 @@ export default function ProfileView({
             <Text style={styles.infoValue} numberOfLines={1}>
               {user?.email || '—'}
             </Text>
+          </View>
+          <View style={styles.rowEditCue}>
+            <PencilEditIcon size={11} color="#94a3b8" />
           </View>
         </TouchableOpacity>
 
@@ -356,6 +482,52 @@ export default function ProfileView({
             </Text>
           </View>
         </TouchableOpacity>
+
+        {user?.role === 'student' && (
+          <>
+            <View style={styles.rowDivider} />
+            {/* Student ID */}
+            <TouchableOpacity
+              style={styles.infoRow}
+              onPress={openEditModal}
+              activeOpacity={0.65}
+            >
+              <View style={styles.iconBox}>
+                <IdBadgeIcon size={19} color="#475569" />
+              </View>
+              <View style={styles.infoTextContainer}>
+                <Text style={styles.infoLabel}>STUDENT ID</Text>
+                <Text style={styles.infoValue} numberOfLines={1}>
+                  {user?.student_id || 'Not set (Tap to edit)'}
+                </Text>
+              </View>
+              <View style={styles.rowEditCue}>
+                <PencilEditIcon size={11} color="#94a3b8" />
+              </View>
+            </TouchableOpacity>
+
+            <View style={styles.rowDivider} />
+            {/* Section */}
+            <TouchableOpacity
+              style={styles.infoRow}
+              onPress={openEditModal}
+              activeOpacity={0.65}
+            >
+              <View style={styles.iconBox}>
+                <RoleShieldIcon size={19} color="#475569" />
+              </View>
+              <View style={styles.infoTextContainer}>
+                <Text style={styles.infoLabel}>SECTION</Text>
+                <Text style={styles.infoValue} numberOfLines={1}>
+                  {user?.section || 'Not set (Tap to edit)'}
+                </Text>
+              </View>
+              <View style={styles.rowEditCue}>
+                <PencilEditIcon size={11} color="#94a3b8" />
+              </View>
+            </TouchableOpacity>
+          </>
+        )}
 
         <View style={styles.rowDivider} />
 
@@ -538,6 +710,236 @@ export default function ProfileView({
       {/* Bottom spacing for bottom navigation bar */}
       <View style={{ height: 110 }} />
     </ScrollView>
+
+    {/* 7. Edit Profile Modal */}
+    <Modal
+      visible={showEditModal}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={() => {
+        if (!isSavingProfile) setShowEditModal(false);
+      }}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.modalOverlay}
+      >
+        <View style={styles.modalBackdrop}>
+          <TouchableOpacity
+            style={StyleSheet.absoluteFillObject}
+            onPress={() => {
+              if (!isSavingProfile) setShowEditModal(false);
+            }}
+            activeOpacity={1}
+          />
+        </View>
+
+        <View style={styles.modalContainer}>
+          {/* Modal Header */}
+          <View style={styles.modalHeader}>
+            <View>
+              <Text style={styles.modalTitle}>Edit Profile</Text>
+              <Text style={styles.modalSubtitle}>Update your personal and account details</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.modalCloseCircle}
+              onPress={() => setShowEditModal(false)}
+              disabled={isSavingProfile}
+            >
+              <Text style={styles.modalCloseText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Error Banner */}
+          {Boolean(editError) && (
+            <View style={styles.errorBanner}>
+              <Text style={styles.errorBannerText}>{editError}</Text>
+            </View>
+          )}
+
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.modalScrollContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Photo Change Action Bar */}
+            <View style={styles.modalPhotoRow}>
+              <View style={styles.modalAvatarThumb}>
+                {activePhotoUrl ? (
+                  <Image
+                    source={{ uri: activePhotoUrl }}
+                    style={styles.modalAvatarImage}
+                  />
+                ) : (
+                  <View style={styles.modalAvatarFallback}>
+                    <Text style={styles.modalAvatarInitial}>
+                      {getUserInitial(editName || user?.name)}
+                    </Text>
+                  </View>
+                )}
+              </View>
+              <View style={styles.modalPhotoActions}>
+                <TouchableOpacity
+                  style={styles.modalChangePhotoBtn}
+                  onPress={handleEditPhoto}
+                  disabled={isUploadingPhoto || isSavingProfile}
+                >
+                  <Text style={styles.modalChangePhotoText}>Change Photo</Text>
+                </TouchableOpacity>
+                {Boolean(customPhotoUri) && (
+                  <TouchableOpacity
+                    style={styles.modalRemovePhotoBtn}
+                    onPress={handleRemovePhoto}
+                    disabled={isUploadingPhoto || isSavingProfile}
+                  >
+                    <Text style={styles.modalRemovePhotoText}>Remove</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+
+            {/* Form Input: Full Name */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>FULL NAME *</Text>
+              <TextInput
+                style={styles.textInput}
+                value={editName}
+                onChangeText={setEditName}
+                placeholder="Enter full name"
+                placeholderTextColor="#94a3b8"
+                autoCapitalize="words"
+                editable={!isSavingProfile}
+              />
+            </View>
+
+            {/* Form Input: Email */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>EMAIL ADDRESS *</Text>
+              <TextInput
+                style={styles.textInput}
+                value={editEmail}
+                onChangeText={setEditEmail}
+                placeholder="Enter email address"
+                placeholderTextColor="#94a3b8"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                editable={!isSavingProfile}
+              />
+            </View>
+
+            {/* Student specific fields */}
+            {user?.role === 'student' && (
+              <>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>STUDENT ID</Text>
+                  <TextInput
+                    style={styles.textInput}
+                    value={editStudentId}
+                    onChangeText={setEditStudentId}
+                    placeholder="e.g. 2026-10492"
+                    placeholderTextColor="#94a3b8"
+                    editable={!isSavingProfile}
+                  />
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>SECTION / CLASS</Text>
+                  <TextInput
+                    style={styles.textInput}
+                    value={editSection}
+                    onChangeText={setEditSection}
+                    placeholder="e.g. BSCS-3A"
+                    placeholderTextColor="#94a3b8"
+                    editable={!isSavingProfile}
+                  />
+                </View>
+              </>
+            )}
+
+            {/* Security / Password Section Toggle */}
+            <TouchableOpacity
+              style={styles.passwordToggleRow}
+              onPress={() => setShowPasswordFields((prev) => !prev)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.passwordToggleTitle}>
+                {showPasswordFields ? '▼ Hide Password Change' : '▶ Change Password (Optional)'}
+              </Text>
+              <Text style={styles.passwordToggleHint}>
+                {showPasswordFields ? 'Leave blank to keep current' : 'Tap to set new password'}
+              </Text>
+            </TouchableOpacity>
+
+            {showPasswordFields && (
+              <View style={styles.passwordFieldsContainer}>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>CURRENT PASSWORD</Text>
+                  <TextInput
+                    style={styles.textInput}
+                    value={currentPassword}
+                    onChangeText={setCurrentPassword}
+                    placeholder="Required only if changing password"
+                    placeholderTextColor="#94a3b8"
+                    secureTextEntry
+                    editable={!isSavingProfile}
+                  />
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>NEW PASSWORD</Text>
+                  <TextInput
+                    style={styles.textInput}
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                    placeholder="Min. 8 characters"
+                    placeholderTextColor="#94a3b8"
+                    secureTextEntry
+                    editable={!isSavingProfile}
+                  />
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>CONFIRM NEW PASSWORD</Text>
+                  <TextInput
+                    style={styles.textInput}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    placeholder="Re-type new password"
+                    placeholderTextColor="#94a3b8"
+                    secureTextEntry
+                    editable={!isSavingProfile}
+                  />
+                </View>
+              </View>
+            )}
+          </ScrollView>
+
+          {/* Modal Footer Buttons */}
+          <View style={styles.modalFooter}>
+            <TouchableOpacity
+              style={styles.modalCancelBtn}
+              onPress={() => setShowEditModal(false)}
+              disabled={isSavingProfile}
+            >
+              <Text style={styles.modalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.modalSaveBtn}
+              onPress={handleSaveProfile}
+              disabled={isSavingProfile}
+            >
+              {isSavingProfile ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text style={styles.modalSaveText}>Save Changes</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+    </View>
   );
 }
 
@@ -545,6 +947,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8fafc',
+  },
+  scrollView: {
+    flex: 1,
   },
   contentContainer: {
     paddingTop: Platform.OS === 'ios' ? 52 : 36,
@@ -860,5 +1265,252 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '800',
     color: '#ef4444',
+  },
+
+  // 7. Edit Profile Pill & Cues
+  editProfilePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#dcfce7',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+  },
+  editProfilePillText: {
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: '#15803d',
+  },
+  rowEditCue: {
+    paddingLeft: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // 8. Edit Profile Modal Styles
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(15, 23, 42, 0.45)',
+  },
+  modalContainer: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    maxHeight: '90%',
+    paddingBottom: Platform.OS === 'ios' ? 34 : 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 22,
+    paddingTop: 20,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#0f172a',
+    letterSpacing: -0.3,
+  },
+  modalSubtitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#64748b',
+    marginTop: 2,
+  },
+  modalCloseCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f1f5f9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCloseText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#64748b',
+  },
+  errorBanner: {
+    backgroundColor: '#fef2f2',
+    borderLeftWidth: 4,
+    borderLeftColor: '#ef4444',
+    marginHorizontal: 22,
+    marginTop: 12,
+    padding: 10,
+    borderRadius: 8,
+  },
+  errorBannerText: {
+    fontSize: 12.5,
+    fontWeight: '600',
+    color: '#b91c1c',
+  },
+  modalScrollContent: {
+    paddingHorizontal: 22,
+    paddingVertical: 14,
+  },
+  modalPhotoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: '#f8fafc',
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 16,
+  },
+  modalAvatarThumb: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    overflow: 'hidden',
+  },
+  modalAvatarImage: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+  },
+  modalAvatarFallback: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#16a34a',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalAvatarInitial: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  modalPhotoActions: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  modalChangePhotoBtn: {
+    backgroundColor: '#15803d',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+  },
+  modalChangePhotoText: {
+    color: '#ffffff',
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  modalRemovePhotoBtn: {
+    backgroundColor: '#fee2e2',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+  },
+  modalRemovePhotoText: {
+    color: '#b91c1c',
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  inputGroup: {
+    marginBottom: 14,
+  },
+  inputLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#475569',
+    letterSpacing: 0.6,
+    marginBottom: 6,
+  },
+  textInput: {
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#0f172a',
+  },
+  passwordToggleRow: {
+    paddingVertical: 10,
+    marginTop: 4,
+    marginBottom: 6,
+  },
+  passwordToggleTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#15803d',
+  },
+  passwordToggleHint: {
+    fontSize: 11.5,
+    fontWeight: '500',
+    color: '#64748b',
+    marginTop: 2,
+  },
+  passwordFieldsContainer: {
+    backgroundColor: '#f8fafc',
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 14,
+  },
+  modalFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 12,
+    paddingHorizontal: 22,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+  },
+  modalCancelBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    borderRadius: 12,
+    backgroundColor: '#f1f5f9',
+  },
+  modalCancelText: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#64748b',
+  },
+  modalSaveBtn: {
+    paddingHorizontal: 22,
+    paddingVertical: 11,
+    borderRadius: 12,
+    backgroundColor: '#15803d',
+    minWidth: 120,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#15803d',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  modalSaveText: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#ffffff',
   },
 });

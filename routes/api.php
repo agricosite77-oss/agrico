@@ -73,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/user/profile-photo', [AuthController::class, 'updateProfilePhoto']);
+    Route::post('/user/profile', [AuthController::class, 'updateProfile']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::post('/downloads', [DownloadController::class, 'store']);
     Route::post('/requests', [UserRequestController::class, 'store']);
