@@ -1228,22 +1228,29 @@
                 var tbody = tableEl.querySelector('tbody');
                 var allRows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
 
-                // 1. Measure real rendered element heights using a temporary measurement sandbox
+                // 1. Measure real rendered element heights using a temporary measurement sandbox with print styling
                 var measureBox = document.createElement('div');
-                measureBox.id = 'agricoPrintContainer';
-                measureBox.style.cssText = 'position: absolute; left: -99999px; top: 0; width: 281mm; visibility: hidden;';
+                measureBox.id = 'agricoMeasureSandbox';
+                measureBox.style.cssText = 'position: absolute; left: -99999px; top: 0; width: 285mm; visibility: hidden; font-family: Arial, sans-serif; font-size: 8pt; line-height: 1.15;';
+
+                var styleEl = document.createElement('style');
+                styleEl.textContent = '#agricoMeasureSandbox table { width: 100% !important; border-collapse: collapse !important; font-family: Arial, sans-serif !important; font-size: 8pt !important; } #agricoMeasureSandbox th, #agricoMeasureSandbox td { border: 1px solid #000000 !important; padding: 2px 4px !important; font-size: 7.5pt !important; line-height: 1.15 !important; box-sizing: border-box !important; }';
+                measureBox.appendChild(styleEl);
                 document.body.appendChild(measureBox);
 
                 var headerClone = headerEl.cloneNode(true);
                 measureBox.appendChild(headerClone);
-                var headerHeight = headerClone.offsetHeight || 120;
+                var headerHeight = headerClone.offsetHeight || 80;
+                if (headerHeight > 105) headerHeight = 85;
 
                 var tableClone = document.createElement('table');
-                tableClone.style.cssText = 'width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 8pt;';
-                var theadClone = thead.cloneNode(true);
-                tableClone.appendChild(theadClone);
+                var theadClone = thead ? thead.cloneNode(true) : null;
+                if (theadClone) {
+                    tableClone.appendChild(theadClone);
+                }
                 measureBox.appendChild(tableClone);
-                var theadHeight = theadClone.offsetHeight || 44;
+                var theadHeight = theadClone ? (theadClone.offsetHeight || 36) : 36;
+                if (theadHeight > 55) theadHeight = 38;
 
                 var tbodyMeasure = document.createElement('tbody');
                 tableClone.appendChild(tbodyMeasure);
@@ -1252,15 +1259,17 @@
                 for (var i = 0; i < allRows.length; i++) {
                     var rClone = allRows[i].cloneNode(true);
                     tbodyMeasure.appendChild(rClone);
-                    rowHeights.push(rClone.offsetHeight || 25);
+                    var measuredH = rClone.offsetHeight || 19;
+                    var realH = Math.max(17, Math.min(measuredH, 25));
+                    rowHeights.push(realH);
                 }
                 measureBox.remove();
 
-                // 2. Safe height budgets for content on A4 landscape (printable height ~748px)
-                // Page 1 budget: ~660px comfortably fits CSU Header + Thead + ~16-18 rows + running footer
-                // Subsequent pages budget: ~700px fits Thead + ~22-25 rows + running footer
-                var PAGE_1_MAX_HEIGHT = 660;
-                var SUBSEQUENT_PAGE_MAX_HEIGHT = 700;
+                // 2. Content height budgets for A4 landscape (printable height ~756px with 5mm margins)
+                // Page 1 budget (715px) comfortably accommodates CSU Header (~85px) + Thead (~36px) + 26-28 student rows (~490-530px) + Running Footer (~24px)
+                // Subsequent pages budget (725px) comfortably fits Thead (~36px) + 32-35 student rows (~600-660px) + Running Footer (~24px)
+                var PAGE_1_MAX_HEIGHT = 715;
+                var SUBSEQUENT_PAGE_MAX_HEIGHT = 725;
 
                 // 3. Dynamically partition rows by available pixel height
                 var pages = [];
@@ -1269,7 +1278,7 @@
                 var currentHeight = headerHeight + theadHeight;
 
                 for (var i = 0; i < allRows.length; i++) {
-                    var rHeight = rowHeights[i] || 25;
+                    var rHeight = rowHeights[i] || 19;
                     if (currentPageRows.length > 0 && (currentHeight + rHeight > currentLimit)) {
                         pages.push(currentPageRows);
                         currentPageRows = [allRows[i]];
@@ -1282,6 +1291,15 @@
                 }
                 if (currentPageRows.length > 0 || pages.length === 0) {
                     pages.push(currentPageRows);
+                }
+
+                // 4. Orphan protection: balance rows so the last page does not have fewer than 4 rows when previous page has plenty
+                if (pages.length > 1 && pages[pages.length - 1].length < 4) {
+                    var lastPage = pages[pages.length - 1];
+                    var prevPage = pages[pages.length - 2];
+                    while (lastPage.length < 5 && prevPage.length > 20) {
+                        lastPage.unshift(prevPage.pop());
+                    }
                 }
 
                 var totalPages = pages.length;
@@ -1403,7 +1421,7 @@
         @media print {
             @page {
                 size: A4 landscape;
-                margin: 6mm 8mm !important;
+                margin: 5mm 6mm !important;
             }
             body.agrico-print-active {
                 background: #ffffff !important;
@@ -1437,9 +1455,9 @@
                 border: 1px solid #000000 !important;
                 background: #ffffff !important;
                 color: #000000 !important;
-                padding: 2.5px 5px !important;
-                font-size: 8pt !important;
-                line-height: 1.2 !important;
+                padding: 2px 4px !important;
+                font-size: 7.5pt !important;
+                line-height: 1.15 !important;
                 box-sizing: border-box !important;
             }
             #agricoPrintContainer th {

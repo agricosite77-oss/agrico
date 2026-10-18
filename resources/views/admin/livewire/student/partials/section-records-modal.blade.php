@@ -529,7 +529,7 @@
             @media print {
                 @page {
                     size: A4 landscape;
-                    margin: 6mm 8mm !important;
+                    margin: 5mm 6mm !important;
                 }
                 body.agrico-print-active {
                     background: #ffffff !important;
@@ -570,9 +570,9 @@
                     border: 1px solid #000000 !important;
                     background: #ffffff !important;
                     color: #000000 !important;
-                    padding: 2.5px 5px !important;
-                    font-size: 8pt !important;
-                    line-height: 1.2 !important;
+                    padding: 2px 4px !important;
+                    font-size: 7.5pt !important;
+                    line-height: 1.15 !important;
                     box-sizing: border-box !important;
                 }
                 #agricoPrintContainer th {
@@ -810,24 +810,24 @@
                 @forelse($sectionRecords as $n => $student)
                     @php $rowTotal = 0; @endphp
                     <tr style="page-break-inside: avoid;">
-                        <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
-                        <td style="border: 1px solid #000000; padding: 2.5px 5px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
-                        <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">{{ trim(preg_replace('/^BS\s*Agriculture[\s\-_]*/i', '', $student->section ?? '')) }}</td>
+                        <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
+                        <td style="border: 1px solid #000000; padding: 2px 4px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
+                        <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; color: #000000;">{{ trim(preg_replace('/^BS\s*Agriculture[\s\-_]*/i', '', $student->section ?? '')) }}</td>
                         @foreach($cards as $i => $card)
                             @if(!empty($card['show_scans']))
                                 @php $s = (int) ($student->{"card_{$i}_scans_count"} ?? 0); $rowTotal += $s; @endphp
-                                <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">
+                                <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; color: #000000;">
                                     {{ $s }}
                                 </td>
                             @endif
                             @if(!empty($card['show_pins']))
                                 @php $p = (int) ($student->{"card_{$i}_pins_count"} ?? 0); $rowTotal += $p; @endphp
-                                <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">
+                                <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; color: #000000;">
                                     {{ $p }}
                                 </td>
                             @endif
                         @endforeach
-                        <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; color: #000000;">{{ $rowTotal }}</td>
+                        <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; color: #000000;">{{ $rowTotal }}</td>
                     </tr>
                 @empty
                     <tr>
