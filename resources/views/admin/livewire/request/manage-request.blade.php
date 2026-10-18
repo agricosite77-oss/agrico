@@ -154,7 +154,7 @@
         </div>
 
         {{-- RESULTS COUNTER --}}
-        <div class="ui-reveal-num" style="--i:4; font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0;" x-data x-init="animateCount($el, {{ (int) $userRequests->total() }}, { suffix: ' results', delay: 1200 })">
+        <div style="font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0;">
             {{ $userRequests->total() }} results
         </div>
     </div>
@@ -185,7 +185,7 @@
         {{-- CARD HEADER --}}
         <div class="px-6 py-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between request-card-header">
             <h2 class="ui-reveal-text text-base font-bold text-gray-900 dark:text-slate-100" style="--i:5">
-                User Requests (<span class="ui-reveal-num" style="--i:5" x-data x-init="animateCount($el, {{ (int) $userRequests->total() }}, { delay: 1400 })">{{ $userRequests->total() }}</span>)
+                User Requests (<span>{{ $userRequests->total() }}</span>)
             </h2>
         </div>
 

@@ -346,7 +346,7 @@
                 <h2 class="ui-reveal-text" style="--i:2; font-size:16px; font-weight:800; color:#0f172a; margin:0;">
                     Version History
                 </h2>
-                <span class="ui-reveal-num" style="--i:2; font-size:12px; font-weight:500; color:#94a3b8;" x-data x-init="animateCount($el, {{ count($applications) }}, { suffix: ' versions', delay: 800 })">
+                <span style="--i:2; font-size:12px; font-weight:500; color:#94a3b8;">
                     {{ count($applications) }} versions
                 </span>
             </div>

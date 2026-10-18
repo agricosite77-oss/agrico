@@ -129,8 +129,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <span class="ui-reveal-num" style="color: #22c55e; font-weight: 700; font-size: 12.5px; white-space: nowrap; flex-shrink: 0; text-align: right; margin-left: 4px;"
-                                  x-data x-init="animateCount($el, {{ (int) $item['scans'] }}, { suffix: ' scans', delay: 1400 + {{ $index }} * 50 })">
+                            <span style="color: #22c55e; font-weight: 700; font-size: 12.5px; white-space: nowrap; flex-shrink: 0; text-align: right; margin-left: 4px;">
                                 {{ number_format($item['scans']) }} scans
                             </span>
                         </div>
@@ -204,12 +203,10 @@
                                 </div>
                             </div>
                             <div style="text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 1px;">
-                                <span class="ui-reveal-num" style="color: #16a34a; font-weight: 800; font-size: 12px; white-space: nowrap;"
-                                      x-data x-init="animateCount($el, {{ (int) $item['scans'] }}, { suffix: ' {{ Str::plural('scan', $item['scans']) }}', delay: 1600 + {{ $index }} * 50 })">
+                                <span style="color: #16a34a; font-weight: 800; font-size: 12px; white-space: nowrap;">
                                     {{ number_format($item['scans']) }} {{ Str::plural('scan', $item['scans']) }}
                                 </span>
-                                <span class="ui-reveal-num" style="color: #0284c7; font-weight: 700; font-size: 11px; white-space: nowrap;"
-                                      x-data x-init="animateCount($el, {{ (int) $item['pins'] }}, { suffix: ' {{ Str::plural('pin map', $item['pins']) }}', delay: 1650 + {{ $index }} * 50 })">
+                                <span style="color: #0284c7; font-weight: 700; font-size: 11px; white-space: nowrap;">
                                     {{ number_format($item['pins']) }} {{ Str::plural('pin map', $item['pins']) }}
                                 </span>
                             </div>
@@ -301,8 +298,7 @@
                     <span style="color: #64748b; font-weight: 500;">
                         Total Downloads
                     </span>
-                    <span class="ui-reveal-num" style="color: #1e293b; font-weight: 700;"
-                          x-data x-init="animateCount($el, {{ (int) $appDownloads }}, { delay: 1800 })">
+                    <span style="color: #1e293b; font-weight: 700;">
                         {{ number_format($appDownloads) }}
                     </span>
                 </div>

@@ -407,7 +407,7 @@
         </div>
 
         {{-- RESULTS COUNTER --}}
-        <div class="ui-reveal-num" style="font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0;" x-data x-init="animateCount($el, {{ (int) $tableMappings->total() }}, { suffix: ' results', delay: 1200 })">
+        <div style="font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0;">
             {{ $tableMappings->total() }} results
         </div>
     </div>
@@ -417,7 +417,7 @@
         {{-- CARD HEADER --}}
         <div class="px-6 py-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
             <h2 class="ui-reveal-text text-base font-bold text-gray-900 dark:text-slate-100">
-                Mapped Locations (<span class="ui-reveal-num" x-data x-init="animateCount($el, {{ (int) $tableMappings->total() }}, { delay: 1400 })">{{ $tableMappings->total() }}</span>)
+                Mapped Locations ({{ $tableMappings->total() }})
             </h2>
         </div>
 

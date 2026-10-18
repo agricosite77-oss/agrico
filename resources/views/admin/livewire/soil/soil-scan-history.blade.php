@@ -7,7 +7,7 @@
                 Soil Scan History
             </h1>
             <p class="ui-reveal-text text-sm text-gray-400 mt-1" style="--i:0">
-                <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) ($soils->total() ?? 0) }}, { delay: 400 })">{{ $soils->total() ?? 0 }}</span> soil records in database
+                {{ $soils->total() ?? 0 }} soil records in database
             </p>
         </div>
         <a
@@ -146,7 +146,7 @@
         </div>
 
         {{-- RESULTS COUNTER --}}
-        <div class="ui-reveal-num" style="--i:1; font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0;" x-data x-init="animateCount($el, {{ (int) ($soils->total() ?? 0) }}, { suffix: ' results', delay: 600 })">
+        <div style="--i:1; font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0;">
             {{ $soils->total() ?? 0 }} results
         </div>
     </div>
@@ -464,7 +464,7 @@
         {{-- CARD HEADER --}}
         <div class="px-6 py-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
             <h2 class="ui-reveal-text text-base font-bold text-gray-900 dark:text-slate-100" style="--i:2">
-                Soil Scan History (<span class="ui-reveal-num" style="--i:2" x-data x-init="animateCount($el, {{ (int) ($soils->total() ?? 0) }}, { delay: 800 })">{{ $soils->total() ?? 0 }}</span>)
+                Soil Scan History ({{ $soils->total() ?? 0 }})
             </h2>
         </div>
 
@@ -656,7 +656,7 @@
                                       })->where('soil_scan_id', '<=', $scan->soil_scan_id)->count()
                                     : 1;
                             @endphp
-                            <span class="ui-reveal-num" style="--i:2" x-data x-init="animateCount($el, {{ (int) $scanSeq }}, { delay: 1000 })">{{ $scanSeq }}</span>
+                            {{ $scanSeq }}
                         </td>
 
                         {{-- SCAN NOTE --}}

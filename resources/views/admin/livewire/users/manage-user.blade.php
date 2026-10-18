@@ -114,7 +114,7 @@
                 Manage Users
             </h1>
             <p class="ui-reveal-text" style="--i:0; font-size:13.5px; font-weight:500; color:#94a3b8; margin:4px 0 0 0; line-height:1.4;">
-                <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $totalRegistered }}, { delay: 400 })">{{ $totalRegistered }}</span> registered users — <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $onlineCount }}, { delay: 400 })">{{ $onlineCount }}</span> currently online
+                {{ $totalRegistered }} registered users — {{ $onlineCount }} currently online
             </p>
         </div>
 
@@ -132,7 +132,7 @@
             <div class="ui-reveal-text" style="--i:0; background:#ffffff; border:1px solid #f1f5f9; border-radius:9999px; padding:4px 6px; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:inline-flex; align-items:center; gap:8px; flex-shrink:0;">
                 {{-- GREEN ONLINE PILL --}}
                 <span style="background:#dcfce7; color:#22c55e; border-radius:9999px; padding:4px 14px; font-size:12.5px; font-weight:700; display:inline-flex; align-items:center; white-space:nowrap;">
-                    <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $onlineCount }}, { suffix: ' Online', delay: 400 })">{{ $onlineCount }} Online</span>
+                    {{ $onlineCount }} Online
                 </span>
 
                 {{-- VERTICAL DIVIDER --}}
@@ -140,7 +140,7 @@
 
                 {{-- GRAY OFFLINE TEXT --}}
                 <span style="color:#64748b; font-size:12.5px; font-weight:600; padding-right:12px; display:inline-flex; align-items:center; white-space:nowrap;">
-                    <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $offlineCount }}, { suffix: ' Offline', delay: 400 })">{{ $offlineCount }} Offline</span>
+                    {{ $offlineCount }} Offline
                 </span>
             </div>
         </div>
@@ -307,7 +307,7 @@
             </div>
 
             {{-- RESULTS COUNTER --}}
-            <div class="ui-reveal-num" style="--i:1; font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0; margin-left:4px;" x-data x-init="animateCount($el, {{ (int) $users->total() }}, { suffix: ' results', delay: 600 })">
+            <div style="font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0; margin-left:4px;">
                 {{ $users->total() }} results
             </div>
         </div>
@@ -318,7 +318,7 @@
         {{-- CARD HEADER --}}
         <div class="px-6 py-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
             <h2 class="ui-reveal-text text-base font-bold text-gray-900 dark:text-slate-100" style="--i:2">
-                Manage Users (<span class="ui-reveal-num" style="--i:2" x-data x-init="animateCount($el, {{ (int) $users->total() }}, { delay: 800 })">{{ $users->total() }}</span>)
+                Manage Users ({{ $users->total() }})
             </h2>
         </div>
 

@@ -7,7 +7,7 @@
                 Mapping History
             </h1>
             <p class="ui-reveal-text text-sm text-gray-400 mt-1" style="--i:0">
-                <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) ($mappings->total() ?? 0) }}, { delay: 400 })">{{ $mappings->total() ?? 0 }}</span> location mapping records in database
+                {{ $mappings->total() ?? 0 }} location mapping records in database
             </p>
         </div>
     </div>
@@ -52,7 +52,7 @@
         </select>
 
         {{-- RESULTS COUNTER --}}
-        <div class="ui-reveal-num" style="--i:1; font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0;" x-data x-init="animateCount($el, {{ (int) ($mappings->total() ?? 0) }}, { suffix: ' results', delay: 600 })">
+        <div style="--i:1; font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0;">
             {{ $mappings->total() }} results
         </div>
     </div>
@@ -62,7 +62,7 @@
         {{-- CARD HEADER --}}
         <div class="px-6 py-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
             <h2 class="ui-reveal-text text-base font-bold text-gray-900 dark:text-slate-100" style="--i:2">
-                Mapping History (<span class="ui-reveal-num" style="--i:2" x-data x-init="animateCount($el, {{ (int) ($mappings->total() ?? 0) }}, { delay: 800 })">{{ $mappings->total() }}</span>)
+                Mapping History ({{ $mappings->total() }})
             </h2>
         </div>
 

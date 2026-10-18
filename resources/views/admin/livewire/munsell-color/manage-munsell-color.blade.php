@@ -9,7 +9,7 @@
                 Manage Munsell Color
             </h1>
             <p class="ui-reveal-text text-xs sm:text-sm text-gray-400 mt-1" style="--i:0">
-                <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) ($colors->total() ?? 0) }}, { delay: 400 })">{{ $colors->total() ?? 0 }}</span> Munsell color records in database
+                {{ $colors->total() ?? 0 }} Munsell color records in database
             </p>
         </div>
 
@@ -153,7 +153,7 @@
         </div>
 
         {{-- RESULTS COUNTER --}}
-        <div class="ui-reveal-num" style="--i:1; font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0;" x-data x-init="animateCount($el, {{ (int) ($colors->total() ?? 0) }}, { suffix: ' results', delay: 600 })">
+        <div style="--i:1; font-size:13px; font-weight:500; color:#94a3b8; flex-shrink:0;">
             {{ $colors->total() ?? 0 }} results
         </div>
     </div>
@@ -176,7 +176,7 @@
         {{-- CARD HEADER --}}
         <div class="px-6 py-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
             <h2 class="ui-reveal-text text-base font-bold text-gray-900 dark:text-slate-100" style="--i:2">
-                Munsell Soil Colors (<span class="ui-reveal-num" style="--i:2" x-data x-init="animateCount($el, {{ (int) ($colors->total() ?? 0) }}, { delay: 800 })">{{ $colors->total() ?? 0 }}</span>)
+                Munsell Soil Colors ({{ $colors->total() ?? 0 }})
             </h2>
         </div>
 

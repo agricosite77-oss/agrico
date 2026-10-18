@@ -660,7 +660,7 @@
                 Student Records
             </h1>
             <p class="ui-reveal-text" style="--i:0; font-size:13.5px; font-weight:500; color:#94a3b8; margin:4px 0 0 0; line-height:1.4;">
-                <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $totalRegistered }}, { delay: 400 })">{{ $totalRegistered }}</span> registered students — <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $onlineCount }}, { delay: 400 })">{{ $onlineCount }}</span> currently online
+                {{ $totalRegistered }} registered students — {{ $onlineCount }} currently online
             </p>
         </div>
 
@@ -695,7 +695,7 @@
             <div style="background:#ffffff; border:1px solid #f1f5f9; border-radius:9999px; padding:4px 6px; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:inline-flex; align-items:center; gap:8px; flex-shrink:0;">
                 {{-- GREEN ONLINE PILL --}}
                 <span style="background:#dcfce7; color:#22c55e; border-radius:9999px; padding:4px 14px; font-size:12.5px; font-weight:700; display:inline-flex; align-items:center; white-space:nowrap;">
-                    <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $onlineCount }}, { suffix: ' Online', delay: 400 })">{{ $onlineCount }} Online</span>
+                    {{ $onlineCount }} Online
                 </span>
 
                 {{-- VERTICAL DIVIDER --}}
@@ -703,7 +703,7 @@
 
                 {{-- GRAY OFFLINE TEXT --}}
                 <span style="color:#64748b; font-size:12.5px; font-weight:600; padding-right:12px; display:inline-flex; align-items:center; white-space:nowrap;">
-                    <span class="ui-reveal-num" style="--i:0" x-data x-init="animateCount($el, {{ (int) $offlineCount }}, { suffix: ' Offline', delay: 400 })">{{ $offlineCount }} Offline</span>
+                    {{ $offlineCount }} Offline
                 </span>
             </div>
         </div>
@@ -922,7 +922,7 @@
                 </button>
             </div>
 
-            <div class="ui-reveal-num" style="--i:1; font-size: 13px; font-weight: 600; color: #94a3b8; flex-shrink: 0; white-space: nowrap;" x-data x-init="animateCount($el, {{ (int) $students->total() }}, { suffix: ' results', delay: 600 })">
+            <div style="--i:1; font-size: 13px; font-weight: 600; color: #94a3b8; flex-shrink: 0; white-space: nowrap;">
                 {{ $students->total() }} results
             </div>
         </div>
@@ -1008,7 +1008,7 @@
                 <div class="student-stats-box">
                     {{-- SCAN COUNT --}}
                     <div>
-                        <div class="ui-reveal-num" style="--i:2; font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.1;" x-data x-init="animateCount($el, {{ (int) ($user->soil_scans_count ?? 0) }}, { delay: 1000 })">
+                        <div style="--i:2; font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.1;">
                             {{ $user->soil_scans_count ?? 0 }}
                         </div>
                         <div style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-top: 3px;">
@@ -1018,7 +1018,7 @@
 
                     {{-- SOIL PIN MAP --}}
                     <div>
-                        <div class="ui-reveal-num" style="--i:2; font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.1;" x-data x-init="animateCount($el, {{ (int) ($user->location_mappings_count ?? 0) }}, { delay: 1000 })">
+                        <div style="--i:2; font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.1;">
                             {{ $user->location_mappings_count ?? 0 }}
                         </div>
                         <div style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-top: 3px;">
@@ -1172,7 +1172,7 @@
         {{-- CARD HEADER --}}
         <div class="px-6 py-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
             <h2 class="ui-reveal-text text-base font-bold text-gray-900 dark:text-slate-100" style="--i:2">
-                Student Records (<span class="ui-reveal-num" style="--i:2" x-data x-init="animateCount($el, {{ (int) ($students->total() ?? 0) }}, { delay: 800 })">{{ $students->total() ?? 0 }}</span>)
+                Student Records ({{ $students->total() ?? 0 }})
             </h2>
         </div>
 
@@ -1386,12 +1386,12 @@
 
                         {{-- SCANS --}}
                         <td class="px-5 py-5 whitespace-nowrap text-center text-sm font-bold text-gray-500 col-scans">
-                            <span class="ui-reveal-num" style="--i:2" x-data x-init="animateCount($el, {{ (int) $scans }}, { delay: 1000 })">{{ $scans }}</span>
+                            {{ $scans }}
                         </td>
 
                         {{-- PIN MAP --}}
                         <td class="px-5 py-5 whitespace-nowrap text-center text-sm font-bold text-gray-500 col-pin-map">
-                            <span class="ui-reveal-num" style="--i:2" x-data x-init="animateCount($el, {{ (int) ($user->location_mappings_count ?? 0) }}, { delay: 1000 })">{{ $user->location_mappings_count ?? 0 }}</span>
+                            {{ $user->location_mappings_count ?? 0 }}
                         </td>
 
                         {{-- ACTIONS --}}
