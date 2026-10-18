@@ -63,14 +63,14 @@ class StudentRecord extends Component
     public $showSectionRecordsModal = false;
     public $sectionRecordsSearch = '';
     public $sectionRecordsSectionFilter = '';
-    public $sectionRecordsColumnName = 'SCAN SOIL ACTIVITY';
+    public $sectionRecordsColumnName = 'Scan Soil';
     public $sectionRecordsDateFilter = '';
     public $sectionRecordsStartTime = '';
     public $sectionRecordsEndTime = '';
     public $sectionRecordsShowScans = true;
     public $sectionRecordsShowPins = true;
     public $activityCards = [];
-    public $documentTitle = 'GENERAL ACTION PLAN FOR ACADEMIC YEAR 2025-2026';
+    public $documentTitle = 'Student Soil and Pin Location Activity Records';
 
     // EDIT MODAL STATE
     public $showEditModal = false;
@@ -298,8 +298,8 @@ class StudentRecord extends Component
             [
                 'id' => 1,
                 'activity_name' => 'Activity #1',
-                'scan_name' => 'SCAN SOIL ACTIVITY',
-                'pin_name' => 'PIN LOCATION ACTIVITY',
+                'scan_name' => 'Scan Soil',
+                'pin_name' => 'Pin Soil Location',
                 'date' => $defaultDate,
                 'start_time' => '',
                 'end_time' => '',
@@ -312,7 +312,7 @@ class StudentRecord extends Component
         $this->sectionRecordsStartTime = '';
         $this->sectionRecordsEndTime = '';
         if (empty($this->sectionRecordsColumnName)) {
-            $this->sectionRecordsColumnName = 'SCAN SOIL ACTIVITY';
+            $this->sectionRecordsColumnName = 'Scan Soil';
         }
         $this->sectionRecordsShowScans = true;
         $this->sectionRecordsShowPins = true;
@@ -321,12 +321,16 @@ class StudentRecord extends Component
 
     public function addActivityCard()
     {
+        if (count($this->activityCards) >= 8) {
+            return;
+        }
+
         $num = count($this->activityCards) + 1;
         $this->activityCards[] = [
             'id' => time() . '_' . $num,
             'activity_name' => 'Activity #' . $num,
-            'scan_name' => 'Activity #' . $num . ' (Scan)',
-            'pin_name' => 'Activity #' . $num . ' (Pin Location)',
+            'scan_name' => 'Scan Soil',
+            'pin_name' => 'Pin Soil Location',
             'date' => now()->format('Y-m-d'),
             'start_time' => '',
             'end_time' => '',
@@ -402,7 +406,7 @@ class StudentRecord extends Component
         $this->sectionRecordsShowScans = true;
         $this->sectionRecordsShowPins = true;
         $this->activityCards = [];
-        $this->documentTitle = 'GENERAL ACTION PLAN FOR ACADEMIC YEAR 2025-2026';
+        $this->documentTitle = 'Student Soil and Pin Location Activity Records';
     }
 
     public function exportSectionDocx(\App\Services\StudentRecordsExportService $exportService)
@@ -441,8 +445,8 @@ class StudentRecord extends Component
                 [
                     'id' => 1,
                     'activity_name' => 'Activity #1',
-                    'scan_name' => $this->sectionRecordsColumnName ?: 'SCAN SOIL ACTIVITY',
-                    'pin_name' => 'PIN LOCATION ACTIVITY',
+                    'scan_name' => $this->sectionRecordsColumnName ?: 'Scan Soil',
+                    'pin_name' => 'Pin Soil Location',
                     'date' => $this->sectionRecordsDateFilter ?: now()->format('Y-m-d'),
                     'start_time' => $this->sectionRecordsStartTime ?: '',
                     'end_time' => $this->sectionRecordsEndTime ?: '',

@@ -4,8 +4,8 @@
     $cards = !empty($activityCards) ? $activityCards : [[
         'id' => 1,
         'activity_name' => 'Activity #1',
-        'scan_name' => $sectionRecordsColumnName ?: 'SCAN SOIL ACTIVITY',
-        'pin_name' => 'PIN LOCATION ACTIVITY',
+        'scan_name' => $sectionRecordsColumnName ?: 'Scan Soil',
+        'pin_name' => 'Pin Soil Location',
         'date' => $sectionRecordsDateFilter ?: now()->format('Y-m-d'),
         'start_time' => $sectionRecordsStartTime ?: '',
         'end_time' => $sectionRecordsEndTime ?: '',
@@ -311,20 +311,26 @@
                     </div>
                 @endforeach
 
-                {{-- THE "+" CARD: ADDS ANOTHER ACTIVITY CARD, WILL NOT HIDE --}}
-                <button
-                    type="button"
-                    wire:click="addActivityCard"
-                    style="width: 100%; border: 2px dashed #cbd5e1; border-radius: 18px; background: #ffffff; padding: 16px 22px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; transition: all 0.2s ease; color: #16a34a; font-size: 14px; font-weight: 800; box-shadow: 0 1px 3px rgba(0,0,0,0.02);"
-                    onmouseover="this.style.borderColor='#16a34a'; this.style.background='#f0fdf4';"
-                    onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='#ffffff';"
-                    title="Add another activity card"
-                >
-                    <div style="width: 28px; height: 28px; border-radius: 50%; background: #dcfce7; border: 1.5px solid #86efac; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #16a34a; line-height: 1;">
-                        +
+                {{-- THE "+" CARD: ADDS ANOTHER ACTIVITY CARD (MAXIMUM 8) --}}
+                @if(count($cards) < 8)
+                    <button
+                        type="button"
+                        wire:click="addActivityCard"
+                        style="width: 100%; border: 2px dashed #cbd5e1; border-radius: 18px; background: #ffffff; padding: 16px 22px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; transition: all 0.2s ease; color: #16a34a; font-size: 14px; font-weight: 800; box-shadow: 0 1px 3px rgba(0,0,0,0.02);"
+                        onmouseover="this.style.borderColor='#16a34a'; this.style.background='#f0fdf4';"
+                        onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='#ffffff';"
+                        title="Add another activity card (Maximum 8 activities)"
+                    >
+                        <div style="width: 28px; height: 28px; border-radius: 50%; background: #dcfce7; border: 1.5px solid #86efac; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #16a34a; line-height: 1;">
+                            +
+                        </div>
+                        <span>Add Another Activity ({{ count($cards) }}/8)</span>
+                    </button>
+                @else
+                    <div style="width: 100%; border: 1.5px dashed #cbd5e1; border-radius: 18px; background: #f8fafc; padding: 14px 20px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #64748b; font-size: 13px; font-weight: 700;">
+                        <span>Maximum of 8 activities reached</span>
                     </div>
-                    <span>Add Another Activity</span>
-                </button>
+                @endif
             </div>
 
             {{-- DOCUMENT TITLE INPUT (DIRECTLY AFTER FILTER SECTION) --}}
@@ -335,7 +341,7 @@
                 <input
                     type="text"
                     wire:model.live.debounce.300ms="documentTitle"
-                    placeholder="GENERAL ACTION PLAN FOR ACADEMIC YEAR 2025-2026"
+                    placeholder="Student Soil and Pin Location Activity Records"
                     style="width: 100%; min-height: 42px; padding: 0 14px; border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 13.5px; font-weight: 600; color: #0f172a; outline: none; background: #ffffff; font-family: inherit; box-sizing: border-box; transition: all 0.15s ease;"
                     onfocus="this.style.borderColor='#16a34a'; this.style.boxShadow='0 0 0 3px rgba(34, 197, 94, 0.2)';"
                     onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';"
@@ -406,10 +412,10 @@
                         <tr>
                             @foreach($cards as $i => $card)
                                 @if(!empty($card['show_scans']))
-                                    <th class="xl-scan">{{ $card['scan_name'] ?? 'Scan' }}</th>
+                                    <th class="xl-scan">{{ $card['scan_name'] ?? 'Scan Soil' }}</th>
                                 @endif
                                 @if(!empty($card['show_pins']))
-                                    <th class="xl-pin">{{ $card['pin_name'] ?? 'Pin Location' }}</th>
+                                    <th class="xl-pin">{{ $card['pin_name'] ?? 'Pin Soil Location' }}</th>
                                 @endif
                             @endforeach
                         </tr>
@@ -787,12 +793,12 @@
                     @foreach($cards as $i => $card)
                         @if(!empty($card['show_scans']))
                             <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 7.5pt;">
-                                {{ $card['scan_name'] ?? 'Scan' }}
+                                {{ $card['scan_name'] ?? 'Scan Soil' }}
                             </th>
                         @endif
                         @if(!empty($card['show_pins']))
                             <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 7.5pt;">
-                                {{ $card['pin_name'] ?? 'Pin Location' }}
+                                {{ $card['pin_name'] ?? 'Pin Soil Location' }}
                             </th>
                         @endif
                     @endforeach

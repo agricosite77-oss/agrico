@@ -37,7 +37,7 @@ class StudentRecordsExportTest extends TestCase
         Livewire::actingAs($admin, 'admin')
             ->test(StudentRecord::class)
             ->call('openSectionRecordsModal')
-            ->assertSet('documentTitle', 'GENERAL ACTION PLAN FOR ACADEMIC YEAR 2025-2026')
+            ->assertSet('documentTitle', 'Student Soil and Pin Location Activity Records')
             ->assertSee('Document Title')
             ->assertSee('Print / Save Copy')
             ->assertSee('MS Word (.docx)')
@@ -283,5 +283,31 @@ class StudentRecordsExportTest extends TestCase
         $this->assertEquals('BSIT-4A', StudentRecordsExportService::formatSection('BSIT-4A'));
         $this->assertEquals('4-A', StudentRecordsExportService::formatSection('4-A'));
         $this->assertEquals('', StudentRecordsExportService::formatSection(null));
+    }
+
+    public function test_activity_cards_capped_at_maximum_eight()
+    {
+        $admin = Admin::create([
+            'admin_id'  => 'ADM-004',
+            'full_name' => 'Tester Admin',
+            'email'     => 'admin4@agrico.test',
+            'password'  => bcrypt('password'),
+        ]);
+
+        $component = Livewire::actingAs($admin, 'admin')
+            ->test(StudentRecord::class)
+            ->call('openSectionRecordsModal');
+
+        $this->assertCount(1, $component->get('activityCards'));
+
+        // Add 7 more to reach 8
+        for ($i = 0; $i < 7; $i++) {
+            $component->call('addActivityCard');
+        }
+        $this->assertCount(8, $component->get('activityCards'));
+
+        // Attempting to add 9th must be rejected
+        $component->call('addActivityCard');
+        $this->assertCount(8, $component->get('activityCards'));
     }
 }

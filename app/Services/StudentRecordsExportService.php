@@ -286,12 +286,12 @@ class StudentRecordsExportService
 
         foreach ($cards as $i => $card) {
             if (!empty($card['show_scans'])) {
-                $scanName = $card['scan_name'] ?? 'Scan';
+                $scanName = $card['scan_name'] ?? 'Scan Soil';
                 $row2->addCell($activityColWidth, $cellBase)
                     ->addText($scanName, $headerFont, ['alignment' => Jc::CENTER]);
             }
             if (!empty($card['show_pins'])) {
-                $pinName = $card['pin_name'] ?? 'Pin Location';
+                $pinName = $card['pin_name'] ?? 'Pin Soil Location';
                 $row2->addCell($activityColWidth, $cellBase)
                     ->addText($pinName, $headerFont, ['alignment' => Jc::CENTER]);
             }
@@ -536,12 +536,12 @@ class StudentRecordsExportService
 
             if (!empty($card['show_scans'])) {
                 $cLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
-                $sheet->setCellValue("{$cLetter}{$tableHeaderRow2}", $card['scan_name'] ?? 'Scan');
+                $sheet->setCellValue("{$cLetter}{$tableHeaderRow2}", $card['scan_name'] ?? 'Scan Soil');
                 $colIdx++;
             }
             if (!empty($card['show_pins'])) {
                 $cLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
-                $sheet->setCellValue("{$cLetter}{$tableHeaderRow2}", $card['pin_name'] ?? 'Pin Location');
+                $sheet->setCellValue("{$cLetter}{$tableHeaderRow2}", $card['pin_name'] ?? 'Pin Soil Location');
                 $colIdx++;
             }
         }
