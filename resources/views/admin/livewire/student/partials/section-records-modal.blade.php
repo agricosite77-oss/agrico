@@ -541,7 +541,7 @@
                 }
                 #sectionRecordsPrintArea {
                     display: block !important;
-                    position: static !important;
+                    position: absolute !important;
                     left: 0 !important;
                     top: 0 !important;
                     width: 100% !important;
@@ -815,87 +815,5 @@
             </div>
         </div>
     </div>
-
-<script>
-window.printSectionRecords = function() {
-    var area = document.getElementById('sectionRecordsPrintArea');
-    if (!area) {
-        window.print();
-        return;
-    }
-
-    var iframe = document.getElementById('sectionRecordsPrintIframe');
-    if (iframe) {
-        iframe.remove();
-    }
-
-    iframe = document.createElement('iframe');
-    iframe.id = 'sectionRecordsPrintIframe';
-    iframe.style.position = 'fixed';
-    iframe.style.top = '-99999px';
-    iframe.style.left = '-99999px';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = '0';
-    document.body.appendChild(iframe);
-
-    var doc = iframe.contentWindow.document;
-    doc.open();
-    doc.write('<!DOCTYPE html><html><head><title><\/title>');
-    doc.write('<style>');
-    doc.write('@page { size: A4 landscape; margin: 0 !important; }');
-    doc.write('html, body { margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; font-family: Arial, sans-serif !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }');
-    doc.write('.print-wrap { padding: 5mm 8mm; box-sizing: border-box; width: 100%; }');
-    doc.write('table { width: 100%; border-collapse: collapse; font-size: 8pt; }');
-    doc.write('th, td { border: 1px solid #000000; padding: 4px 6px; }');
-    doc.write('thead { display: table-header-group; }');
-    doc.write('tr { page-break-inside: avoid; }');
-    doc.write('<\/style>');
-    doc.write('<\/head><body>');
-    doc.write('<div class="print-wrap">' + area.innerHTML + '<\/div>');
-    doc.write('<\/body><\/html>');
-    doc.close();
-
-    var triggerPrint = function() {
-        try {
-            iframe.contentWindow.focus();
-            iframe.contentWindow.print();
-        } catch (e) {
-            console.error('Print error:', e);
-            window.print();
-        }
-    };
-
-    var imgs = iframe.contentDocument ? iframe.contentDocument.querySelectorAll('img') : [];
-    if (imgs && imgs.length > 0) {
-        var loaded = 0;
-        var total = imgs.length;
-        var fired = false;
-        var checkDone = function() {
-            loaded++;
-            if (!fired && loaded >= total) {
-                fired = true;
-                setTimeout(triggerPrint, 80);
-            }
-        };
-        imgs.forEach(function(img) {
-            if (img.complete) {
-                checkDone();
-            } else {
-                img.onload = checkDone;
-                img.onerror = checkDone;
-            }
-        });
-        setTimeout(function() {
-            if (!fired) {
-                fired = true;
-                triggerPrint();
-            }
-        }, 500);
-    } else {
-        setTimeout(triggerPrint, 150);
-    }
-};
-</script>
 @endif
 </div>
