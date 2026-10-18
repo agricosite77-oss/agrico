@@ -1784,6 +1784,40 @@ export default function HomeScreen({ navigation, route }) {
     return pages;
   }, [totalPages, currentPage]);
 
+  // Lookup matched official Munsell color from Admin / Manage Munsell Color database
+  const detailMunsellMatch = useMemo(() => {
+    if (!detailSoil) return null;
+    const targetCode = (detailSoil.munsellCode || detailSoil.fullCode || detailSoil.full_code || '')
+      .trim()
+      .toUpperCase();
+    const source = Array.isArray(munsellList) && munsellList.length > 0 ? munsellList : OFFLINE_MUNSELL_COLORS;
+    return (
+      source.find(
+        (c) =>
+          (c.munsellCode || c.full_code || c.munsell_code || '').trim().toUpperCase() === targetCode
+      ) || null
+    );
+  }, [detailSoil, munsellList]);
+
+  // Unified official description based on Admin Manage Munsell Color
+  const detailResolvedDescription = useMemo(() => {
+    if (detailMunsellMatch?.description && detailMunsellMatch.description.trim()) {
+      return detailMunsellMatch.description;
+    }
+    if (
+      detailSoil?.description &&
+      !detailSoil.description.startsWith('Determined Soil:') &&
+      !detailSoil.description.startsWith('Field scan record') &&
+      !detailSoil.description.startsWith('Sample processed successfully')
+    ) {
+      return detailSoil.description;
+    }
+    return (
+      detailMunsellMatch?.description ||
+      `${detailSoil?.munsellCode || detailSoil?.fullCode || ''} - ${detailSoil?.colorName || detailSoil?.name || 'Determined Soil'}`
+    );
+  }, [detailSoil, detailMunsellMatch]);
+
   // Fetch dynamic "Most Scanned Soil" records from the database
   const loadMostScanned = useCallback(async (hue = selectedHue, search = searchQuery) => {
     try {
@@ -2846,7 +2880,7 @@ export default function HomeScreen({ navigation, route }) {
                 <View
                   style={[
                     styles.soilBannerDualPreview,
-                    { backgroundColor: detailSoil.hexCode || detailSoil.hex || '#8F694E' },
+                    { backgroundColor: detailMunsellMatch?.hexCode || detailSoil.hexCode || detailSoil.hex || '#8F694E' },
                   ]}
                 >
                   {/* Left Avatar Snippet (Website #modalSoilSnippetAvatarContainer) */}
@@ -2877,17 +2911,17 @@ export default function HomeScreen({ navigation, route }) {
                   {/* Center Code Display & Percentage/Subtitle (Website #modalSwatchBlock) */}
                   <View style={styles.soilBannerCodeBlock}>
                     <Text style={styles.soilBannerMunsellCode}>
-                      {detailSoil.munsellCode || detailSoil.fullCode || '7.5YR 5/3'}
+                      {detailMunsellMatch?.munsellCode || detailSoil.munsellCode || detailSoil.fullCode || '7.5YR 5/3'}
                     </Text>
                     <Text style={styles.soilBannerSubLabel} numberOfLines={1}>
-                      {detailSoil.colorName || detailSoil.name || 'Determined Soil'}
+                      {detailMunsellMatch?.colorName || detailSoil.colorName || detailSoil.name || 'Determined Soil'}
                     </Text>
                   </View>
 
                   {/* Right Hex Pill (Website #modalHexPill) */}
                   <View style={styles.soilBannerHexPill}>
                     <Text style={styles.soilBannerHexText}>
-                      {(detailSoil.hexCode || detailSoil.hex || '#8F694E').toUpperCase()}
+                      {(detailMunsellMatch?.hexCode || detailSoil.hexCode || detailSoil.hex || '#8F694E').toUpperCase()}
                     </Text>
                   </View>
                 </View>
@@ -2898,13 +2932,13 @@ export default function HomeScreen({ navigation, route }) {
                   <View style={styles.soilModalGridCard}>
                     <Text style={styles.soilModalLabel}>COLOR NAME</Text>
                     <Text style={styles.soilModalValue} numberOfLines={1}>
-                      {detailSoil.colorName || detailSoil.name || 'Brown'}
+                      {detailMunsellMatch?.colorName || detailSoil.colorName || detailSoil.name || 'Brown'}
                     </Text>
                   </View>
                   <View style={styles.soilModalGridCard}>
                     <Text style={styles.soilModalLabel}>FULL CODE</Text>
                     <Text style={styles.soilModalValue} numberOfLines={1}>
-                      {detailSoil.fullCode || detailSoil.munsellCode || '7.5YR 5/3'}
+                      {detailMunsellMatch?.munsellCode || detailSoil.fullCode || detailSoil.munsellCode || '7.5YR 5/3'}
                     </Text>
                   </View>
                 </View>
@@ -2914,13 +2948,13 @@ export default function HomeScreen({ navigation, route }) {
                   <View style={styles.soilModalGridCard}>
                     <Text style={styles.soilModalLabel}>SOIL ORGANIC</Text>
                     <Text style={styles.soilModalValue} numberOfLines={2}>
-                      {detailSoil.soil_organic_index || detailSoil.organicIndex || 'Moderate (2.2% – 3.7%)'}
+                      {detailMunsellMatch?.soil_organic_index || detailSoil.soil_organic_index || detailSoil.organicIndex || 'Moderate (2.2% – 3.7%)'}
                     </Text>
                   </View>
                   <View style={styles.soilModalGridCard}>
                     <Text style={styles.soilModalLabel}>SOIL TYPE</Text>
                     <Text style={styles.soilModalValue} numberOfLines={2}>
-                      {detailSoil.soil_type || detailSoil.soilType || 'Determined Soil'}
+                      {detailMunsellMatch?.soil_type || detailSoil.soil_type || detailSoil.soilType || 'Determined Soil'}
                     </Text>
                   </View>
                 </View>
@@ -2965,7 +2999,9 @@ export default function HomeScreen({ navigation, route }) {
                   <Text style={styles.soilModalLabel}>SCAN NOTE</Text>
                   <Text style={styles.soilModalDescText}>
                     {detailSoil.scanNote ||
-                      `Determined ${detailSoil.colorName || 'Soil'} (${detailSoil.munsellCode || detailSoil.fullCode || ''}) with ${detailSoil.nearMatchRating || detailSoil.confidence || '97.4%'} confidence.`}
+                      (detailSoil.description && detailSoil.description.startsWith('Determined Soil:')
+                        ? detailSoil.description
+                        : `Determined ${detailMunsellMatch?.colorName || detailSoil.colorName || 'Soil'} (${detailMunsellMatch?.munsellCode || detailSoil.munsellCode || detailSoil.fullCode || ''}) with ${detailSoil.nearMatchRating || detailSoil.confidence || '97.4%'} confidence.`)}
                   </Text>
                 </View>
 
@@ -2973,13 +3009,12 @@ export default function HomeScreen({ navigation, route }) {
                 <View style={styles.soilModalFullCard}>
                   <Text style={styles.soilModalLabel}>DESCRIPTION</Text>
                   <Text style={styles.soilModalDescText}>
-                    {detailSoil.description ||
-                      `${detailSoil.munsellCode || detailSoil.fullCode || ''} - ${detailSoil.colorName || detailSoil.name || ''}`}
+                    {detailResolvedDescription}
                   </Text>
                 </View>
               </ScrollView>
 
-              {/* Fixed Modal Footer: Close & Save Copy / Pin Location Buttons (Website .soil-modal-footer) */}
+              {/* Fixed Modal Footer: Close & Save Copy Buttons (No Pin Location in Scan History) */}
               <View style={styles.soilModalFooter}>
                 <TouchableOpacity
                   style={styles.btnModalCancel}
@@ -2993,7 +3028,7 @@ export default function HomeScreen({ navigation, route }) {
                 <TouchableOpacity
                   style={styles.btnSaveHardcopy}
                   onPress={() => {
-                    const info = `AgriCo Soil Record Details\nMunsell Code: ${detailSoil.munsellCode || detailSoil.fullCode || '7.5YR 5/3'}\nColor Name: ${detailSoil.colorName || detailSoil.name || 'Brown'}\nHex Code: ${(detailSoil.hexCode || detailSoil.hex || '#8F694E').toUpperCase()}\nOrganic Index: ${detailSoil.soil_organic_index || detailSoil.organicIndex || 'Moderate'}\nSoil Type: ${detailSoil.soil_type || detailSoil.soilType || 'Determined Soil'}\nNear-Match: ${detailSoil.nearMatchRating || detailSoil.confidence || '97.4%'}\nDate: ${detailSoil.scanDate || detailSoil.createdDate || 'Today'}`;
+                    const info = `AgriCo Soil Record Details\nMunsell Code: ${detailMunsellMatch?.munsellCode || detailSoil.munsellCode || detailSoil.fullCode || '7.5YR 5/3'}\nColor Name: ${detailMunsellMatch?.colorName || detailSoil.colorName || detailSoil.name || 'Brown'}\nHex Code: ${(detailMunsellMatch?.hexCode || detailSoil.hexCode || detailSoil.hex || '#8F694E').toUpperCase()}\nOrganic Index: ${detailMunsellMatch?.soil_organic_index || detailSoil.soil_organic_index || detailSoil.organicIndex || 'Moderate'}\nSoil Type: ${detailMunsellMatch?.soil_type || detailSoil.soil_type || detailSoil.soilType || 'Determined Soil'}\nNear-Match: ${detailSoil.nearMatchRating || detailSoil.confidence || '97.4%'}\nDate: ${detailSoil.scanDate || detailSoil.createdDate || 'Today'}\nDescription: ${detailResolvedDescription}`;
                     if (Platform.OS === 'android' && ToastAndroid) {
                       ToastAndroid.show('Soil record details saved!', ToastAndroid.SHORT);
                     } else {
@@ -3005,19 +3040,6 @@ export default function HomeScreen({ navigation, route }) {
                 >
                   <SaveTrayIcon size={14} color="#ffffff" />
                   <Text style={styles.btnSaveHardcopyText}>Save Copy</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.btnPinSoilModal}
-                  onPress={() => {
-                    setDetailSoil(null);
-                    setActiveTab('Map');
-                  }}
-                  activeOpacity={0.85}
-                  accessibilityLabel="Pin Soil Location"
-                >
-                  <MapPinIcon size={14} color="#ffffff" />
-                  <Text style={styles.btnPinSoilModalText}>Pin Location</Text>
                 </TouchableOpacity>
               </View>
             </View>

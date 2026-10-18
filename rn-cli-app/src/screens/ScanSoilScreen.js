@@ -31,6 +31,7 @@ import {
   mapServerScan,
 } from '../services/scanSyncService';
 import { analyzeSoilOffline } from '../services/offlineSoilAnalysis';
+import OFFLINE_MUNSELL_COLORS from '../data/munsellColors.json';
 import { saveLocalScan } from '../services/localScanStore';
 import { FlashlightIcon, GalleryIcon } from '../components/AppIcons';
 import BottomNavBar from '../components/BottomNavBar';
@@ -264,6 +265,37 @@ export default function ScanSoilScreen({ navigation }) {
   const targetPctRef = useRef(15);
 
   const currentSpecimen = scanResult; // real result only; null until a scan completes
+
+  const specimenMunsellMatch = useMemo(() => {
+    if (!currentSpecimen) return null;
+    const targetCode = (currentSpecimen.munsellCode || currentSpecimen.fullCode || '')
+      .trim()
+      .toUpperCase();
+    return (
+      OFFLINE_MUNSELL_COLORS.find(
+        (c) =>
+          (c.munsellCode || c.full_code || '').trim().toUpperCase() === targetCode
+      ) || null
+    );
+  }, [currentSpecimen]);
+
+  const specimenResolvedDescription = useMemo(() => {
+    if (specimenMunsellMatch?.description && specimenMunsellMatch.description.trim()) {
+      return specimenMunsellMatch.description;
+    }
+    if (
+      currentSpecimen?.description &&
+      !currentSpecimen.description.startsWith('Determined Soil:') &&
+      !currentSpecimen.description.startsWith('Field scan record') &&
+      !currentSpecimen.description.startsWith('Sample processed successfully')
+    ) {
+      return currentSpecimen.description;
+    }
+    return (
+      specimenMunsellMatch?.description ||
+      `${currentSpecimen?.munsellCode || currentSpecimen?.fullCode || ''} - ${currentSpecimen?.name || currentSpecimen?.colorName || 'Determined Soil'}`
+    );
+  }, [currentSpecimen, specimenMunsellMatch]);
 
   // Animated values
   const flashAnim = useRef(new Animated.Value(0)).current;
@@ -1284,13 +1316,13 @@ export default function ScanSoilScreen({ navigation }) {
                   <View style={styles.soilModalGridCard}>
                     <Text style={styles.soilModalLabel}>SOIL ORGANIC</Text>
                     <Text style={styles.soilModalValue} numberOfLines={2}>
-                      {currentSpecimen.organicIndex || 'Moderate (2.2% – 3.7%)'}
+                      {specimenMunsellMatch?.soil_organic_index || currentSpecimen.organicIndex || 'Moderate (2.2% – 3.7%)'}
                     </Text>
                   </View>
                   <View style={styles.soilModalGridCard}>
                     <Text style={styles.soilModalLabel}>SOIL TYPE</Text>
                     <Text style={styles.soilModalValue} numberOfLines={2}>
-                      {currentSpecimen.soilType || 'Determined Soil'}
+                      {specimenMunsellMatch?.soil_type || currentSpecimen.soilType || 'Determined Soil'}
                     </Text>
                   </View>
                 </View>
@@ -1335,7 +1367,9 @@ export default function ScanSoilScreen({ navigation }) {
                   <Text style={styles.soilModalLabel}>SCAN NOTE</Text>
                   <Text style={styles.soilModalDescText}>
                     {currentSpecimen.scanNote ||
-                      `Determined ${currentSpecimen.name || currentSpecimen.colorName || 'Soil'} (${currentSpecimen.munsellCode || currentSpecimen.fullCode || ''}) with ${currentSpecimen.nearMatchRating || currentSpecimen.confidence || '97.4%'} confidence.`}
+                      (currentSpecimen.description && currentSpecimen.description.startsWith('Determined Soil:')
+                        ? currentSpecimen.description
+                        : `Determined ${specimenMunsellMatch?.colorName || currentSpecimen.name || currentSpecimen.colorName || 'Soil'} (${specimenMunsellMatch?.munsellCode || currentSpecimen.munsellCode || currentSpecimen.fullCode || ''}) with ${currentSpecimen.nearMatchRating || currentSpecimen.confidence || '97.4%'} confidence.`)}
                   </Text>
                 </View>
 
@@ -1343,8 +1377,7 @@ export default function ScanSoilScreen({ navigation }) {
                 <View style={styles.soilModalFullCard}>
                   <Text style={styles.soilModalLabel}>DESCRIPTION</Text>
                   <Text style={styles.soilModalDescText}>
-                    {currentSpecimen.description ||
-                      `${currentSpecimen.munsellCode || currentSpecimen.fullCode || ''} - ${currentSpecimen.name || currentSpecimen.colorName || ''}`}
+                    {specimenResolvedDescription}
                   </Text>
                 </View>
               </ScrollView>
@@ -1363,7 +1396,7 @@ export default function ScanSoilScreen({ navigation }) {
                 <TouchableOpacity
                   style={styles.btnSaveHardcopy}
                   onPress={() => {
-                    const info = `AgriCo Soil Record Details\nMunsell Code: ${currentSpecimen.munsellCode || currentSpecimen.fullCode || '7.5YR 5/3'}\nColor Name: ${currentSpecimen.name || currentSpecimen.colorName || 'Brown'}\nHex Code: ${(currentSpecimen.hexColor || currentSpecimen.hex || '#8F694E').toUpperCase()}\nOrganic Index: ${currentSpecimen.organicIndex || 'Moderate'}\nSoil Type: ${currentSpecimen.soilType || 'Determined Soil'}\nNear-Match: ${currentSpecimen.nearMatchRating || currentSpecimen.confidence || '97.4%'}\nDate: ${currentSpecimen.scanDate || currentSpecimen.createdDate || 'Today'}`;
+                    const info = `AgriCo Soil Record Details\nMunsell Code: ${specimenMunsellMatch?.munsellCode || currentSpecimen.munsellCode || currentSpecimen.fullCode || '7.5YR 5/3'}\nColor Name: ${specimenMunsellMatch?.colorName || currentSpecimen.name || currentSpecimen.colorName || 'Brown'}\nHex Code: ${(specimenMunsellMatch?.hexCode || currentSpecimen.hexColor || currentSpecimen.hex || '#8F694E').toUpperCase()}\nOrganic Index: ${specimenMunsellMatch?.soil_organic_index || currentSpecimen.organicIndex || 'Moderate'}\nSoil Type: ${specimenMunsellMatch?.soil_type || currentSpecimen.soilType || 'Determined Soil'}\nNear-Match: ${currentSpecimen.nearMatchRating || currentSpecimen.confidence || '97.4%'}\nDate: ${currentSpecimen.scanDate || currentSpecimen.createdDate || 'Today'}\nDescription: ${specimenResolvedDescription}`;
                     if (Platform.OS === 'android' && ToastAndroid) {
                       ToastAndroid.show('Soil record details saved!', ToastAndroid.SHORT);
                     } else {
