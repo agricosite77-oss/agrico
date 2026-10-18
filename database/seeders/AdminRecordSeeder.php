@@ -207,10 +207,6 @@ class AdminRecordSeeder extends Seeder
      */
     public function seedStudents(): void
     {
-        if (User::where('role', 'student')->count() > 0) {
-            return;
-        }
-
         $admin = Admin::first();
         $adminId = $admin?->admin_id ?? 'ADM-001';
 
@@ -245,9 +241,74 @@ class AdminRecordSeeder extends Seeder
                 'student_id' => '2023-0084',
                 'section'    => 'BS Agriculture 4-A',
             ],
+            [
+                'name'       => 'Gabriel Luis Mendoza',
+                'email'      => 'mendoza.gabriel@csu.edu.ph',
+                'student_id' => '2024-0062',
+                'section'    => 'BS Agriculture 3-A',
+            ],
+            [
+                'name'       => 'Bea Bianca Alcantara',
+                'email'      => 'alcantara.bea@csu.edu.ph',
+                'student_id' => '2024-0075',
+                'section'    => 'BS Agriculture 3-A',
+            ],
+            [
+                'name'       => 'Rafael Dominic Cruz',
+                'email'      => 'cruz.rafael@csu.edu.ph',
+                'student_id' => '2024-0088',
+                'section'    => 'BS Agriculture 3-B',
+            ],
+            [
+                'name'       => 'Sophia Louise Valdez',
+                'email'      => 'valdez.sophia@csu.edu.ph',
+                'student_id' => '2024-0099',
+                'section'    => 'BS Agriculture 3-B',
+            ],
+            [
+                'name'       => 'Joshua Miguel Castro',
+                'email'      => 'castro.joshua@csu.edu.ph',
+                'student_id' => '2023-0105',
+                'section'    => 'BS Agriculture 4-A',
+            ],
+            [
+                'name'       => 'Patricia Camille Soriano',
+                'email'      => 'soriano.patricia@csu.edu.ph',
+                'student_id' => '2023-0118',
+                'section'    => 'BS Agriculture 4-A',
+            ],
+            [
+                'name'       => 'Mark Anthony Villanueva',
+                'email'      => 'villanueva.mark@csu.edu.ph',
+                'student_id' => '2023-0127',
+                'section'    => 'BS Agriculture 4-B',
+            ],
+            [
+                'name'       => 'Katherine Grace Tolentino',
+                'email'      => 'tolentino.katherine@csu.edu.ph',
+                'student_id' => '2023-0139',
+                'section'    => 'BS Agriculture 4-B',
+            ],
+            [
+                'name'       => 'John Paul Navarro',
+                'email'      => 'navarro.johnpaul@csu.edu.ph',
+                'student_id' => '2025-0142',
+                'section'    => 'BS Agriculture 2-A',
+            ],
+            [
+                'name'       => 'Alyssa Marie Corpuz',
+                'email'      => 'corpuz.alyssa@csu.edu.ph',
+                'student_id' => '2025-0156',
+                'section'    => 'BS Agriculture 2-B',
+            ],
         ];
 
         foreach ($students as $idx => $st) {
+            $existing = User::where('email', $st['email'])->first();
+            if ($existing) {
+                continue;
+            }
+
             $userId = 'STU-' . str_pad((string)($idx + 1), 3, '0', STR_PAD_LEFT);
             if (User::where('user_id', $userId)->exists()) {
                 $userId = 'STU-' . strtoupper(Str::random(4));
