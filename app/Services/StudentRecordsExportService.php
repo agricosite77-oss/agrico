@@ -112,9 +112,9 @@ class StudentRecordsExportService
         // 3. Right Column: Contact info (labels only)
         $rightCellWidth = Converter::inchToTwip(4.2);
         $rightCell = $headerRow->addCell($rightCellWidth, ['valign' => 'center']);
-        $rightCell->addText('Phone Number:', ['name' => 'Arial', 'size' => 7.5, 'bold' => true, 'color' => '000000'], ['spaceAfter' => 10]);
-        $rightCell->addText('Email Address:', ['name' => 'Arial', 'size' => 7.5, 'bold' => true, 'color' => '000000'], ['spaceAfter' => 10]);
-        $rightCell->addText('Facebook page:', ['name' => 'Arial', 'size' => 7.5, 'bold' => true, 'color' => '000000'], ['spaceAfter' => 0]);
+        $rightCell->addText('Phone Number:', ['name' => 'Arial', 'size' => 7.5, 'bold' => true, 'color' => '000000'], ['alignment' => Jc::END, 'spaceAfter' => 10]);
+        $rightCell->addText('Email Address:', ['name' => 'Arial', 'size' => 7.5, 'bold' => true, 'color' => '000000'], ['alignment' => Jc::END, 'spaceAfter' => 10]);
+        $rightCell->addText('Facebook page:', ['name' => 'Arial', 'size' => 7.5, 'bold' => true, 'color' => '000000'], ['alignment' => Jc::END, 'spaceAfter' => 0]);
 
         // CAMPUS MAIN TITLE
         $section->addText('CAGAYAN STATE UNIVERSITY Lal-lo Campus', [
@@ -440,7 +440,7 @@ class StudentRecordsExportService
             $sheet->mergeCells("{$rightStartLetter}1:{$lastColLetter}1");
             $sheet->setCellValue("{$rightStartLetter}1", "Phone Number:\nEmail Address:\nFacebook page:");
             $sheet->getStyle("{$rightStartLetter}1")->getFont()->setName('Arial')->setSize(7.5)->getColor()->setRGB('000000');
-            $sheet->getStyle("{$rightStartLetter}1")->getAlignment()->setWrapText(true)->setHorizontal(Alignment::HORIZONTAL_LEFT)->setVertical(Alignment::VERTICAL_CENTER);
+            $sheet->getStyle("{$rightStartLetter}1")->getAlignment()->setWrapText(true)->setHorizontal(Alignment::HORIZONTAL_RIGHT)->setVertical(Alignment::VERTICAL_CENTER);
         }
 
         $sheet->getRowDimension(1)->setRowHeight(58);

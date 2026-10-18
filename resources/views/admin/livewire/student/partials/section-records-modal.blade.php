@@ -707,9 +707,9 @@
 
             {{-- 3. Right: Contact Info (labels only) --}}
             <div style="flex: 1; text-align: right; font-size: 7pt; line-height: 1.3; color: #000000;">
-                <div><strong style="font-weight: bold;">Phone Number:</strong></div>
-                <div><strong style="font-weight: bold;">Email Address:</strong></div>
-                <div><strong style="font-weight: bold;">Facebook page:</strong></div>
+                <div style="text-align: right;"><strong style="font-weight: bold;">Phone Number:</strong></div>
+                <div style="text-align: right;"><strong style="font-weight: bold;">Email Address:</strong></div>
+                <div style="text-align: right;"><strong style="font-weight: bold;">Facebook page:</strong></div>
             </div>
         </div>
 
