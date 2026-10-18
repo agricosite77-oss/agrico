@@ -37,13 +37,27 @@ class InstallApkModule(private val reactContext: ReactApplicationContext) : Reac
         }
     }
 
+    private fun getLocalFileFromUri(uriString: String): File {
+        if (uriString.startsWith("content://")) {
+            val uri = Uri.parse(uriString)
+            val tempFile = File(reactContext.cacheDir, "temp_input_${System.currentTimeMillis()}.jpg")
+            reactContext.contentResolver.openInputStream(uri)?.use { input ->
+                tempFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            return tempFile
+        }
+        val cleanPath = uriString.replace("file://", "")
+        return File(cleanPath)
+    }
+
     @ReactMethod
     fun extractSoilColor(filePath: String, promise: Promise) {
         try {
-            val cleanPath = filePath.replace("file://", "")
-            val file = File(cleanPath)
+            val file = getLocalFileFromUri(filePath)
             if (!file.exists()) {
-                promise.reject("FILE_NOT_FOUND", "File not found at $cleanPath")
+                promise.reject("FILE_NOT_FOUND", "File not found at $filePath")
                 return
             }
 
@@ -64,17 +78,17 @@ class InstallApkModule(private val reactContext: ReactApplicationContext) : Reac
 
             val bitmap = android.graphics.BitmapFactory.decodeFile(file.absolutePath, decodeOpts)
             if (bitmap == null) {
-                promise.reject("DECODE_ERROR", "Failed to decode image at $cleanPath")
+                promise.reject("DECODE_ERROR", "Failed to decode image at $filePath")
                 return
             }
 
-            // Center 50% region where the soil sample reticle is focused
+            // Sample central 80% region of the soil specimen (inside crop box)
             val w = bitmap.width
             val h = bitmap.height
-            val startX = (w * 0.25).toInt()
-            val endX = (w * 0.75).toInt()
-            val startY = (h * 0.25).toInt()
-            val endY = (h * 0.75).toInt()
+            val startX = Math.max(0, (w * 0.10).toInt())
+            val endX = Math.min(w, (w * 0.90).toInt())
+            val startY = Math.max(0, (h * 0.10).toInt())
+            val endY = Math.min(h, (h * 0.90).toInt())
 
             var totalR = 0L
             var totalG = 0L
@@ -157,6 +171,126 @@ class InstallApkModule(private val reactContext: ReactApplicationContext) : Reac
             promise.resolve(map)
         } catch (e: Exception) {
             promise.reject("EXTRACT_ERROR", e.message, e)
+        }
+    }
+
+    @ReactMethod
+    fun cropImageWithFrame(
+        filePath: String,
+        frameX: Double,
+        frameY: Double,
+        frameWidth: Double,
+        frameHeight: Double,
+        previewWidth: Double,
+        previewHeight: Double,
+        promise: Promise
+    ) {
+        try {
+            val file = getLocalFileFromUri(filePath)
+            if (!file.exists()) {
+                promise.reject("FILE_NOT_FOUND", "Image file not found at $filePath")
+                return
+            }
+            val absolutePath = file.absolutePath
+
+            // Read orientation from EXIF
+            var rotation = 0
+            try {
+                val exif = android.media.ExifInterface(absolutePath)
+                val orientation = exif.getAttributeInt(
+                    android.media.ExifInterface.TAG_ORIENTATION,
+                    android.media.ExifInterface.ORIENTATION_NORMAL
+                )
+                rotation = when (orientation) {
+                    android.media.ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                    android.media.ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                    android.media.ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                    else -> 0
+                }
+            } catch (e: Exception) {
+                // Ignore exif errors
+            }
+
+            // Downsample if huge (> 2500px) to prevent OOM
+            val boundsOpts = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            android.graphics.BitmapFactory.decodeFile(absolutePath, boundsOpts)
+            val maxDim = Math.max(boundsOpts.outWidth, boundsOpts.outHeight)
+            var sampleSize = 1
+            if (maxDim > 2500) {
+                sampleSize = 2
+            }
+
+            val decodeOpts = android.graphics.BitmapFactory.Options().apply {
+                inSampleSize = sampleSize
+                inPreferredConfig = android.graphics.Bitmap.Config.ARGB_8888
+            }
+            var sourceBitmap = android.graphics.BitmapFactory.decodeFile(absolutePath, decodeOpts)
+            if (sourceBitmap == null) {
+                promise.reject("DECODE_ERROR", "Failed to decode image at $filePath")
+                return
+            }
+
+            if (rotation != 0) {
+                val matrix = android.graphics.Matrix().apply { postRotate(rotation.toFloat()) }
+                val rotated = android.graphics.Bitmap.createBitmap(
+                    sourceBitmap, 0, 0, sourceBitmap.width, sourceBitmap.height, matrix, true
+                )
+                if (rotated != sourceBitmap) {
+                    sourceBitmap.recycle()
+                    sourceBitmap = rotated
+                }
+            }
+
+            val imgW = sourceBitmap.width.toDouble()
+            val imgH = sourceBitmap.height.toDouble()
+
+            val pW = if (previewWidth > 0) previewWidth else imgW
+            val pH = if (previewHeight > 0) previewHeight else imgH
+
+            // Image uses resizeMode="cover" (matches <Image ... resizeMode="cover" />)
+            val scale = Math.max(pW / imgW, pH / imgH)
+            val offX = (imgW * scale - pW) / 2.0
+            val offY = (imgH * scale - pH) / 2.0
+
+            val rawCropX = (frameX + offX) / scale
+            val rawCropY = (frameY + offY) / scale
+            val rawCropW = frameWidth / scale
+            val rawCropH = frameHeight / scale
+
+            val cropX = Math.max(0, Math.min(rawCropX.toInt(), sourceBitmap.width - 1))
+            val cropY = Math.max(0, Math.min(rawCropY.toInt(), sourceBitmap.height - 1))
+            val cropW = Math.max(1, Math.min(rawCropW.toInt(), sourceBitmap.width - cropX))
+            val cropH = Math.max(1, Math.min(rawCropH.toInt(), sourceBitmap.height - cropY))
+
+            val cropped = android.graphics.Bitmap.createBitmap(sourceBitmap, cropX, cropY, cropW, cropH)
+
+            val cropFile = File(reactContext.cacheDir, "soil_crop_${System.currentTimeMillis()}.jpg")
+            val outStream = java.io.FileOutputStream(cropFile)
+            cropped.compress(android.graphics.Bitmap.CompressFormat.JPEG, 92, outStream)
+            outStream.flush()
+            outStream.close()
+
+            val base64Bytes = cropFile.readBytes()
+            val base64String = android.util.Base64.encodeToString(base64Bytes, android.util.Base64.NO_WRAP)
+
+            sourceBitmap.recycle()
+            if (cropped != sourceBitmap) {
+                cropped.recycle()
+            }
+
+            val map = com.facebook.react.bridge.Arguments.createMap().apply {
+                putString("uri", "file://${cropFile.absolutePath}")
+                putString("base64", base64String)
+                putInt("x", cropX)
+                putInt("y", cropY)
+                putInt("width", cropW)
+                putInt("height", cropH)
+                putInt("originalWidth", imgW.toInt())
+                putInt("originalHeight", imgH.toInt())
+            }
+            promise.resolve(map)
+        } catch (e: Exception) {
+            promise.reject("CROP_ERROR", e.message, e)
         }
     }
 }

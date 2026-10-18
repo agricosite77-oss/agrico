@@ -15,6 +15,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  NativeModules,
 } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import RNFS from 'react-native-fs';
@@ -240,6 +241,8 @@ export default function ScanSoilScreen({ navigation }) {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
   const [userCustomImage, setUserCustomImage] = useState(null);
+  const [croppedSpecimenUri, setCroppedSpecimenUri] = useState(null);
+  const frozenOriginalPhotoRef = useRef(null);
   const [syncStatus, setSyncStatus] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
   const [pinnedLocation, setPinnedLocation] = useState(null);
@@ -619,7 +622,46 @@ export default function ScanSoilScreen({ navigation }) {
     }
   };
 
+  const cropToFrame = async (photo) => {
+    if (!photo?.uri) return photo;
+    try {
+      const rect = frameRectRef.current || {
+        x: frameBounds.x + (frameBounds.width - 240) / 2,
+        y: frameBounds.y + (frameBounds.height - 240) / 2,
+        width: 240,
+        height: 240,
+      };
+      const pW = camBounds.width || SCREEN_WIDTH;
+      const pH = camBounds.height || SCREEN_HEIGHT;
+
+      if (NativeModules?.InstallApk?.cropImageWithFrame) {
+        const result = await NativeModules.InstallApk.cropImageWithFrame(
+          photo.uri,
+          rect.x,
+          rect.y,
+          rect.width,
+          rect.height,
+          pW,
+          pH
+        );
+        if (result?.uri && result?.base64) {
+          return {
+            uri: result.uri,
+            base64: result.base64,
+            width: result.width,
+            height: result.height,
+          };
+        }
+      }
+    } catch (err) {
+      console.warn('[ScanSoilScreen] cropToFrame error:', err?.message);
+    }
+    return photo;
+  };
+
   const handleRetake = () => {
+    frozenOriginalPhotoRef.current = null;
+    setCroppedSpecimenUri(null);
     setUserCustomImage(null);
     setScanResult(null);
     setRejectMsg(null);
@@ -633,8 +675,11 @@ export default function ScanSoilScreen({ navigation }) {
     const photo = await capturePhoto();
     if (photo && photo.base64) {
       const uriToUse = photo.uri || `data:image/jpeg;base64,${photo.base64}`;
+      frozenOriginalPhotoRef.current = { uri: uriToUse, base64: photo.base64 };
       setUserCustomImage(uriToUse);
-      runScan(photo);
+      const cropped = await cropToFrame({ uri: uriToUse, base64: photo.base64 });
+      setCroppedSpecimenUri(cropped.uri);
+      runScan(cropped);
     } else if (__DEV__) {
       runScan({ uri: null, base64: null, isDemo: true });
     }
@@ -653,12 +698,27 @@ export default function ScanSoilScreen({ navigation }) {
       const a = res.assets?.[0];
       if (a?.base64) {
         const uriToUse = a.uri || `data:image/jpeg;base64,${a.base64}`;
+        frozenOriginalPhotoRef.current = { uri: uriToUse, base64: a.base64 };
         setUserCustomImage(uriToUse);
-        runScan({ uri: uriToUse, base64: a.base64 });
+        const cropped = await cropToFrame({ uri: uriToUse, base64: a.base64 });
+        setCroppedSpecimenUri(cropped.uri);
+        runScan(cropped);
       }
     } catch (err) {
       Alert.alert('Gallery', 'Unable to open gallery');
     }
+  };
+
+  const handleScanFrozenPhoto = async () => {
+    if (isScanning) return;
+    const rawPhoto = frozenOriginalPhotoRef.current || (userCustomImage ? { uri: userCustomImage } : null);
+    if (!rawPhoto) {
+      handleManualScan();
+      return;
+    }
+    const cropped = await cropToFrame(rawPhoto);
+    setCroppedSpecimenUri(cropped.uri);
+    runScan(cropped);
   };
 
   const handleToggleFlashlight = () => {
@@ -673,8 +733,8 @@ export default function ScanSoilScreen({ navigation }) {
       navigation.navigate('Home', { screen: 'Munsell' });
     } else if (tab === 'ScanSoil') {
       if (userCustomImage) {
-        // If a photo is currently frozen, tapping scan button unfreezes to live camera
-        handleRetake();
+        // User adjusted the resize frame over frozen photo and tapped Scan Soil
+        handleScanFrozenPhoto();
       } else {
         handleManualScan();
       }
@@ -868,7 +928,7 @@ export default function ScanSoilScreen({ navigation }) {
             {isScanning
               ? `Processing Stage ${scanStage || 1} of 6… (${progressPct}%)`
               : userCustomImage
-              ? 'Photo frozen • Tap Retake to resume live camera'
+              ? 'Photo frozen • Adjust resize box & tap Scan Soil'
               : 'Drag handles to resize • Drag inside to move'}
           </Text>
         </View>
@@ -1005,9 +1065,15 @@ export default function ScanSoilScreen({ navigation }) {
               ]}
             >
               <View style={styles.stateBThumbBox}>
-                {userCustomImage ? (
+                {croppedSpecimenUri ? (
                   <Image
-                    source={{ uri: userCustomImage }}
+                    source={{ uri: croppedSpecimenUri }}
+                    style={styles.stateBSoilThumb}
+                    resizeMode="cover"
+                  />
+                ) : currentSpecimen.scanImage ? (
+                  <Image
+                    source={{ uri: currentSpecimen.scanImage }}
                     style={styles.stateBSoilThumb}
                     resizeMode="cover"
                   />
@@ -1176,9 +1242,9 @@ export default function ScanSoilScreen({ navigation }) {
 
                   {/* Overlapping Soil Snippet on Left */}
                   <View style={styles.resSoilSnippetContainer}>
-                    {userCustomImage ? (
+                    {croppedSpecimenUri ? (
                       <Image
-                        source={{ uri: userCustomImage }}
+                        source={{ uri: croppedSpecimenUri }}
                         style={styles.resSoilSnippetImg}
                         resizeMode="cover"
                       />
