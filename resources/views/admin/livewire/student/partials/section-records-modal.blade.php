@@ -394,16 +394,17 @@
                                         ? 'All Dates'
                                         : (!empty($card['date']) ? \Carbon\Carbon::parse($card['date'])->format('m/d/Y') : 'All Dates');
 
-                                    // Time label: "8:00 AM – 10:00 AM", "From 8:00 AM", "Until 10:00 AM", or "All Day"
+                                    // Time label: only present if custom time is provided, never fallback to "All Day"
                                     $start = !empty($card['start_time']) ? \Carbon\Carbon::parse($card['start_time'])->format('g:i A') : null;
                                     $end   = !empty($card['end_time'])   ? \Carbon\Carbon::parse($card['end_time'])->format('g:i A')   : null;
                                     $timeLabel = $start && $end ? "{$start} – {$end}"
-                                               : ($start ? "From {$start}" : ($end ? "Until {$end}" : 'All Day'));
+                                               : ($start ? "From {$start}" : ($end ? "Until {$end}" : null));
+                                    $windowLabel = $timeLabel ? "{$dateLabel} · {$timeLabel}" : $dateLabel;
                                 @endphp
                                 @if($cols)
                                     <th colspan="{{ $cols }}" class="xl-group">
                                         <div>{{ !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1)) }}</div>
-                                        <div class="xl-window">{{ trim($dateLabel . ' · ' . $timeLabel, ' ·') }}</div>
+                                        <div class="xl-window">{{ $windowLabel }}</div>
                                     </th>
                                 @endif
                             @endforeach
@@ -778,12 +779,13 @@
                             $start = !empty($card['start_time']) ? \Carbon\Carbon::parse($card['start_time'])->format('g:i A') : null;
                             $end   = !empty($card['end_time'])   ? \Carbon\Carbon::parse($card['end_time'])->format('g:i A')   : null;
                             $timeLabel = $start && $end ? "{$start} – {$end}"
-                                       : ($start ? "From {$start}" : ($end ? "Until {$end}" : 'All Day'));
+                                       : ($start ? "From {$start}" : ($end ? "Until {$end}" : null));
+                            $windowLabel = $timeLabel ? "{$dateLabel} · {$timeLabel}" : $dateLabel;
                         @endphp
                         @if($cols)
                             <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000;">
                                 <div>{{ !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1)) }}</div>
-                                <div style="font-size: 7pt; font-weight: normal; margin-top: 1px;">{{ trim($dateLabel . ' · ' . $timeLabel, ' ·') }}</div>
+                                <div style="font-size: 7pt; font-weight: normal; margin-top: 1px;">{{ $windowLabel }}</div>
                             </th>
                         @endif
                     @endforeach

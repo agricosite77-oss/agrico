@@ -263,10 +263,10 @@ class StudentRecordsExportService
             $start = !empty($card['start_time']) ? \Carbon\Carbon::parse($card['start_time'])->format('g:i A') : null;
             $end   = !empty($card['end_time'])   ? \Carbon\Carbon::parse($card['end_time'])->format('g:i A')   : null;
             $timeLabel = $start && $end ? "{$start} – {$end}"
-                       : ($start ? "From {$start}" : ($end ? "Until {$end}" : 'All Day'));
+                       : ($start ? "From {$start}" : ($end ? "Until {$end}" : null));
 
             $activityTitle = !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1));
-            $windowText = trim($dateLabel . ' · ' . $timeLabel, ' ·');
+            $windowText = $timeLabel ? "{$dateLabel} · {$timeLabel}" : $dateLabel;
 
             $cell = $row1->addCell($groupWidth, array_merge($cellBase, ['gridSpan' => $cols]));
             $cell->addText($activityTitle, $headerFont, ['alignment' => Jc::CENTER, 'spaceAfter' => 20]);
@@ -526,10 +526,10 @@ class StudentRecordsExportService
             $start = !empty($card['start_time']) ? \Carbon\Carbon::parse($card['start_time'])->format('g:i A') : null;
             $end   = !empty($card['end_time'])   ? \Carbon\Carbon::parse($card['end_time'])->format('g:i A')   : null;
             $timeLabel = $start && $end ? "{$start} – {$end}"
-                       : ($start ? "From {$start}" : ($end ? "Until {$end}" : 'All Day'));
+                       : ($start ? "From {$start}" : ($end ? "Until {$end}" : null));
 
             $activityTitle = !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1));
-            $windowText = trim($dateLabel . ' · ' . $timeLabel, ' ·');
+            $windowText = $timeLabel ? "{$dateLabel} · {$timeLabel}" : $dateLabel;
 
             $sheet->mergeCells("{$startColLetter}{$tableHeaderRow1}:{$endColLetter}{$tableHeaderRow1}");
             $sheet->setCellValue("{$startColLetter}{$tableHeaderRow1}", "{$activityTitle}\n{$windowText}");

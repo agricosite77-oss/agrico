@@ -144,6 +144,10 @@ class StudentRecordsExportTest extends TestCase
         $combinedXml = $docXml . $footerXml;
         $this->assertStringContainsString('Prof. Maria Santos', $combinedXml, 'Docx must contain Admin full name in footer');
         $this->assertStringContainsString(date('F j, Y'), $combinedXml, 'Docx must contain Date in footer');
+
+        // Assert Activity Header has Date Only and NO "All Day"
+        $this->assertStringNotContainsString('All Day', $docXml, 'Docx must not contain All Day in headers');
+        $this->assertStringContainsString('10/17/2026', $docXml, 'Docx must contain date in activity header');
     }
 
     public function test_xlsx_export_is_landscape_and_contains_header_title_and_footer()
@@ -223,6 +227,11 @@ class StudentRecordsExportTest extends TestCase
             }
         }
         $this->assertTrue($foundStudent, 'Excel must contain student Jose Rizal');
+
+        // 6. Assert Activity Header has Date Only and NO "All Day"
+        $activityHeaderVal = $sheet->getCell('D6')->getValue() ?? '';
+        $this->assertStringNotContainsString('All Day', $activityHeaderVal, 'Excel must not contain All Day in headers');
+        $this->assertStringContainsString('10/17/2026', $activityHeaderVal, 'Excel must contain date in activity header');
     }
 
     public function test_empty_section_generates_valid_exports_without_crashing()
