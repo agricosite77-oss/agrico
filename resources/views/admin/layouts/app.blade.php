@@ -1217,82 +1217,108 @@
                 return;
             }
 
-            var iframe = document.getElementById('sectionRecordsPrintIframe');
-            if (iframe) {
-                iframe.remove();
+            var existing = document.getElementById('agricoPrintContainer');
+            if (existing) {
+                existing.remove();
             }
 
-            iframe = document.createElement('iframe');
-            iframe.id = 'sectionRecordsPrintIframe';
-            iframe.style.position = 'fixed';
-            iframe.style.top = '0';
-            iframe.style.left = '0';
-            iframe.style.width = '100vw';
-            iframe.style.height = '100vh';
-            iframe.style.border = 'none';
-            iframe.style.opacity = '0';
-            iframe.style.pointerEvents = 'none';
-            iframe.style.zIndex = '-9999';
-            document.body.appendChild(iframe);
+            var container = document.createElement('div');
+            container.id = 'agricoPrintContainer';
+            container.innerHTML = area.innerHTML;
+            document.body.appendChild(container);
+            document.body.classList.add('agrico-print-active');
 
-            var doc = iframe.contentWindow.document;
-            doc.open();
-            doc.write('<!DOCTYPE html><html><head><title><\/title>');
-            doc.write('<style>');
-            doc.write('@page { size: A4 landscape; margin: 0 !important; }');
-            doc.write('html, body { margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; font-family: Arial, sans-serif !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }');
-            doc.write('.print-wrap { padding: 5mm 8mm; box-sizing: border-box; width: 100%; margin: 0 !important; }');
-            doc.write('table { width: 100%; border-collapse: collapse; font-size: 8pt; }');
-            doc.write('th, td { border: 1px solid #000000; padding: 4px 6px; }');
-            doc.write('thead { display: table-header-group; }');
-            doc.write('tr { page-break-inside: avoid; }');
-            doc.write('<\/style>');
-            doc.write('<\/head><body>');
-            doc.write('<div class="print-wrap">' + area.innerHTML + '<\/div>');
-            doc.write('<\/body><\/html>');
-            doc.close();
-
-            var triggerPrint = function() {
-                try {
-                    iframe.contentWindow.focus();
-                    iframe.contentWindow.print();
-                } catch (e) {
-                    console.error('Print iframe error:', e);
-                    window.print();
+            var cleanup = function() {
+                document.body.classList.remove('agrico-print-active');
+                var c = document.getElementById('agricoPrintContainer');
+                if (c) {
+                    c.remove();
                 }
+                window.removeEventListener('afterprint', cleanup);
             };
 
-            var imgs = iframe.contentDocument ? iframe.contentDocument.querySelectorAll('img') : [];
-            if (imgs && imgs.length > 0) {
-                var loaded = 0;
-                var total = imgs.length;
-                var fired = false;
-                var checkDone = function() {
-                    loaded++;
-                    if (!fired && loaded >= total) {
-                        fired = true;
-                        setTimeout(triggerPrint, 60);
-                    }
-                };
-                imgs.forEach(function(img) {
-                    if (img.complete) {
-                        checkDone();
-                    } else {
-                        img.onload = checkDone;
-                        img.onerror = checkDone;
-                    }
-                });
+            window.addEventListener('afterprint', cleanup);
+
+            requestAnimationFrame(function() {
                 setTimeout(function() {
-                    if (!fired) {
-                        fired = true;
-                        triggerPrint();
-                    }
-                }, 500);
-            } else {
-                setTimeout(triggerPrint, 100);
-            }
+                    window.print();
+                    setTimeout(cleanup, 2500);
+                }, 60);
+            });
         };
+
+        window.addEventListener('beforeprint', function() {
+            var area = document.getElementById('sectionRecordsPrintArea');
+            if (area && !document.getElementById('agricoPrintContainer')) {
+                var container = document.createElement('div');
+                container.id = 'agricoPrintContainer';
+                container.innerHTML = area.innerHTML;
+                document.body.appendChild(container);
+                document.body.classList.add('agrico-print-active');
+            }
+        });
+
+        window.addEventListener('afterprint', function() {
+            document.body.classList.remove('agrico-print-active');
+            var c = document.getElementById('agricoPrintContainer');
+            if (c) {
+                c.remove();
+            }
+        });
     </script>
+    <style>
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 6mm 8mm !important;
+            }
+            body.agrico-print-active {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            body.agrico-print-active > *:not(#agricoPrintContainer) {
+                display: none !important;
+            }
+            #agricoPrintContainer {
+                display: block !important;
+                position: static !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                font-family: Arial, sans-serif !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            #agricoPrintContainer table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                page-break-inside: auto !important;
+            }
+            #agricoPrintContainer thead {
+                display: table-header-group !important;
+            }
+            #agricoPrintContainer tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto !important;
+            }
+            #agricoPrintContainer th,
+            #agricoPrintContainer td {
+                border: 1px solid #000000 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 4px 6px !important;
+                font-size: 8pt !important;
+            }
+            #agricoPrintContainer th {
+                font-weight: bold !important;
+            }
+        }
+    </style>
 </body>
 
 </html>

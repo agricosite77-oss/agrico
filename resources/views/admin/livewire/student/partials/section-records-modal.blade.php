@@ -522,59 +522,51 @@
             @media print {
                 @page {
                     size: A4 landscape;
-                    margin: 0 !important;
+                    margin: 6mm 8mm !important;
                 }
-                html, body {
+                body.agrico-print-active {
                     background: #ffffff !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     width: 100% !important;
                 }
-                body * {
-                    visibility: hidden !important;
-                }
-                .fixed, [class*="fixed"], .section-records-dialog {
+                body.agrico-print-active > *:not(#agricoPrintContainer) {
                     display: none !important;
                 }
-                #sectionRecordsPrintArea, #sectionRecordsPrintArea * {
-                    visibility: visible !important;
-                }
-                #sectionRecordsPrintArea {
+                #agricoPrintContainer {
                     display: block !important;
-                    position: absolute !important;
-                    left: 0 !important;
-                    top: 0 !important;
+                    position: static !important;
                     width: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
                     box-sizing: border-box !important;
                     background: #ffffff !important;
                     color: #000000 !important;
-                    padding: 5mm 8mm !important;
-                    margin: 0 !important;
                     font-family: Arial, sans-serif !important;
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
                 }
-                #sectionRecordsPrintArea table {
+                #agricoPrintContainer table {
                     width: 100% !important;
                     border-collapse: collapse !important;
                     page-break-inside: auto !important;
                 }
-                #sectionRecordsPrintArea thead {
+                #agricoPrintContainer thead {
                     display: table-header-group !important;
                 }
-                #sectionRecordsPrintArea tr {
+                #agricoPrintContainer tr {
                     page-break-inside: avoid !important;
                     page-break-after: auto !important;
                 }
-                #sectionRecordsPrintArea th,
-                #sectionRecordsPrintArea td {
+                #agricoPrintContainer th,
+                #agricoPrintContainer td {
                     border: 1px solid #000000 !important;
                     background: #ffffff !important;
                     color: #000000 !important;
                     padding: 4px 6px !important;
                     font-size: 8pt !important;
                 }
-                #sectionRecordsPrintArea th {
+                #agricoPrintContainer th {
                     font-weight: bold !important;
                 }
             }
