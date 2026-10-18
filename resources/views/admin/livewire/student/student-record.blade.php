@@ -1631,7 +1631,7 @@
                                     {{ $soilDescription }}
                                 </div>
                             @endif
-                            @if(!empty($scan->scan_note))
+                            @if($scan->has_user_scan_note)
                                 <div style="font-size:11.5px; color:#64748b; font-style:italic; line-height:1.4;" class="truncate" title="{{ $scan->scan_note }}">
                                     "{{ $scan->scan_note }}"
                                 </div>

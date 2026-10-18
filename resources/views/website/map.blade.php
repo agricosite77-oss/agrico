@@ -1883,8 +1883,9 @@
             const recordedDate = m.scan_date_formatted || '09/27/2026';
             const scannedBy = m.scanned_by || 'Admin Analyst';
             const scanPlatform = m.scan_platform || 'Web';
-            const scanCount = soil.scan_count || (m.soil_scan_id ? 4 : 1);
-            const noteText = m.scan_note_text || (m.soil_scan && m.soil_scan.scan_note ? m.soil_scan.scan_note : 'No scan note available for this record.');
+            const rawNote = m.scan_note_text || (m.soil_scan && m.soil_scan.scan_note ? m.soil_scan.scan_note : '');
+            const isRealNote = rawNote && !rawNote.startsWith('Determined Soil:') && rawNote !== '—' && rawNote !== '-' && rawNote !== 'No scan note available for this record.';
+            const noteText = isRealNote ? rawNote : '-';
 
             // Update Header Title
             if (isCluster) {
@@ -2117,7 +2118,7 @@
                                 <div class="soil-metric-card" style="margin-bottom: 10px;">
                                     <div class="soil-metric-card-label">Scan Note</div>
                                     <div class="soil-metric-card-text" style="font-size: 13px; font-weight: 700; line-height: 1.5;">
-                                        No scan note available for this record.
+                                        -
                                     </div>
                                 </div>
 

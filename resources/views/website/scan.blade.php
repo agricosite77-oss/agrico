@@ -5055,7 +5055,7 @@
                             Scan Note
                         </div>
                         <div id="resCardScanNote" class="soil-modal-value" style="font-size: 13px; font-weight: 700; margin: 0; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
-                            No scan note available for this record.
+                            -
                         </div>
                     </div>
 
@@ -5363,9 +5363,12 @@
                                     }
                                 } catch (\Throwable $e_d) {}
 
-                                $userNote = '';
+                                $userNote = '-';
                                 try {
-                                    $userNote = $scan->has_user_scan_note ? $scan->scan_note : ($scan->scan_note && !str_starts_with(trim($scan->scan_note), 'Determined Soil:') && trim($scan->scan_note) !== '—' && trim($scan->scan_note) !== '-' ? $scan->scan_note : '');
+                                    $hasPin = !empty($scanLat) && !empty($scanLng);
+                                    if ($hasPin && $scan->has_user_scan_note) {
+                                        $userNote = trim($scan->scan_note);
+                                    }
                                 } catch (\Throwable $e_n) {}
 
                                 $regionsJson = '[]';
@@ -7844,13 +7847,11 @@
                 if (resCardScanNote) {
                     const rawLiveNote = data.scan_note || match.scan_note || '';
                     let cleanLiveNote = typeof rawLiveNote === 'string' ? rawLiveNote.trim() : '';
-                    if (cleanLiveNote && !cleanLiveNote.startsWith('Determined Soil:') && cleanLiveNote !== '—' && cleanLiveNote !== '-') {
+                    const hasPin = Boolean((data.lat && data.lng) || data.location_id || data.barangay);
+                    if (hasPin && cleanLiveNote && !cleanLiveNote.startsWith('Determined Soil:') && cleanLiveNote !== '—' && cleanLiveNote !== '-') {
                         resCardScanNote.textContent = cleanLiveNote;
                     } else {
-                        const safeName = (match.color_name && match.color_name !== 'undefined') ? match.color_name : 'Determined Soil Specimen';
-                        const safeCode = (match.code && match.code !== 'undefined') ? ` (${match.code})` : '';
-                        const safeConf = match.confidence ? ` with ${match.confidence} confidence.` : '.';
-                        resCardScanNote.textContent = `Determined ${safeName}${safeCode}${safeConf}`;
+                        resCardScanNote.textContent = '-';
                     }
                 }
 
@@ -8039,10 +8040,10 @@
                     const rLabel = r.label || r.color_name || match.color_name || 'Determined Soil';
                     const rOrganic = r.organic_matter || match.organic || '—';
                     const rDrainage = r.soil_name || r.soil_type || match.soil_type || '—';
-                    const rConf = window.getNearMatchScore(r, match.confidence || '96.8%');
-                    const rNote = (r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
+                    const hasPin = Boolean((data.lat && data.lng) || data.location_id || data.barangay);
+                    const rNote = (hasPin && r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
                         ? r.scan_note 
-                        : (data.scan_note || `Determined ${rLabel} (${rCode}) with ${rConf} confidence.`);
+                        : '-';
                     const rDesc = r.description || `${rCode} - ${rLabel}`;
 
                     // Update hero banner with dynamic contrast
@@ -8161,10 +8162,10 @@
 
                             const rOrganic = r.organic_matter || match.organic || 'Moderate (2.2% – 3.7%)';
                             const rDrainage = r.soil_name || match.drainage || 'Well-Drained Clay / Latosol';
-                            const rDesc = r.description || `${rMunsell} - ${rLabel}`;
-                            const rItemNote = (r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
+                            const hasPin = Boolean((data.lat && data.lng) || data.location_id || data.barangay);
+                            const rItemNote = (hasPin && r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
                                 ? r.scan_note 
-                                : `Determined ${rLabel} (${rMunsell}) with ${rConf} confidence.`;
+                                : '-';
 
                             const itemTheme = window.getContrastColor(rHex);
                             const itemDiv = document.createElement('div');
@@ -8755,10 +8756,10 @@
                     const rLabel = r.label || r.color_name || data.name;
                     const rOrganic = r.organic_matter || data.organic;
                     const rDrainage = r.soil_name || r.soil_type || data.drainage;
-                    const rConf = window.getNearMatchScore ? window.getNearMatchScore(r, data.confidence || '97.4%') : (data.confidence || '97.4%');
-                    const rNote = (r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
+                    const hasPin = Boolean((data.lat && data.lng) || data.location_id || data.barangay);
+                    const rNote = (hasPin && r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
                         ? r.scan_note 
-                        : (data.scan_note || `Determined ${rLabel} (${rCode}) with ${rConf} confidence.`);
+                        : '-';
                     let rDesc = r.description || `${rCode} - ${rLabel}`;
                     rDesc = rDesc.replace(/\bundefined\b/gi, '').replace(/\bnull\b/gi, '').replace(/\s*-\s*$/, '').trim();
                     if (!rDesc) rDesc = rLabel;
@@ -8883,10 +8884,11 @@
                 const rawModalNote = data.scan_note || data.note || data.field_remarks || '';
                 let cleanModalNote = typeof rawModalNote === 'string' ? rawModalNote.trim() : '';
                 if (modalCardScanNote) {
-                    if (cleanModalNote && !cleanModalNote.startsWith('Determined Soil:') && cleanModalNote !== '—' && cleanModalNote !== '-') {
+                    const hasPin = Boolean((data.lat && data.lng) || data.location_id || data.barangay);
+                    if (hasPin && cleanModalNote && !cleanModalNote.startsWith('Determined Soil:') && cleanModalNote !== '—' && cleanModalNote !== '-') {
                         modalCardScanNote.textContent = cleanModalNote;
                     } else {
-                        modalCardScanNote.textContent = 'No scan note available for this record.';
+                        modalCardScanNote.textContent = '-';
                     }
                 }
 
@@ -9091,7 +9093,7 @@
                                 </div>
                                 <div class="soil-modal-grid-card" style="margin-bottom: 8px; padding: 12px 16px;">
                                     <div class="soil-modal-label">Scan Note</div>
-                                    <div class="soil-modal-value" style="font-size: 13px; font-weight: 700; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">${(r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') ? r.scan_note : 'No scan note available for this record.'}</div>
+                                    <div class="soil-modal-value" style="font-size: 13px; font-weight: 700; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">${(Boolean((data.lat && data.lng) || data.location_id || data.barangay) && r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') ? r.scan_note : '-'}</div>
                                 </div>
                                 <div class="soil-modal-grid-card" style="padding: 12px 16px;">
                                     <div class="soil-modal-label">Description</div>
@@ -10952,7 +10954,7 @@
             if (cleanNote.startsWith('Determined Soil:') || cleanNote === '—' || cleanNote === '-') {
                 cleanNote = '';
             }
-            const noteText = cleanNote || 'No scan note available for this record.';
+            const noteText = cleanNote || '-';
             const maxNoteTextW = w - 64;
             ctx.font = '500 24px sans-serif';
 
@@ -11591,7 +11593,7 @@
                         Scan Note
                     </div>
                     <div id="modalCardScanNote" class="soil-modal-value" style="font-size: 13px; font-weight: 700; margin: 0; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
-                        No scan note available for this record.
+                        -
                     </div>
                 </div>
 

@@ -39,7 +39,7 @@ class SoilScanResource extends JsonResource
             'date_group'     => $dateGroup,
             'scan_image'     => $this->scan_image,
             'scan_image_url' => $imgUrl,
-            'scan_note'      => $this->scan_note,
+            'scan_note'      => $this->user_scan_note,
             'platform'       => $this->platform ?? 'mobile',
             'color_name'     => $this->soil?->effective_soil_name ?? $this->soil?->soil_name ?? 'Determined Soil',
             'full_code'      => $this->soil?->full_code ?? '10YR 4/1',

@@ -660,8 +660,8 @@
                         </td>
 
                         {{-- SCAN NOTE --}}
-                        <td class="px-5 py-5 text-sm text-gray-500 font-bold max-w-[220px] truncate col-scan-note" title="{{ !empty($scan->scan_note) ? $scan->scan_note : '-' }}">
-                            {{ !empty($scan->scan_note) ? \Illuminate\Support\Str::limit($scan->scan_note, 28, '...') : '-' }}
+                        <td class="px-5 py-5 text-sm text-gray-500 font-bold max-w-[220px] truncate col-scan-note" title="{{ $scan->has_user_scan_note ? $scan->scan_note : '-' }}">
+                            {{ $scan->has_user_scan_note ? \Illuminate\Support\Str::limit($scan->scan_note, 28, '...') : '-' }}
                         </td>
 
                         {{-- SCAN_DATE / TIMESTAMP --}}

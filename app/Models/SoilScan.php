@@ -224,6 +224,14 @@ class SoilScan extends Model
 
     public function getHasUserScanNoteAttribute(): bool
     {
+        $hasLocation = !empty($this->location_id) || ($this->relationLoaded('location') && !empty($this->location));
+        if (!$hasLocation && !empty($this->soil_scan_id)) {
+            $hasLocation = \App\Models\LocationMapping::where('soil_scan_id', $this->soil_scan_id)->exists();
+        }
+        if (!$hasLocation) {
+            return false;
+        }
+
         $note = trim($this->scan_note ?? '');
         return !empty($note) 
             && !str_starts_with($note, 'Determined Soil:') 
@@ -233,7 +241,7 @@ class SoilScan extends Model
 
     public function getUserScanNoteAttribute(): string
     {
-        return $this->has_user_scan_note ? trim($this->scan_note) : '—';
+        return $this->has_user_scan_note ? trim($this->scan_note) : '-';
     }
 
     public function getRegionsAttribute(): array

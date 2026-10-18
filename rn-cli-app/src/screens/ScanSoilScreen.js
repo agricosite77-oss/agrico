@@ -1366,10 +1366,12 @@ export default function ScanSoilScreen({ navigation }) {
                 <View style={styles.soilModalFullCard}>
                   <Text style={styles.soilModalLabel}>SCAN NOTE</Text>
                   <Text style={styles.soilModalDescText}>
-                    {currentSpecimen.scanNote ||
-                      (currentSpecimen.description && currentSpecimen.description.startsWith('Determined Soil:')
-                        ? currentSpecimen.description
-                        : `Determined ${specimenMunsellMatch?.colorName || currentSpecimen.name || currentSpecimen.colorName || 'Soil'} (${specimenMunsellMatch?.munsellCode || currentSpecimen.munsellCode || currentSpecimen.fullCode || ''}) with ${currentSpecimen.nearMatchRating || currentSpecimen.confidence || '97.4%'} confidence.`)}
+                    {(() => {
+                      const hasPin = Boolean(currentSpecimen.hasPin || currentSpecimen.location_id || currentSpecimen.location || currentSpecimen.latitude);
+                      const rawNote = currentSpecimen.scanNote || currentSpecimen.scan_note || '';
+                      const isRealNote = rawNote && !rawNote.startsWith('Determined Soil:') && rawNote !== '—' && rawNote !== '-';
+                      return (hasPin && isRealNote) ? rawNote : '-';
+                    })()}
                   </Text>
                 </View>
 

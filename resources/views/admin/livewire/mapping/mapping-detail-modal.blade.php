@@ -902,7 +902,7 @@
             <div class="soil-metric-card" style="margin-bottom: 10px;">
                 <div class="soil-metric-card-label">Scan Note</div>
                 <div class="soil-metric-card-text" style="font-size: 13px; font-weight: 700; line-height: 1.5; word-break: normal; overflow-wrap: break-word; white-space: pre-line;">
-                    {{ $scan?->has_user_scan_note ? $scan->scan_note : 'No scan note available for this record.' }}
+                    {{ $scan?->has_user_scan_note ? $scan->scan_note : '-' }}
                 </div>
             </div>
 

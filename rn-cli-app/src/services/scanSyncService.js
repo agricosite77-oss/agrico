@@ -227,9 +227,10 @@ export function mapServerScan(scan, data = {}) {
         : `${baseUrl}${String(rawImg).startsWith('/') ? '' : '/'}${rawImg}`)
     : null;
 
-  const scanNote = (scan?.scan_note && !scan.scan_note.startsWith('Determined Soil:') && scan.scan_note !== '—')
-    ? scan.scan_note
-    : (data?.scan_note || `Determined ${name} (${munsellCode}) with ${confStr} confidence.`);
+  const hasPin = Boolean(scan?.location_id || scan?.location || data?.hasPin || data?.location_id || data?.location || data?.latitude);
+  const rawNote = scan?.scan_note || data?.scan_note || '';
+  const isRealNote = rawNote && !rawNote.startsWith('Determined Soil:') && rawNote !== '—' && rawNote !== '-';
+  const scanNote = (hasPin && isRealNote) ? rawNote : '-';
   const soilPercentage = data?.soil_percentage || data?.percentage || (data?.regions && data.regions[0] ? data.regions[0].percent || Math.round((data.regions[0].proportion || 0) * 100) : null);
 
   return {

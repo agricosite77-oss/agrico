@@ -1873,32 +1873,43 @@ export default function HomeScreen({ navigation, route }) {
           ? rawList.filter((s) => !s.user_id || String(s.user_id) === String(activeUserId))
           : rawList;
 
-        const mapped = accountScans.map((s) => ({
-          id: 'scan_' + s.soil_scan_id,
-          soil_scan_id: s.soil_scan_id,
-          soil_id: s.soil_id,
-          user_id: s.user_id,
-          munsellCode: s.full_code || s.soil?.full_code || '10YR 4/1',
-          hue: s.hue || s.soil?.hue || '10YR',
-          colorName: s.color_name || s.soil?.effective_soil_name || s.soil?.soil_name || 'Determined Soil',
-          hexCode: s.hex_color || s.soil?.effective_hex_color || s.soil?.hex_color || '#8f694e',
-          description: s.description || s.scan_note || s.soil?.effective_description || 'Field scan record',
-          scansCount: s.soil?.scan_count || 1,
-          scanImage: s.scan_image_url || s.scan_image
-            ? (String(s.scan_image_url || s.scan_image).startsWith('http')
-                ? (s.scan_image_url || s.scan_image)
-                : `${ENV.API_URL.replace(/\/api\/?$/, '')}${String(s.scan_image_url || s.scan_image).startsWith('/') ? '' : '/'}${s.scan_image_url || s.scan_image}`)
-            : null,
-          rawDate: s.scan_date || s.created_at,
-          scanTime: s.scan_time || '',
-          dateGroup: s.date_group || 'Earlier',
-          platform: s.platform || 'website',
-          syncState: 'synced',
-          isOffline: false,
-          soil_organic_index: s.soil?.soil_organic_index,
-          soil_type: s.soil?.effective_soil_type || s.soil?.soil_type,
-          nearMatchRating: s.confidence ? `${s.confidence}%` : '95%',
-        }));
+        const mapped = accountScans.map((s) => {
+          const hasPin = Boolean(s.location_id || s.location || s.latitude);
+          const rawNote = s.scan_note || '';
+          const isRealNote = rawNote && !rawNote.startsWith('Determined Soil:') && rawNote !== '—' && rawNote !== '-';
+          const resolvedScanNote = (hasPin && isRealNote) ? rawNote : '-';
+
+          return {
+            id: 'scan_' + s.soil_scan_id,
+            soil_scan_id: s.soil_scan_id,
+            soil_id: s.soil_id,
+            user_id: s.user_id,
+            location_id: s.location_id,
+            location: s.location,
+            hasPin: hasPin,
+            munsellCode: s.full_code || s.soil?.full_code || '10YR 4/1',
+            hue: s.hue || s.soil?.hue || '10YR',
+            colorName: s.color_name || s.soil?.effective_soil_name || s.soil?.soil_name || 'Determined Soil',
+            hexCode: s.hex_color || s.soil?.effective_hex_color || s.soil?.hex_color || '#8f694e',
+            description: s.description || s.soil?.effective_description || 'Field scan record',
+            scanNote: resolvedScanNote,
+            scansCount: s.soil?.scan_count || 1,
+            scanImage: s.scan_image_url || s.scan_image
+              ? (String(s.scan_image_url || s.scan_image).startsWith('http')
+                  ? (s.scan_image_url || s.scan_image)
+                  : `${ENV.API_URL.replace(/\/api\/?$/, '')}${String(s.scan_image_url || s.scan_image).startsWith('/') ? '' : '/'}${s.scan_image_url || s.scan_image}`)
+              : null,
+            rawDate: s.scan_date || s.created_at,
+            scanTime: s.scan_time || '',
+            dateGroup: s.date_group || 'Earlier',
+            platform: s.platform || 'website',
+            syncState: 'synced',
+            isOffline: false,
+            soil_organic_index: s.soil?.soil_organic_index,
+            soil_type: s.soil?.effective_soil_type || s.soil?.soil_type,
+            nearMatchRating: s.confidence ? `${s.confidence}%` : '95%',
+          };
+        });
 
         const merged = await mergeServerScans(mapped);
         setScanHistory(merged);
@@ -2998,10 +3009,12 @@ export default function HomeScreen({ navigation, route }) {
                 <View style={styles.soilModalFullCard}>
                   <Text style={styles.soilModalLabel}>SCAN NOTE</Text>
                   <Text style={styles.soilModalDescText}>
-                    {detailSoil.scanNote ||
-                      (detailSoil.description && detailSoil.description.startsWith('Determined Soil:')
-                        ? detailSoil.description
-                        : `Determined ${detailMunsellMatch?.colorName || detailSoil.colorName || 'Soil'} (${detailMunsellMatch?.munsellCode || detailSoil.munsellCode || detailSoil.fullCode || ''}) with ${detailSoil.nearMatchRating || detailSoil.confidence || '97.4%'} confidence.`)}
+                    {(() => {
+                      const hasPin = Boolean(detailSoil.hasPin || detailSoil.location_id || detailSoil.location || detailSoil.latitude);
+                      const rawNote = detailSoil.scanNote || detailSoil.scan_note || '';
+                      const isRealNote = rawNote && !rawNote.startsWith('Determined Soil:') && rawNote !== '—' && rawNote !== '-';
+                      return (hasPin && isRealNote) ? rawNote : '-';
+                    })()}
                   </Text>
                 </View>
 

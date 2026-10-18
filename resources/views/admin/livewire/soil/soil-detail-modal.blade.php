@@ -936,7 +936,7 @@
                         Scan Note
                     </div>
                     <div class="soil-metric-card-text">
-                        {{ $scan?->has_user_scan_note ? $scan->scan_note : 'No scan note available for this record.' }}
+                        {{ $scan?->has_user_scan_note ? $scan->scan_note : '-' }}
                     </div>
                 </div>
 
@@ -957,7 +957,7 @@
                         Scan Note
                     </div>
                     <div class="soil-metric-card-text">
-                        {{ $scan?->has_user_scan_note ? $scan->scan_note : 'No scan note available for this record.' }}
+                        {{ $scan?->has_user_scan_note ? $scan->scan_note : '-' }}
                     </div>
                 </div>
 
