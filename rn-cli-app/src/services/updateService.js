@@ -28,7 +28,9 @@ export const compareVersions = (vA, vB) => {
  */
 export const checkForAppUpdate = async () => {
   try {
-    const res = await api.get('/app-version');
+    const res = await api.get('/app-version', {
+      params: { current_version: CURRENT_APP_VERSION },
+    });
     if (res.data?.status === 'success' && res.data?.latest_version) {
       const serverVersion = res.data.latest_version;
       const isNewer = compareVersions(serverVersion, CURRENT_APP_VERSION) > 0;

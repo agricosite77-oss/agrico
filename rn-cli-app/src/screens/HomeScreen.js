@@ -1463,12 +1463,17 @@ export default function HomeScreen({ navigation, route }) {
   // Auto-Update States
   const [appUpdateInfo, setAppUpdateInfo] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const dismissedUpdateVersionRef = useRef(null);
 
-  // Automatically check for new mobile application version when online
-  const runUpdateCheck = useCallback(async () => {
+  // Check for new mobile application version on launch (without aggressive intervals)
+  const runUpdateCheck = useCallback(async (isManual = false) => {
     try {
       const updateData = await checkForAppUpdate();
       if (updateData?.hasUpdate) {
+        // If user already dismissed this update in current session, skip automatic popup
+        if (!isManual && dismissedUpdateVersionRef.current === updateData.latestVersion) {
+          return;
+        }
         setAppUpdateInfo(updateData);
         setShowUpdateModal(true);
       }
@@ -1484,14 +1489,8 @@ export default function HomeScreen({ navigation, route }) {
       }
     });
 
-    // Check periodically every 30 seconds while the app is in use
-    const updateInterval = setInterval(() => {
-      runUpdateCheck();
-    }, 30000);
-
     return () => {
       unsubscribe();
-      clearInterval(updateInterval);
     };
   }, [runUpdateCheck]);
 
@@ -2972,7 +2971,12 @@ export default function HomeScreen({ navigation, route }) {
       <UpdateModal
         visible={showUpdateModal}
         updateInfo={appUpdateInfo}
-        onClose={() => setShowUpdateModal(false)}
+        onClose={() => {
+          if (appUpdateInfo?.latestVersion) {
+            dismissedUpdateVersionRef.current = appUpdateInfo.latestVersion;
+          }
+          setShowUpdateModal(false);
+        }}
       />
 
       {/* Floating Rounded Bottom Navigation Bar (Image 2 Style) */}

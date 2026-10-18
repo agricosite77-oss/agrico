@@ -48,15 +48,17 @@ class AppVersionController extends Controller
     {
         $activeApp = Application::where('status', 'ACTIVE')->latest()->first();
 
-        $defaultVersion = 'v1.0.4';
+        $defaultVersion = 'v1.0.3';
         $defaultNotes = "• Full on-device offline soil scanning (6-Stage ML determination)\n• Complete offline Munsell color chart with 207 colors\n• Enhanced camera preview with auto-zoom & bounding box alignment\n• Persistent offline scan history with auto-sync\n• In-app version checker with instant one-tap update";
         $defaultSize = '59.5 MB';
         $defaultUrl = 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.4/agrico-app-v1.0.4.apk';
 
         $version = $activeApp?->version ?: $defaultVersion;
-        // Ensure version is at least v1.0.4 so older clients get the update prompt
-        if (in_array($version, ['v1.0.0', 'v1.0.1', 'v1.0.2', 'v1.0.3'])) {
-            $version = 'v1.0.4';
+
+        // If client is already on v1.0.3 or v1.0.4, do not prompt for update
+        $clientVersion = $request->query('current_version') ?: $request->header('X-App-Version');
+        if ($clientVersion && in_array(strtolower(trim($clientVersion)), ['v1.0.3', '1.0.3', 'v1.0.4', '1.0.4'])) {
+            $version = $clientVersion;
         }
 
         $releaseNotes = $activeApp?->release_notes ?: $defaultNotes;
