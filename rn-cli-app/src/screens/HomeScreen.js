@@ -1858,6 +1858,26 @@ export default function HomeScreen({ navigation, route }) {
     );
   }, [detailSoil, detailMunsellMatch]);
 
+  // Differentiate between Munsell Color Chart record details vs Scan History record details
+  const isMunsellDetail = useMemo(() => {
+    if (!detailSoil) return false;
+    if (detailSoil.isMunsellColor) return true;
+    if (detailSoil.isScanRecord) return false;
+    if (
+      detailSoil.soil_scan_id ||
+      detailSoil.scan_image ||
+      detailSoil.scanImage ||
+      detailSoil.beforeAfterImage ||
+      detailSoil.beforeAfterImageUrl ||
+      (typeof detailSoil.id === 'string' && detailSoil.id.startsWith('scan_')) ||
+      detailSoil.syncState ||
+      detailSoil.isOffline
+    ) {
+      return false;
+    }
+    return true;
+  }, [detailSoil]);
+
   // Normalization data and swatches for Soil Record Details modal
   const detailNormRegions = useMemo(() => {
     if (!detailSoil) return [];
@@ -2269,7 +2289,7 @@ export default function HomeScreen({ navigation, route }) {
                   {/* Munsell Color Swatch (Pure Color Only, Not Real Soil) */}
                   <TouchableOpacity
                     activeOpacity={0.88}
-                    onPress={() => setDetailSoil(item)}
+                    onPress={() => setDetailSoil({ ...item, isMunsellColor: true, isScanRecord: false })}
                     style={[
                       styles.soilImageContainer,
                       { backgroundColor: item.hexCode || item.hex || '#794c22' },
@@ -2315,7 +2335,7 @@ export default function HomeScreen({ navigation, route }) {
                       <TouchableOpacity
                         style={styles.viewBtn}
                         activeOpacity={0.8}
-                        onPress={() => setDetailSoil(item)}
+                        onPress={() => setDetailSoil({ ...item, isMunsellColor: true, isScanRecord: false })}
                       >
                         <Text style={styles.viewBtnText}>View</Text>
                       </TouchableOpacity>
@@ -2367,7 +2387,7 @@ export default function HomeScreen({ navigation, route }) {
                             key={item.id}
                             style={styles.recentCard}
                             activeOpacity={0.85}
-                            onPress={() => setDetailSoil(item)}
+                            onPress={() => setDetailSoil({ ...item, isScanRecord: true, isMunsellColor: false })}
                           >
                             {/* Thumbnail: Camera photo if user scanned, otherwise pure Munsell color swatch */}
                             <View
@@ -2653,7 +2673,7 @@ export default function HomeScreen({ navigation, route }) {
                   {/* Munsell Color Swatch (Pure Color Only, Not Real Soil) */}
                   <TouchableOpacity
                     activeOpacity={0.88}
-                    onPress={() => setDetailSoil(item)}
+                    onPress={() => setDetailSoil({ ...item, isMunsellColor: true, isScanRecord: false })}
                     style={[
                       styles.soilImageContainer,
                       { backgroundColor: item.hexCode || item.hex || '#794c22' },
@@ -2699,7 +2719,7 @@ export default function HomeScreen({ navigation, route }) {
                       <TouchableOpacity
                         style={styles.viewBtn}
                         activeOpacity={0.8}
-                        onPress={() => setDetailSoil(item)}
+                        onPress={() => setDetailSoil({ ...item, isMunsellColor: true, isScanRecord: false })}
                       >
                         <Text style={styles.viewBtnText}>View</Text>
                       </TouchableOpacity>
@@ -2958,7 +2978,9 @@ export default function HomeScreen({ navigation, route }) {
             <View style={styles.soilModalCard} pointerEvents="auto">
               {/* Modal Header: Title & Circular Close Button */}
               <View style={styles.soilModalHeaderRow}>
-                <Text style={styles.soilModalTitle}>Soil Record Details</Text>
+                <Text style={styles.soilModalTitle}>
+                  {isMunsellDetail ? 'Munsell Color Details' : 'Soil Record Details'}
+                </Text>
                 <TouchableOpacity
                   style={styles.soilModalCloseBtn}
                   onPress={() => setDetailSoil(null)}
@@ -2982,30 +3004,32 @@ export default function HomeScreen({ navigation, route }) {
                     { backgroundColor: detailMunsellMatch?.hexCode || detailSoil.hexCode || detailSoil.hex || '#8F694E' },
                   ]}
                 >
-                  {/* Left Avatar Snippet (Website #modalSoilSnippetAvatarContainer) */}
-                  <View style={styles.soilBannerAvatarContainer}>
-                    {detailSoil.scanImage ? (
-                      <Image
-                        source={{ uri: detailSoil.scanImage }}
-                        style={styles.soilBannerAvatarImg}
-                        resizeMode="cover"
-                      />
-                    ) : detailSoil.thumbnail ? (
-                      <Image
-                        source={
-                          typeof detailSoil.thumbnail === 'number'
-                            ? detailSoil.thumbnail
-                            : { uri: detailSoil.thumbnail }
-                        }
-                        style={styles.soilBannerAvatarImg}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <View style={styles.soilBannerAvatarFallback}>
-                        <Text style={{ fontSize: 20 }}>🌱</Text>
-                      </View>
-                    )}
-                  </View>
+                  {/* Left Avatar Snippet (Website #modalSoilSnippetAvatarContainer) - Scan History Only */}
+                  {!isMunsellDetail && (
+                    <View style={styles.soilBannerAvatarContainer}>
+                      {detailSoil.scanImage ? (
+                        <Image
+                          source={{ uri: detailSoil.scanImage }}
+                          style={styles.soilBannerAvatarImg}
+                          resizeMode="cover"
+                        />
+                      ) : detailSoil.thumbnail ? (
+                        <Image
+                          source={
+                            typeof detailSoil.thumbnail === 'number'
+                              ? detailSoil.thumbnail
+                              : { uri: detailSoil.thumbnail }
+                          }
+                          style={styles.soilBannerAvatarImg}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <View style={styles.soilBannerAvatarFallback}>
+                          <Text style={{ fontSize: 20 }}>🌱</Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
 
                   {/* Center Code Display & Percentage/Subtitle (Website #modalSwatchBlock) */}
                   <View style={styles.soilBannerCodeBlock}>
@@ -3058,53 +3082,58 @@ export default function HomeScreen({ navigation, route }) {
                   </View>
                 </View>
 
-                {/* Row 3: Scan Count & Near-Match */}
-                <View style={styles.soilGridRow2}>
-                  <View style={styles.soilModalGridCard}>
-                    <Text style={styles.soilModalLabel}>SCAN COUNT</Text>
-                    <Text style={styles.soilModalValue}>
-                      {detailSoil.scanCount ? String(detailSoil.scanCount) : '1'}
-                    </Text>
-                  </View>
-                  <View style={[styles.soilModalGridCard, styles.soilNearMatchCard]}>
-                    <Text style={styles.soilModalLabel}>NEAR-MATCH</Text>
-                    <Text style={styles.soilNearMatchValue}>
-                      {detailSoil.nearMatchRating || detailSoil.confidence || '97.4%'}
-                    </Text>
-                  </View>
-                </View>
-
-                {/* Row 4: Scan Date & Scanned By */}
-                <View style={styles.soilGridRow2}>
-                  <View style={styles.soilModalGridCard}>
-                    <Text style={styles.soilModalLabel}>SCAN DATE</Text>
-                    <Text style={styles.soilModalValue} numberOfLines={1}>
-                      {detailSoil.scanDate || detailSoil.createdDate || detailSoil.scanTime || 'Today'}
-                    </Text>
-                  </View>
-                  <View style={styles.soilModalGridCard}>
-                    <Text style={styles.soilModalLabel}>SCANNED BY</Text>
-                    <View style={styles.scannedByRow}>
-                      <Text style={styles.soilModalValue} numberOfLines={1}>
-                        {detailSoil.adminId || detailSoil.scannedBy || 'User'}
-                      </Text>
-                      <Text style={styles.soilPlatformBadge}>App</Text>
+                {/* Scan Metrics (Scan Count, Near-Match, Scan Date, Scanned By, Scan Note) - Scan History Only */}
+                {!isMunsellDetail && (
+                  <>
+                    {/* Row 3: Scan Count & Near-Match */}
+                    <View style={styles.soilGridRow2}>
+                      <View style={styles.soilModalGridCard}>
+                        <Text style={styles.soilModalLabel}>SCAN COUNT</Text>
+                        <Text style={styles.soilModalValue}>
+                          {detailSoil.scanCount ? String(detailSoil.scanCount) : '1'}
+                        </Text>
+                      </View>
+                      <View style={[styles.soilModalGridCard, styles.soilNearMatchCard]}>
+                        <Text style={styles.soilModalLabel}>NEAR-MATCH</Text>
+                        <Text style={styles.soilNearMatchValue}>
+                          {detailSoil.nearMatchRating || detailSoil.confidence || '97.4%'}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                </View>
 
-                {/* Scan Note Card (Full Width - Website #modalScanNoteCard) */}
-                <View style={styles.soilModalFullCard}>
-                  <Text style={styles.soilModalLabel}>SCAN NOTE</Text>
-                  <Text style={styles.soilModalDescText}>
-                    {(() => {
-                      const hasPin = Boolean(detailSoil.hasPin || detailSoil.location_id || detailSoil.location || detailSoil.latitude);
-                      const rawNote = detailSoil.scanNote || detailSoil.scan_note || '';
-                      const isRealNote = rawNote && !rawNote.startsWith('Determined Soil:') && rawNote !== '—' && rawNote !== '-';
-                      return (hasPin && isRealNote) ? rawNote : '-';
-                    })()}
-                  </Text>
-                </View>
+                    {/* Row 4: Scan Date & Scanned By */}
+                    <View style={styles.soilGridRow2}>
+                      <View style={styles.soilModalGridCard}>
+                        <Text style={styles.soilModalLabel}>SCAN DATE</Text>
+                        <Text style={styles.soilModalValue} numberOfLines={1}>
+                          {detailSoil.scanDate || detailSoil.createdDate || detailSoil.scanTime || 'Today'}
+                        </Text>
+                      </View>
+                      <View style={styles.soilModalGridCard}>
+                        <Text style={styles.soilModalLabel}>SCANNED BY</Text>
+                        <View style={styles.scannedByRow}>
+                          <Text style={styles.soilModalValue} numberOfLines={1}>
+                            {detailSoil.adminId || detailSoil.scannedBy || 'User'}
+                          </Text>
+                          <Text style={styles.soilPlatformBadge}>App</Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    {/* Scan Note Card (Full Width - Website #modalScanNoteCard) */}
+                    <View style={styles.soilModalFullCard}>
+                      <Text style={styles.soilModalLabel}>SCAN NOTE</Text>
+                      <Text style={styles.soilModalDescText}>
+                        {(() => {
+                          const hasPin = Boolean(detailSoil.hasPin || detailSoil.location_id || detailSoil.location || detailSoil.latitude);
+                          const rawNote = detailSoil.scanNote || detailSoil.scan_note || '';
+                          const isRealNote = rawNote && !rawNote.startsWith('Determined Soil:') && rawNote !== '—' && rawNote !== '-';
+                          return (hasPin && isRealNote) ? rawNote : '-';
+                        })()}
+                      </Text>
+                    </View>
+                  </>
+                )}
 
                 {/* Description Card (Full Width - Website #modalDescCard) */}
                 <View style={styles.soilModalFullCard}>
@@ -3114,133 +3143,135 @@ export default function HomeScreen({ navigation, route }) {
                   </Text>
                 </View>
 
-                {/* Soil Normalization Card (Matches Website / Mobile Specification) */}
-                <View style={styles.soilModalNormCard}>
-                  {/* Card Header: Label & Pill Badge */}
-                  <View style={styles.soilModalNormHeader}>
-                    <Text style={styles.soilModalNormLabel}>SOIL NORMALIZATION</Text>
-                    <View style={styles.beforeAfterBadge}>
-                      <Text style={styles.beforeAfterBadgeText}>BEFORE / AFTER</Text>
-                    </View>
-                  </View>
-
-                  {/* Image Frame with Overlays */}
-                  <View style={styles.soilModalNormImageFrame}>
-                    {detailSoil.beforeAfterImage || detailSoil.beforeAfterImageUrl ? (
-                      <View style={{ width: '100%', height: 165, position: 'relative' }}>
-                        <Image
-                          source={{ uri: detailSoil.beforeAfterImage || detailSoil.beforeAfterImageUrl }}
-                          style={styles.soilNormImage}
-                          resizeMode="cover"
-                        />
-                        {/* Overlaid green ROI bounding boxes */}
-                        {detailNormBoxes.map((b, idx) => (
-                          <View
-                            key={`norm_box_${idx}`}
-                            style={{
-                              position: 'absolute',
-                              left: `${b.leftPct}%`,
-                              top: `${b.topPct}%`,
-                              width: `${b.widthPct}%`,
-                              height: `${b.heightPct}%`,
-                              borderWidth: 2,
-                              borderColor: '#4ade80',
-                              borderRadius: 4,
-                            }}
-                          >
-                            <View style={styles.normRoleBadge}>
-                              <Text style={styles.normRoleBadgeText}>{b.roleLabel}</Text>
-                            </View>
-                          </View>
-                        ))}
+                {/* Soil Normalization Card (Matches Website / Mobile Specification - Scan History Only) */}
+                {!isMunsellDetail && (
+                  <View style={styles.soilModalNormCard}>
+                    {/* Card Header: Label & Pill Badge */}
+                    <View style={styles.soilModalNormHeader}>
+                      <Text style={styles.soilModalNormLabel}>SOIL NORMALIZATION</Text>
+                      <View style={styles.beforeAfterBadge}>
+                        <Text style={styles.beforeAfterBadgeText}>BEFORE / AFTER</Text>
                       </View>
-                    ) : detailSoil.scanImage ? (
-                      /* Simulated split Before / After frame if before_after is not yet rendered */
-                      <View style={{ width: '100%', position: 'relative' }}>
-                        <View style={styles.normSimulatedHeader}>
-                          <Text style={styles.normHeaderBefore}>BEFORE</Text>
-                          <Text style={styles.normHeaderAfter}>
-                            AFTER (NORMALIZED) -- {detailSoil.munsellCode || detailSoil.fullCode || '10YR 4/1'}
-                          </Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', height: 135 }}>
+                    </View>
+
+                    {/* Image Frame with Overlays */}
+                    <View style={styles.soilModalNormImageFrame}>
+                      {detailSoil.beforeAfterImage || detailSoil.beforeAfterImageUrl ? (
+                        <View style={{ width: '100%', height: 165, position: 'relative' }}>
                           <Image
-                            source={{ uri: detailSoil.scanImage }}
-                            style={{ flex: 1, height: '100%' }}
+                            source={{ uri: detailSoil.beforeAfterImage || detailSoil.beforeAfterImageUrl }}
+                            style={styles.soilNormImage}
                             resizeMode="cover"
                           />
-                          <View style={{ width: 1.5, backgroundColor: 'rgba(255, 255, 255, 0.3)' }} />
-                          <View style={{ flex: 1, height: '100%', position: 'relative' }}>
-                            <Image
-                              source={{ uri: detailSoil.scanImage }}
-                              style={{ width: '100%', height: '100%' }}
-                              resizeMode="cover"
-                            />
+                          {/* Overlaid green ROI bounding boxes */}
+                          {detailNormBoxes.map((b, idx) => (
                             <View
+                              key={`norm_box_${idx}`}
                               style={{
                                 position: 'absolute',
-                                left: '20%',
-                                top: '20%',
-                                width: '60%',
-                                height: '60%',
+                                left: `${b.leftPct}%`,
+                                top: `${b.topPct}%`,
+                                width: `${b.widthPct}%`,
+                                height: `${b.heightPct}%`,
                                 borderWidth: 2,
                                 borderColor: '#4ade80',
                                 borderRadius: 4,
                               }}
                             >
                               <View style={styles.normRoleBadge}>
-                                <Text style={styles.normRoleBadgeText}>1ST COLOR</Text>
+                                <Text style={styles.normRoleBadgeText}>{b.roleLabel}</Text>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      ) : detailSoil.scanImage ? (
+                        /* Simulated split Before / After frame if before_after is not yet rendered */
+                        <View style={{ width: '100%', position: 'relative' }}>
+                          <View style={styles.normSimulatedHeader}>
+                            <Text style={styles.normHeaderBefore}>BEFORE</Text>
+                            <Text style={styles.normHeaderAfter}>
+                              AFTER (NORMALIZED) -- {detailSoil.munsellCode || detailSoil.fullCode || '10YR 4/1'}
+                            </Text>
+                          </View>
+                          <View style={{ flexDirection: 'row', height: 135 }}>
+                            <Image
+                              source={{ uri: detailSoil.scanImage }}
+                              style={{ flex: 1, height: '100%' }}
+                              resizeMode="cover"
+                            />
+                            <View style={{ width: 1.5, backgroundColor: 'rgba(255, 255, 255, 0.3)' }} />
+                            <View style={{ flex: 1, height: '100%', position: 'relative' }}>
+                              <Image
+                                source={{ uri: detailSoil.scanImage }}
+                                style={{ width: '100%', height: '100%' }}
+                                resizeMode="cover"
+                              />
+                              <View
+                                style={{
+                                  position: 'absolute',
+                                  left: '20%',
+                                  top: '20%',
+                                  width: '60%',
+                                  height: '60%',
+                                  borderWidth: 2,
+                                  borderColor: '#4ade80',
+                                  borderRadius: 4,
+                                }}
+                              >
+                                <View style={styles.normRoleBadge}>
+                                  <Text style={styles.normRoleBadgeText}>1ST COLOR</Text>
+                                </View>
                               </View>
                             </View>
                           </View>
                         </View>
-                      </View>
-                    ) : (
-                      <View style={styles.normPlaceholder}>
-                        <Text style={styles.normPlaceholderTitle}>SOIL NORMALIZATION</Text>
-                        <Text style={styles.normPlaceholderSub}>
-                          Comparison image unavailable for this record
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-
-                  {/* Swatch Capsule Pills */}
-                  <View style={styles.normSwatchesRow}>
-                    {detailNormRegions.map((r, idx) => {
-                      let rHex = r.hex || r.hex_color || detailSoil.hexCode || detailSoil.hexColor || '#8F694E';
-                      if (!rHex.startsWith('#')) rHex = `#${rHex}`;
-                      const rCode = r.munsell || r.munsell_code || detailSoil.munsellCode || detailSoil.fullCode || '';
-                      const rPct = r.percent !== undefined 
-                        ? Math.round(r.percent) 
-                        : (r.proportion !== undefined 
-                            ? Math.round(r.proportion * 100) 
-                            : (detailSoil.soilPercentage || 100));
-                      return (
-                        <View key={`swatch_pill_${idx}`} style={styles.soilSwatchCapsulePill}>
-                          <View style={[styles.capsulePillSwatch, { backgroundColor: rHex }]} />
-                          <Text style={styles.capsulePillHex}>{rHex.toUpperCase()}</Text>
-                          {rCode ? <Text style={styles.capsulePillCode}>({rCode})</Text> : null}
-                          <Text style={styles.capsulePillPct}>{rPct}%</Text>
+                      ) : (
+                        <View style={styles.normPlaceholder}>
+                          <Text style={styles.normPlaceholderTitle}>SOIL NORMALIZATION</Text>
+                          <Text style={styles.normPlaceholderSub}>
+                            Comparison image unavailable for this record
+                          </Text>
                         </View>
-                      );
-                    })}
-                  </View>
+                      )}
+                    </View>
 
-                  {/* Metadata Row */}
-                  <View style={styles.soilNormMetaRow}>
-                    <Text style={styles.soilNormMetaTitle}>METADATA</Text>
-                    <Text style={styles.soilNormMetaInfo}>
-                      CREATED: {detailNormDate}  |  DETECTED COLORS: {detailNormRegions.length}
-                    </Text>
+                    {/* Swatch Capsule Pills */}
+                    <View style={styles.normSwatchesRow}>
+                      {detailNormRegions.map((r, idx) => {
+                        let rHex = r.hex || r.hex_color || detailSoil.hexCode || detailSoil.hexColor || '#8F694E';
+                        if (!rHex.startsWith('#')) rHex = `#${rHex}`;
+                        const rCode = r.munsell || r.munsell_code || detailSoil.munsellCode || detailSoil.fullCode || '';
+                        const rPct = r.percent !== undefined 
+                          ? Math.round(r.percent) 
+                          : (r.proportion !== undefined 
+                              ? Math.round(r.proportion * 100) 
+                              : (detailSoil.soilPercentage || 100));
+                        return (
+                          <View key={`swatch_pill_${idx}`} style={styles.soilSwatchCapsulePill}>
+                            <View style={[styles.capsulePillSwatch, { backgroundColor: rHex }]} />
+                            <Text style={styles.capsulePillHex}>{rHex.toUpperCase()}</Text>
+                            {rCode ? <Text style={styles.capsulePillCode}>({rCode})</Text> : null}
+                            <Text style={styles.capsulePillPct}>{rPct}%</Text>
+                          </View>
+                        );
+                      })}
+                    </View>
+
+                    {/* Metadata Row */}
+                    <View style={styles.soilNormMetaRow}>
+                      <Text style={styles.soilNormMetaTitle}>METADATA</Text>
+                      <Text style={styles.soilNormMetaInfo}>
+                        CREATED: {detailNormDate}  |  DETECTED COLORS: {detailNormRegions.length}
+                      </Text>
+                    </View>
                   </View>
-                </View>
+                )}
               </ScrollView>
 
-              {/* Fixed Modal Footer: Close & Save Copy Buttons (No Pin Location in Scan History) */}
+              {/* Fixed Modal Footer: Close & Save Copy Buttons (Save Copy for Scan History Only) */}
               <View style={styles.soilModalFooter}>
                 <TouchableOpacity
-                  style={styles.btnModalCancel}
+                  style={[styles.btnModalCancel, isMunsellDetail && { flex: 1 }]}
                   onPress={() => setDetailSoil(null)}
                   activeOpacity={0.8}
                   accessibilityLabel="Close details"
@@ -3248,22 +3279,24 @@ export default function HomeScreen({ navigation, route }) {
                   <Text style={styles.btnModalCancelText}>Close</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.btnSaveHardcopy}
-                  onPress={() => {
-                    const info = `AgriCo Soil Record Details\nMunsell Code: ${detailMunsellMatch?.munsellCode || detailSoil.munsellCode || detailSoil.fullCode || '7.5YR 5/3'}\nColor Name: ${detailMunsellMatch?.colorName || detailSoil.colorName || detailSoil.name || 'Brown'}\nHex Code: ${(detailMunsellMatch?.hexCode || detailSoil.hexCode || detailSoil.hex || '#8F694E').toUpperCase()}\nOrganic Index: ${detailMunsellMatch?.soil_organic_index || detailSoil.soil_organic_index || detailSoil.organicIndex || 'Moderate'}\nSoil Type: ${detailMunsellMatch?.soil_type || detailSoil.soil_type || detailSoil.soilType || 'Determined Soil'}\nNear-Match: ${detailSoil.nearMatchRating || detailSoil.confidence || '97.4%'}\nDate: ${detailSoil.scanDate || detailSoil.createdDate || 'Today'}\nDescription: ${detailResolvedDescription}`;
-                    if (Platform.OS === 'android' && ToastAndroid) {
-                      ToastAndroid.show('Soil record details saved!', ToastAndroid.SHORT);
-                    } else {
-                      Alert.alert('Soil Record Details', info);
-                    }
-                  }}
-                  activeOpacity={0.85}
-                  accessibilityLabel="Save Copy"
-                >
-                  <SaveTrayIcon size={14} color="#ffffff" />
-                  <Text style={styles.btnSaveHardcopyText}>Save Copy</Text>
-                </TouchableOpacity>
+                {!isMunsellDetail && (
+                  <TouchableOpacity
+                    style={styles.btnSaveHardcopy}
+                    onPress={() => {
+                      const info = `AgriCo Soil Record Details\nMunsell Code: ${detailMunsellMatch?.munsellCode || detailSoil.munsellCode || detailSoil.fullCode || '7.5YR 5/3'}\nColor Name: ${detailMunsellMatch?.colorName || detailSoil.colorName || detailSoil.name || 'Brown'}\nHex Code: ${(detailMunsellMatch?.hexCode || detailSoil.hexCode || detailSoil.hex || '#8F694E').toUpperCase()}\nOrganic Index: ${detailMunsellMatch?.soil_organic_index || detailSoil.soil_organic_index || detailSoil.organicIndex || 'Moderate'}\nSoil Type: ${detailMunsellMatch?.soil_type || detailSoil.soil_type || detailSoil.soilType || 'Determined Soil'}\nNear-Match: ${detailSoil.nearMatchRating || detailSoil.confidence || '97.4%'}\nDate: ${detailSoil.scanDate || detailSoil.createdDate || 'Today'}\nDescription: ${detailResolvedDescription}`;
+                      if (Platform.OS === 'android' && ToastAndroid) {
+                        ToastAndroid.show('Soil record details saved!', ToastAndroid.SHORT);
+                      } else {
+                        Alert.alert('Soil Record Details', info);
+                      }
+                    }}
+                    activeOpacity={0.85}
+                    accessibilityLabel="Save Copy"
+                  >
+                    <SaveTrayIcon size={14} color="#ffffff" />
+                    <Text style={styles.btnSaveHardcopyText}>Save Copy</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </View>
