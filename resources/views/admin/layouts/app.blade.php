@@ -1228,25 +1228,71 @@
                 var tbody = tableEl.querySelector('tbody');
                 var allRows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
 
-                // Page 1: CSU header (~45mm) + table header (~15mm) -> fits 18 student rows
-                // Page 2+: table header (~15mm) -> fits 23 student rows
-                var ROWS_PAGE_1 = 18;
-                var ROWS_PAGE_2 = 23;
+                // 1. Measure real rendered element heights using a temporary measurement sandbox
+                var measureBox = document.createElement('div');
+                measureBox.style.cssText = 'position: absolute; left: -99999px; top: 0; width: 281mm; visibility: hidden;';
+                document.body.appendChild(measureBox);
 
-                var totalRows = allRows.length;
-                var totalPages = 1;
-                if (totalRows > ROWS_PAGE_1) {
-                    totalPages = 1 + Math.ceil((totalRows - ROWS_PAGE_1) / ROWS_PAGE_2);
+                var headerClone = headerEl.cloneNode(true);
+                measureBox.appendChild(headerClone);
+                var headerHeight = headerClone.offsetHeight || 140;
+
+                var tableClone = document.createElement('table');
+                tableClone.style.cssText = 'width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 8pt;';
+                var theadClone = thead.cloneNode(true);
+                tableClone.appendChild(theadClone);
+                measureBox.appendChild(tableClone);
+                var theadHeight = theadClone.offsetHeight || 48;
+
+                var tbodyMeasure = document.createElement('tbody');
+                tableClone.appendChild(tbodyMeasure);
+
+                var rowHeights = [];
+                for (var i = 0; i < allRows.length; i++) {
+                    var rClone = allRows[i].cloneNode(true);
+                    tbodyMeasure.appendChild(rClone);
+                    rowHeights.push(rClone.offsetHeight || 28);
+                }
+                measureBox.remove();
+
+                // 2. Safe height budgets for content on A4 landscape (printable height ~748px)
+                // Page 1 budget accommodates CSU Header + Thead + ~12-13 rows + running footer
+                // Subsequent pages budget accommodates Thead + ~18-19 rows + running footer
+                var PAGE_1_MAX_HEIGHT = 550;
+                var SUBSEQUENT_PAGE_MAX_HEIGHT = 630;
+
+                // 3. Dynamically partition rows by available pixel height
+                var pages = [];
+                var currentPageRows = [];
+                var currentLimit = PAGE_1_MAX_HEIGHT;
+                var currentHeight = headerHeight + theadHeight;
+
+                for (var i = 0; i < allRows.length; i++) {
+                    var rHeight = rowHeights[i] || 28;
+                    if (currentPageRows.length > 0 && (currentHeight + rHeight > currentLimit)) {
+                        pages.push(currentPageRows);
+                        currentPageRows = [allRows[i]];
+                        currentLimit = SUBSEQUENT_PAGE_MAX_HEIGHT;
+                        currentHeight = theadHeight + rHeight; // subsequent pages start with thead + this row
+                    } else {
+                        currentPageRows.push(allRows[i]);
+                        currentHeight += rHeight;
+                    }
+                }
+                if (currentPageRows.length > 0 || pages.length === 0) {
+                    pages.push(currentPageRows);
                 }
 
+                var totalPages = pages.length;
                 var adminHtml = footerEl.children[0] ? footerEl.children[0].innerHTML : 'Prepared By: <strong>AgriCo Administrator</strong>';
                 var dateHtml  = footerEl.children[1] ? footerEl.children[1].innerHTML : '{{ date("F j, Y") }}';
 
-                var currentRowIndex = 0;
                 for (var p = 1; p <= totalPages; p++) {
+                    var pageRows = pages[p - 1];
+
                     var pageDiv = document.createElement('div');
                     pageDiv.className = 'agrico-print-page';
-                    pageDiv.style.cssText = 'height: 195mm; max-height: 195mm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; page-break-after: ' + (p < totalPages ? 'always' : 'auto') + '; break-after: ' + (p < totalPages ? 'page' : 'auto') + '; overflow: hidden;';
+                    pageDiv.style.cssText = 'min-height: 190mm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; page-break-after: ' + (p < totalPages ? 'always' : 'auto') + '; break-after: ' + (p < totalPages ? 'page' : 'auto') + '; page-break-inside: avoid; break-inside: avoid;';
 
                     var pageTop = document.createElement('div');
                     pageTop.style.cssText = 'flex: 1 0 auto; width: 100%;';
@@ -1256,7 +1302,7 @@
                         pageTop.appendChild(headerEl.cloneNode(true));
                     }
 
-                    // Every page gets table with thead
+                    // Table with column headers
                     var pageTable = document.createElement('table');
                     pageTable.style.cssText = 'width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 8pt; color: #000000;';
                     if (thead) {
@@ -1264,16 +1310,12 @@
                     }
 
                     var pageTbody = document.createElement('tbody');
-                    var countToTake = (p === 1) ? ROWS_PAGE_1 : ROWS_PAGE_2;
-                    var slice = allRows.slice(currentRowIndex, currentRowIndex + countToTake);
-                    currentRowIndex += countToTake;
-
-                    if (slice.length === 0 && totalRows === 0) {
+                    if (pageRows.length === 0) {
                         var emptyTr = document.createElement('tr');
                         emptyTr.innerHTML = '<td colspan="99" style="border: 1px solid #000000; text-align: center; color: #000000; padding: 12px;">No students found.</td>';
                         pageTbody.appendChild(emptyTr);
                     } else {
-                        slice.forEach(function(r) {
+                        pageRows.forEach(function(r) {
                             pageTbody.appendChild(r.cloneNode(true));
                         });
                     }
@@ -1284,7 +1326,7 @@
                     // Running Footer at the lowest part of every page
                     var pageFooter = document.createElement('div');
                     pageFooter.className = 'agrico-print-footer';
-                    pageFooter.style.cssText = 'flex-shrink: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 8pt; color: #000000; font-family: Arial, sans-serif; padding-top: 4px; box-sizing: border-box;';
+                    pageFooter.style.cssText = 'flex-shrink: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 8pt; color: #000000; font-family: Arial, sans-serif; padding-top: 6px; margin-top: auto; box-sizing: border-box;';
 
                     var leftCol = document.createElement('div');
                     leftCol.style.cssText = 'flex: 1; text-align: left; font-weight: 500;';
@@ -1387,28 +1429,33 @@
             #agricoPrintContainer table {
                 width: 100% !important;
                 border-collapse: collapse !important;
+                table-layout: auto !important;
             }
             #agricoPrintContainer th,
             #agricoPrintContainer td {
                 border: 1px solid #000000 !important;
                 background: #ffffff !important;
                 color: #000000 !important;
-                padding: 4px 6px !important;
+                padding: 3.5px 5px !important;
                 font-size: 8pt !important;
+                line-height: 1.25 !important;
+                box-sizing: border-box !important;
             }
             #agricoPrintContainer th {
                 font-weight: bold !important;
             }
             .agrico-print-page {
-                height: 195mm !important;
-                max-height: 195mm !important;
+                min-height: 190mm !important;
                 box-sizing: border-box !important;
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: space-between !important;
                 page-break-after: always !important;
                 break-after: page !important;
-                overflow: hidden !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                width: 100% !important;
+                background: #ffffff !important;
             }
             .agrico-print-page:last-child {
                 page-break-after: auto !important;
@@ -1424,6 +1471,8 @@
                 color: #000000 !important;
                 box-sizing: border-box !important;
                 margin-top: auto !important;
+                padding-top: 6px !important;
+                flex-shrink: 0 !important;
             }
         }
     </style>

@@ -549,7 +549,7 @@
                 #agricoPrintContainer table {
                     width: 100% !important;
                     border-collapse: collapse !important;
-                    page-break-inside: auto !important;
+                    table-layout: auto !important;
                 }
                 #agricoPrintContainer thead {
                     display: table-header-group !important;
@@ -563,22 +563,26 @@
                     border: 1px solid #000000 !important;
                     background: #ffffff !important;
                     color: #000000 !important;
-                    padding: 4px 6px !important;
+                    padding: 3.5px 5px !important;
                     font-size: 8pt !important;
+                    line-height: 1.25 !important;
+                    box-sizing: border-box !important;
                 }
                 #agricoPrintContainer th {
                     font-weight: bold !important;
                 }
                 .agrico-print-page {
-                    height: 195mm !important;
-                    max-height: 195mm !important;
+                    min-height: 190mm !important;
                     box-sizing: border-box !important;
                     display: flex !important;
                     flex-direction: column !important;
                     justify-content: space-between !important;
                     page-break-after: always !important;
                     break-after: page !important;
-                    overflow: hidden !important;
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                    width: 100% !important;
+                    background: #ffffff !important;
                 }
                 .agrico-print-page:last-child {
                     page-break-after: auto !important;
@@ -594,6 +598,8 @@
                     color: #000000 !important;
                     box-sizing: border-box !important;
                     margin-top: auto !important;
+                    padding-top: 6px !important;
+                    flex-shrink: 0 !important;
                 }
             }
             </style>
@@ -754,9 +760,9 @@
     <table id="sectionRecordsPrintTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 8pt; color: #000000;">
             <thead>
                 <tr style="page-break-inside: avoid;">
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 36px;">#</th>
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 4px 6px; text-align: left; font-weight: bold; background: #ffffff; color: #000000;">Student Name</th>
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 90px;">Section</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 36px;">#</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 3.5px 5px; text-align: left; font-weight: bold; background: #ffffff; color: #000000;">Student Name</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 90px;">Section</th>
                     @foreach($cards as $i => $card)
                         @php
                             $cols = (!empty($card['show_scans']) ? 1 : 0) + (!empty($card['show_pins']) ? 1 : 0);
@@ -769,13 +775,13 @@
                                        : ($start ? "From {$start}" : ($end ? "Until {$end}" : 'All Day'));
                         @endphp
                         @if($cols)
-                            <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000;">
+                            <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000;">
                                 <div>{{ !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1)) }}</div>
                                 <div style="font-size: 7pt; font-weight: normal; margin-top: 1px;">{{ trim($dateLabel . ' · ' . $timeLabel, ' ·') }}</div>
                             </th>
                         @endif
                     @endforeach
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 55px;">Total</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 55px;">Total</th>
                 </tr>
                 <tr style="page-break-inside: avoid;">
                     @foreach($cards as $i => $card)
@@ -796,24 +802,24 @@
                 @forelse($sectionRecords as $n => $student)
                     @php $rowTotal = 0; @endphp
                     <tr style="page-break-inside: avoid;">
-                        <td style="border: 1px solid #000000; padding: 4px 6px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
-                        <td style="border: 1px solid #000000; padding: 4px 6px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
-                        <td style="border: 1px solid #000000; padding: 4px 6px; text-align: center; color: #000000;">{{ $student->section }}</td>
+                        <td style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
+                        <td style="border: 1px solid #000000; padding: 3.5px 5px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
+                        <td style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; color: #000000;">{{ $student->section }}</td>
                         @foreach($cards as $i => $card)
                             @if(!empty($card['show_scans']))
                                 @php $s = (int) ($student->{"card_{$i}_scans_count"} ?? 0); $rowTotal += $s; @endphp
-                                <td style="border: 1px solid #000000; padding: 4px 6px; text-align: center; color: #000000;">
+                                <td style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; color: #000000;">
                                     {{ $s }}
                                 </td>
                             @endif
                             @if(!empty($card['show_pins']))
                                 @php $p = (int) ($student->{"card_{$i}_pins_count"} ?? 0); $rowTotal += $p; @endphp
-                                <td style="border: 1px solid #000000; padding: 4px 6px; text-align: center; color: #000000;">
+                                <td style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; color: #000000;">
                                     {{ $p }}
                                 </td>
                             @endif
                         @endforeach
-                        <td style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; color: #000000;">{{ $rowTotal }}</td>
+                        <td style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; font-weight: bold; color: #000000;">{{ $rowTotal }}</td>
                     </tr>
                 @empty
                     <tr>
