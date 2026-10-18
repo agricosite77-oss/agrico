@@ -1407,7 +1407,47 @@ const groupScansByDate = (scansList) => {
     date: dateLabel,
     data: groups[dateLabel],
   }));
-};
+}
+
+// Helper map pin icon matching Pin Soil Location button
+function MapPinIcon({ size = 16, color = '#ffffff' }) {
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', marginRight: 4 }}>
+      <View
+        style={{
+          width: size * 0.65,
+          height: size * 0.65,
+          borderRadius: (size * 0.65) / 2,
+          backgroundColor: color,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <View
+          style={{
+            width: size * 0.22,
+            height: size * 0.22,
+            borderRadius: (size * 0.22) / 2,
+            backgroundColor: '#15803d',
+          }}
+        />
+      </View>
+      <View
+        style={{
+          width: 0,
+          height: 0,
+          borderLeftWidth: size * 0.18,
+          borderRightWidth: size * 0.18,
+          borderTopWidth: size * 0.32,
+          borderLeftColor: 'transparent',
+          borderRightColor: 'transparent',
+          borderTopColor: color,
+          marginTop: -1.5,
+        }}
+      />
+    </View>
+  );
+}
 
 export default function HomeScreen({ navigation, route }) {
   const { user, logout, checkAuth } = useContext(AuthContext);
@@ -2886,14 +2926,28 @@ export default function HomeScreen({ navigation, route }) {
                   </Text>
                 </View>
 
-                {/* Action Button: Close */}
+                {/* Action Buttons Row: Cancel & Pin Soil Location matching image */}
                 <View style={styles.soilModalFooterRow}>
                   <TouchableOpacity
-                    style={styles.modalDoneBtn}
+                    style={styles.modalCancelBtn}
                     onPress={() => setDetailSoil(null)}
-                    activeOpacity={0.85}
+                    activeOpacity={0.8}
+                    accessibilityLabel="Cancel"
                   >
-                    <Text style={styles.modalDoneBtnText}>Done</Text>
+                    <Text style={styles.modalCancelBtnText}>Cancel</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.modalPinBtn}
+                    onPress={() => {
+                      setDetailSoil(null);
+                      setActiveTab('Map');
+                    }}
+                    activeOpacity={0.85}
+                    accessibilityLabel="Pin Soil Location"
+                  >
+                    <MapPinIcon size={16} color="#ffffff" />
+                    <Text style={styles.modalPinBtnText}>Pin Soil Location</Text>
                   </TouchableOpacity>
                 </View>
               </ScrollView>
@@ -4118,18 +4172,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#dc2626',
   },
-  // Modal Styling (Determined Soil Record - Mirrors Website Exactly)
+  // Modal Styling (Determined Soil Record - Dark Forest Theme matching screenshot)
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(5, 31, 32, 0.82)',
+    backgroundColor: 'rgba(3, 18, 14, 0.82)',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,
   },
   soilModalCard: {
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
+    backgroundColor: '#0a2620',
+    borderWidth: 1.5,
+    borderColor: 'rgba(34, 197, 94, 0.22)',
     borderRadius: 24,
     width: '100%',
     maxHeight: SCREEN_HEIGHT * 0.88,
@@ -4138,7 +4192,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 16 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.35,
     shadowRadius: 28,
     elevation: 20,
     zIndex: 10,
@@ -4149,20 +4203,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: 'rgba(142, 182, 155, 0.15)',
   },
   soilModalSubHeader: {
-    fontSize: 10,
+    fontSize: 10.5,
     fontWeight: '800',
-    color: '#16a34a',
+    color: '#22c55e',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
     marginBottom: 2,
   },
   soilModalTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#ffffff',
     letterSpacing: -0.2,
   },
   soilModalCloseBtn: {
@@ -4171,23 +4225,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 16,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   soilModalCloseIcon: {
     fontSize: 13,
-    color: '#64748b',
+    color: '#ffffff',
     fontWeight: '700',
   },
   soilModalScrollContent: {
     paddingTop: 12,
     paddingBottom: 8,
   },
-  // Dual-preview Soil Banner (matches website #modalSoilDualPreviewBadge)
+  // Dual-preview Soil Banner (matches screenshot)
   soilBannerDualPreview: {
     width: '100%',
-    borderRadius: 16,
+    borderRadius: 18,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
@@ -4196,7 +4250,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 5,
   },
@@ -4231,7 +4285,7 @@ const styles = StyleSheet.create({
     lineHeight: 26,
   },
   soilBannerSubLabel: {
-    fontSize: 12,
+    fontSize: 12.5,
     fontWeight: '700',
     color: 'rgba(255, 255, 255, 0.95)',
     marginTop: 2,
@@ -4251,7 +4305,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
-  // 3-Grid Metric Cards (matches website .soil-modal-grid-card)
+  // 3-Grid Metric Cards (matches screenshot: dark forest cards with sage labels)
   soilMetricsRow: {
     flexDirection: 'row',
     gap: 8,
@@ -4259,27 +4313,27 @@ const styles = StyleSheet.create({
   },
   soilModalGridCard: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    borderWidth: 1.5,
-    borderColor: '#f1f5f9',
+    backgroundColor: '#0c2e27',
+    borderWidth: 1,
+    borderColor: '#18493f',
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 9,
     justifyContent: 'center',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
+    shadowOpacity: 0.15,
     shadowRadius: 3,
     elevation: 1,
   },
   soilNearMatchCard: {
-    borderColor: '#bbf7d0',
-    backgroundColor: '#f0fdf4',
+    borderColor: '#1e5a4e',
+    backgroundColor: '#0c2e27',
   },
   soilModalLabel: {
     fontSize: 9.5,
     fontWeight: '800',
-    color: '#64748b',
+    color: '#8eb69b',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
     marginBottom: 3,
@@ -4287,19 +4341,19 @@ const styles = StyleSheet.create({
   soilModalValue: {
     fontSize: 12.5,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#ffffff',
     lineHeight: 16,
   },
   soilNearMatchValue: {
     fontSize: 13.5,
     fontWeight: '900',
-    color: '#16a34a',
+    color: '#22c55e',
   },
-  // Full-width cards (matches website .soil-modal-desc-card)
+  // Full-width cards (matches screenshot: SCAN DATE & DESCRIPTION)
   soilModalFullCard: {
-    backgroundColor: '#f8fafc',
-    borderWidth: 1.5,
-    borderColor: '#f1f5f9',
+    backgroundColor: '#0c2e27',
+    borderWidth: 1,
+    borderColor: '#18493f',
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -4307,7 +4361,7 @@ const styles = StyleSheet.create({
   },
   soilModalDescText: {
     fontSize: 12,
-    color: '#334155',
+    color: '#e2e8f0',
     lineHeight: 18,
     fontWeight: '600',
   },
@@ -4316,23 +4370,38 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 8,
     paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
   },
-  modalDoneBtn: {
-    width: '100%',
+  modalCancelBtn: {
+    flex: 1,
     height: 46,
-    borderRadius: 9999,
-    backgroundColor: '#16a34a',
+    borderRadius: 14,
+    backgroundColor: '#0c2e27',
+    borderWidth: 1,
+    borderColor: '#1e5347',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#16a34a',
+  },
+  modalCancelBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#ffffff',
+  },
+  modalPinBtn: {
+    flex: 2,
+    height: 46,
+    borderRadius: 14,
+    backgroundColor: '#22c55e',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    shadowColor: '#22c55e',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.28,
     shadowRadius: 8,
     elevation: 3,
   },
-  modalDoneBtnText: {
+  modalPinBtnText: {
     fontSize: 14,
     fontWeight: '800',
     color: '#ffffff',

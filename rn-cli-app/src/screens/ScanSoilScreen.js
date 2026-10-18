@@ -1185,73 +1185,46 @@ export default function ScanSoilScreen({ navigation }) {
               onPress={() => setShowDetailModal(false)}
             />
             <View style={styles.soilModalCard} pointerEvents="auto">
-              {/* Result Header (Matches website .result-header) */}
-              <View style={styles.resultHeader}>
-                <View style={styles.resultHeaderTitleBox}>
-                  <Text style={styles.resultHeaderTitle}>DETERMINED SOIL RECORD</Text>
-                  <View style={styles.resultMultiBadge}>
-                    <Text style={styles.resultMultiBadgeText}>
-                      {`${currentSpecimen.regions?.length || 1} DETECTED`}
-                    </Text>
-                  </View>
+              {/* Header */}
+              <View style={styles.soilModalHeaderRow}>
+                <View>
+                  <Text style={styles.soilModalSubHeader}>DETERMINED SOIL RECORD</Text>
+                  <Text style={styles.soilModalTitle}>Soil Record Details</Text>
                 </View>
                 <TouchableOpacity
-                  style={styles.modalCloseCircleBtn}
+                  style={styles.soilModalCloseBtn}
                   onPress={() => setShowDetailModal(false)}
                   activeOpacity={0.7}
-                  accessibilityLabel="Close"
+                  accessibilityLabel="Close details"
                 >
-                  <Text style={styles.modalCloseCircleIcon}>✕</Text>
+                  <Text style={styles.soilModalCloseIcon}>✕</Text>
                 </TouchableOpacity>
               </View>
 
               <ScrollView
-                contentContainerStyle={styles.soilModalScrollContent}
                 showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.soilModalScrollContent}
                 keyboardShouldPersistTaps="always"
               >
-                {/* Dual-Preview Soil Badge Banner (Matches website #soilDualPreviewBadge) */}
-                <View style={styles.soilDualPreviewBadge}>
-                  {/* Rectangular Color Swatch Block */}
-                  <View
-                    style={[
-                      styles.resSwatchBlock,
-                      { backgroundColor: currentSpecimen.hexColor || '#594433' },
-                    ]}
-                  >
-                    <View style={styles.resSwatchLeftText}>
-                      <Text style={styles.resCodeDisplay} numberOfLines={1}>
-                        {currentSpecimen.munsellCode || currentSpecimen.fullCode || '10YR 4/3'}
-                      </Text>
-                      <Text style={styles.resBannerColorName} numberOfLines={1}>
-                        {currentSpecimen.name || 'Determined Soil'}
-                      </Text>
-                      {currentSpecimen.soilPercentage != null ? (
-                        <Text style={styles.resSoilPercentageDisplay}>
-                          {`Soil Percentage (${currentSpecimen.soilPercentage}%)`}
-                        </Text>
-                      ) : null}
-                    </View>
-
-                    <View style={styles.resHexPill}>
-                      <Text style={styles.resHexPillText}>
-                        {(currentSpecimen.hexColor || '#594433').toUpperCase()}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Overlapping Soil Snippet on Left */}
-                  <View style={styles.resSoilSnippetContainer}>
+                {/* Dual-Preview Soil Banner (Avatar + Code + Hex Pill) */}
+                <View
+                  style={[
+                    styles.soilBannerDualPreview,
+                    { backgroundColor: currentSpecimen.hexColor || currentSpecimen.hex || '#cba985' },
+                  ]}
+                >
+                  {/* Left Avatar Snippet */}
+                  <View style={styles.soilBannerAvatarContainer}>
                     {croppedSpecimenUri ? (
                       <Image
                         source={{ uri: croppedSpecimenUri }}
-                        style={styles.resSoilSnippetImg}
+                        style={styles.soilBannerAvatarImg}
                         resizeMode="cover"
                       />
                     ) : currentSpecimen.scanImage ? (
                       <Image
                         source={{ uri: currentSpecimen.scanImage }}
-                        style={styles.resSoilSnippetImg}
+                        style={styles.soilBannerAvatarImg}
                         resizeMode="cover"
                       />
                     ) : currentSpecimen.thumbnail ? (
@@ -1261,104 +1234,108 @@ export default function ScanSoilScreen({ navigation }) {
                             ? currentSpecimen.thumbnail
                             : { uri: currentSpecimen.thumbnail?.uri || currentSpecimen.thumbnail }
                         }
-                        style={styles.resSoilSnippetImg}
+                        style={styles.soilBannerAvatarImg}
                         resizeMode="cover"
                       />
                     ) : (
-                      <View style={styles.resSoilSnippetFallback}>
-                        <Text style={{ fontSize: 24 }}>🌱</Text>
+                      <View style={styles.soilBannerAvatarFallback}>
+                        <Text style={{ fontSize: 22 }}>🌱</Text>
                       </View>
                     )}
                   </View>
+
+                  {/* Center Code & Label */}
+                  <View style={styles.soilBannerCodeBlock}>
+                    <Text style={styles.soilBannerMunsellCode}>
+                      {currentSpecimen.munsellCode || currentSpecimen.fullCode || '10YR 7/3'}
+                    </Text>
+                    <Text style={styles.soilBannerSubLabel} numberOfLines={1}>
+                      {currentSpecimen.name || currentSpecimen.colorName || 'Very Pale Brown'}
+                    </Text>
+                  </View>
+
+                  {/* Right Hex Pill */}
+                  <View style={styles.soilBannerHexPill}>
+                    <Text style={styles.soilBannerHexText}>
+                      {(currentSpecimen.hexColor || currentSpecimen.hex || '#CBA985').toUpperCase()}
+                    </Text>
+                  </View>
                 </View>
 
-                {/* Row 1: Code Details (3 Columns: Color Name, Full Code, Scan Count) */}
-                <View style={styles.soilModalGrid3}>
+                {/* Row 1: COLOR NAME | FULL CODE | SCAN COUNT */}
+                <View style={styles.soilMetricsRow}>
                   <View style={styles.soilModalGridCard}>
-                    <Text style={styles.soilModalLabel}>Color Name</Text>
+                    <Text style={styles.soilModalLabel}>COLOR NAME</Text>
                     <Text style={styles.soilModalValue} numberOfLines={1}>
-                      {currentSpecimen.name || 'Determined Soil'}
+                      {currentSpecimen.name || currentSpecimen.colorName || 'Very Pale Brown'}
                     </Text>
                   </View>
-
                   <View style={styles.soilModalGridCard}>
-                    <Text style={styles.soilModalLabel}>Full Code</Text>
+                    <Text style={styles.soilModalLabel}>FULL CODE</Text>
                     <Text style={styles.soilModalValue} numberOfLines={1}>
-                      {currentSpecimen.fullCode || currentSpecimen.munsellCode || '10YR 4/3'}
+                      {currentSpecimen.fullCode || currentSpecimen.munsellCode || '10YR 7/3'}
                     </Text>
                   </View>
-
                   <View style={styles.soilModalGridCard}>
-                    <Text style={styles.soilModalLabel}>Scan Count</Text>
+                    <Text style={styles.soilModalLabel}>SCAN COUNT</Text>
                     <Text style={styles.soilModalValue}>
                       {currentSpecimen.scanCount || '1'}
                     </Text>
                   </View>
                 </View>
 
-                {/* Row 2: Soil Properties (3 Columns: Soil Organic, Soil Type, Near-Match) */}
-                <View style={styles.soilModalGrid3}>
+                {/* Row 2: SOIL ORGANIC | SOIL TYPE | NEAR-MATCH */}
+                <View style={styles.soilMetricsRow}>
                   <View style={styles.soilModalGridCard}>
-                    <Text style={styles.soilModalLabel}>Soil Organic</Text>
+                    <Text style={styles.soilModalLabel}>SOIL ORGANIC</Text>
                     <Text style={styles.soilModalValue} numberOfLines={2}>
                       {currentSpecimen.organicIndex || 'Low (1.1% – 2.0%)'}
                     </Text>
                   </View>
-
                   <View style={styles.soilModalGridCard}>
-                    <Text style={styles.soilModalLabel}>Soil Type</Text>
+                    <Text style={styles.soilModalLabel}>SOIL TYPE</Text>
                     <Text style={styles.soilModalValue} numberOfLines={2}>
                       {currentSpecimen.soilType || 'Dry, light-colored'}
                     </Text>
                   </View>
-
-                  <View style={[styles.soilModalGridCard, styles.cardNearMatch]}>
-                    <Text style={styles.soilModalLabel}>Near-Match</Text>
-                    <Text style={styles.nearMatchValue}>
+                  <View style={[styles.soilModalGridCard, styles.soilNearMatchCard]}>
+                    <Text style={styles.soilModalLabel}>NEAR-MATCH</Text>
+                    <Text style={styles.soilNearMatchValue}>
                       {currentSpecimen.nearMatchRating || currentSpecimen.confidence || '82.7%'}
                     </Text>
                   </View>
                 </View>
 
-                {/* Scan Note Card (Full Width) */}
-                <View style={styles.soilModalDescCard}>
-                  <Text style={styles.soilModalLabel}>Scan Note</Text>
-                  <Text style={styles.soilModalValueDesc}>
-                    {currentSpecimen.scanNote ||
-                      `Determined ${currentSpecimen.name || 'Soil'} (${currentSpecimen.munsellCode || ''}) with ${currentSpecimen.nearMatchRating || currentSpecimen.confidence || 'high'} confidence.`}
+                {/* Scan Date Card */}
+                <View style={styles.soilModalFullCard}>
+                  <Text style={styles.soilModalLabel}>SCAN DATE</Text>
+                  <Text style={styles.soilModalValue}>
+                    {currentSpecimen.scanDate || currentSpecimen.createdDate || currentSpecimen.scanTime || '10/18/2026'}
                   </Text>
                 </View>
 
-                {/* Description Card (Full Width) */}
-                <View style={styles.soilModalDescCard}>
-                  <Text style={styles.soilModalLabel}>Description</Text>
-                  <Text style={styles.soilModalValueDesc}>
+                {/* Description Card */}
+                <View style={styles.soilModalFullCard}>
+                  <Text style={styles.soilModalLabel}>DESCRIPTION</Text>
+                  <Text style={styles.soilModalDescText}>
                     {currentSpecimen.description ||
-                      'Sample processed successfully using AgriCo Munsell Determination Algorithm.'}
+                      `Determined Soil: ${currentSpecimen.name || 'Very Pale Brown'} (${currentSpecimen.munsellCode || '10YR 7/3'})${currentSpecimen.soilPercentage != null ? ` - Soil Percentage: ${currentSpecimen.soilPercentage}%` : ''}${currentSpecimen.confidence ? ` - Confidence: ${currentSpecimen.confidence}%` : ' - Confidence: 96.8%'}`}
                   </Text>
                 </View>
 
-                {/* Pinned Location Card (if location is pinned) */}
-                {pinnedLocation ? (
-                  <View style={styles.soilModalDescCard}>
-                    <View style={styles.soilLocHeaderRow}>
-                      <Text style={styles.soilModalLabel}>SOIL PIN LOCATION &amp; COVERED AREA</Text>
-                      <View style={styles.soilLocBadge}>
-                        <Text style={styles.soilLocBadgeText}>
-                          {pinnedLocation.barangay || pinnedLocation.locationName || 'Pinned'}
-                        </Text>
-                      </View>
-                    </View>
-                    <Text style={styles.soilLocCoordsText}>
-                      {`GPS: ${pinnedLocation.latitude != null ? pinnedLocation.latitude.toFixed(5) : '--'}, ${pinnedLocation.longitude != null ? pinnedLocation.longitude.toFixed(5) : '--'}`}
-                    </Text>
-                  </View>
-                ) : null}
-
-                {/* Primary Soil Result: Pin Location Button */}
-                <View style={styles.resPrimaryPinLocationWrapper}>
+                {/* Action Buttons: Cancel (Left) & Pin Soil Location (Right) */}
+                <View style={styles.soilModalFooterRow}>
                   <TouchableOpacity
-                    style={styles.btnResPinLocation}
+                    style={styles.modalCancelBtn}
+                    onPress={() => setShowDetailModal(false)}
+                    activeOpacity={0.8}
+                    accessibilityLabel="Cancel"
+                  >
+                    <Text style={styles.modalCancelBtnText}>Cancel</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.modalPinBtn}
                     onPress={() => {
                       setShowDetailModal(false);
                       setTimeout(() => {
@@ -1366,38 +1343,10 @@ export default function ScanSoilScreen({ navigation }) {
                       }, 250);
                     }}
                     activeOpacity={0.85}
-                    accessibilityLabel="Pin Location"
+                    accessibilityLabel="Pin Soil Location"
                   >
                     <MapPinIcon size={16} color="#ffffff" />
-                    <Text style={styles.btnResPinLocationText}>Pin Location</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Action Buttons Row: Save Copy (Left) & Retake Photo (Right) */}
-                <View style={styles.resActionButtonsRow}>
-                  <TouchableOpacity
-                    style={styles.btnResSaveCopy}
-                    onPress={() => {
-                      triggerAutoSaveToast('✓ Copy of Soil Record Saved');
-                    }}
-                    activeOpacity={0.8}
-                    accessibilityLabel="Save Copy"
-                  >
-                    <SaveTrayIcon size={15} color="#DAF1DE" />
-                    <Text style={styles.btnResSaveCopyText}>Save Copy</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.btnResRetake}
-                    onPress={() => {
-                      setShowDetailModal(false);
-                      handleRetake();
-                    }}
-                    activeOpacity={0.8}
-                    accessibilityLabel="Retake Photo"
-                  >
-                    <RefreshIcon size={15} color="#DAF1DE" />
-                    <Text style={styles.btnResRetakeText}>Retake Photo</Text>
+                    <Text style={styles.modalPinBtnText}>Pin Soil Location</Text>
                   </TouchableOpacity>
                 </View>
               </ScrollView>
@@ -1882,15 +1831,15 @@ const styles = StyleSheet.create({
 
   soilModalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    backgroundColor: 'rgba(3, 18, 14, 0.82)',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,
   },
   soilModalCard: {
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
+    backgroundColor: '#0a2620',
+    borderWidth: 1.5,
+    borderColor: 'rgba(34, 197, 94, 0.22)',
     borderRadius: 24,
     width: '100%',
     maxHeight: SCREEN_HEIGHT * 0.88,
@@ -1899,191 +1848,148 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 16 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.5,
     shadowRadius: 28,
     elevation: 20,
     zIndex: 10,
   },
-  // Result Header (matches website .result-header)
-  resultHeader: {
+  soilModalHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
-  resultHeaderTitleBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  resultHeaderTitle: {
-    fontSize: 12.5,
-    fontWeight: '800',
-    color: '#16a34a',
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-  },
-  resultMultiBadge: {
-    backgroundColor: 'rgba(34, 197, 94, 0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.3)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 9999,
-  },
-  resultMultiBadgeText: {
-    fontSize: 11,
+  soilModalSubHeader: {
+    fontSize: 10,
     fontWeight: '800',
     color: '#22c55e',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 2,
   },
-  modalCloseCircleBtn: {
+  soilModalTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#ffffff',
+    letterSpacing: -0.2,
+  },
+  soilModalCloseBtn: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: '#f1f5f9',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
-  modalCloseCircleIcon: {
+  soilModalCloseIcon: {
     fontSize: 13,
-    color: '#64748b',
+    color: '#ffffff',
     fontWeight: '700',
   },
   soilModalScrollContent: {
     paddingTop: 12,
     paddingBottom: 8,
   },
-
-  // Dual-preview Soil Badge Banner (matches website #soilDualPreviewBadge)
-  soilDualPreviewBadge: {
-    position: 'relative',
-    marginTop: 10,
-    marginBottom: 14,
+  // Dual-preview Soil Banner
+  soilBannerDualPreview: {
     width: '100%',
-    justifyContent: 'center',
-  },
-  resSwatchBlock: {
-    width: '100%',
-    minHeight: 78,
-    borderRadius: 14,
-    paddingLeft: 100,
-    paddingRight: 14,
-    paddingVertical: 10,
+    borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 12,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.22,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  resSwatchLeftText: {
+  soilBannerAvatarContainer: {
+    width: 58,
+    height: 58,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+  },
+  soilBannerAvatarImg: {
+    width: '100%',
+    height: '100%',
+  },
+  soilBannerAvatarFallback: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  soilBannerCodeBlock: {
     flex: 1,
     minWidth: 0,
-    paddingRight: 6,
   },
-  resCodeDisplay: {
+  soilBannerMunsellCode: {
     fontSize: 22,
     fontWeight: '900',
     color: '#ffffff',
     letterSpacing: -0.2,
     lineHeight: 26,
   },
-  resBannerColorName: {
-    fontSize: 12.5,
+  soilBannerSubLabel: {
+    fontSize: 12,
     fontWeight: '700',
-    color: 'rgba(255, 255, 255, 0.92)',
+    color: 'rgba(255, 255, 255, 0.95)',
     marginTop: 2,
   },
-  resSoilPercentageDisplay: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: 'rgba(255, 255, 255, 0.85)',
-    marginTop: 2,
-  },
-  resHexPill: {
+  soilBannerHexPill: {
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.58)',
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    flexShrink: 0,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
   },
-  resHexPillText: {
-    fontSize: 11,
+  soilBannerHexText: {
+    fontSize: 10.5,
     fontWeight: '800',
     color: '#ffffff',
     letterSpacing: 0.5,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
-
-  // Overlapping Left Soil Photo Snippet
-  resSoilSnippetContainer: {
-    position: 'absolute',
-    left: 10,
-    top: '50%',
-    marginTop: -42,
-    zIndex: 10,
-    width: 84,
-    height: 84,
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#f1f5f9',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  resSoilSnippetImg: {
-    width: '100%',
-    height: '100%',
-  },
-  resSoilSnippetFallback: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f1f5f9',
-  },
-
-  // 3-Grid Metric Cards (matches website .soil-modal-grid-card)
-  soilModalGrid3: {
+  // 3-Grid Metric Cards
+  soilMetricsRow: {
     flexDirection: 'row',
     gap: 8,
     marginBottom: 8,
   },
   soilModalGridCard: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#0c2e27',
     borderWidth: 1.5,
-    borderColor: '#f1f5f9',
+    borderColor: '#18493f',
     borderRadius: 12,
-    paddingHorizontal: 9,
+    paddingHorizontal: 10,
     paddingVertical: 9,
     justifyContent: 'center',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
+    shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 1,
   },
-  cardNearMatch: {
-    borderColor: '#bbf7d0',
-    backgroundColor: '#f0fdf4',
+  soilNearMatchCard: {
+    borderColor: 'rgba(34, 197, 94, 0.35)',
+    backgroundColor: '#0c2e27',
   },
   soilModalLabel: {
     fontSize: 9.5,
     fontWeight: '800',
-    color: '#64748b',
+    color: '#8eb69b',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
     marginBottom: 3,
@@ -2091,121 +1997,72 @@ const styles = StyleSheet.create({
   soilModalValue: {
     fontSize: 12.5,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#ffffff',
     lineHeight: 16,
   },
-  nearMatchValue: {
+  soilNearMatchValue: {
     fontSize: 13.5,
     fontWeight: '900',
-    color: '#16a34a',
+    color: '#22c55e',
   },
-
-  // Full-width cards (matches website .soil-modal-desc-card)
-  soilModalDescCard: {
-    backgroundColor: '#f8fafc',
+  // Full-width cards
+  soilModalFullCard: {
+    backgroundColor: '#0c2e27',
     borderWidth: 1.5,
-    borderColor: '#f1f5f9',
+    borderColor: '#18493f',
     borderRadius: 12,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 10,
     marginBottom: 8,
   },
-  soilModalValueDesc: {
+  soilModalDescText: {
     fontSize: 12,
-    color: '#334155',
-    lineHeight: 17,
+    color: '#e2e8f0',
+    lineHeight: 18,
     fontWeight: '600',
   },
-  soilLocHeaderRow: {
+  soilModalFooterRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 4,
+    gap: 10,
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
   },
-  soilLocBadge: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.4)',
-  },
-  soilLocBadgeText: {
-    fontSize: 10.5,
-    fontWeight: '700',
-    color: '#22c55e',
-  },
-  soilLocCoordsText: {
-    fontSize: 11.5,
-    color: '#64748b',
-    fontWeight: '600',
-  },
-
-  // Primary Pin Location Button (matches website .btn-res-pin-location)
-  resPrimaryPinLocationWrapper: {
-    marginTop: 4,
-    marginBottom: 10,
-  },
-  btnResPinLocation: {
-    width: '100%',
+  modalCancelBtn: {
+    flex: 1,
     height: 46,
-    borderRadius: 9999,
-    backgroundColor: '#16a34a',
+    borderRadius: 14,
+    backgroundColor: '#0c2e27',
+    borderWidth: 1.5,
+    borderColor: '#1e5347',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCancelBtnText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  modalPinBtn: {
+    flex: 2,
+    height: 46,
+    borderRadius: 14,
+    backgroundColor: '#22c55e',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    shadowColor: '#16a34a',
+    shadowColor: '#22c55e',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 8,
     elevation: 4,
   },
-  btnResPinLocationText: {
-    fontSize: 13.5,
+  modalPinBtnText: {
+    fontSize: 14,
     fontWeight: '800',
     color: '#ffffff',
-  },
-
-  // Action Buttons Row (matches website .res-action-buttons-row)
-  resActionButtonsRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 4,
-  },
-  btnResSaveCopy: {
-    flex: 1,
-    height: 42,
-    borderRadius: 9999,
-    backgroundColor: '#f1f5f9',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-  },
-  btnResSaveCopyText: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: '#334155',
-  },
-  btnResRetake: {
-    flex: 1,
-    height: 42,
-    borderRadius: 9999,
-    backgroundColor: '#f1f5f9',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-  },
-  btnResRetakeText: {
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: '#334155',
   },
 
   // State B (Camera preview bottom card) styles
