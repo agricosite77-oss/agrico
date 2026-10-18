@@ -43,13 +43,13 @@ class UploadApplication extends Component
             } else {
                 Application::create([
                     'application_name' => 'AgriCo Mobile App',
-                    'version'          => 'v1.0.4',
-                    'filename'         => 'agrico-app-v1.0.4.apk',
-                    'file_size'        => '59.5 MB',
-                    'release_notes'    => "Official AgriCo mobile app release with on-device 6-Stage ML soil scanning and offline Munsell color chart.",
+                    'version'          => 'v1.0.5',
+                    'filename'         => 'agrico-app-v1.0.5.apk',
+                    'file_size'        => '62.4 MB',
+                    'release_notes'    => "Official AgriCo mobile app release with on-device 6-Stage ML soil scanning, offline crop and soil data, and authenticated sync.",
                     'status'           => 'ACTIVE',
                     'uploaded_by'      => auth()->user()?->name ?? 'AgriCo Administrator',
-                    'file_path'        => 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.4/agrico-app-v1.0.4.apk',
+                    'file_path'        => 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.5/agrico-app-v1.0.5.apk',
                 ]);
             }
         }
@@ -60,20 +60,34 @@ class UploadApplication extends Component
         $this->checkSuperAdmin();
         $app = Application::find($id);
         if ($app) {
+            if ($app->filename) {
+                $candidate = 'applications/' . $app->filename;
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($candidate)) {
+                    return \Illuminate\Support\Facades\Storage::disk('public')->download($candidate, $app->filename, [
+                        'Content-Type' => 'application/vnd.android.package-archive',
+                    ]);
+                }
+            }
+            if ($app->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($app->file_path)) {
+                return \Illuminate\Support\Facades\Storage::disk('public')->download($app->file_path, $app->filename ?: 'agrico-app.apk', [
+                    'Content-Type' => 'application/vnd.android.package-archive',
+                ]);
+            }
             if ($app->file_path && (str_starts_with($app->file_path, 'http://') || str_starts_with($app->file_path, 'https://'))) {
                 return redirect()->away($app->file_path);
             }
-            if ($app->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($app->file_path)) {
-                return \Illuminate\Support\Facades\Storage::disk('public')->download($app->file_path, $app->filename ?: 'agrico-app.apk');
-            }
         }
 
-        $samplePath = 'applications/agrico-app-v1.0.4.apk';
+        $activeApp = Application::where('status', 'ACTIVE')->orderBy('application_id', 'desc')->first();
+        $fallbackFilename = $activeApp?->filename ?: 'agrico-app-v1.0.5.apk';
+        $samplePath = 'applications/' . $fallbackFilename;
         if (\Illuminate\Support\Facades\Storage::disk('public')->exists($samplePath)) {
-            return \Illuminate\Support\Facades\Storage::disk('public')->download($samplePath, ($app?->filename) ?: 'agrico-app-v1.0.4.apk');
+            return \Illuminate\Support\Facades\Storage::disk('public')->download($samplePath, $fallbackFilename, [
+                'Content-Type' => 'application/vnd.android.package-archive',
+            ]);
         }
 
-        return redirect()->away('https://github.com/agricosite77-oss/agrico/releases/download/v1.0.4/agrico-app-v1.0.4.apk');
+        return redirect()->away('https://github.com/agricosite77-oss/agrico/releases/download/v1.0.5/agrico-app-v1.0.5.apk');
     }
 
     public function uploadVersion()

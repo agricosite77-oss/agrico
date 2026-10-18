@@ -985,16 +985,27 @@ class WebsiteController extends Controller
             ]);
         } catch (\Throwable $e) {}
 
-        // 1. If local APK exists on server disk, download it directly with correct MIME type
-        $localApk = 'applications/agrico-app-v1.0.4.apk';
+        // 1. If local APK exists for active version, download it directly with correct MIME type
+        $activeFilename = $activeApp?->filename ?: 'agrico-app-v1.0.5.apk';
+        $localApk = 'applications/' . $activeFilename;
         if (\Illuminate\Support\Facades\Storage::disk('public')->exists($localApk)) {
-            return \Illuminate\Support\Facades\Storage::disk('public')->download($localApk, 'agrico-app-v1.0.4.apk', [
+            return \Illuminate\Support\Facades\Storage::disk('public')->download($localApk, $activeFilename, [
                 'Content-Type' => 'application/vnd.android.package-archive',
             ]);
         }
 
-        // 2. Otherwise redirect to the verified GitHub release (or direct CDN)
-        $releaseUrl = 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.4/agrico-app-v1.0.4.apk';
+        // Check fallback v1.0.5 on server disk
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists('applications/agrico-app-v1.0.5.apk')) {
+            return \Illuminate\Support\Facades\Storage::disk('public')->download('applications/agrico-app-v1.0.5.apk', 'agrico-app-v1.0.5.apk', [
+                'Content-Type' => 'application/vnd.android.package-archive',
+            ]);
+        }
+
+        // 2. Otherwise redirect to the active GitHub release URL (or direct CDN)
+        $releaseUrl = ($activeApp && $activeApp->file_path && (str_starts_with($activeApp->file_path, 'http://') || str_starts_with($activeApp->file_path, 'https://')))
+            ? $activeApp->file_path
+            : 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.5/agrico-app-v1.0.5.apk';
+
         $directUrl = \App\Http\Controllers\Mobile\Api\AppVersionController::resolveDirectAssetUrl($releaseUrl);
         return redirect()->away($directUrl);
     }
