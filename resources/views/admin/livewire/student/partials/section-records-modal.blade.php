@@ -529,30 +529,16 @@
                     margin: 0 !important;
                     padding: 0 !important;
                     width: 100% !important;
-                    height: auto !important;
-                    overflow: visible !important;
                 }
                 body * {
                     visibility: hidden !important;
-                }
-                .fixed, [class*="fixed"], [style*="position: fixed"] {
-                    position: static !important;
-                    height: auto !important;
-                    max-height: none !important;
-                    width: 100% !important;
-                    overflow: visible !important;
-                    background: transparent !important;
-                    padding: 0 !important;
-                }
-                .section-records-dialog {
-                    display: none !important;
                 }
                 #sectionRecordsPrintArea, #sectionRecordsPrintArea * {
                     visibility: visible !important;
                 }
                 #sectionRecordsPrintArea {
                     display: block !important;
-                    position: static !important;
+                    position: absolute !important;
                     left: 0 !important;
                     top: 0 !important;
                     width: 100% !important;
@@ -633,87 +619,12 @@
                             type="button"
                             @click="
                                 openMenu = false;
-                                (function() {
-                                    const printContent = document.getElementById('sectionRecordsPrintArea');
-                                    if (!printContent) {
-                                        window.print();
-                                        return;
-                                    }
-
-                                    let iframe = document.getElementById('sectionRecordsPrintIframe');
-                                    if (iframe) iframe.remove();
-
-                                    iframe = document.createElement('iframe');
-                                    iframe.id = 'sectionRecordsPrintIframe';
-                                    iframe.style.position = 'fixed';
-                                    iframe.style.right = '0';
-                                    iframe.style.bottom = '0';
-                                    iframe.style.width = '0';
-                                    iframe.style.height = '0';
-                                    iframe.style.border = '0';
-                                    document.body.appendChild(iframe);
-
-                                    const doc = iframe.contentWindow.document;
-                                    doc.open();
-                                    doc.write(`
-                                        <!DOCTYPE html>
-                                        <html>
-                                        <head>
-                                            <title></title>
-                                            <style>
-                                                @page {
-                                                    size: A4 landscape;
-                                                    margin: 0 !important;
-                                                }
-                                                html, body {
-                                                    margin: 0 !important;
-                                                    padding: 0 !important;
-                                                    background: #ffffff !important;
-                                                    color: #000000 !important;
-                                                    font-family: Arial, sans-serif !important;
-                                                    -webkit-print-color-adjust: exact !important;
-                                                    print-color-adjust: exact !important;
-                                                }
-                                                .print-container {
-                                                    padding: 10mm 14mm;
-                                                    box-sizing: border-box;
-                                                    width: 100%;
-                                                }
-                                                table {
-                                                    width: 100%;
-                                                    border-collapse: collapse;
-                                                }
-                                                th, td {
-                                                    border: 1px solid #000000;
-                                                    padding: 6px 8px;
-                                                    background: #ffffff;
-                                                    color: #000000;
-                                                }
-                                                th {
-                                                    font-weight: bold;
-                                                }
-                                                thead {
-                                                    display: table-header-group;
-                                                }
-                                                tr {
-                                                    page-break-inside: avoid;
-                                                }
-                                            </style>
-                                        </head>
-                                        <body>
-                                            <div class="print-container">
-                                                ${printContent.innerHTML}
-                                            </div>
-                                        </body>
-                                        </html>
-                                    `);
-                                    doc.close();
-
-                                    setTimeout(() => {
-                                        iframe.contentWindow.focus();
-                                        iframe.contentWindow.print();
-                                    }, 250);
-                                })();
+                                const origDocTitle = document.title;
+                                document.title = '';
+                                setTimeout(() => {
+                                    window.print();
+                                    setTimeout(() => { document.title = origDocTitle; }, 1000);
+                                }, 150);
                             "
                             style="width: 100%; min-height: 40px; padding: 8px 14px; border-radius: 10px; border: none; background: transparent; color: #0f172a; font-size: 13px; font-weight: 600; text-align: left; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.15s ease; box-sizing: border-box;"
                             onmouseover="this.style.background='#f1f5f9';"
