@@ -556,7 +556,7 @@
                 #agricoPrintContainer table {
                     width: 100% !important;
                     border-collapse: collapse !important;
-                    table-layout: auto !important;
+                    table-layout: fixed !important;
                 }
                 #agricoPrintContainer thead {
                     display: table-header-group !important;
@@ -570,9 +570,10 @@
                     border: 1px solid #000000 !important;
                     background: #ffffff !important;
                     color: #000000 !important;
-                    padding: 2px 4px !important;
+                    padding: 2.5px 4px !important;
                     font-size: 9pt !important;
                     line-height: 1.15 !important;
+                    vertical-align: middle !important;
                     box-sizing: border-box !important;
                 }
                 #agricoPrintContainer th {
@@ -600,7 +601,7 @@
                     display: flex !important;
                     align-items: center !important;
                     justify-content: space-between !important;
-                    font-size: 8pt !important;
+                    font-size: 8.5pt !important;
                     font-family: Arial, sans-serif !important;
                     color: #000000 !important;
                     box-sizing: border-box !important;
@@ -724,21 +725,21 @@
         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; font-family: Arial, sans-serif;">
             {{-- 1. Left: Republic & CSU Addresses --}}
             <div style="flex: 1; text-align: left; font-size: 7.5pt; line-height: 1.25; color: #000000;">
-                <div style="font-weight: bold; font-size: 8pt; letter-spacing: 0.02em;">REPUBLIC OF THE PHILIPPINES</div>
+                <div style="font-weight: bold; font-size: 7.5pt; letter-spacing: 0.02em;">REPUBLIC OF THE PHILIPPINES</div>
                 <div style="font-weight: bold; font-size: 9pt; margin-top: 1px;">CAGAYAN STATE UNIVERSITY</div>
-                <div style="font-size: 6.5pt; margin-top: 1px;">Andrews Campus, Tuguegarao City, Cagayan (Central Office)</div>
-                <div style="font-size: 6.5pt;">CSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)</div>
+                <div style="font-size: 7pt; margin-top: 1px;">Andrews Campus, Tuguegarao City, Cagayan (Central Office)</div>
+                <div style="font-size: 7pt;">CSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)</div>
             </div>
 
             {{-- 2. Center: CSU Logo --}}
             <div style="flex: 0 0 auto; text-align: center; padding: 0 10px;">
                 @if(file_exists(public_path('images/csu-logo.png')))
-                    <img src="{{ asset('images/csu-logo.png') }}" alt="CSU Logo" style="height: 38px; width: auto; object-fit: contain; display: inline-block;" />
+                    <img src="{{ asset('images/csu-logo.png') }}" alt="CSU Logo" style="height: 48px; width: auto; object-fit: contain; display: inline-block;" />
                 @endif
             </div>
 
             {{-- 3. Right: Contact Info (labels only) --}}
-            <div style="flex: 1; text-align: right; font-size: 7pt; line-height: 1.3; color: #000000;">
+            <div style="flex: 1; text-align: right; font-size: 7.5pt; line-height: 1.3; color: #000000;">
                 <div style="text-align: right;"><strong style="font-weight: bold;">Phone Number:</strong></div>
                 <div style="text-align: right;"><strong style="font-weight: bold;">Email Address:</strong></div>
                 <div style="text-align: right;"><strong style="font-weight: bold;">Facebook page:</strong></div>
@@ -746,109 +747,131 @@
         </div>
 
         {{-- CAMPUS MAIN TITLE --}}
-        <div style="text-align: center; font-size: 9.5pt; font-weight: bold; color: #000000; margin-top: 2px; margin-bottom: 2px; letter-spacing: 0.02em; font-family: Arial, sans-serif;">
+        <div style="text-align: center; font-size: 11pt; font-weight: bold; color: #000000; margin-top: 4px; margin-bottom: 2px; letter-spacing: 0.02em; font-family: Arial, sans-serif;">
             CAGAYAN STATE UNIVERSITY Lal-lo Campus
         </div>
 
         {{-- HORIZONTAL DIVIDER LINE --}}
-        <div style="width: 100%; border-bottom: 1.5px solid #000000; margin-bottom: 3px;"></div>
+        <div style="width: 100%; border-bottom: 1.5px solid #000000; margin-bottom: 6px;"></div>
 
         {{-- DOCUMENT TITLE (AFTER THE LINE, WITH SPACE BEFORE AND AFTER) --}}
         @if(!empty(trim($documentTitle)))
-            <div style="text-align: center; font-size: 9.5pt; font-weight: bold; color: #000000; margin-top: 2px; margin-bottom: 3px; text-transform: uppercase; font-family: Arial, sans-serif;">
+            <div style="text-align: center; font-size: 10.5pt; font-weight: bold; color: #000000; margin-top: 5px; margin-bottom: 8px; text-transform: uppercase; font-family: Arial, sans-serif;">
                 {{ trim($documentTitle) }}
             </div>
         @else
-            <div style="margin-bottom: 2px;"></div>
+            <div style="margin-bottom: 6px;"></div>
         @endif
     </div>
 
-    {{-- PRINT TABLE --}}
-    <table id="sectionRecordsPrintTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 9pt; color: #000000;">
-            <thead>
+    {{-- PRINT TABLE (Calibrated with MS Word column width proportions and fixed layout) --}}
+    @php
+        $subcolCount = 0;
+        foreach ($cards as $c) {
+            if (!empty($c['show_scans'])) $subcolCount++;
+            if (!empty($c['show_pins'])) $subcolCount++;
+        }
+        $actColPct = $subcolCount > 0 ? (56 / $subcolCount) : 0;
+    @endphp
+    <table id="sectionRecordsPrintTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 9pt; color: #000000; table-layout: fixed;">
+        <colgroup>
+            <col style="width: 4%;">
+            <col style="width: 22%;">
+            <col style="width: 11%;">
+            @foreach($cards as $c)
+                @if(!empty($c['show_scans']))
+                    <col style="width: {{ $actColPct }}%;">
+                @endif
+                @if(!empty($c['show_pins']))
+                    <col style="width: {{ $actColPct }}%;">
+                @endif
+            @endforeach
+            <col style="width: 7%;">
+        </colgroup>
+        <thead>
+            <tr style="page-break-inside: avoid;">
+                <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 4px; text-align: center; vertical-align: middle; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">#</th>
+                <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 6px; text-align: left; vertical-align: middle; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">Student Name</th>
+                <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 4px; text-align: center; vertical-align: middle; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">Section</th>
+                @foreach($cards as $i => $card)
+                    @php
+                        $cols = (!empty($card['show_scans']) ? 1 : 0) + (!empty($card['show_pins']) ? 1 : 0);
+                        $dateLabel = !empty($card['all_dates'])
+                            ? 'All Dates'
+                            : (!empty($card['date']) ? \Carbon\Carbon::parse($card['date'])->format('m/d/Y') : 'All Dates');
+                        $start = !empty($card['start_time']) ? \Carbon\Carbon::parse($card['start_time'])->format('g:i A') : null;
+                        $end   = !empty($card['end_time'])   ? \Carbon\Carbon::parse($card['end_time'])->format('g:i A')   : null;
+                        $timeLabel = $start && $end ? "{$start} – {$end}"
+                                   : ($start ? "From {$start}" : ($end ? "Until {$end}" : null));
+                        $windowLabel = $timeLabel ? "{$dateLabel} · {$timeLabel}" : $dateLabel;
+                    @endphp
+                    @if($cols)
+                        <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 2.5px 4px; text-align: center; vertical-align: middle; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">
+                            <div>{{ !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1)) }}</div>
+                            <div style="font-size: 8.5pt; font-weight: normal; margin-top: 1px;">{{ $windowLabel }}</div>
+                        </th>
+                    @endif
+                @endforeach
+                <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 4px; text-align: center; vertical-align: middle; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">Total</th>
+            </tr>
+            <tr style="page-break-inside: avoid;">
+                @foreach($cards as $i => $card)
+                    @if(!empty($card['show_scans']))
+                        <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; vertical-align: middle; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">
+                            {{ $card['scan_name'] ?? 'Scan Soil' }}
+                        </th>
+                    @endif
+                    @if(!empty($card['show_pins']))
+                        <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; vertical-align: middle; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">
+                            {{ $card['pin_name'] ?? 'Pin Soil Location' }}
+                        </th>
+                    @endif
+                @endforeach
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($sectionRecords as $n => $student)
+                @php $rowTotal = 0; @endphp
                 <tr style="page-break-inside: avoid;">
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 36px;">#</th>
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: left; font-weight: bold; background: #ffffff; color: #000000;">Student Name</th>
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 90px;">Section</th>
-                    @foreach($cards as $i => $card)
-                        @php
-                            $cols = (!empty($card['show_scans']) ? 1 : 0) + (!empty($card['show_pins']) ? 1 : 0);
-                            $dateLabel = !empty($card['all_dates'])
-                                ? 'All Dates'
-                                : (!empty($card['date']) ? \Carbon\Carbon::parse($card['date'])->format('m/d/Y') : 'All Dates');
-                            $start = !empty($card['start_time']) ? \Carbon\Carbon::parse($card['start_time'])->format('g:i A') : null;
-                            $end   = !empty($card['end_time'])   ? \Carbon\Carbon::parse($card['end_time'])->format('g:i A')   : null;
-                            $timeLabel = $start && $end ? "{$start} – {$end}"
-                                       : ($start ? "From {$start}" : ($end ? "Until {$end}" : null));
-                            $windowLabel = $timeLabel ? "{$dateLabel} · {$timeLabel}" : $dateLabel;
-                        @endphp
-                        @if($cols)
-                            <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000;">
-                                <div>{{ !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1)) }}</div>
-                                <div style="font-size: 9pt; font-weight: normal; margin-top: 1px;">{{ $windowLabel }}</div>
-                            </th>
-                        @endif
-                    @endforeach
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 55px;">Total</th>
-                </tr>
-                <tr style="page-break-inside: avoid;">
+                    <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; vertical-align: middle; color: #000000; font-size: 9pt;">{{ $n + 1 }}</td>
+                    <td style="border: 1px solid #000000; padding: 2px 6px; text-align: left; vertical-align: middle; font-weight: bold; color: #000000; font-size: 9pt;">{{ $student->name }}</td>
+                    <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; vertical-align: middle; color: #000000; font-size: 9pt;">{{ trim(preg_replace('/^BS\s*Agriculture[\s\-_]*/i', '', $student->section ?? '')) }}</td>
                     @foreach($cards as $i => $card)
                         @if(!empty($card['show_scans']))
-                            <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">
-                                {{ $card['scan_name'] ?? 'Scan Soil' }}
-                            </th>
+                            @php $s = (int) ($student->{"card_{$i}_scans_count"} ?? 0); $rowTotal += $s; @endphp
+                            <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; vertical-align: middle; color: #000000; font-size: 9pt;">
+                                {{ $s }}
+                            </td>
                         @endif
                         @if(!empty($card['show_pins']))
-                            <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">
-                                {{ $card['pin_name'] ?? 'Pin Soil Location' }}
-                            </th>
+                            @php $p = (int) ($student->{"card_{$i}_pins_count"} ?? 0); $rowTotal += $p; @endphp
+                            <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; vertical-align: middle; color: #000000; font-size: 9pt;">
+                                {{ $p }}
+                            </td>
                         @endif
                     @endforeach
+                    <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; vertical-align: middle; font-weight: bold; color: #000000; font-size: 9pt;">{{ $rowTotal }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @forelse($sectionRecords as $n => $student)
-                    @php $rowTotal = 0; @endphp
-                    <tr style="page-break-inside: avoid;">
-                        <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
-                        <td style="border: 1px solid #000000; padding: 2px 4px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
-                        <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; color: #000000;">{{ trim(preg_replace('/^BS\s*Agriculture[\s\-_]*/i', '', $student->section ?? '')) }}</td>
-                        @foreach($cards as $i => $card)
-                            @if(!empty($card['show_scans']))
-                                @php $s = (int) ($student->{"card_{$i}_scans_count"} ?? 0); $rowTotal += $s; @endphp
-                                <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; color: #000000;">
-                                    {{ $s }}
-                                </td>
-                            @endif
-                            @if(!empty($card['show_pins']))
-                                @php $p = (int) ($student->{"card_{$i}_pins_count"} ?? 0); $rowTotal += $p; @endphp
-                                <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; color: #000000;">
-                                    {{ $p }}
-                                </td>
-                            @endif
-                        @endforeach
-                        <td style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; color: #000000;">{{ $rowTotal }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="99" style="border: 1px solid #000000; text-align: center; color: #000000; padding: 12px;">No students found.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+            @empty
+                <tr>
+                    <td colspan="99" style="border: 1px solid #000000; text-align: center; color: #000000; padding: 12px; font-size: 9pt;">No students found.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 
-        {{-- PRINT FOOTER (Left: Prepared By, Center: Date, Right: Page X/Y) --}}
-        <div id="sectionRecordsPrintFooter" style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: 8pt; color: #000000; font-family: Arial, sans-serif; width: 100%;">
-            <div style="flex: 1; text-align: left; font-weight: 500;">
-                Prepared By: <strong>{{ $loggedInAdminName ?? 'AgriCo Administrator' }}</strong>
-            </div>
-            <div style="flex: 1; text-align: center; font-weight: 500;">
-                {{ date('F j, Y') }}
-            </div>
-            <div style="flex: 1; text-align: right; font-weight: 500;">
-                <span class="page-number-text">1/1</span>
-            </div>
+    {{-- PRINT FOOTER (Left: Prepared By, Center: Date, Right: Page X/Y) --}}
+    <div id="sectionRecordsPrintFooter" style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: 8.5pt; color: #000000; font-family: Arial, sans-serif; width: 100%;">
+        <div style="flex: 1; text-align: left; font-weight: 500;">
+            Prepared By: <strong>{{ $loggedInAdminName ?? 'AgriCo Administrator' }}</strong>
+        </div>
+        <div style="flex: 1; text-align: center; font-weight: 500;">
+            {{ date('F j, Y') }}
+        </div>
+        <div style="flex: 1; text-align: right; font-weight: 500;">
+            <span class="page-number-text">1/1</span>
         </div>
     </div>
+</div>
 @endif
 </div>

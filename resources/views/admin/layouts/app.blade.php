@@ -1234,7 +1234,7 @@
                 measureBox.style.cssText = 'position: absolute; left: -99999px; top: 0; width: 285mm; visibility: hidden; font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.15;';
 
                 var styleEl = document.createElement('style');
-                styleEl.textContent = '#agricoMeasureSandbox table { width: 100% !important; border-collapse: collapse !important; font-family: Arial, sans-serif !important; font-size: 9pt !important; } #agricoMeasureSandbox th, #agricoMeasureSandbox td { border: 1px solid #000000 !important; padding: 2px 4px !important; font-size: 9pt !important; line-height: 1.15 !important; box-sizing: border-box !important; }';
+                styleEl.textContent = '#agricoMeasureSandbox table { width: 100% !important; border-collapse: collapse !important; table-layout: fixed !important; font-family: Arial, sans-serif !important; font-size: 9pt !important; } #agricoMeasureSandbox th, #agricoMeasureSandbox td { border: 1px solid #000000 !important; padding: 2.5px 4px !important; font-size: 9pt !important; line-height: 1.15 !important; vertical-align: middle !important; box-sizing: border-box !important; }';
                 measureBox.appendChild(styleEl);
                 document.body.appendChild(measureBox);
 
@@ -1244,6 +1244,10 @@
                 if (headerHeight > 105) headerHeight = 85;
 
                 var tableClone = document.createElement('table');
+                var colgroup = tableEl.querySelector('colgroup');
+                if (colgroup) {
+                    tableClone.appendChild(colgroup.cloneNode(true));
+                }
                 var theadClone = thead ? thead.cloneNode(true) : null;
                 if (theadClone) {
                     tableClone.appendChild(theadClone);
@@ -1321,9 +1325,12 @@
                         pageTop.appendChild(headerEl.cloneNode(true));
                     }
 
-                    // Table with column headers
+                    // Table with column headers (inherits colgroup for MS Word proportional widths)
                     var pageTable = document.createElement('table');
-                    pageTable.style.cssText = 'width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 8pt; color: #000000;';
+                    pageTable.style.cssText = 'width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 9pt; color: #000000; table-layout: fixed;';
+                    if (colgroup) {
+                        pageTable.appendChild(colgroup.cloneNode(true));
+                    }
                     if (thead) {
                         pageTable.appendChild(thead.cloneNode(true));
                     }
@@ -1331,7 +1338,7 @@
                     var pageTbody = document.createElement('tbody');
                     if (pageRows.length === 0) {
                         var emptyTr = document.createElement('tr');
-                        emptyTr.innerHTML = '<td colspan="99" style="border: 1px solid #000000; text-align: center; color: #000000; padding: 12px;">No students found.</td>';
+                        emptyTr.innerHTML = '<td colspan="99" style="border: 1px solid #000000; text-align: center; color: #000000; padding: 12px; font-size: 9pt;">No students found.</td>';
                         pageTbody.appendChild(emptyTr);
                     } else {
                         pageRows.forEach(function(r) {
@@ -1342,10 +1349,10 @@
                     pageTop.appendChild(pageTable);
                     pageDiv.appendChild(pageTop);
 
-                    // Running Footer at the lowest part of every page
+                    // Running Footer at the lowest part of every page matching MS Word 8.5pt
                     var pageFooter = document.createElement('div');
                     pageFooter.className = 'agrico-print-footer';
-                    pageFooter.style.cssText = 'flex-shrink: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 8pt; color: #000000; font-family: Arial, sans-serif; padding-top: 6px; margin-top: auto; box-sizing: border-box;';
+                    pageFooter.style.cssText = 'flex-shrink: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 8.5pt; color: #000000; font-family: Arial, sans-serif; padding-top: 6px; margin-top: auto; box-sizing: border-box;';
 
                     var leftCol = document.createElement('div');
                     leftCol.style.cssText = 'flex: 1; text-align: left; font-weight: 500;';
@@ -1448,16 +1455,17 @@
             #agricoPrintContainer table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                table-layout: auto !important;
+                table-layout: fixed !important;
             }
             #agricoPrintContainer th,
             #agricoPrintContainer td {
                 border: 1px solid #000000 !important;
                 background: #ffffff !important;
                 color: #000000 !important;
-                padding: 2px 4px !important;
+                padding: 2.5px 4px !important;
                 font-size: 9pt !important;
                 line-height: 1.15 !important;
+                vertical-align: middle !important;
                 box-sizing: border-box !important;
             }
             #agricoPrintContainer th {
@@ -1485,7 +1493,7 @@
                 display: flex !important;
                 align-items: center !important;
                 justify-content: space-between !important;
-                font-size: 8pt !important;
+                font-size: 8.5pt !important;
                 font-family: Arial, sans-serif !important;
                 color: #000000 !important;
                 box-sizing: border-box !important;

@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StudentRecordsExportService
@@ -150,7 +151,7 @@ class StudentRecordsExportService
         // DOCUMENT TITLE (with space after the line, next title, then space again)
         $trimmedTitle = trim($documentTitle);
         if ($trimmedTitle !== '') {
-            $section->addText($trimmedTitle, [
+            $section->addText(mb_strtoupper($trimmedTitle, 'UTF-8'), [
                 'name'  => 'Arial',
                 'size'  => 10.5,
                 'bold'  => true,
@@ -385,7 +386,7 @@ class StudentRecordsExportService
     /**
      * Generate and stream MS Excel (.xlsx) export in landscape.
      */
-    public function exportXlsx($students, array $cards, string $sectionFilter, string $documentTitle, string $adminName): StreamedResponse
+     public function exportXlsx($students, array $cards, string $sectionFilter, string $documentTitle, string $adminName): StreamedResponse
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -398,8 +399,10 @@ class StudentRecordsExportService
         $pageSetup->setFitToPage(true);
         $pageSetup->setFitToWidth(1);
         $pageSetup->setFitToHeight(0); // Automatic height pages
+        $pageSetup->setHorizontalCentered(true);
+        $sheet->setPrintGridLines(false);
 
-        // Margins: 0.5 inch (0.5 in = 12.7mm)
+        // Margins: 0.5 inch (0.5 in = 12.7mm) matching MS Word
         $sheet->getPageMargins()->setTop(0.5);
         $sheet->getPageMargins()->setBottom(0.5);
         $sheet->getPageMargins()->setLeft(0.5);
@@ -414,25 +417,55 @@ class StudentRecordsExportService
         $totalColumnCount = 4 + $subcolumnCount;
         $lastColLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totalColumnCount);
 
+        // Column widths calibrated to match MS Word proportions:
+        // Column A (#): 5.5 (~4%)
+        // Column B (Student Name): 28 (~22%)
+        // Column C (Section): 14 (~11%)
+        // Activity subcolumns: 14 each (equal share of remaining width)
+        // Total column: 9 (~7%)
+        $sheet->getColumnDimension('A')->setWidth(5.5);
+        $sheet->getColumnDimension('B')->setWidth(28);
+        $sheet->getColumnDimension('C')->setWidth(14);
+        for ($col = 4; $col < $totalColumnCount; $col++) {
+            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+            $sheet->getColumnDimension($colLetter)->setWidth(14);
+        }
+        $sheet->getColumnDimension($lastColLetter)->setWidth(9);
+
         $currentRow = 1;
 
-        // Column indices for 3-column header
-        $leftEndCol = max(1, (int)floor($totalColumnCount * 0.4));
-        $leftEndLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($leftEndCol);
+        // Perfectly symmetrical 3-column top header distribution matching MS Word
+        if ($totalColumnCount % 2 === 0 && $totalColumnCount >= 6) {
+            $midStartCol = (int) ($totalColumnCount / 2);
+            $midEndCol   = $midStartCol + 1;
+        } else {
+            $midStartCol = (int) ceil($totalColumnCount / 2);
+            $midEndCol   = $midStartCol;
+        }
+        $leftEndCol    = max(1, $midStartCol - 1);
+        $rightStartCol = min($totalColumnCount, $midEndCol + 1);
 
-        $midCol = min($totalColumnCount, $leftEndCol + 1);
-        $midLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($midCol);
-
-        $rightStartCol = min($totalColumnCount, $midCol + 1);
+        $leftEndLetter    = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($leftEndCol);
+        $midStartLetter   = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($midStartCol);
+        $midEndLetter     = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($midEndCol);
         $rightStartLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($rightStartCol);
 
-        // 1. LEFT HEADER BLOCK: Republic & CSU Addresses
+        // 1. LEFT HEADER BLOCK: Republic & CSU Addresses (Matching Word fonts & bolding)
         $sheet->mergeCells("A1:{$leftEndLetter}1");
-        $sheet->setCellValue("A1", "REPUBLIC OF THE PHILIPPINES\nCAGAYAN STATE UNIVERSITY\nAndrews Campus, Tuguegarao City, Cagayan (Central Office)\nCSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)");
-        $sheet->getStyle("A1")->getFont()->setName('Arial')->setSize(7.5)->getColor()->setRGB('000000');
+        $leftRich = new RichText();
+        $l1 = $leftRich->createTextRun("REPUBLIC OF THE PHILIPPINES\n");
+        $l1->getFont()->setBold(true)->setName('Arial')->setSize(7.5)->getColor()->setRGB('000000');
+        $l2 = $leftRich->createTextRun("CAGAYAN STATE UNIVERSITY\n");
+        $l2->getFont()->setBold(true)->setName('Arial')->setSize(9)->getColor()->setRGB('000000');
+        $l3 = $leftRich->createTextRun("Andrews Campus, Tuguegarao City, Cagayan (Central Office)\nCSU Lal-lo Campus, Sta. Maria, Lal-lo, Cagayan (Sub Office)");
+        $l3->getFont()->setBold(false)->setName('Arial')->setSize(7)->getColor()->setRGB('000000');
+        $sheet->setCellValue("A1", $leftRich);
         $sheet->getStyle("A1")->getAlignment()->setWrapText(true)->setHorizontal(Alignment::HORIZONTAL_LEFT)->setVertical(Alignment::VERTICAL_CENTER);
 
-        // 2. CENTER: CSU LOGO
+        // 2. CENTER: CSU LOGO (Height 48px matching Word)
+        if ($midStartCol <= $midEndCol) {
+            $sheet->mergeCells("{$midStartLetter}1:{$midEndLetter}1");
+        }
         $logoPath = public_path('images/csu-logo.png');
         if (file_exists($logoPath)) {
             try {
@@ -440,26 +473,28 @@ class StudentRecordsExportService
                 $drawing->setName('CSU Logo');
                 $drawing->setDescription('CSU Logo');
                 $drawing->setPath($logoPath);
-                $drawing->setHeight(46);
-                $drawing->setCoordinates("{$midLetter}1");
-                $drawing->setOffsetX(8);
+                $drawing->setHeight(48);
+                $drawing->setCoordinates("{$midStartLetter}1");
+                $drawing->setOffsetX(10);
                 $drawing->setOffsetY(4);
                 $drawing->setWorksheet($sheet);
             } catch (\Throwable $e) {}
         }
 
-        // 3. RIGHT HEADER BLOCK: Contact Info (labels only)
+        // 3. RIGHT HEADER BLOCK: Contact Info (labels only, bold 7.5pt matching Word)
         if ($rightStartCol <= $totalColumnCount) {
             $sheet->mergeCells("{$rightStartLetter}1:{$lastColLetter}1");
-            $sheet->setCellValue("{$rightStartLetter}1", "Phone Number:\nEmail Address:\nFacebook page:");
-            $sheet->getStyle("{$rightStartLetter}1")->getFont()->setName('Arial')->setSize(7.5)->getColor()->setRGB('000000');
+            $rightRich = new RichText();
+            $r1 = $rightRich->createTextRun("Phone Number:\nEmail Address:\nFacebook page:");
+            $r1->getFont()->setBold(true)->setName('Arial')->setSize(7.5)->getColor()->setRGB('000000');
+            $sheet->setCellValue("{$rightStartLetter}1", $rightRich);
             $sheet->getStyle("{$rightStartLetter}1")->getAlignment()->setWrapText(true)->setHorizontal(Alignment::HORIZONTAL_RIGHT)->setVertical(Alignment::VERTICAL_CENTER);
         }
 
         $sheet->getRowDimension(1)->setRowHeight(58);
         $currentRow = 2;
 
-        // CAMPUS MAIN TITLE WITH DIVIDER LINE
+        // CAMPUS MAIN TITLE WITH DIVIDER LINE (Arial 11pt Bold, Centered)
         $sheet->mergeCells("A{$currentRow}:{$lastColLetter}{$currentRow}");
         $sheet->setCellValue("A{$currentRow}", 'CAGAYAN STATE UNIVERSITY Lal-lo Campus');
         $sheet->getStyle("A{$currentRow}")->getFont()->setName('Arial')->setSize(11)->setBold(true)->getColor()->setRGB('000000');
@@ -472,11 +507,11 @@ class StudentRecordsExportService
         $sheet->getRowDimension($currentRow)->setRowHeight(12);
         $currentRow++;
 
-        // DOCUMENT TITLE ROW (if provided)
+        // DOCUMENT TITLE ROW (if provided, uppercase Arial 10.5pt Bold with space before & after)
         $trimmedTitle = trim($documentTitle);
         if ($trimmedTitle !== '') {
             $sheet->mergeCells("A{$currentRow}:{$lastColLetter}{$currentRow}");
-            $sheet->setCellValue("A{$currentRow}", $trimmedTitle);
+            $sheet->setCellValue("A{$currentRow}", mb_strtoupper($trimmedTitle, 'UTF-8'));
             $sheet->getStyle("A{$currentRow}")->getFont()->setName('Arial')->setSize(10.5)->setBold(true)->getColor()->setRGB('000000');
             $sheet->getStyle("A{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
             $sheet->getRowDimension($currentRow)->setRowHeight(22);
@@ -525,8 +560,14 @@ class StudentRecordsExportService
             $activityTitle = !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1));
             $windowText = $timeLabel ? "{$dateLabel} · {$timeLabel}" : $dateLabel;
 
+            $headerRich = new RichText();
+            $tRun = $headerRich->createTextRun("{$activityTitle}\n");
+            $tRun->getFont()->setName('Arial')->setSize(9)->setBold(true)->getColor()->setRGB('000000');
+            $wRun = $headerRich->createTextRun($windowText);
+            $wRun->getFont()->setName('Arial')->setSize(8.5)->setBold(false)->getColor()->setRGB('000000');
+
             $sheet->mergeCells("{$startColLetter}{$tableHeaderRow1}:{$endColLetter}{$tableHeaderRow1}");
-            $sheet->setCellValue("{$startColLetter}{$tableHeaderRow1}", "{$activityTitle}\n{$windowText}");
+            $sheet->setCellValue("{$startColLetter}{$tableHeaderRow1}", $headerRich);
 
             if (!empty($card['show_scans'])) {
                 $cLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
@@ -550,6 +591,9 @@ class StudentRecordsExportService
         $sheet->getStyle($headerRange)->getFont()->setName('Arial')->setSize(9)->setBold(true)->getColor()->setRGB('000000');
         $sheet->getStyle($headerRange)->getAlignment()->setWrapText(true)->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
         $sheet->getStyle($headerRange)->getFill()->setFillType(Fill::FILL_NONE);
+
+        // Align Student Name header to Left, matching MS Word
+        $sheet->getStyle("B{$tableHeaderRow1}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
         $sheet->getRowDimension($tableHeaderRow1)->setRowHeight(34);
         $sheet->getRowDimension($tableHeaderRow2)->setRowHeight(22);
@@ -605,8 +649,9 @@ class StudentRecordsExportService
         $tableRange = "A{$tableHeaderRow1}:{$lastColLetter}{$dataEndRow}";
         $sheet->getStyle($tableRange)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('000000');
         $sheet->getStyle("A{$dataStartRow}:{$lastColLetter}{$dataEndRow}")->getFont()->setName('Arial')->setSize(9)->getColor()->setRGB('000000');
+        $sheet->getStyle("A{$dataStartRow}:{$lastColLetter}{$dataEndRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-        // Alignments
+        // Alignments matching MS Word
         $sheet->getStyle("A{$dataStartRow}:A{$dataEndRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle("B{$dataStartRow}:B{$dataEndRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
         $sheet->getStyle("C{$dataStartRow}:{$lastColLetter}{$dataEndRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -615,19 +660,10 @@ class StudentRecordsExportService
         $sheet->getStyle("B{$dataStartRow}:B{$dataEndRow}")->getFont()->setBold(true);
         $sheet->getStyle("{$lastColLetter}{$dataStartRow}:{$lastColLetter}{$dataEndRow}")->getFont()->setBold(true);
 
-        // Column Auto-sizing / Sensible Widths
-        $sheet->getColumnDimension('A')->setWidth(6);
-        $sheet->getColumnDimension('B')->setAutoSize(true);
-        $sheet->getColumnDimension('C')->setAutoSize(true);
-        for ($col = 4; $col <= $totalColumnCount; $col++) {
-            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
-            $sheet->getColumnDimension($colLetter)->setWidth(14);
-        }
-
-        // FOOTER ON EVERY PAGE (Left: Prepared By, Center: Date, Right: Page X/Y)
+        // FOOTER ON EVERY PAGE (Left: Prepared By, Center: Date, Right: Page X/Y) matching MS Word
         $todayStr = date('F j, Y');
-        $sheet->getHeaderFooter()->setOddFooter("&LPrepared By: {$adminName}&C{$todayStr}&R&P/&N");
-        $sheet->getHeaderFooter()->setEvenFooter("&LPrepared By: {$adminName}&C{$todayStr}&R&P/&N");
+        $sheet->getHeaderFooter()->setOddFooter('&L&"Arial,Regular"&8.5Prepared By: ' . $adminName . '&C&"Arial,Regular"&8.5' . $todayStr . '&R&"Arial,Regular"&8.5&P/&N');
+        $sheet->getHeaderFooter()->setEvenFooter('&L&"Arial,Regular"&8.5Prepared By: ' . $adminName . '&C&"Arial,Regular"&8.5' . $todayStr . '&R&"Arial,Regular"&8.5&P/&N');
 
         $filename = self::buildFilename($sectionFilter, 'xlsx');
 
