@@ -1,6 +1,7 @@
 import { NativeModules } from 'react-native';
 import OFFLINE_MUNSELL_COLORS from '../data/munsellColors.json';
 import OFFLINE_SOIL_PROFILES from '../data/offlineSoils.json';
+import { getActiveCalibration } from './soilCalibrationService';
 
 /**
  * Convert standard sRGB [0-255] to CIELAB [L*, a*, b*]
@@ -50,14 +51,134 @@ function deltaE(lab1, lab2) {
 }
 
 /**
+ * Stage 1 Soil Gate:
+ * Strictly validates that the scanned image is real, granular soil
+ * and rejects human hands/skin, blank paper, computer screens, walls, or non-soil objects.
+ */
+export async function validateSoilGate({
+  r,
+  g,
+  b,
+  stdDev = 18.0,
+  skinRatio = 0.0,
+  gradVariance = 25.0,
+}) {
+  const calibration = await getActiveCalibration();
+  const gateConfig = calibration?.gate_config || {
+    min_variance: 8.5,
+    max_skin_ratio: 0.32,
+    max_delta_e: 30.0,
+  };
+
+  // 1. Extreme overexposure check (e.g. blank white paper, direct sunlight glare, white wall)
+  if (r > 225 && g > 225 && b > 225) {
+    return {
+      isValid: false,
+      reason: 'overexposed_blank',
+      message: 'Overexposed or plain white surface detected. Please place the camera over real soil.',
+    };
+  }
+
+  // 2. Extreme underexposure check (pitch black or obstructed lens)
+  if (r < 18 && g < 18 && b < 18) {
+    return {
+      isValid: false,
+      reason: 'underexposed_dark',
+      message: 'Image is too dark or camera is covered. Ensure adequate natural daylight or flash.',
+    };
+  }
+
+  // 3. Human skin / hand detection (holding sample or hand in viewfinder)
+  const maxSkinRatio = gateConfig.max_skin_ratio ?? 0.32;
+  if (skinRatio > maxSkinRatio) {
+    return {
+      isValid: false,
+      reason: 'human_skin_detected',
+      message: 'Human skin or hand detected in scanning box. Point camera strictly at genuine soil.',
+    };
+  }
+
+  // 4. Uniform / flat surface check (paper, desk, plastic card, wall lacking soil particle texture)
+  const minVar = gateConfig.min_variance ?? 8.5;
+  if (stdDev < minVar && gradVariance < 16.0) {
+    return {
+      isValid: false,
+      reason: 'flat_texture',
+      message: 'Smooth surface without soil grain detected. Soil requires textured granular particles.',
+    };
+  }
+
+  // 5. Chromaticity checks (unnatural blue/cyan or bright plant foliage)
+  if (b > r + 15 && b > g + 15) {
+    return {
+      isValid: false,
+      reason: 'unnatural_blue',
+      message: 'Non-soil blue/cyan hue detected. Real soil does not exhibit dominant blue tones.',
+    };
+  }
+  if (g > r + 28 && g > 110) {
+    return {
+      isValid: false,
+      reason: 'foliage_green',
+      message: 'Plant foliage or grass detected. Position viewfinder entirely over bare soil.',
+    };
+  }
+
+  // 6. Spectral soil gamut check: CIELAB ΔE distance to reference soil centroids
+  const targetLab = rgbToLab(r, g, b);
+  const centroids = calibration?.reference_centroids || [];
+  let minCentroidDist = Infinity;
+  let closestCentroid = null;
+
+  for (const c of centroids) {
+    let cLab = c.lab;
+    if (!cLab && c.rgb) {
+      cLab = rgbToLab(c.rgb[0], c.rgb[1], c.rgb[2]);
+    } else if (!cLab && c.hexCode) {
+      const [cr, cg, cb] = hexToRgb(c.hexCode);
+      cLab = rgbToLab(cr, cg, cb);
+    }
+    if (cLab) {
+      const dist = deltaE(targetLab, cLab);
+      if (dist < minCentroidDist) {
+        minCentroidDist = dist;
+        closestCentroid = c;
+      }
+    }
+  }
+
+  const maxDeltaE = gateConfig.max_delta_e ?? 30.0;
+  if (minCentroidDist > maxDeltaE) {
+    return {
+      isValid: false,
+      reason: 'outside_soil_gamut',
+      message: `Sample color is outside the Munsell soil spectrum (ΔE = ${minCentroidDist.toFixed(1)}). Please scan real soil.`,
+      deltaE: minCentroidDist,
+    };
+  }
+
+  return {
+    isValid: true,
+    reason: 'real_soil_verified',
+    message: 'Stage 1 Gate Passed: Verified genuine soil sample.',
+    closestCentroid,
+    deltaE: minCentroidDist,
+  };
+}
+
+/**
  * Perform on-device soil classification and Munsell spectral matching.
  * Uses 207 pre-bundled official Munsell colors and offline agronomic profiles.
+ * Strictly verifies Stage 1 Soil Gate before proceeding to Stages 2-6.
  */
 export async function analyzeSoilOffline({ imageUri, imageBase64 }) {
   let sampledR = 90;
   let sampledG = 70;
   let sampledB = 60;
   let sampledHex = '#5A4643';
+  let stdDev = 22.0;
+  let skinRatio = 0.0;
+  let gradVariance = 28.0;
 
   // 1. Try native fast Android color extraction from photo file
   if (imageUri && NativeModules.InstallApk && typeof NativeModules.InstallApk.extractSoilColor === 'function') {
@@ -69,10 +190,35 @@ export async function analyzeSoilOffline({ imageUri, imageBase64 }) {
         sampledG = nativeColor.g;
         sampledB = nativeColor.b;
         sampledHex = nativeColor.hex;
+        if (typeof nativeColor.stdDev === 'number') stdDev = nativeColor.stdDev;
+        if (typeof nativeColor.skinRatio === 'number') skinRatio = nativeColor.skinRatio;
+        if (typeof nativeColor.gradVariance === 'number') gradVariance = nativeColor.gradVariance;
       }
     } catch (nativeErr) {
       console.warn('[OfflineSoilAnalysis] Native color extraction fallback:', nativeErr?.message);
     }
+  }
+
+  // STAGE 1: Soil Gate Validation
+  const gate = await validateSoilGate({
+    r: sampledR,
+    g: sampledG,
+    b: sampledB,
+    stdDev,
+    skinRatio,
+    gradVariance,
+  });
+
+  if (!gate.isValid) {
+    return {
+      isValidSoil: false,
+      rejected: true,
+      stage: 1,
+      reason: gate.reason,
+      message: gate.message,
+      imageUrl: imageUri || null,
+      sampledHex,
+    };
   }
 
   // 2. Convert sampled soil color to CIELAB
@@ -131,6 +277,10 @@ export async function analyzeSoilOffline({ imageUri, imageBase64 }) {
     id: scanId,
     scanId,
     soil_scan_id: scanId,
+    isValidSoil: true,
+    rejected: false,
+    stage1Verified: true,
+    closestCentroid: gate.closestCentroid,
     name: soilName,
     scientificName: `${munsellCode} · Munsell Color`,
     munsellCode,

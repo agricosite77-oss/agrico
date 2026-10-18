@@ -197,6 +197,17 @@ class WebsiteController extends Controller
             'status' => $latest['status'] ?? 'pending',
         ];
 
+        if (($latest['status'] ?? '') === 'rejected') {
+            @unlink($progressFile);
+            @unlink($resultFile);
+            $payload['status']   = 'rejected';
+            $payload['rejected'] = true;
+            $payload['stage']    = $latest['stage'] ?? 1;
+            $payload['message']  = $latest['message'] ?? 'No valid soil sample detected. Please align the viewfinder over a clear, well-lit soil sample and try again.';
+            \Illuminate\Support\Facades\Cache::put("scan_result_payload_{$scanId}", $payload, 180);
+            return response()->json($payload);
+        }
+
         if (($latest['stage'] ?? 0) === 6 && ($latest['status'] ?? '') === 'done') {
             $lockKey = "scan_finalizing_{$scanId}";
             $acquired = \Illuminate\Support\Facades\Cache::add($lockKey, true, 30);

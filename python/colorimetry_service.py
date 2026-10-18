@@ -238,6 +238,40 @@ def main() -> int:
             use_promptnorm=use_promptnorm,
         )
 
+        # Stage 1 Soil Gate Rejection Short-Circuit
+        if getattr(result, "label", "fake_soil") != "real_soil":
+            reject_msg = "No valid soil sample detected. Please align the camera directly over genuine soil."
+            emit_progress(
+                scan_id,
+                1,
+                "Soil Gate",
+                "rejected",
+                {"reason": "non_soil_detected", "message": reject_msg}
+            )
+            output = {
+                "success": True,
+                "label": "fake_soil",
+                "rejected": True,
+                "status": "rejected",
+                "message": reject_msg,
+                "confidence": getattr(result, "confidence", 0.0),
+                "texture_score": getattr(result, "texture_score", 0.0),
+                "rgb": {"r": 0, "g": 0, "b": 0},
+                "regions": [],
+            }
+            if scan_id:
+                tmp_dir = tempfile.gettempdir()
+                result_path = os.path.join(tmp_dir, f"scan_result_{scan_id}.json")
+                tmp_path = result_path + ".tmp"
+                try:
+                    with open(tmp_path, "w") as f:
+                        json.dump(output, f)
+                    os.replace(tmp_path, result_path)
+                except OSError:
+                    pass
+            print(json.dumps(output))
+            return 0
+
         store = SoilScanStore(root_dir=scan_root)
         record = store.save_scan(image_path, result, source=source)
 

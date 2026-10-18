@@ -30,6 +30,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
 // Real Soil Dataset APIs
+Route::get('/real-soil/calibration', [RealSoilController::class, 'getCalibration']);
+Route::get('/soil/reference-calibration', [RealSoilController::class, 'getCalibration']);
 Route::get('/real-soil/images', [RealSoilController::class, 'getImages']);
 Route::get('/real-soil/file/{path}', [RealSoilController::class, 'serveFile'])->where('path', '.*');
 

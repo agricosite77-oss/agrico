@@ -1,0 +1,149 @@
+{
+  "version": "2.0.0",
+  "name": "AgriCo Stage 1 Soil Reference Calibration Dataset",
+  "gate_config": {
+    "min_variance": 8.5,
+    "min_laplacian": 18.0,
+    "max_skin_ratio": 0.32,
+    "max_delta_e": 30.0,
+    "allowed_hues": ["10R", "2.5YR", "5YR", "7.5YR", "10YR", "2.5Y", "5Y", "GLEY"],
+    "valid_lum_range": [12, 85]
+  },
+  "reference_centroids": [
+    {
+      "munsellCode": "10R 3/1",
+      "colorName": "Reddish Black",
+      "hexCode": "#6a4a44",
+      "rgb": [106, 74, 68],
+      "lab": [34.5, 12.8, 8.4],
+      "soil_organic_index": "Very High (>8%)",
+      "soil_type": "Humic, red derived"
+    },
+    {
+      "munsellCode": "10R 4/3",
+      "colorName": "Weak Red",
+      "hexCode": "#7a5048",
+      "rgb": [122, 80, 72],
+      "lab": [38.2, 16.4, 11.2],
+      "soil_organic_index": "High (3.8%)",
+      "soil_type": "Mineral Clay Subsoil"
+    },
+    {
+      "munsellCode": "2.5YR 3/2",
+      "colorName": "Dusky Red",
+      "hexCode": "#553833",
+      "rgb": [85, 56, 51],
+      "lab": [26.4, 12.1, 8.2],
+      "soil_organic_index": "High (4.0%)",
+      "soil_type": "Volcanic Red Clay Loam"
+    },
+    {
+      "munsellCode": "2.5YR 4/4",
+      "colorName": "Reddish Brown",
+      "hexCode": "#7e4a3b",
+      "rgb": [126, 74, 59],
+      "lab": [37.8, 19.5, 17.8],
+      "soil_organic_index": "Moderate (2.8%)",
+      "soil_type": "Well-drained Ferrosol"
+    },
+    {
+      "munsellCode": "5YR 3/2",
+      "colorName": "Dark Reddish Brown",
+      "hexCode": "#56413a",
+      "rgb": [86, 65, 58],
+      "lab": [29.6, 8.3, 7.8],
+      "soil_organic_index": "High (3.5%)",
+      "soil_type": "Alluvial Silt Loam"
+    },
+    {
+      "munsellCode": "5YR 4/4",
+      "colorName": "Reddish Brown",
+      "hexCode": "#7d5543",
+      "rgb": [125, 85, 67],
+      "lab": [40.2, 14.1, 15.6],
+      "soil_organic_index": "Moderate (2.5%)",
+      "soil_type": "Agricultural Clay Loam"
+    },
+    {
+      "munsellCode": "7.5YR 3/2",
+      "colorName": "Dark Brown",
+      "hexCode": "#54433a",
+      "rgb": [84, 67, 58],
+      "lab": [30.4, 6.2, 8.1],
+      "soil_organic_index": "High (3.6%)",
+      "soil_type": "Organic Surface Horizon"
+    },
+    {
+      "munsellCode": "7.5YR 4/3",
+      "colorName": "Brown",
+      "hexCode": "#765c4c",
+      "rgb": [118, 92, 76],
+      "lab": [41.5, 8.9, 13.5],
+      "soil_organic_index": "Moderate (2.7%)",
+      "soil_type": "Fertile Loamy Topsoil"
+    },
+    {
+      "munsellCode": "10YR 2/1",
+      "colorName": "Black",
+      "hexCode": "#32302e",
+      "rgb": [50, 48, 46],
+      "lab": [20.2, 0.6, 1.4],
+      "soil_organic_index": "Very High (>6%)",
+      "soil_type": "Humic Muck / Peaty Loam"
+    },
+    {
+      "munsellCode": "10YR 3/2",
+      "colorName": "Very Dark Grayish Brown",
+      "hexCode": "#52463e",
+      "rgb": [82, 70, 62],
+      "lab": [31.5, 4.2, 6.8],
+      "soil_organic_index": "High (3.8%)",
+      "soil_type": "Mollic Epipedon Loam"
+    },
+    {
+      "munsellCode": "10YR 4/2",
+      "colorName": "Dark Grayish Brown",
+      "hexCode": "#6d6056",
+      "rgb": [109, 96, 86],
+      "lab": [42.1, 4.3, 7.9],
+      "soil_organic_index": "Moderate (2.4%)",
+      "soil_type": "Paddy Clay Subsoil"
+    },
+    {
+      "munsellCode": "10YR 4/3",
+      "colorName": "Brown",
+      "hexCode": "#745e4c",
+      "rgb": [116, 94, 76],
+      "lab": [42.0, 7.2, 13.9],
+      "soil_organic_index": "Moderate (2.6%)",
+      "soil_type": "Standard Agricultural Loam"
+    },
+    {
+      "munsellCode": "10YR 5/4",
+      "colorName": "Yellowish Brown",
+      "hexCode": "#8f7354",
+      "rgb": [143, 115, 84],
+      "lab": [50.8, 7.5, 20.4],
+      "soil_organic_index": "Low-Moderate (1.8%)",
+      "soil_type": "Sandy Clay Loam"
+    },
+    {
+      "munsellCode": "2.5Y 4/2",
+      "colorName": "Dark Grayish Brown",
+      "hexCode": "#6c6356",
+      "rgb": [108, 99, 86],
+      "lab": [43.1, 2.3, 8.8],
+      "soil_organic_index": "Moderate (2.1%)",
+      "soil_type": "Poorly Drained Alluvial Soil"
+    },
+    {
+      "munsellCode": "2.5Y 5/4",
+      "colorName": "Light Olive Brown",
+      "hexCode": "#8e7c5c",
+      "rgb": [142, 124, 92],
+      "lab": [53.2, 3.8, 19.4],
+      "soil_organic_index": "Low (1.5%)",
+      "soil_type": "Silty Clay Subsoil"
+    }
+  ]
+}

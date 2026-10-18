@@ -471,6 +471,19 @@ class SoilScanController extends Controller
             return response()->json($payload, 422);
         }
 
+        // Stage 1 Soil Gate Rejection
+        if (($latest['status'] ?? '') === 'rejected') {
+            @unlink($progressFile);
+            @unlink($resultFile);
+            @unlink($metaFile);
+            $payload['status']   = 'rejected';
+            $payload['rejected'] = true;
+            $payload['stage']    = $latest['stage'] ?? 1;
+            $payload['message']  = $latest['message'] ?? 'No valid soil sample detected. Please point camera directly at genuine soil.';
+            \Illuminate\Support\Facades\Cache::put("scan_result_payload_{$scanId}", $payload, 180);
+            return response()->json($payload);
+        }
+
         if (($latest['stage'] ?? 0) === 6 && ($latest['status'] ?? '') === 'done') {
             $lockKey = "scan_finalizing_{$scanId}";
             $acquired = \Illuminate\Support\Facades\Cache::add($lockKey, true, 30);

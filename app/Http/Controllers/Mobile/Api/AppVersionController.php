@@ -48,16 +48,16 @@ class AppVersionController extends Controller
     {
         $activeApp = Application::where('status', 'ACTIVE')->latest()->first();
 
-        $defaultVersion = 'v1.0.3';
-        $defaultNotes = "• Full on-device offline soil scanning (6-Stage ML determination)\n• Complete offline Munsell color chart with 207 colors\n• Enhanced camera preview with auto-zoom & bounding box alignment\n• Persistent offline scan history with auto-sync\n• In-app version checker with instant one-tap update";
+        $defaultVersion = 'v1.0.5';
+        $defaultNotes = "• Profile editing & photo sync: Full live synchronization between mobile profile and website database\n• Stage 1 to Stage 6 soil pipeline: Immediate non-soil rejection at Stage 1, plus server-side calibration sync\n• Website 1:1 Result Card & Modal: Matches website layout with overlapping swatch crop, 3-column metric grids, Scan Note, and Pin Location";
         $defaultSize = '59.5 MB';
-        $defaultUrl = 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.4/agrico-app-v1.0.4.apk';
+        $defaultUrl = 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.5/agrico-app-v1.0.5.apk';
 
         $version = $activeApp?->version ?: $defaultVersion;
 
-        // If client is already on v1.0.3 or v1.0.4, do not prompt for update
+        // If client is already on latest version (v1.0.5), do not prompt for update
         $clientVersion = $request->query('current_version') ?: $request->header('X-App-Version');
-        if ($clientVersion && in_array(strtolower(trim($clientVersion)), ['v1.0.3', '1.0.3', 'v1.0.4', '1.0.4'])) {
+        if ($clientVersion && in_array(strtolower(trim($clientVersion)), ['v1.0.5', '1.0.5'])) {
             $version = $clientVersion;
         }
 
@@ -73,9 +73,6 @@ class AppVersionController extends Controller
 
         if (str_contains($apkUrl, 'agrico-releases')) {
             $apkUrl = str_replace('agrico-releases', 'agrico', $apkUrl);
-        }
-        if (str_contains($apkUrl, 'v1.0.0') || str_contains($apkUrl, 'v1.0.2')) {
-            $apkUrl = str_replace(['v1.0.0', 'v1.0.2'], 'v1.0.4', $apkUrl);
         }
 
         $directApkUrl = self::resolveDirectAssetUrl($apkUrl);

@@ -14,7 +14,7 @@
  * - 10.5s – 11.0s: Smooth dissolve into Log In screen.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -27,6 +27,7 @@ import {
   Platform,
 } from 'react-native';
 import Svg, { Circle, Path, Defs, LinearGradient, Stop } from 'react-native-svg';
+import { syncSoilCalibrationFromWebsite } from '../services/soilCalibrationService';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -71,10 +72,18 @@ export default function SplashScreen({ onFinish }) {
   // Master progress value running from 0 to 11000 ms
   const progress = useRef(new Animated.Value(0)).current;
   const onFinishRef = useRef(onFinish);
+  const [calibrationStatus, setCalibrationStatus] = useState('Syncing Stage 1 Soil References…');
 
   useEffect(() => {
     onFinishRef.current = onFinish;
   }, [onFinish]);
+
+  useEffect(() => {
+    // Proactively fetch reference soil images & calibration from website during landing
+    syncSoilCalibrationFromWebsite((msg) => {
+      setCalibrationStatus(msg);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const animation = Animated.timing(progress, {
@@ -253,6 +262,21 @@ export default function SplashScreen({ onFinish }) {
             </Text>
           </Animated.View>
         </View>
+
+        {/* Stage 1 Soil Reference Calibration Indicator */}
+        <Animated.View
+          style={[
+            styles.calibrationStatusRow,
+            {
+              opacity: logoOpacity,
+            },
+          ]}
+        >
+          <View style={styles.calibrationPulseDot} />
+          <Text style={styles.calibrationStatusText}>
+            {calibrationStatus}
+          </Text>
+        </Animated.View>
       </Animated.View>
     </Animated.View>
   );
@@ -263,6 +287,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#DAF1DE',
     overflow: 'hidden',
+  },
+
+  calibrationStatusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 26,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    backgroundColor: 'rgba(255, 255, 255, 0.78)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.3)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  calibrationPulseDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: '#16a34a',
+    marginRight: 8,
+  },
+  calibrationStatusText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#15803d',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
   },
 
   centerStage: {

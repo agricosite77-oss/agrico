@@ -227,6 +227,11 @@ export function mapServerScan(scan, data = {}) {
         : `${baseUrl}${String(rawImg).startsWith('/') ? '' : '/'}${rawImg}`)
     : null;
 
+  const scanNote = (scan?.scan_note && !scan.scan_note.startsWith('Determined Soil:') && scan.scan_note !== '—')
+    ? scan.scan_note
+    : (data?.scan_note || `Determined ${name} (${munsellCode}) with ${confStr} confidence.`);
+  const soilPercentage = data?.soil_percentage || data?.percentage || (data?.regions && data.regions[0] ? data.regions[0].percent || Math.round((data.regions[0].proportion || 0) * 100) : null);
+
   return {
     id: scanId,
     scanId,
@@ -243,6 +248,8 @@ export function mapServerScan(scan, data = {}) {
     confidence: confStr,
     createdDate,
     description,
+    scanNote,
+    soilPercentage,
     soilCategory: soilType,
     imageUrl,
     thumbnail: imageUrl ? { uri: imageUrl } : null,

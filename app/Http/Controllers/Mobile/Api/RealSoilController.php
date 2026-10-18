@@ -10,10 +10,50 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class RealSoilController extends Controller
 {
     protected string $realSoilRoot;
+    protected array $candidateRoots;
 
     public function __construct()
     {
-        $this->realSoilRoot = base_path('Scan_Soil_Image/Real_Soil');
+        $pythonRoot = base_path('python/Scan_Soil_Image/Real_Soil');
+        $scanRoot = base_path('Scan_Soil_Image/Real_Soil');
+        $this->candidateRoots = array_filter([$pythonRoot, $scanRoot], 'is_dir');
+        $this->realSoilRoot = is_dir($pythonRoot) ? $pythonRoot : $scanRoot;
+    }
+
+    /**
+     * Get Stage 1 Soil Gate calibration parameters, thresholds, and curated reference soil samples.
+     */
+    public function getCalibration(Request $request)
+    {
+        $cacheKey = 'real_soil_calibration_v2';
+        $data = Cache::remember($cacheKey, 1800, function () {
+            $samples = $this->findRealSoilImages('All', '', 40);
+
+            $munsellColors = \App\Models\MunsellColor::select([
+                'munsell_color_id', 'full_code', 'color_name', 'hue', 'value', 'chroma',
+                'hex_code', 'soil_organic_index', 'soil_type', 'description'
+            ])->get();
+
+            return [
+                'status'         => 'success',
+                'model_version'  => '2.0.0',
+                'engine'         => 'Stage 1-6 Soil Gate & Munsell Spectral Analyzer',
+                'gate_config'    => [
+                    'min_variance'    => 8.5,
+                    'min_laplacian'   => 18.0,
+                    'max_skin_ratio'  => 0.32,
+                    'max_delta_e'     => 30.0,
+                    'allowed_hues'    => ['10R', '2.5YR', '5YR', '7.5YR', '10YR', '2.5Y', '5Y', 'GLEY'],
+                    'valid_lum_range' => [12, 85],
+                ],
+                'samples_count'     => count($samples),
+                'reference_samples' => $samples,
+                'munsell_colors'    => $munsellColors,
+                'updated_at'        => now()->toIso8601String(),
+            ];
+        });
+
+        return response()->json($data);
     }
 
     /**
@@ -46,7 +86,17 @@ class RealSoilController extends Controller
     {
         // Sanitize and prevent directory traversal
         $cleanPath = str_replace(['..', "\0"], '', $path);
-        $fullPath = $this->realSoilRoot . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $cleanPath);
+        $fullPath = null;
+        foreach ($this->candidateRoots as $root) {
+            $candidate = $root . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $cleanPath);
+            if (file_exists($candidate) && !is_dir($candidate)) {
+                $fullPath = $candidate;
+                break;
+            }
+        }
+        if (!$fullPath) {
+            $fullPath = $this->realSoilRoot . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $cleanPath);
+        }
 
         if (!file_exists($fullPath) || is_dir($fullPath)) {
             return response()->json(['status' => 'error', 'message' => 'Image not found'], 404);
