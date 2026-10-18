@@ -1210,13 +1210,7 @@
             }, { passive: true });
         })();
 
-        window.printSectionRecords = function() {
-            var area = document.getElementById('sectionRecordsPrintArea');
-            if (!area) {
-                window.print();
-                return;
-            }
-
+        window.buildAgricoPrintContainer = function(area) {
             var existing = document.getElementById('agricoPrintContainer');
             if (existing) {
                 existing.remove();
@@ -1224,15 +1218,115 @@
 
             var container = document.createElement('div');
             container.id = 'agricoPrintContainer';
-            container.innerHTML = area.innerHTML;
+
+            var headerEl = area.querySelector('#sectionRecordsPrintHeader');
+            var tableEl  = area.querySelector('#sectionRecordsPrintTable');
+            var footerEl = area.querySelector('#sectionRecordsPrintFooter');
+
+            if (headerEl && tableEl && footerEl) {
+                var thead = tableEl.querySelector('thead');
+                var tbody = tableEl.querySelector('tbody');
+                var allRows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+
+                // Page 1: CSU header (~45mm) + table header (~15mm) -> fits 18 student rows
+                // Page 2+: table header (~15mm) -> fits 23 student rows
+                var ROWS_PAGE_1 = 18;
+                var ROWS_PAGE_2 = 23;
+
+                var totalRows = allRows.length;
+                var totalPages = 1;
+                if (totalRows > ROWS_PAGE_1) {
+                    totalPages = 1 + Math.ceil((totalRows - ROWS_PAGE_1) / ROWS_PAGE_2);
+                }
+
+                var adminHtml = footerEl.children[0] ? footerEl.children[0].innerHTML : 'Prepared By: <strong>AgriCo Administrator</strong>';
+                var dateHtml  = footerEl.children[1] ? footerEl.children[1].innerHTML : '{{ date("F j, Y") }}';
+
+                var currentRowIndex = 0;
+                for (var p = 1; p <= totalPages; p++) {
+                    var pageDiv = document.createElement('div');
+                    pageDiv.className = 'agrico-print-page';
+                    pageDiv.style.cssText = 'height: 195mm; max-height: 195mm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; page-break-after: ' + (p < totalPages ? 'always' : 'auto') + '; break-after: ' + (p < totalPages ? 'page' : 'auto') + '; overflow: hidden;';
+
+                    var pageTop = document.createElement('div');
+                    pageTop.style.cssText = 'flex: 1 0 auto; width: 100%;';
+
+                    // Page 1 gets CSU Header
+                    if (p === 1) {
+                        pageTop.appendChild(headerEl.cloneNode(true));
+                    }
+
+                    // Every page gets table with thead
+                    var pageTable = document.createElement('table');
+                    pageTable.style.cssText = 'width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 8pt; color: #000000;';
+                    if (thead) {
+                        pageTable.appendChild(thead.cloneNode(true));
+                    }
+
+                    var pageTbody = document.createElement('tbody');
+                    var countToTake = (p === 1) ? ROWS_PAGE_1 : ROWS_PAGE_2;
+                    var slice = allRows.slice(currentRowIndex, currentRowIndex + countToTake);
+                    currentRowIndex += countToTake;
+
+                    if (slice.length === 0 && totalRows === 0) {
+                        var emptyTr = document.createElement('tr');
+                        emptyTr.innerHTML = '<td colspan="99" style="border: 1px solid #000000; text-align: center; color: #000000; padding: 12px;">No students found.</td>';
+                        pageTbody.appendChild(emptyTr);
+                    } else {
+                        slice.forEach(function(r) {
+                            pageTbody.appendChild(r.cloneNode(true));
+                        });
+                    }
+                    pageTable.appendChild(pageTbody);
+                    pageTop.appendChild(pageTable);
+                    pageDiv.appendChild(pageTop);
+
+                    // Running Footer at the lowest part of every page
+                    var pageFooter = document.createElement('div');
+                    pageFooter.className = 'agrico-print-footer';
+                    pageFooter.style.cssText = 'flex-shrink: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 8pt; color: #000000; font-family: Arial, sans-serif; padding-top: 4px; box-sizing: border-box;';
+
+                    var leftCol = document.createElement('div');
+                    leftCol.style.cssText = 'flex: 1; text-align: left; font-weight: 500;';
+                    leftCol.innerHTML = adminHtml;
+
+                    var centerCol = document.createElement('div');
+                    centerCol.style.cssText = 'flex: 1; text-align: center; font-weight: 500;';
+                    centerCol.innerHTML = dateHtml;
+
+                    var rightCol = document.createElement('div');
+                    rightCol.style.cssText = 'flex: 1; text-align: right; font-weight: 500;';
+                    rightCol.textContent = p + '/' + totalPages;
+
+                    pageFooter.appendChild(leftCol);
+                    pageFooter.appendChild(centerCol);
+                    pageFooter.appendChild(rightCol);
+
+                    pageDiv.appendChild(pageFooter);
+                    container.appendChild(pageDiv);
+                }
+            } else {
+                container.innerHTML = area.innerHTML;
+            }
+
             document.body.appendChild(container);
             document.body.classList.add('agrico-print-active');
+            return container;
+        };
+
+        window.printSectionRecords = function() {
+            var area = document.getElementById('sectionRecordsPrintArea');
+            if (!area) {
+                window.print();
+                return;
+            }
+
+            var container = window.buildAgricoPrintContainer(area);
 
             var cleanup = function() {
                 document.body.classList.remove('agrico-print-active');
-                var c = document.getElementById('agricoPrintContainer');
-                if (c) {
-                    c.remove();
+                if (container && container.parentNode) {
+                    container.remove();
                 }
                 window.removeEventListener('afterprint', cleanup);
             };
@@ -1250,11 +1344,7 @@
         window.addEventListener('beforeprint', function() {
             var area = document.getElementById('sectionRecordsPrintArea');
             if (area && !document.getElementById('agricoPrintContainer')) {
-                var container = document.createElement('div');
-                container.id = 'agricoPrintContainer';
-                container.innerHTML = area.innerHTML;
-                document.body.appendChild(container);
-                document.body.classList.add('agrico-print-active');
+                window.buildAgricoPrintContainer(area);
             }
         });
 
@@ -1297,14 +1387,6 @@
             #agricoPrintContainer table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                page-break-inside: auto !important;
-            }
-            #agricoPrintContainer thead {
-                display: table-header-group !important;
-            }
-            #agricoPrintContainer tr {
-                page-break-inside: avoid !important;
-                page-break-after: auto !important;
             }
             #agricoPrintContainer th,
             #agricoPrintContainer td {
@@ -1316,6 +1398,32 @@
             }
             #agricoPrintContainer th {
                 font-weight: bold !important;
+            }
+            .agrico-print-page {
+                height: 195mm !important;
+                max-height: 195mm !important;
+                box-sizing: border-box !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                overflow: hidden !important;
+            }
+            .agrico-print-page:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
+            .agrico-print-footer {
+                width: 100% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                font-size: 8pt !important;
+                font-family: Arial, sans-serif !important;
+                color: #000000 !important;
+                box-sizing: border-box !important;
+                margin-top: auto !important;
             }
         }
     </style>

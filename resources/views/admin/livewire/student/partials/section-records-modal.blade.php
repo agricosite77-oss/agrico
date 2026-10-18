@@ -569,6 +569,32 @@
                 #agricoPrintContainer th {
                     font-weight: bold !important;
                 }
+                .agrico-print-page {
+                    height: 195mm !important;
+                    max-height: 195mm !important;
+                    box-sizing: border-box !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: space-between !important;
+                    page-break-after: always !important;
+                    break-after: page !important;
+                    overflow: hidden !important;
+                }
+                .agrico-print-page:last-child {
+                    page-break-after: auto !important;
+                    break-after: auto !important;
+                }
+                .agrico-print-footer {
+                    width: 100% !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: space-between !important;
+                    font-size: 8pt !important;
+                    font-family: Arial, sans-serif !important;
+                    color: #000000 !important;
+                    box-sizing: border-box !important;
+                    margin-top: auto !important;
+                }
             }
             </style>
         </div>
@@ -680,6 +706,7 @@
 
 {{-- DEDICATED PRINT-ONLY LAYOUT (LANDSCAPE, BLACK & WHITE ONLY, CSU HEADER, DOCUMENT TITLE, TABLE, FOOTER) --}}
 <div id="sectionRecordsPrintArea">
+    <div id="sectionRecordsPrintHeader">
         {{-- TOP 3-COLUMN HEADER TABLE (Left: Republic & CSU info, Center: Logo, Right: Contact info) --}}
         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; font-family: Arial, sans-serif;">
             {{-- 1. Left: Republic & CSU Addresses --}}
@@ -721,9 +748,10 @@
         @else
             <div style="margin-bottom: 4px;"></div>
         @endif
+    </div>
 
-        {{-- PRINT TABLE --}}
-        <table style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 8pt; color: #000000;">
+    {{-- PRINT TABLE --}}
+    <table id="sectionRecordsPrintTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 8pt; color: #000000;">
             <thead>
                 <tr style="page-break-inside: avoid;">
                     <th rowspan="2" style="border: 1px solid #000000; padding: 4px 6px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 36px;">#</th>
@@ -795,15 +823,16 @@
             </tbody>
         </table>
 
-        {{-- PRINT FOOTER (Left: Prepared By, Center: Date) --}}
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: 8pt; color: #000000; font-family: Arial, sans-serif; width: 100%;">
+        {{-- PRINT FOOTER (Left: Prepared By, Center: Date, Right: Page X/Y) --}}
+        <div id="sectionRecordsPrintFooter" style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: 8pt; color: #000000; font-family: Arial, sans-serif; width: 100%;">
             <div style="flex: 1; text-align: left; font-weight: 500;">
                 Prepared By: <strong>{{ $loggedInAdminName ?? 'AgriCo Administrator' }}</strong>
             </div>
             <div style="flex: 1; text-align: center; font-weight: 500;">
                 {{ date('F j, Y') }}
             </div>
-            <div style="flex: 1; text-align: right;">
+            <div style="flex: 1; text-align: right; font-weight: 500;">
+                <span class="page-number-text">1/1</span>
             </div>
         </div>
     </div>

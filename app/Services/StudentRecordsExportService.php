@@ -332,7 +332,7 @@ class StudentRecordsExportService
             }
         }
 
-        // FOOTER ON EVERY PAGE (Left: Prepared by, Center: Date)
+        // FOOTER ON EVERY PAGE (Left: Prepared By, Center: Date, Right: Page X/Y)
         $footer = $section->addFooter();
         $footerTable = $footer->addTable([
             'alignment' => JcTable::CENTER,
@@ -340,21 +340,29 @@ class StudentRecordsExportService
         ]);
         $footerRow = $footerTable->addRow();
 
-        // Left: Prepared by
-        $preparedCell = $footerRow->addCell(Converter::inchToTwip(5.34));
-        $preparedCell->addText("Prepared by: {$adminName}", [
+        // Left: Prepared By
+        $preparedCell = $footerRow->addCell(5500);
+        $preparedCell->addText("Prepared By: {$adminName}", [
             'name'  => 'Arial',
             'size'  => 8.5,
             'color' => '000000',
         ], ['alignment' => Jc::LEFT]);
 
         // Center: Date
-        $dateCell = $footerRow->addCell(Converter::inchToTwip(5.34));
+        $dateCell = $footerRow->addCell(4890);
         $dateCell->addText(date('F j, Y'), [
             'name'  => 'Arial',
             'size'  => 8.5,
             'color' => '000000',
         ], ['alignment' => Jc::CENTER]);
+
+        // Right: Page number (e.g. 1/5, 2/5...)
+        $pageCell = $footerRow->addCell(5000);
+        $pageCell->addPreserveText('{PAGE}/{NUMPAGES}', [
+            'name'  => 'Arial',
+            'size'  => 8.5,
+            'color' => '000000',
+        ], ['alignment' => Jc::END]);
 
         // Stream download
         $filename = self::buildFilename($sectionFilter, 'docx');
@@ -611,10 +619,10 @@ class StudentRecordsExportService
             $sheet->getColumnDimension($colLetter)->setWidth(14);
         }
 
-        // FOOTER ON EVERY PAGE (Left: Admin Name, Center: Date)
+        // FOOTER ON EVERY PAGE (Left: Prepared By, Center: Date, Right: Page X/Y)
         $todayStr = date('F j, Y');
-        $sheet->getHeaderFooter()->setOddFooter("&LPrepared by: {$adminName}&C{$todayStr}&R");
-        $sheet->getHeaderFooter()->setEvenFooter("&LPrepared by: {$adminName}&C{$todayStr}&R");
+        $sheet->getHeaderFooter()->setOddFooter("&LPrepared By: {$adminName}&C{$todayStr}&R&P/&N");
+        $sheet->getHeaderFooter()->setEvenFooter("&LPrepared By: {$adminName}&C{$todayStr}&R&P/&N");
 
         $filename = self::buildFilename($sectionFilter, 'xlsx');
 
