@@ -222,6 +222,47 @@ function RefreshIcon({ size = 15, color = '#DAF1DE' }) {
   );
 }
 
+// Helper: Normalize ROI bounding box for crop avatar & before/after card
+const normalizeBox = (r) => {
+  if (!r) return { left: 25, top: 25, width: 50, height: 50, raw_x: 0.25, raw_y: 0.25, raw_w: 0.5, raw_h: 0.5 };
+  let box = r.box || r.bounding_box || null;
+  if (!box && (r.x !== undefined && r.y !== undefined && r.w !== undefined && r.h !== undefined)) {
+    box = { x: r.x, y: r.y, w: r.w, h: r.h };
+  }
+  if (!box && (r.norm_x !== undefined && r.norm_y !== undefined && r.norm_w !== undefined && r.norm_h !== undefined)) {
+    box = { x: r.norm_x, y: r.norm_y, w: r.norm_w, h: r.norm_h };
+  }
+  if (typeof box === 'string') {
+    try { box = JSON.parse(box); } catch(e) { box = null; }
+  }
+  if (!box) {
+    return { left: 25, top: 25, width: 50, height: 50, raw_x: 0.25, raw_y: 0.25, raw_w: 0.5, raw_h: 0.5 };
+  }
+  let bx = parseFloat(box.norm_x !== undefined ? box.norm_x : (box.x !== undefined ? box.x : 0.25));
+  let by = parseFloat(box.norm_y !== undefined ? box.norm_y : (box.y !== undefined ? box.y : 0.25));
+  let bw = parseFloat(box.norm_w !== undefined ? box.norm_w : (box.w !== undefined ? box.w : 0.5));
+  let bh = parseFloat(box.norm_h !== undefined ? box.norm_h : (box.h !== undefined ? box.h : 0.5));
+
+  if (bx > 1.0 || by > 1.0 || bw > 1.0 || bh > 1.0) {
+    bx = bx / 400; by = by / 400; bw = bw / 400; bh = bh / 400;
+  }
+  bx = Math.max(0.02, Math.min(0.88, bx));
+  by = Math.max(0.02, Math.min(0.88, by));
+  bw = Math.max(0.06, Math.min(0.96 - bx, bw));
+  bh = Math.max(0.06, Math.min(0.96 - by, bh));
+
+  return {
+    left: Math.round(bx * 10000) / 100,
+    top: Math.round(by * 10000) / 100,
+    width: Math.round(bw * 10000) / 100,
+    height: Math.round(bh * 10000) / 100,
+    raw_x: bx,
+    raw_y: by,
+    raw_w: bw,
+    raw_h: bh,
+  };
+};
+
 export default function ScanSoilScreen({ navigation }) {
   // Flashlight / Torch state
   const [isTorchOn, setIsTorchOn] = useState(false);
@@ -296,6 +337,48 @@ export default function ScanSoilScreen({ navigation }) {
       `${currentSpecimen?.munsellCode || currentSpecimen?.fullCode || ''} - ${currentSpecimen?.name || currentSpecimen?.colorName || 'Determined Soil'}`
     );
   }, [currentSpecimen, specimenMunsellMatch]);
+
+  // Normalization data and swatches for Soil Record Details modal
+  const specimenNormRegions = useMemo(() => {
+    if (!currentSpecimen) return [];
+    if (Array.isArray(currentSpecimen.regions) && currentSpecimen.regions.length > 0) {
+      return currentSpecimen.regions;
+    }
+    const domHex = specimenMunsellMatch?.hexCode || currentSpecimen.hexColor || currentSpecimen.hex || '#8F694E';
+    const domCode = specimenMunsellMatch?.munsellCode || currentSpecimen.munsellCode || currentSpecimen.fullCode || '10YR 4/1';
+    const domPct = currentSpecimen.soilPercentage || 100;
+    return [{
+      hex: domHex,
+      munsell: domCode,
+      percent: domPct,
+    }];
+  }, [currentSpecimen, specimenMunsellMatch]);
+
+  const specimenNormDate = useMemo(() => {
+    if (!currentSpecimen) return 'Today';
+    const raw = currentSpecimen.rawDate || currentSpecimen.scanDate || currentSpecimen.createdDate;
+    if (!raw) return 'Today';
+    const d = new Date(typeof raw === 'string' ? raw.replace(' ', 'T') : raw);
+    if (isNaN(d.getTime())) return String(raw);
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+  }, [currentSpecimen]);
+
+  const specimenNormBoxes = useMemo(() => {
+    const ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
+    return specimenNormRegions.map((r, idx) => {
+      const bData = normalizeBox(r);
+      return {
+        leftPct: 50 + (bData.raw_x * 50),
+        topPct: 7.41 + (bData.raw_y * 92.59),
+        widthPct: bData.raw_w * 50,
+        heightPct: bData.raw_h * 92.59,
+        roleLabel: `${ordinalNames[idx] || (idx + 1) + 'TH'} COLOR`,
+      };
+    });
+  }, [specimenNormRegions]);
 
   // Animated values
   const flashAnim = useRef(new Animated.Value(0)).current;
@@ -626,6 +709,9 @@ export default function ScanSoilScreen({ navigation }) {
         description: mapped.description,
         scansCount: mapped.scanCount,
         scanImage: mapped.imageUrl || photo.uri,
+        beforeAfterImage: mapped.beforeAfterImage,
+        beforeAfterImageUrl: mapped.beforeAfterImage,
+        regions: mapped.regions || [],
         rawDate: result.scan.created_at || now.toISOString(),
         scanTime: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         dateGroup: 'Today',
@@ -1381,6 +1467,128 @@ export default function ScanSoilScreen({ navigation }) {
                   <Text style={styles.soilModalDescText}>
                     {specimenResolvedDescription}
                   </Text>
+                </View>
+
+                {/* Soil Normalization Card (Matches Website / Mobile Specification) */}
+                <View style={styles.soilModalNormCard}>
+                  {/* Card Header: Label & Pill Badge */}
+                  <View style={styles.soilModalNormHeader}>
+                    <Text style={styles.soilModalNormLabel}>SOIL NORMALIZATION</Text>
+                    <View style={styles.beforeAfterBadge}>
+                      <Text style={styles.beforeAfterBadgeText}>BEFORE / AFTER</Text>
+                    </View>
+                  </View>
+
+                  {/* Image Frame with Overlays */}
+                  <View style={styles.soilModalNormImageFrame}>
+                    {currentSpecimen.beforeAfterImage || currentSpecimen.beforeAfterImageUrl ? (
+                      <View style={{ width: '100%', height: 165, position: 'relative' }}>
+                        <Image
+                          source={{ uri: currentSpecimen.beforeAfterImage || currentSpecimen.beforeAfterImageUrl }}
+                          style={styles.soilNormImage}
+                          resizeMode="cover"
+                        />
+                        {/* Overlaid green ROI bounding boxes */}
+                        {specimenNormBoxes.map((b, idx) => (
+                          <View
+                            key={`norm_box_${idx}`}
+                            style={{
+                              position: 'absolute',
+                              left: `${b.leftPct}%`,
+                              top: `${b.topPct}%`,
+                              width: `${b.widthPct}%`,
+                              height: `${b.heightPct}%`,
+                              borderWidth: 2,
+                              borderColor: '#4ade80',
+                              borderRadius: 4,
+                            }}
+                          >
+                            <View style={styles.normRoleBadge}>
+                              <Text style={styles.normRoleBadgeText}>{b.roleLabel}</Text>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    ) : currentSpecimen.scanImage || userCustomImage || croppedSpecimenUri ? (
+                      /* Simulated split Before / After frame if before_after is not yet rendered */
+                      <View style={{ width: '100%', position: 'relative' }}>
+                        <View style={styles.normSimulatedHeader}>
+                          <Text style={styles.normHeaderBefore}>BEFORE</Text>
+                          <Text style={styles.normHeaderAfter}>
+                            AFTER (NORMALIZED) -- {currentSpecimen.munsellCode || currentSpecimen.fullCode || '10YR 4/1'}
+                          </Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', height: 135 }}>
+                          <Image
+                            source={{ uri: currentSpecimen.scanImage || croppedSpecimenUri || userCustomImage }}
+                            style={{ flex: 1, height: '100%' }}
+                            resizeMode="cover"
+                          />
+                          <View style={{ width: 1.5, backgroundColor: 'rgba(255, 255, 255, 0.3)' }} />
+                          <View style={{ flex: 1, height: '100%', position: 'relative' }}>
+                            <Image
+                              source={{ uri: currentSpecimen.scanImage || croppedSpecimenUri || userCustomImage }}
+                              style={{ width: '100%', height: '100%' }}
+                              resizeMode="cover"
+                            />
+                            <View
+                              style={{
+                                position: 'absolute',
+                                left: '20%',
+                                top: '20%',
+                                width: '60%',
+                                height: '60%',
+                                borderWidth: 2,
+                                borderColor: '#4ade80',
+                                borderRadius: 4,
+                              }}
+                            >
+                              <View style={styles.normRoleBadge}>
+                                <Text style={styles.normRoleBadgeText}>1ST COLOR</Text>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={styles.normPlaceholder}>
+                        <Text style={styles.normPlaceholderTitle}>SOIL NORMALIZATION</Text>
+                        <Text style={styles.normPlaceholderSub}>
+                          Comparison image unavailable for this record
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {/* Swatch Capsule Pills */}
+                  <View style={styles.normSwatchesRow}>
+                    {specimenNormRegions.map((r, idx) => {
+                      let rHex = r.hex || r.hex_color || currentSpecimen.hexColor || currentSpecimen.hex || '#8F694E';
+                      if (!rHex.startsWith('#')) rHex = `#${rHex}`;
+                      const rCode = r.munsell || r.munsell_code || currentSpecimen.munsellCode || currentSpecimen.fullCode || '';
+                      const rPct = r.percent !== undefined 
+                        ? Math.round(r.percent) 
+                        : (r.proportion !== undefined 
+                            ? Math.round(r.proportion * 100) 
+                            : (currentSpecimen.soilPercentage || 100));
+                      return (
+                        <View key={`swatch_pill_${idx}`} style={styles.soilSwatchCapsulePill}>
+                          <View style={[styles.capsulePillSwatch, { backgroundColor: rHex }]} />
+                          <Text style={styles.capsulePillHex}>{rHex.toUpperCase()}</Text>
+                          {rCode ? <Text style={styles.capsulePillCode}>({rCode})</Text> : null}
+                          <Text style={styles.capsulePillPct}>{rPct}%</Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+
+                  {/* Metadata Row */}
+                  <View style={styles.soilNormMetaRow}>
+                    <Text style={styles.soilNormMetaTitle}>METADATA</Text>
+                    <Text style={styles.soilNormMetaInfo}>
+                      CREATED: {specimenNormDate}  |  DETECTED COLORS: {specimenNormRegions.length}
+                    </Text>
+                  </View>
                 </View>
               </ScrollView>
 
@@ -2568,5 +2776,171 @@ const styles = StyleSheet.create({
     color: '#051F20',
     fontSize: 13,
     fontWeight: '800',
+  },
+  // Soil Normalization Card Styles (Matches Website Exactly)
+  soilModalNormCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    padding: 12,
+    marginBottom: 10,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  soilModalNormHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  soilModalNormLabel: {
+    fontSize: 10.5,
+    fontWeight: '700',
+    color: '#64748b',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  beforeAfterBadge: {
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+  },
+  beforeAfterBadgeText: {
+    fontSize: 9.5,
+    fontWeight: '700',
+    color: '#10b981',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  soilModalNormImageFrame: {
+    width: '100%',
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: '#0c1a17',
+    borderWidth: 1,
+    borderColor: 'rgba(142, 182, 155, 0.25)',
+  },
+  soilNormImage: {
+    width: '100%',
+    height: 165,
+  },
+  normSimulatedHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: '#0c1a17',
+  },
+  normHeaderBefore: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: '#fbbf24',
+    letterSpacing: 0.4,
+  },
+  normHeaderAfter: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: '#86efac',
+    letterSpacing: 0.4,
+  },
+  normRoleBadge: {
+    position: 'absolute',
+    top: -13,
+    alignSelf: 'center',
+    backgroundColor: '#4ade80',
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 3,
+  },
+  normRoleBadgeText: {
+    fontSize: 7.5,
+    fontWeight: '800',
+    color: '#000000',
+    letterSpacing: 0.3,
+  },
+  normPlaceholder: {
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  normPlaceholderTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#94a3b8',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  normPlaceholderSub: {
+    fontSize: 10,
+    color: '#64748b',
+    textAlign: 'center',
+  },
+  normSwatchesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 10,
+  },
+  soilSwatchCapsulePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 20,
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
+    gap: 6,
+  },
+  capsulePillSwatch: {
+    width: 14,
+    height: 14,
+    borderRadius: 3,
+    borderWidth: 0.5,
+    borderColor: 'rgba(0, 0, 0, 0.15)',
+  },
+  capsulePillHex: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#1e293b',
+    letterSpacing: 0.2,
+  },
+  capsulePillCode: {
+    fontSize: 10.5,
+    fontWeight: '600',
+    color: '#64748b',
+  },
+  capsulePillPct: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#10b981',
+  },
+  soilNormMetaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+    paddingTop: 8,
+    marginTop: 10,
+  },
+  soilNormMetaTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#1e293b',
+    letterSpacing: 0.4,
+  },
+  soilNormMetaInfo: {
+    fontSize: 9.5,
+    fontWeight: '700',
+    color: '#475569',
+    letterSpacing: 0.2,
   },
 });

@@ -1350,6 +1350,46 @@ const INITIAL_SOIL_CARDS = Array.isArray(OFFLINE_SOIL_CARDS) && OFFLINE_SOIL_CAR
   ? OFFLINE_SOIL_CARDS
   : [];
 
+// Helper: Normalize ROI bounding box for crop avatar & before/after card
+const normalizeBox = (r) => {
+  if (!r) return { left: 25, top: 25, width: 50, height: 50, raw_x: 0.25, raw_y: 0.25, raw_w: 0.5, raw_h: 0.5 };
+  let box = r.box || r.bounding_box || null;
+  if (!box && (r.x !== undefined && r.y !== undefined && r.w !== undefined && r.h !== undefined)) {
+    box = { x: r.x, y: r.y, w: r.w, h: r.h };
+  }
+  if (!box && (r.norm_x !== undefined && r.norm_y !== undefined && r.norm_w !== undefined && r.norm_h !== undefined)) {
+    box = { x: r.norm_x, y: r.norm_y, w: r.norm_w, h: r.norm_h };
+  }
+  if (typeof box === 'string') {
+    try { box = JSON.parse(box); } catch(e) { box = null; }
+  }
+  if (!box) {
+    return { left: 25, top: 25, width: 50, height: 50, raw_x: 0.25, raw_y: 0.25, raw_w: 0.5, raw_h: 0.5 };
+  }
+  let bx = parseFloat(box.norm_x !== undefined ? box.norm_x : (box.x !== undefined ? box.x : 0.25));
+  let by = parseFloat(box.norm_y !== undefined ? box.norm_y : (box.y !== undefined ? box.y : 0.25));
+  let bw = parseFloat(box.norm_w !== undefined ? box.norm_w : (box.w !== undefined ? box.w : 0.5));
+  let bh = parseFloat(box.norm_h !== undefined ? box.norm_h : (box.h !== undefined ? box.h : 0.5));
+
+  if (bx > 1.0 || by > 1.0 || bw > 1.0 || bh > 1.0) {
+    bx = bx / 400; by = by / 400; bw = bw / 400; bh = bh / 400;
+  }
+  bx = Math.max(0.02, Math.min(0.88, bx));
+  by = Math.max(0.02, Math.min(0.88, by));
+  bw = Math.max(0.06, Math.min(0.96 - bx, bw));
+  bh = Math.max(0.06, Math.min(0.96 - by, bh));
+
+  return {
+    left: Math.round(bx * 10000) / 100,
+    top: Math.round(by * 10000) / 100,
+    width: Math.round(bw * 10000) / 100,
+    height: Math.round(bh * 10000) / 100,
+    raw_x: bx,
+    raw_y: by,
+    raw_w: bw,
+    raw_h: bh,
+  };
+};
 
 // Date Grouping Engine for Scan History (Today, Yesterday, Specific Date)
 const groupScansByDate = (scansList) => {
@@ -1818,6 +1858,48 @@ export default function HomeScreen({ navigation, route }) {
     );
   }, [detailSoil, detailMunsellMatch]);
 
+  // Normalization data and swatches for Soil Record Details modal
+  const detailNormRegions = useMemo(() => {
+    if (!detailSoil) return [];
+    if (Array.isArray(detailSoil.regions) && detailSoil.regions.length > 0) {
+      return detailSoil.regions;
+    }
+    const domHex = detailMunsellMatch?.hexCode || detailSoil.hexCode || detailSoil.hexColor || '#8F694E';
+    const domCode = detailMunsellMatch?.munsellCode || detailSoil.munsellCode || detailSoil.fullCode || '10YR 4/1';
+    const domPct = detailSoil.soilPercentage || 100;
+    return [{
+      hex: domHex,
+      munsell: domCode,
+      percent: domPct,
+    }];
+  }, [detailSoil, detailMunsellMatch]);
+
+  const detailNormDate = useMemo(() => {
+    if (!detailSoil) return 'Today';
+    const raw = detailSoil.rawDate || detailSoil.scanDate || detailSoil.createdDate || detailSoil.created_at;
+    if (!raw) return 'Today';
+    const d = new Date(typeof raw === 'string' ? raw.replace(' ', 'T') : raw);
+    if (isNaN(d.getTime())) return String(raw);
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+  }, [detailSoil]);
+
+  const detailNormBoxes = useMemo(() => {
+    const ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
+    return detailNormRegions.map((r, idx) => {
+      const bData = normalizeBox(r);
+      return {
+        leftPct: 50 + (bData.raw_x * 50),
+        topPct: 7.41 + (bData.raw_y * 92.59),
+        widthPct: bData.raw_w * 50,
+        heightPct: bData.raw_h * 92.59,
+        roleLabel: `${ordinalNames[idx] || (idx + 1) + 'TH'} COLOR`,
+      };
+    });
+  }, [detailNormRegions]);
+
   // Fetch dynamic "Most Scanned Soil" records from the database
   const loadMostScanned = useCallback(async (hue = selectedHue, search = searchQuery) => {
     try {
@@ -1877,7 +1959,14 @@ export default function HomeScreen({ navigation, route }) {
           const hasPin = Boolean(s.location_id || s.location || s.latitude);
           const rawNote = s.scan_note || '';
           const isRealNote = rawNote && !rawNote.startsWith('Determined Soil:') && rawNote !== '—' && rawNote !== '-';
-          const resolvedScanNote = (hasPin && isRealNote) ? rawNote : '-';
+          const fixMediaUrl = (u) => {
+            if (!u) return null;
+            let str = String(u);
+            if (str.includes('localhost:8080')) str = str.replace('localhost:8080', '10.0.2.2:8080');
+            if (str.includes('127.0.0.1:8080')) str = str.replace('127.0.0.1:8080', '10.0.2.2:8080');
+            if (str.startsWith('http') || str.startsWith('data:')) return str;
+            return `${ENV.API_URL.replace(/\/api\/?$/, '')}${str.startsWith('/') ? '' : '/'}${str}`;
+          };
 
           return {
             id: 'scan_' + s.soil_scan_id,
@@ -1894,11 +1983,10 @@ export default function HomeScreen({ navigation, route }) {
             description: s.description || s.soil?.effective_description || 'Field scan record',
             scanNote: resolvedScanNote,
             scansCount: s.soil?.scan_count || 1,
-            scanImage: s.scan_image_url || s.scan_image
-              ? (String(s.scan_image_url || s.scan_image).startsWith('http')
-                  ? (s.scan_image_url || s.scan_image)
-                  : `${ENV.API_URL.replace(/\/api\/?$/, '')}${String(s.scan_image_url || s.scan_image).startsWith('/') ? '' : '/'}${s.scan_image_url || s.scan_image}`)
-              : null,
+            scanImage: fixMediaUrl(s.scan_image_url || s.scan_image),
+            beforeAfterImage: fixMediaUrl(s.before_after_image_url || s.before_after_image),
+            beforeAfterImageUrl: fixMediaUrl(s.before_after_image_url || s.before_after_image),
+            regions: Array.isArray(s.regions) ? s.regions : (Array.isArray(s.regions_data) ? s.regions_data : []),
             rawDate: s.scan_date || s.created_at,
             scanTime: s.scan_time || '',
             dateGroup: s.date_group || 'Earlier',
@@ -3024,6 +3112,128 @@ export default function HomeScreen({ navigation, route }) {
                   <Text style={styles.soilModalDescText}>
                     {detailResolvedDescription}
                   </Text>
+                </View>
+
+                {/* Soil Normalization Card (Matches Website / Mobile Specification) */}
+                <View style={styles.soilModalNormCard}>
+                  {/* Card Header: Label & Pill Badge */}
+                  <View style={styles.soilModalNormHeader}>
+                    <Text style={styles.soilModalNormLabel}>SOIL NORMALIZATION</Text>
+                    <View style={styles.beforeAfterBadge}>
+                      <Text style={styles.beforeAfterBadgeText}>BEFORE / AFTER</Text>
+                    </View>
+                  </View>
+
+                  {/* Image Frame with Overlays */}
+                  <View style={styles.soilModalNormImageFrame}>
+                    {detailSoil.beforeAfterImage || detailSoil.beforeAfterImageUrl ? (
+                      <View style={{ width: '100%', height: 165, position: 'relative' }}>
+                        <Image
+                          source={{ uri: detailSoil.beforeAfterImage || detailSoil.beforeAfterImageUrl }}
+                          style={styles.soilNormImage}
+                          resizeMode="cover"
+                        />
+                        {/* Overlaid green ROI bounding boxes */}
+                        {detailNormBoxes.map((b, idx) => (
+                          <View
+                            key={`norm_box_${idx}`}
+                            style={{
+                              position: 'absolute',
+                              left: `${b.leftPct}%`,
+                              top: `${b.topPct}%`,
+                              width: `${b.widthPct}%`,
+                              height: `${b.heightPct}%`,
+                              borderWidth: 2,
+                              borderColor: '#4ade80',
+                              borderRadius: 4,
+                            }}
+                          >
+                            <View style={styles.normRoleBadge}>
+                              <Text style={styles.normRoleBadgeText}>{b.roleLabel}</Text>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    ) : detailSoil.scanImage ? (
+                      /* Simulated split Before / After frame if before_after is not yet rendered */
+                      <View style={{ width: '100%', position: 'relative' }}>
+                        <View style={styles.normSimulatedHeader}>
+                          <Text style={styles.normHeaderBefore}>BEFORE</Text>
+                          <Text style={styles.normHeaderAfter}>
+                            AFTER (NORMALIZED) -- {detailSoil.munsellCode || detailSoil.fullCode || '10YR 4/1'}
+                          </Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', height: 135 }}>
+                          <Image
+                            source={{ uri: detailSoil.scanImage }}
+                            style={{ flex: 1, height: '100%' }}
+                            resizeMode="cover"
+                          />
+                          <View style={{ width: 1.5, backgroundColor: 'rgba(255, 255, 255, 0.3)' }} />
+                          <View style={{ flex: 1, height: '100%', position: 'relative' }}>
+                            <Image
+                              source={{ uri: detailSoil.scanImage }}
+                              style={{ width: '100%', height: '100%' }}
+                              resizeMode="cover"
+                            />
+                            <View
+                              style={{
+                                position: 'absolute',
+                                left: '20%',
+                                top: '20%',
+                                width: '60%',
+                                height: '60%',
+                                borderWidth: 2,
+                                borderColor: '#4ade80',
+                                borderRadius: 4,
+                              }}
+                            >
+                              <View style={styles.normRoleBadge}>
+                                <Text style={styles.normRoleBadgeText}>1ST COLOR</Text>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={styles.normPlaceholder}>
+                        <Text style={styles.normPlaceholderTitle}>SOIL NORMALIZATION</Text>
+                        <Text style={styles.normPlaceholderSub}>
+                          Comparison image unavailable for this record
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {/* Swatch Capsule Pills */}
+                  <View style={styles.normSwatchesRow}>
+                    {detailNormRegions.map((r, idx) => {
+                      let rHex = r.hex || r.hex_color || detailSoil.hexCode || detailSoil.hexColor || '#8F694E';
+                      if (!rHex.startsWith('#')) rHex = `#${rHex}`;
+                      const rCode = r.munsell || r.munsell_code || detailSoil.munsellCode || detailSoil.fullCode || '';
+                      const rPct = r.percent !== undefined 
+                        ? Math.round(r.percent) 
+                        : (r.proportion !== undefined 
+                            ? Math.round(r.proportion * 100) 
+                            : (detailSoil.soilPercentage || 100));
+                      return (
+                        <View key={`swatch_pill_${idx}`} style={styles.soilSwatchCapsulePill}>
+                          <View style={[styles.capsulePillSwatch, { backgroundColor: rHex }]} />
+                          <Text style={styles.capsulePillHex}>{rHex.toUpperCase()}</Text>
+                          {rCode ? <Text style={styles.capsulePillCode}>({rCode})</Text> : null}
+                          <Text style={styles.capsulePillPct}>{rPct}%</Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+
+                  {/* Metadata Row */}
+                  <View style={styles.soilNormMetaRow}>
+                    <Text style={styles.soilNormMetaTitle}>METADATA</Text>
+                    <Text style={styles.soilNormMetaInfo}>
+                      CREATED: {detailNormDate}  |  DETECTED COLORS: {detailNormRegions.length}
+                    </Text>
+                  </View>
                 </View>
               </ScrollView>
 
@@ -4547,5 +4757,171 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
     fontWeight: '700',
     color: '#ffffff',
+  },
+  // Soil Normalization Card Styles (Matches Website Exactly)
+  soilModalNormCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    padding: 12,
+    marginBottom: 10,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  soilModalNormHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  soilModalNormLabel: {
+    fontSize: 10.5,
+    fontWeight: '700',
+    color: '#64748b',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  beforeAfterBadge: {
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+  },
+  beforeAfterBadgeText: {
+    fontSize: 9.5,
+    fontWeight: '700',
+    color: '#10b981',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  soilModalNormImageFrame: {
+    width: '100%',
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: '#0c1a17',
+    borderWidth: 1,
+    borderColor: 'rgba(142, 182, 155, 0.25)',
+  },
+  soilNormImage: {
+    width: '100%',
+    height: 165,
+  },
+  normSimulatedHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: '#0c1a17',
+  },
+  normHeaderBefore: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: '#fbbf24',
+    letterSpacing: 0.4,
+  },
+  normHeaderAfter: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: '#86efac',
+    letterSpacing: 0.4,
+  },
+  normRoleBadge: {
+    position: 'absolute',
+    top: -13,
+    alignSelf: 'center',
+    backgroundColor: '#4ade80',
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 3,
+  },
+  normRoleBadgeText: {
+    fontSize: 7.5,
+    fontWeight: '800',
+    color: '#000000',
+    letterSpacing: 0.3,
+  },
+  normPlaceholder: {
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  normPlaceholderTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#94a3b8',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  normPlaceholderSub: {
+    fontSize: 10,
+    color: '#64748b',
+    textAlign: 'center',
+  },
+  normSwatchesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 10,
+  },
+  soilSwatchCapsulePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 20,
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
+    gap: 6,
+  },
+  capsulePillSwatch: {
+    width: 14,
+    height: 14,
+    borderRadius: 3,
+    borderWidth: 0.5,
+    borderColor: 'rgba(0, 0, 0, 0.15)',
+  },
+  capsulePillHex: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#1e293b',
+    letterSpacing: 0.2,
+  },
+  capsulePillCode: {
+    fontSize: 10.5,
+    fontWeight: '600',
+    color: '#64748b',
+  },
+  capsulePillPct: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#10b981',
+  },
+  soilNormMetaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+    paddingTop: 8,
+    marginTop: 10,
+  },
+  soilNormMetaTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#1e293b',
+    letterSpacing: 0.4,
+  },
+  soilNormMetaInfo: {
+    fontSize: 9.5,
+    fontWeight: '700',
+    color: '#475569',
+    letterSpacing: 0.2,
   },
 });

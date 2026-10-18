@@ -221,17 +221,24 @@ export function mapServerScan(scan, data = {}) {
   const scanCount = String(data?.scan_seq || 1);
   const rawImg = data?.scan_image_url || data?.image || scan?.scan_image_url || scan?.scan_image;
   const baseUrl = (ENV?.API_URL || 'http://10.0.2.2:8080/api').replace(/\/api\/?$/, '');
-  const imageUrl = rawImg
-    ? (String(rawImg).startsWith('http') || String(rawImg).startsWith('data:')
-        ? rawImg
-        : `${baseUrl}${String(rawImg).startsWith('/') ? '' : '/'}${rawImg}`)
-    : null;
+  const fixMediaUrl = (u) => {
+    if (!u) return null;
+    let s = String(u);
+    if (s.includes('localhost:8080')) s = s.replace('localhost:8080', '10.0.2.2:8080');
+    if (s.includes('127.0.0.1:8080')) s = s.replace('127.0.0.1:8080', '10.0.2.2:8080');
+    if (s.startsWith('http') || s.startsWith('data:')) return s;
+    return `${baseUrl}${s.startsWith('/') ? '' : '/'}${s}`;
+  };
+  const imageUrl = fixMediaUrl(rawImg);
+  const rawBaImg = data?.before_after_image_url || data?.before_after_image || scan?.before_after_image_url || scan?.before_after_image;
+  const beforeAfterImage = fixMediaUrl(rawBaImg);
+  const regions = Array.isArray(data?.regions) ? data.regions : (Array.isArray(scan?.regions) ? scan.regions : []);
 
   const hasPin = Boolean(scan?.location_id || scan?.location || data?.hasPin || data?.location_id || data?.location || data?.latitude);
   const rawNote = scan?.scan_note || data?.scan_note || '';
   const isRealNote = rawNote && !rawNote.startsWith('Determined Soil:') && rawNote !== '—' && rawNote !== '-';
   const scanNote = (hasPin && isRealNote) ? rawNote : '-';
-  const soilPercentage = data?.soil_percentage || data?.percentage || (data?.regions && data.regions[0] ? data.regions[0].percent || Math.round((data.regions[0].proportion || 0) * 100) : null);
+  const soilPercentage = data?.soil_percentage || data?.percentage || (regions && regions[0] ? regions[0].percent || Math.round((regions[0].proportion || 0) * 100) : null);
 
   return {
     id: scanId,
@@ -254,7 +261,9 @@ export function mapServerScan(scan, data = {}) {
     soilCategory: soilType,
     imageUrl,
     thumbnail: imageUrl ? { uri: imageUrl } : null,
-    regions: data?.regions || [],
+    beforeAfterImage,
+    beforeAfterImageUrl: beforeAfterImage,
+    regions,
   };
 }
 
