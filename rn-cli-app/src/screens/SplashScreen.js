@@ -72,18 +72,31 @@ export default function SplashScreen({ onFinish }) {
   // Master progress value running from 0 to 11000 ms
   const progress = useRef(new Animated.Value(0)).current;
   const onFinishRef = useRef(onFinish);
-  const [calibrationStatus, setCalibrationStatus] = useState('Syncing Stage 1 Soil References…');
+  const [syncStatus, setSyncStatus] = useState('Initializing AgriCo Soil Engine…');
+  const [syncPercent, setSyncPercent] = useState(0.06);
+  const syncProgressAnim = useRef(new Animated.Value(0.06)).current;
 
   useEffect(() => {
     onFinishRef.current = onFinish;
   }, [onFinish]);
 
   useEffect(() => {
-    // Proactively fetch reference soil images & calibration from website during landing
-    syncSoilCalibrationFromWebsite((msg) => {
-      setCalibrationStatus(msg);
+    // Proactively download real & fake soil images and sync calibration from website
+    syncSoilCalibrationFromWebsite((msg, pct) => {
+      if (typeof msg === 'string') {
+        setSyncStatus(msg);
+      }
+      if (typeof pct === 'number') {
+        setSyncPercent(pct);
+        Animated.timing(syncProgressAnim, {
+          toValue: Math.min(1.0, Math.max(0.06, pct)),
+          duration: 250,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: false,
+        }).start();
+      }
     }).catch(() => {});
-  }, []);
+  }, [syncProgressAnim]);
 
   useEffect(() => {
     const animation = Animated.timing(progress, {
@@ -161,7 +174,20 @@ export default function SplashScreen({ onFinish }) {
     extrapolate: 'clamp',
   });
 
-  // 4. Overall Screen Exit Dissolve (10500ms - 11000ms)
+  // 4. Lower Screen Updating & Sync Loader Opacity (0ms - 800ms fade in, 10200ms - 10800ms fade out)
+  const bottomLoaderOpacity = progress.interpolate({
+    inputRange: [0, 800, 10200, 10800],
+    outputRange: [0, 1, 1, 0],
+    extrapolate: 'clamp',
+  });
+
+  const progressWidth = syncProgressAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+    extrapolate: 'clamp',
+  });
+
+  // 5. Overall Screen Exit Dissolve (10500ms - 11000ms)
   const screenOpacity = progress.interpolate({
     inputRange: [0, 10500, 11000],
     outputRange: [1, 1, 0],
@@ -225,7 +251,7 @@ export default function SplashScreen({ onFinish }) {
         />
       </Animated.View>
 
-      {/* 4. Centered AgriCo Brand Identity Lockup (elevated above wave) */}
+      {/* 4. Centered AgriCo Brand Identity Lockup (Clean - no pills or badges) */}
       <Animated.View style={styles.centerStage} pointerEvents="none">
         <View style={styles.brandLockup}>
           {/* AgriCo Logo */}
@@ -262,21 +288,37 @@ export default function SplashScreen({ onFinish }) {
             </Text>
           </Animated.View>
         </View>
+      </Animated.View>
 
-        {/* Stage 1 Soil Reference Calibration Indicator */}
-        <Animated.View
-          style={[
-            styles.calibrationStatusRow,
-            {
-              opacity: logoOpacity,
-            },
-          ]}
-        >
-          <View style={styles.calibrationPulseDot} />
-          <Text style={styles.calibrationStatusText}>
-            {calibrationStatus}
+      {/* 5. Lower Screen Updating & Dataset Sync Loader (Positioned at bottom) */}
+      <Animated.View
+        style={[
+          styles.bottomUpdatingContainer,
+          {
+            opacity: bottomLoaderOpacity,
+          },
+        ]}
+        pointerEvents="none"
+      >
+        <View style={styles.updatingCard}>
+          <View style={styles.updatingHeaderRow}>
+            <View style={styles.updatingBadge}>
+              <View style={styles.pulsingDot} />
+              <Text style={styles.updatingTitle}>SYNCING SOIL DATASET</Text>
+            </View>
+            <Text style={styles.updatingPercentText}>{Math.round(syncPercent * 100)}%</Text>
+          </View>
+
+          {/* Sleek Progress Bar Track & Animated Fill */}
+          <View style={styles.progressBarTrack}>
+            <Animated.View style={[styles.progressBarFill, { width: progressWidth }]} />
+          </View>
+
+          {/* Detailed status: real & fake soil images */}
+          <Text style={styles.updatingDetailText} numberOfLines={1}>
+            {syncStatus}
           </Text>
-        </Animated.View>
+        </View>
       </Animated.View>
     </Animated.View>
   );
@@ -289,43 +331,86 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 
-  calibrationStatusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 26,
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-    backgroundColor: 'rgba(255, 255, 255, 0.78)',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.3)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  calibrationPulseDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: '#16a34a',
-    marginRight: 8,
-  },
-  calibrationStatusText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#15803d',
-    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
-  },
-
   centerStage: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 999,
     elevation: 50,
+  },
+
+  /* Lower Screen Updating & Sync Container */
+  bottomUpdatingContainer: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 44 : 34,
+    left: 20,
+    right: 20,
+    zIndex: 9999,
+    elevation: 60,
+    alignItems: 'center',
+  },
+  updatingCard: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: 'rgba(255, 255, 255, 0.90)',
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.25)',
+    shadowColor: '#052e16',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.10,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  updatingHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  updatingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pulsingDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: '#16a34a',
+    marginRight: 7,
+  },
+  updatingTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#15803d',
+    letterSpacing: 0.8,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
+  },
+  updatingPercentText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#16a34a',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif-medium',
+  },
+  progressBarTrack: {
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: 'rgba(22, 163, 74, 0.14)',
+    overflow: 'hidden',
+    marginBottom: 7,
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 2.5,
+    backgroundColor: '#16a34a',
+  },
+  updatingDetailText: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#374151',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
   },
 
   /* Wave Wrapper: top: -25vh, height: 150vh matching splash.blade.php */

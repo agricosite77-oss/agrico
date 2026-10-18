@@ -11,6 +11,8 @@ class RealSoilController extends Controller
 {
     protected string $realSoilRoot;
     protected array $candidateRoots;
+    protected string $fakeSoilRoot;
+    protected array $candidateFakeRoots;
 
     public function __construct()
     {
@@ -18,27 +20,45 @@ class RealSoilController extends Controller
         $scanRoot = base_path('Scan_Soil_Image/Real_Soil');
         $this->candidateRoots = array_filter([$pythonRoot, $scanRoot], 'is_dir');
         $this->realSoilRoot = is_dir($pythonRoot) ? $pythonRoot : $scanRoot;
+
+        $pythonFakeRoot = base_path('python/Scan_Soil_Image/Fake_Soil');
+        $scanFakeRoot = base_path('Scan_Soil_Image/Fake_Soil');
+        $this->candidateFakeRoots = array_filter([$pythonFakeRoot, $scanFakeRoot], 'is_dir');
+        $this->fakeSoilRoot = is_dir($pythonFakeRoot) ? $pythonFakeRoot : $scanFakeRoot;
     }
 
     /**
-     * Get Stage 1 Soil Gate calibration parameters, thresholds, and curated reference soil samples.
+     * Get Stage 1 Soil Gate calibration parameters, thresholds, and curated real and fake soil reference samples.
      */
     public function getCalibration(Request $request)
     {
-        $cacheKey = 'real_soil_calibration_v2';
+        $cacheKey = 'real_soil_calibration_v3';
         $data = Cache::remember($cacheKey, 1800, function () {
-            $samples = $this->findRealSoilImages('All', '', 40);
+            $realSamples = $this->findRealSoilImages('All', '', 25);
+            $fakeSamples = $this->findFakeSoilImages(20);
 
             $munsellColors = \App\Models\MunsellColor::select([
                 'munsell_color_id', 'full_code', 'color_name', 'hue', 'value', 'chroma',
                 'hex_code', 'soil_organic_index', 'soil_type', 'description'
             ])->get();
 
+            // Reference non-soil centroids (skin, paper, desks, walls, plastics) for offline rejection
+            $fakeCentroids = [
+                ['name' => 'Human Skin Tone 1', 'rgb' => [225, 175, 150], 'hexCode' => '#E1AF96', 'type' => 'skin'],
+                ['name' => 'Human Skin Tone 2', 'rgb' => [185, 130, 105], 'hexCode' => '#B98269', 'type' => 'skin'],
+                ['name' => 'Blank White Paper', 'rgb' => [245, 245, 245], 'hexCode' => '#F5F5F5', 'type' => 'paper'],
+                ['name' => 'Office Desk Brown', 'rgb' => [175, 120, 75], 'hexCode' => '#AF784B', 'type' => 'furniture'],
+                ['name' => 'Gray Concrete / Tile', 'rgb' => [180, 180, 180], 'hexCode' => '#B4B4B4', 'type' => 'tile'],
+                ['name' => 'Dark Keyboard / Surface', 'rgb' => [35, 35, 35], 'hexCode' => '#232323', 'type' => 'plastic'],
+                ['name' => 'Plant Foliage / Leaf', 'rgb' => [45, 160, 40], 'hexCode' => '#2DA028', 'type' => 'foliage'],
+                ['name' => 'Blue Cloth / Object', 'rgb' => [45, 115, 205], 'hexCode' => '#2D73CD', 'type' => 'artificial'],
+            ];
+
             return [
-                'status'         => 'success',
-                'model_version'  => '2.0.0',
-                'engine'         => 'Stage 1-6 Soil Gate & Munsell Spectral Analyzer',
-                'gate_config'    => [
+                'status'            => 'success',
+                'model_version'     => '2.1.0',
+                'engine'            => 'Stage 1-6 Soil Gate & Munsell Spectral Analyzer',
+                'gate_config'       => [
                     'min_variance'    => 8.5,
                     'min_laplacian'   => 18.0,
                     'max_skin_ratio'  => 0.32,
@@ -46,8 +66,13 @@ class RealSoilController extends Controller
                     'allowed_hues'    => ['10R', '2.5YR', '5YR', '7.5YR', '10YR', '2.5Y', '5Y', 'GLEY'],
                     'valid_lum_range' => [12, 85],
                 ],
-                'samples_count'     => count($samples),
-                'reference_samples' => $samples,
+                'samples_count'     => count($realSamples) + count($fakeSamples),
+                'real_samples_count'=> count($realSamples),
+                'fake_samples_count'=> count($fakeSamples),
+                'real_samples'      => $realSamples,
+                'fake_samples'      => $fakeSamples,
+                'fake_centroids'    => $fakeCentroids,
+                'reference_samples' => $realSamples, // Backwards compatibility
                 'munsell_colors'    => $munsellColors,
                 'updated_at'        => now()->toIso8601String(),
             ];
@@ -80,22 +105,37 @@ class RealSoilController extends Controller
     }
 
     /**
-     * Serve a real soil image file directly with caching headers.
+     * Serve a real or fake soil image file directly with caching headers.
      */
     public function serveFile(string $path)
     {
         // Sanitize and prevent directory traversal
         $cleanPath = str_replace(['..', "\0"], '', $path);
+        
+        $isFake = str_starts_with($cleanPath, 'fake/');
+        $isReal = str_starts_with($cleanPath, 'real/');
+        $subPath = $cleanPath;
+        if ($isFake) {
+            $subPath = substr($cleanPath, 5);
+        } elseif ($isReal) {
+            $subPath = substr($cleanPath, 5);
+        }
+
+        $allRoots = $isFake
+            ? array_merge($this->candidateFakeRoots, $this->candidateRoots)
+            : array_merge($this->candidateRoots, $this->candidateFakeRoots);
+
         $fullPath = null;
-        foreach ($this->candidateRoots as $root) {
-            $candidate = $root . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $cleanPath);
+        foreach ($allRoots as $root) {
+            $candidate = $root . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $subPath);
             if (file_exists($candidate) && !is_dir($candidate)) {
                 $fullPath = $candidate;
                 break;
             }
         }
         if (!$fullPath) {
-            $fullPath = $this->realSoilRoot . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $cleanPath);
+            $fallbackRoot = $isFake ? $this->fakeSoilRoot : $this->realSoilRoot;
+            $fullPath = $fallbackRoot . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $subPath);
         }
 
         if (!file_exists($fullPath) || is_dir($fullPath)) {
@@ -113,6 +153,56 @@ class RealSoilController extends Controller
             'Content-Type'  => $mimeType,
             'Cache-Control' => 'public, max-age=604800, immutable',
         ]);
+    }
+
+    /**
+     * Find curated non-soil / fake soil images from the Fake_Soil store.
+     * Samples evenly across available fake images (hands, paper, desk, plastics, walls).
+     */
+    protected function findFakeSoilImages(int $limit = 20): array
+    {
+        if (!is_dir($this->fakeSoilRoot)) {
+            return [];
+        }
+
+        $pattern = $this->fakeSoilRoot . DIRECTORY_SEPARATOR . '*.{jpg,jpeg,png,JPG,JPEG,PNG}';
+        $allFiles = glob($pattern, GLOB_BRACE) ?: [];
+        $total = count($allFiles);
+        if ($total === 0) {
+            return [];
+        }
+
+        // Evenly sample across the dataset to get diverse non-soil surfaces
+        $step = max(1, (int) floor($total / max(1, $limit)));
+        $selected = [];
+        for ($i = 0; $i < $total && count($selected) < $limit; $i += $step) {
+            $selected[] = $allFiles[$i];
+        }
+
+        $output = [];
+        foreach ($selected as $file) {
+            $filename = basename($file);
+            $jsonFile = preg_replace('/\.(jpg|jpeg|png)$/i', '.json', $file);
+            $meta = [];
+            if ($jsonFile && file_exists($jsonFile)) {
+                $raw = @file_get_contents($jsonFile);
+                if ($raw) {
+                    $meta = json_decode($raw, true) ?: [];
+                }
+            }
+
+            $output[] = [
+                'id'         => 'fs_' . md5($filename),
+                'url'        => request()->root() . '/api/real-soil/file/fake/' . $filename,
+                'filename'   => $filename,
+                'type'       => 'fake_soil',
+                'label'      => 'Non-Soil Reference',
+                'confidence' => $meta['confidence'] ?? 1.0,
+                'source'     => $meta['source'] ?? 'reference_dataset',
+            ];
+        }
+
+        return $output;
     }
 
     /**

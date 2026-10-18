@@ -145,5 +145,15 @@
       "soil_organic_index": "Low (1.5%)",
       "soil_type": "Silty Clay Subsoil"
     }
+  ],
+  "fake_centroids": [
+    { "name": "Human Skin Tone 1", "rgb": [225, 175, 150], "hexCode": "#E1AF96", "type": "skin" },
+    { "name": "Human Skin Tone 2", "rgb": [185, 130, 105], "hexCode": "#B98269", "type": "skin" },
+    { "name": "Blank White Paper", "rgb": [245, 245, 245], "hexCode": "#F5F5F5", "type": "paper" },
+    { "name": "Office Desk Brown", "rgb": [175, 120, 75], "hexCode": "#AF784B", "type": "furniture" },
+    { "name": "Gray Concrete / Tile", "rgb": [180, 180, 180], "hexCode": "#B4B4B4", "type": "tile" },
+    { "name": "Dark Keyboard / Surface", "rgb": [35, 35, 35], "hexCode": "#232323", "type": "plastic" },
+    { "name": "Plant Foliage / Leaf", "rgb": [45, 160, 40], "hexCode": "#2DA028", "type": "foliage" },
+    { "name": "Blue Cloth / Object", "rgb": [45, 115, 205], "hexCode": "#2D73CD", "type": "artificial" }
   ]
 }

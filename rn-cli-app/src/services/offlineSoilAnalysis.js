@@ -157,6 +157,37 @@ export async function validateSoilGate({
     };
   }
 
+  // 7. Non-soil / Fake soil centroid check (human skin, blank paper, desk wood, concrete tile, plastic)
+  const fakeCentroids = calibration?.fake_centroids || [];
+  let minFakeDist = Infinity;
+  let closestFake = null;
+  for (const fc of fakeCentroids) {
+    let fcLab = fc.lab;
+    if (!fcLab && fc.rgb) {
+      fcLab = rgbToLab(fc.rgb[0], fc.rgb[1], fc.rgb[2]);
+    } else if (!fcLab && fc.hexCode) {
+      const [fcr, fcg, fcb] = hexToRgb(fc.hexCode);
+      fcLab = rgbToLab(fcr, fcg, fcb);
+    }
+    if (fcLab) {
+      const dist = deltaE(targetLab, fcLab);
+      if (dist < minFakeDist) {
+        minFakeDist = dist;
+        closestFake = fc;
+      }
+    }
+  }
+
+  // Reject if matches non-soil reference and is closer to fake surface than real soil
+  if (closestFake && minFakeDist < 14.0 && minFakeDist < minCentroidDist * 0.8) {
+    return {
+      isValid: false,
+      reason: 'non_soil_surface_matched',
+      message: `Non-soil surface detected (${closestFake.name || 'artificial/flat surface'}). Please aim camera directly at real soil.`,
+      deltaE: minFakeDist,
+    };
+  }
+
   return {
     isValid: true,
     reason: 'real_soil_verified',
