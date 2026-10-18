@@ -533,12 +533,15 @@
                 body * {
                     visibility: hidden !important;
                 }
+                .fixed, [class*="fixed"], .section-records-dialog {
+                    display: none !important;
+                }
                 #sectionRecordsPrintArea, #sectionRecordsPrintArea * {
                     visibility: visible !important;
                 }
                 #sectionRecordsPrintArea {
                     display: block !important;
-                    position: absolute !important;
+                    position: static !important;
                     left: 0 !important;
                     top: 0 !important;
                     width: 100% !important;
@@ -617,15 +620,7 @@
                         {{-- OPTION 1: PRINT --}}
                         <button
                             type="button"
-                            @click="
-                                openMenu = false;
-                                const origDocTitle = document.title;
-                                document.title = '';
-                                setTimeout(() => {
-                                    window.print();
-                                    setTimeout(() => { document.title = origDocTitle; }, 1000);
-                                }, 150);
-                            "
+                            @click="openMenu = false; if (typeof window.printSectionRecords === 'function') { window.printSectionRecords(); } else { window.print(); }"
                             style="width: 100%; min-height: 40px; padding: 8px 14px; border-radius: 10px; border: none; background: transparent; color: #0f172a; font-size: 13px; font-weight: 600; text-align: left; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.15s ease; box-sizing: border-box;"
                             onmouseover="this.style.background='#f1f5f9';"
                             onmouseout="this.style.background='transparent';"
@@ -688,9 +683,10 @@
             </div>
         </div>
     </div>
+</div>
 
-    {{-- DEDICATED PRINT-ONLY LAYOUT (LANDSCAPE, BLACK & WHITE ONLY, CSU HEADER, DOCUMENT TITLE, TABLE, FOOTER) --}}
-    <div id="sectionRecordsPrintArea">
+{{-- DEDICATED PRINT-ONLY LAYOUT (LANDSCAPE, BLACK & WHITE ONLY, CSU HEADER, DOCUMENT TITLE, TABLE, FOOTER) --}}
+<div id="sectionRecordsPrintArea">
         {{-- TOP 3-COLUMN HEADER TABLE (Left: Republic & CSU info, Center: Logo, Right: Contact info) --}}
         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; font-family: Arial, sans-serif;">
             {{-- 1. Left: Republic & CSU Addresses --}}
@@ -818,6 +814,87 @@
             </div>
         </div>
     </div>
-</div>
+
+<script>
+window.printSectionRecords = function() {
+    var area = document.getElementById('sectionRecordsPrintArea');
+    if (!area) {
+        window.print();
+        return;
+    }
+
+    var iframe = document.getElementById('sectionRecordsPrintIframe');
+    if (iframe) {
+        iframe.remove();
+    }
+
+    iframe = document.createElement('iframe');
+    iframe.id = 'sectionRecordsPrintIframe';
+    iframe.style.position = 'fixed';
+    iframe.style.top = '-99999px';
+    iframe.style.left = '-99999px';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    var doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write('<!DOCTYPE html><html><head><title><\/title>');
+    doc.write('<style>');
+    doc.write('@page { size: A4 landscape; margin: 0 !important; }');
+    doc.write('html, body { margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #000000 !important; font-family: Arial, sans-serif !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }');
+    doc.write('.print-wrap { padding: 10mm 14mm; box-sizing: border-box; width: 100%; }');
+    doc.write('table { width: 100%; border-collapse: collapse; }');
+    doc.write('th, td { border: 1px solid #000000; padding: 6px 8px; }');
+    doc.write('thead { display: table-header-group; }');
+    doc.write('tr { page-break-inside: avoid; }');
+    doc.write('<\/style>');
+    doc.write('<\/head><body>');
+    doc.write('<div class="print-wrap">' + area.innerHTML + '<\/div>');
+    doc.write('<\/body><\/html>');
+    doc.close();
+
+    var triggerPrint = function() {
+        try {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        } catch (e) {
+            console.error('Print error:', e);
+            window.print();
+        }
+    };
+
+    var imgs = iframe.contentDocument ? iframe.contentDocument.querySelectorAll('img') : [];
+    if (imgs && imgs.length > 0) {
+        var loaded = 0;
+        var total = imgs.length;
+        var fired = false;
+        var checkDone = function() {
+            loaded++;
+            if (!fired && loaded >= total) {
+                fired = true;
+                setTimeout(triggerPrint, 80);
+            }
+        };
+        imgs.forEach(function(img) {
+            if (img.complete) {
+                checkDone();
+            } else {
+                img.onload = checkDone;
+                img.onerror = checkDone;
+            }
+        });
+        setTimeout(function() {
+            if (!fired) {
+                fired = true;
+                triggerPrint();
+            }
+        }, 500);
+    } else {
+        setTimeout(triggerPrint, 150);
+    }
+};
+</script>
 @endif
 </div>

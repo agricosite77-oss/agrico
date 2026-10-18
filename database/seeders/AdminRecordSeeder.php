@@ -301,6 +301,66 @@ class AdminRecordSeeder extends Seeder
                 'student_id' => '2025-0156',
                 'section'    => 'BS Agriculture 2-B',
             ],
+            [
+                'name'       => 'Kyle Cedric Ramos',
+                'email'      => 'ramos.kylecedric@csu.edu.ph',
+                'student_id' => '2025-0165',
+                'section'    => 'BS Agriculture 2-A',
+            ],
+            [
+                'name'       => 'Hannah Joy Dela Rosa',
+                'email'      => 'delarosa.hannah@csu.edu.ph',
+                'student_id' => '2025-0178',
+                'section'    => 'BS Agriculture 2-A',
+            ],
+            [
+                'name'       => 'Justin Dave Macarubbo',
+                'email'      => 'macarubbo.justin@csu.edu.ph',
+                'student_id' => '2025-0189',
+                'section'    => 'BS Agriculture 2-B',
+            ],
+            [
+                'name'       => 'Trisha Mae Agcaoili',
+                'email'      => 'agcaoili.trisha@csu.edu.ph',
+                'student_id' => '2025-0192',
+                'section'    => 'BS Agriculture 2-B',
+            ],
+            [
+                'name'       => 'Leandro Jose Umingan',
+                'email'      => 'umingan.leandro@csu.edu.ph',
+                'student_id' => '2024-0205',
+                'section'    => 'BS Agriculture 3-A',
+            ],
+            [
+                'name'       => 'Nicole Anne Baclig',
+                'email'      => 'baclig.nicole@csu.edu.ph',
+                'student_id' => '2024-0218',
+                'section'    => 'BS Agriculture 3-B',
+            ],
+            [
+                'name'       => 'Dominic Matthew Siriban',
+                'email'      => 'siriban.dominic@csu.edu.ph',
+                'student_id' => '2023-0224',
+                'section'    => 'BS Agriculture 4-A',
+            ],
+            [
+                'name'       => 'Christine Jane Pasion',
+                'email'      => 'pasion.christine@csu.edu.ph',
+                'student_id' => '2023-0237',
+                'section'    => 'BS Agriculture 4-A',
+            ],
+            [
+                'name'       => 'Vince Patrick Callangan',
+                'email'      => 'callangan.vince@csu.edu.ph',
+                'student_id' => '2023-0245',
+                'section'    => 'BS Agriculture 4-B',
+            ],
+            [
+                'name'       => 'Erika Mae Salvador',
+                'email'      => 'salvador.erika@csu.edu.ph',
+                'student_id' => '2023-0258',
+                'section'    => 'BS Agriculture 4-B',
+            ],
         ];
 
         foreach ($students as $idx => $st) {
@@ -323,7 +383,7 @@ class AdminRecordSeeder extends Seeder
                 'status'                => 'Active',
                 'student_id'            => $st['student_id'],
                 'section'               => $st['section'],
-                'student_record_status' => 'Enrolled',
+                'student_record_status' => 'Active',
                 'last_admin_id'         => $adminId,
             ]);
         }
