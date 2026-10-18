@@ -174,14 +174,8 @@ class StudentRecordsExportService
         }
         $totalColumnCount = 4 + $subcolumnCount;
 
-        // Dynamic font sizing based on column count
+        // Table font size: fixed to 9 for all table content
         $fontSize = 9;
-        if ($totalColumnCount > 8) {
-            $fontSize = 8;
-        }
-        if ($totalColumnCount > 12) {
-            $fontSize = 7;
-        }
 
         // Allocate column twip widths
         $numWidth = 600;
@@ -211,25 +205,25 @@ class StudentRecordsExportService
         ];
         $headerFont = [
             'name'  => 'Arial',
-            'size'  => $fontSize,
+            'size'  => 9,
             'bold'  => true,
             'color' => '000000',
         ];
         $headerSubFont = [
             'name'  => 'Arial',
-            'size'  => max(6, $fontSize - 1),
+            'size'  => 9,
             'bold'  => false,
             'color' => '000000',
         ];
         $bodyFont = [
             'name'  => 'Arial',
-            'size'  => $fontSize,
+            'size'  => 9,
             'bold'  => false,
             'color' => '000000',
         ];
         $bodyBoldFont = [
             'name'  => 'Arial',
-            'size'  => $fontSize,
+            'size'  => 9,
             'bold'  => true,
             'color' => '000000',
         ];
@@ -553,7 +547,7 @@ class StudentRecordsExportService
 
         // Apply styles to headers: Bold, Black text, White background (No Fill), Thin Black borders
         $headerRange = "A{$tableHeaderRow1}:{$lastColLetter}{$tableHeaderRow2}";
-        $sheet->getStyle($headerRange)->getFont()->setName('Arial')->setSize(9.5)->setBold(true)->getColor()->setRGB('000000');
+        $sheet->getStyle($headerRange)->getFont()->setName('Arial')->setSize(9)->setBold(true)->getColor()->setRGB('000000');
         $sheet->getStyle($headerRange)->getAlignment()->setWrapText(true)->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
         $sheet->getStyle($headerRange)->getFill()->setFillType(Fill::FILL_NONE);
 

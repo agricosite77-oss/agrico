@@ -1231,10 +1231,10 @@
                 // 1. Measure real rendered element heights using a temporary measurement sandbox with print styling
                 var measureBox = document.createElement('div');
                 measureBox.id = 'agricoMeasureSandbox';
-                measureBox.style.cssText = 'position: absolute; left: -99999px; top: 0; width: 285mm; visibility: hidden; font-family: Arial, sans-serif; font-size: 8pt; line-height: 1.15;';
+                measureBox.style.cssText = 'position: absolute; left: -99999px; top: 0; width: 285mm; visibility: hidden; font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.15;';
 
                 var styleEl = document.createElement('style');
-                styleEl.textContent = '#agricoMeasureSandbox table { width: 100% !important; border-collapse: collapse !important; font-family: Arial, sans-serif !important; font-size: 8pt !important; } #agricoMeasureSandbox th, #agricoMeasureSandbox td { border: 1px solid #000000 !important; padding: 2px 4px !important; font-size: 7.5pt !important; line-height: 1.15 !important; box-sizing: border-box !important; }';
+                styleEl.textContent = '#agricoMeasureSandbox table { width: 100% !important; border-collapse: collapse !important; font-family: Arial, sans-serif !important; font-size: 9pt !important; } #agricoMeasureSandbox th, #agricoMeasureSandbox td { border: 1px solid #000000 !important; padding: 2px 4px !important; font-size: 9pt !important; line-height: 1.15 !important; box-sizing: border-box !important; }';
                 measureBox.appendChild(styleEl);
                 document.body.appendChild(measureBox);
 
@@ -1456,7 +1456,7 @@
                 background: #ffffff !important;
                 color: #000000 !important;
                 padding: 2px 4px !important;
-                font-size: 7.5pt !important;
+                font-size: 9pt !important;
                 line-height: 1.15 !important;
                 box-sizing: border-box !important;
             }

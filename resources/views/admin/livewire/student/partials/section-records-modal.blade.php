@@ -571,7 +571,7 @@
                     background: #ffffff !important;
                     color: #000000 !important;
                     padding: 2px 4px !important;
-                    font-size: 7.5pt !important;
+                    font-size: 9pt !important;
                     line-height: 1.15 !important;
                     box-sizing: border-box !important;
                 }
@@ -764,7 +764,7 @@
     </div>
 
     {{-- PRINT TABLE --}}
-    <table id="sectionRecordsPrintTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 8pt; color: #000000;">
+    <table id="sectionRecordsPrintTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 9pt; color: #000000;">
             <thead>
                 <tr style="page-break-inside: avoid;">
                     <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 36px;">#</th>
@@ -785,7 +785,7 @@
                         @if($cols)
                             <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000;">
                                 <div>{{ !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1)) }}</div>
-                                <div style="font-size: 7pt; font-weight: normal; margin-top: 1px;">{{ $windowLabel }}</div>
+                                <div style="font-size: 9pt; font-weight: normal; margin-top: 1px;">{{ $windowLabel }}</div>
                             </th>
                         @endif
                     @endforeach
@@ -794,12 +794,12 @@
                 <tr style="page-break-inside: avoid;">
                     @foreach($cards as $i => $card)
                         @if(!empty($card['show_scans']))
-                            <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 7.5pt;">
+                            <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">
                                 {{ $card['scan_name'] ?? 'Scan Soil' }}
                             </th>
                         @endif
                         @if(!empty($card['show_pins']))
-                            <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 7.5pt;">
+                            <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 9pt;">
                                 {{ $card['pin_name'] ?? 'Pin Soil Location' }}
                             </th>
                         @endif
