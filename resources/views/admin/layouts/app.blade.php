@@ -1230,19 +1230,20 @@
 
                 // 1. Measure real rendered element heights using a temporary measurement sandbox
                 var measureBox = document.createElement('div');
+                measureBox.id = 'agricoPrintContainer';
                 measureBox.style.cssText = 'position: absolute; left: -99999px; top: 0; width: 281mm; visibility: hidden;';
                 document.body.appendChild(measureBox);
 
                 var headerClone = headerEl.cloneNode(true);
                 measureBox.appendChild(headerClone);
-                var headerHeight = headerClone.offsetHeight || 140;
+                var headerHeight = headerClone.offsetHeight || 120;
 
                 var tableClone = document.createElement('table');
                 tableClone.style.cssText = 'width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 8pt;';
                 var theadClone = thead.cloneNode(true);
                 tableClone.appendChild(theadClone);
                 measureBox.appendChild(tableClone);
-                var theadHeight = theadClone.offsetHeight || 48;
+                var theadHeight = theadClone.offsetHeight || 44;
 
                 var tbodyMeasure = document.createElement('tbody');
                 tableClone.appendChild(tbodyMeasure);
@@ -1251,15 +1252,15 @@
                 for (var i = 0; i < allRows.length; i++) {
                     var rClone = allRows[i].cloneNode(true);
                     tbodyMeasure.appendChild(rClone);
-                    rowHeights.push(rClone.offsetHeight || 28);
+                    rowHeights.push(rClone.offsetHeight || 25);
                 }
                 measureBox.remove();
 
                 // 2. Safe height budgets for content on A4 landscape (printable height ~748px)
-                // Page 1 budget accommodates CSU Header + Thead + ~12-13 rows + running footer
-                // Subsequent pages budget accommodates Thead + ~18-19 rows + running footer
-                var PAGE_1_MAX_HEIGHT = 550;
-                var SUBSEQUENT_PAGE_MAX_HEIGHT = 630;
+                // Page 1 budget: ~660px comfortably fits CSU Header + Thead + ~16-18 rows + running footer
+                // Subsequent pages budget: ~700px fits Thead + ~22-25 rows + running footer
+                var PAGE_1_MAX_HEIGHT = 660;
+                var SUBSEQUENT_PAGE_MAX_HEIGHT = 700;
 
                 // 3. Dynamically partition rows by available pixel height
                 var pages = [];
@@ -1268,7 +1269,7 @@
                 var currentHeight = headerHeight + theadHeight;
 
                 for (var i = 0; i < allRows.length; i++) {
-                    var rHeight = rowHeights[i] || 28;
+                    var rHeight = rowHeights[i] || 25;
                     if (currentPageRows.length > 0 && (currentHeight + rHeight > currentLimit)) {
                         pages.push(currentPageRows);
                         currentPageRows = [allRows[i]];
@@ -1436,9 +1437,9 @@
                 border: 1px solid #000000 !important;
                 background: #ffffff !important;
                 color: #000000 !important;
-                padding: 3.5px 5px !important;
+                padding: 2.5px 5px !important;
                 font-size: 8pt !important;
-                line-height: 1.25 !important;
+                line-height: 1.2 !important;
                 box-sizing: border-box !important;
             }
             #agricoPrintContainer th {

@@ -563,9 +563,9 @@
                     border: 1px solid #000000 !important;
                     background: #ffffff !important;
                     color: #000000 !important;
-                    padding: 3.5px 5px !important;
+                    padding: 2.5px 5px !important;
                     font-size: 8pt !important;
-                    line-height: 1.25 !important;
+                    line-height: 1.2 !important;
                     box-sizing: border-box !important;
                 }
                 #agricoPrintContainer th {
@@ -726,7 +726,7 @@
             {{-- 2. Center: CSU Logo --}}
             <div style="flex: 0 0 auto; text-align: center; padding: 0 10px;">
                 @if(file_exists(public_path('images/csu-logo.png')))
-                    <img src="{{ asset('images/csu-logo.png') }}" alt="CSU Logo" style="height: 42px; width: auto; object-fit: contain; display: inline-block;" />
+                    <img src="{{ asset('images/csu-logo.png') }}" alt="CSU Logo" style="height: 38px; width: auto; object-fit: contain; display: inline-block;" />
                 @endif
             </div>
 
@@ -739,20 +739,20 @@
         </div>
 
         {{-- CAMPUS MAIN TITLE --}}
-        <div style="text-align: center; font-size: 10pt; font-weight: bold; color: #000000; margin-top: 4px; margin-bottom: 3px; letter-spacing: 0.02em; font-family: Arial, sans-serif;">
+        <div style="text-align: center; font-size: 9.5pt; font-weight: bold; color: #000000; margin-top: 2px; margin-bottom: 2px; letter-spacing: 0.02em; font-family: Arial, sans-serif;">
             CAGAYAN STATE UNIVERSITY Lal-lo Campus
         </div>
 
         {{-- HORIZONTAL DIVIDER LINE --}}
-        <div style="width: 100%; border-bottom: 1.5px solid #000000; margin-bottom: 5px;"></div>
+        <div style="width: 100%; border-bottom: 1.5px solid #000000; margin-bottom: 3px;"></div>
 
         {{-- DOCUMENT TITLE (AFTER THE LINE, WITH SPACE BEFORE AND AFTER) --}}
         @if(!empty(trim($documentTitle)))
-            <div style="text-align: center; font-size: 10pt; font-weight: bold; color: #000000; margin-top: 5px; margin-bottom: 6px; text-transform: uppercase; font-family: Arial, sans-serif;">
+            <div style="text-align: center; font-size: 9.5pt; font-weight: bold; color: #000000; margin-top: 2px; margin-bottom: 3px; text-transform: uppercase; font-family: Arial, sans-serif;">
                 {{ trim($documentTitle) }}
             </div>
         @else
-            <div style="margin-bottom: 4px;"></div>
+            <div style="margin-bottom: 2px;"></div>
         @endif
     </div>
 
@@ -760,9 +760,9 @@
     <table id="sectionRecordsPrintTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000000; font-family: Arial, sans-serif; font-size: 8pt; color: #000000;">
             <thead>
                 <tr style="page-break-inside: avoid;">
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 36px;">#</th>
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 3.5px 5px; text-align: left; font-weight: bold; background: #ffffff; color: #000000;">Student Name</th>
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 90px;">Section</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 36px;">#</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: left; font-weight: bold; background: #ffffff; color: #000000;">Student Name</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 90px;">Section</th>
                     @foreach($cards as $i => $card)
                         @php
                             $cols = (!empty($card['show_scans']) ? 1 : 0) + (!empty($card['show_pins']) ? 1 : 0);
@@ -775,23 +775,23 @@
                                        : ($start ? "From {$start}" : ($end ? "Until {$end}" : 'All Day'));
                         @endphp
                         @if($cols)
-                            <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000;">
+                            <th colspan="{{ $cols }}" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000;">
                                 <div>{{ !empty($card['activity_name']) ? $card['activity_name'] : ('Activity #' . ($i + 1)) }}</div>
                                 <div style="font-size: 7pt; font-weight: normal; margin-top: 1px;">{{ trim($dateLabel . ' · ' . $timeLabel, ' ·') }}</div>
                             </th>
                         @endif
                     @endforeach
-                    <th rowspan="2" style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 55px;">Total</th>
+                    <th rowspan="2" style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; width: 55px;">Total</th>
                 </tr>
                 <tr style="page-break-inside: avoid;">
                     @foreach($cards as $i => $card)
                         @if(!empty($card['show_scans']))
-                            <th style="border: 1px solid #000000; padding: 3px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 7.5pt;">
+                            <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 7.5pt;">
                                 {{ $card['scan_name'] ?? 'Scan' }}
                             </th>
                         @endif
                         @if(!empty($card['show_pins']))
-                            <th style="border: 1px solid #000000; padding: 3px 5px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 7.5pt;">
+                            <th style="border: 1px solid #000000; padding: 2px 4px; text-align: center; font-weight: bold; background: #ffffff; color: #000000; font-size: 7.5pt;">
                                 {{ $card['pin_name'] ?? 'Pin Location' }}
                             </th>
                         @endif
@@ -802,24 +802,24 @@
                 @forelse($sectionRecords as $n => $student)
                     @php $rowTotal = 0; @endphp
                     <tr style="page-break-inside: avoid;">
-                        <td style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
-                        <td style="border: 1px solid #000000; padding: 3.5px 5px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
-                        <td style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; color: #000000;">{{ $student->section }}</td>
+                        <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
+                        <td style="border: 1px solid #000000; padding: 2.5px 5px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
+                        <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">{{ $student->section }}</td>
                         @foreach($cards as $i => $card)
                             @if(!empty($card['show_scans']))
                                 @php $s = (int) ($student->{"card_{$i}_scans_count"} ?? 0); $rowTotal += $s; @endphp
-                                <td style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; color: #000000;">
+                                <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">
                                     {{ $s }}
                                 </td>
                             @endif
                             @if(!empty($card['show_pins']))
                                 @php $p = (int) ($student->{"card_{$i}_pins_count"} ?? 0); $rowTotal += $p; @endphp
-                                <td style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; color: #000000;">
+                                <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">
                                     {{ $p }}
                                 </td>
                             @endif
                         @endforeach
-                        <td style="border: 1px solid #000000; padding: 3.5px 5px; text-align: center; font-weight: bold; color: #000000;">{{ $rowTotal }}</td>
+                        <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; font-weight: bold; color: #000000;">{{ $rowTotal }}</td>
                     </tr>
                 @empty
                     <tr>
