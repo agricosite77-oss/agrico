@@ -36,6 +36,17 @@ class StudentRecordsExportService
     }
 
     /**
+     * Format section name for reports (strips "BS Agriculture" prefix if present).
+     */
+    public static function formatSection(?string $section): string
+    {
+        if ($section === null) {
+            return '';
+        }
+        return trim(preg_replace('/^BS\s*Agriculture[\s\-_]*/i', '', $section));
+    }
+
+    /**
      * Generate and stream MS Word (.docx) export in landscape.
      */
     public function exportDocx($students, array $cards, string $sectionFilter, string $documentTitle, string $adminName): StreamedResponse
@@ -308,7 +319,7 @@ class StudentRecordsExportService
 
                 // Section
                 $row->addCell($sectionWidth, $cellBase)
-                    ->addText($student->section ?? '', $bodyFont, ['alignment' => Jc::CENTER]);
+                    ->addText(self::formatSection($student->section ?? ''), $bodyFont, ['alignment' => Jc::CENTER]);
 
                 // Activity counts
                 foreach ($cards as $i => $card) {
@@ -563,7 +574,7 @@ class StudentRecordsExportService
             foreach ($students as $index => $student) {
                 $sheet->setCellValue("A{$currentRow}", $index + 1);
                 $sheet->setCellValue("B{$currentRow}", $student->name ?? '');
-                $sheet->setCellValue("C{$currentRow}", $student->section ?? '');
+                $sheet->setCellValue("C{$currentRow}", self::formatSection($student->section ?? ''));
 
                 $cIdx = 4;
                 $rowTotal = 0;

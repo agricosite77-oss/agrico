@@ -351,7 +351,7 @@
 
                     @if($sectionRecordsSectionFilter)
                         <span style="background: #f0fdf4; color: #16a34a; border: 1px solid #86efac; padding: 2px 9px; border-radius: 9999px; font-weight: 700; font-size: 11px;">
-                            Section: {{ $sectionRecordsSectionFilter }}
+                            Section: {{ trim(preg_replace('/^BS\s*Agriculture[\s\-_]*/i', '', $sectionRecordsSectionFilter)) }}
                         </span>
                     @else
                         <span style="background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; padding: 2px 9px; border-radius: 9999px; font-weight: 600; font-size: 11px;">
@@ -420,7 +420,7 @@
                             <tr>
                                 <td class="num">{{ $n + 1 }}</td>
                                 <td style="font-weight: 600; color: #0f172a;">{{ $student->name }}</td>
-                                <td>{{ $student->section }}</td>
+                                <td class="num" style="font-weight: 600; color: #475569;">{{ trim(preg_replace('/^BS\s*Agriculture[\s\-_]*/i', '', $student->section ?? '')) }}</td>
                                 @foreach($cards as $i => $card)
                                     @if(!empty($card['show_scans']))
                                         @php $s = (int) ($student->{"card_{$i}_scans_count"} ?? 0); $rowTotal += $s; @endphp
@@ -804,7 +804,7 @@
                     <tr style="page-break-inside: avoid;">
                         <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">{{ $n + 1 }}</td>
                         <td style="border: 1px solid #000000; padding: 2.5px 5px; font-weight: bold; color: #000000;">{{ $student->name }}</td>
-                        <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">{{ $student->section }}</td>
+                        <td style="border: 1px solid #000000; padding: 2.5px 5px; text-align: center; color: #000000;">{{ trim(preg_replace('/^BS\s*Agriculture[\s\-_]*/i', '', $student->section ?? '')) }}</td>
                         @foreach($cards as $i => $card)
                             @if(!empty($card['show_scans']))
                                 @php $s = (int) ($student->{"card_{$i}_scans_count"} ?? 0); $rowTotal += $s; @endphp

@@ -273,4 +273,15 @@ class StudentRecordsExportTest extends TestCase
         file_put_contents($xlsxPath, ob_get_clean());
         $this->assertFileExists($xlsxPath);
     }
+
+    public function test_format_section_removes_bs_agriculture_prefix()
+    {
+        $this->assertEquals('4-A', StudentRecordsExportService::formatSection('BS Agriculture 4-A'));
+        $this->assertEquals('4-B', StudentRecordsExportService::formatSection('BS Agriculture 4-B'));
+        $this->assertEquals('2-A', StudentRecordsExportService::formatSection('bs agriculture 2-A'));
+        $this->assertEquals('3-A', StudentRecordsExportService::formatSection('BS Agriculture - 3-A'));
+        $this->assertEquals('BSIT-4A', StudentRecordsExportService::formatSection('BSIT-4A'));
+        $this->assertEquals('4-A', StudentRecordsExportService::formatSection('4-A'));
+        $this->assertEquals('', StudentRecordsExportService::formatSection(null));
+    }
 }
