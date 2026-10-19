@@ -240,13 +240,6 @@
             background-color: rgba(6, 78, 59, 0.4) !important;
         }
 
-        .soil-action-title-desktop {
-            display: inline;
-        }
-        .soil-action-title-mobile {
-            display: none;
-        }
-
         .soil-mobile-date {
             display: none;
         }
@@ -280,8 +273,14 @@
             color: #f1f5f9 !important;
         }
 
-        /* Action buttons: base look (neutral + colored hover) comes from the global admin layout.
-           Only the size is aligned with the other admin tables here. */
+        /* Action buttons standard styling */
+        .soil-action-btns {
+            display: inline-flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 6px !important;
+            white-space: nowrap !important;
+        }
         .soil-table .agrico-view-btn,
         .soil-table .agrico-delete-btn {
             width: 36px !important;
@@ -291,111 +290,14 @@
             min-height: 36px !important;
             max-height: 36px !important;
             border-radius: 11px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         .soil-table .agrico-view-btn svg,
         .soil-table .agrico-delete-btn svg {
             width: 17px !important;
             height: 17px !important;
-        }
-        .soil-desktop-actions {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-        .soil-mobile-actions {
-            display: none;
-        }
-
-        /* Mobile More Actions Button & Dropdown Menu (same as other admin tables) */
-        .agrico-more-btn {
-            width: 40px !important;
-            height: 40px !important;
-            min-width: 40px !important;
-            max-width: 40px !important;
-            min-height: 40px !important;
-            max-height: 40px !important;
-            border-radius: 12px !important;
-            background: #ffffff !important;
-            border: 1px solid #e2e8f0 !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            color: #64748b !important;
-            cursor: pointer !important;
-            transition: all 0.2s ease !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
-        }
-        .agrico-more-btn:hover {
-            background: #f8fafc !important;
-            color: #0f172a !important;
-            border-color: #cbd5e1 !important;
-        }
-        .dark .agrico-more-btn {
-            background: #1e293b !important;
-            border-color: #334155 !important;
-            color: #94a3b8 !important;
-        }
-        .dark .agrico-more-btn:hover {
-            background: #334155 !important;
-            color: #f8fafc !important;
-        }
-        .agrico-mobile-dropdown {
-            position: absolute !important;
-            right: 0 !important;
-            width: 160px !important;
-            background: #ffffff !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 16px !important;
-            box-shadow: 0 12px 28px -4px rgba(0,0,0,0.14), 0 8px 12px -6px rgba(0,0,0,0.06) !important;
-            padding: 6px !important;
-            z-index: 90 !important;
-            text-align: left !important;
-        }
-        .dark .agrico-mobile-dropdown {
-            background: #1e293b !important;
-            border-color: #334155 !important;
-            box-shadow: 0 12px 28px -4px rgba(0,0,0,0.4) !important;
-        }
-        .agrico-dropdown-item {
-            width: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-            gap: 10px !important;
-            padding: 8px 12px !important;
-            border-radius: 10px !important;
-            border: none !important;
-            background: transparent !important;
-            font-size: 13px !important;
-            font-weight: 600 !important;
-            color: #334155 !important;
-            cursor: pointer !important;
-            transition: all 0.15s ease !important;
-            text-align: left !important;
-            box-sizing: border-box !important;
-        }
-        .agrico-dropdown-item:hover {
-            background: #f8fafc !important;
-            color: #0f172a !important;
-        }
-        .dark .agrico-dropdown-item {
-            color: #cbd5e1 !important;
-        }
-        .dark .agrico-dropdown-item:hover {
-            background: #334155 !important;
-            color: #ffffff !important;
-        }
-        .agrico-dropdown-item-danger {
-            color: #ef4444 !important;
-        }
-        .agrico-dropdown-item-danger:hover {
-            background: #fef2f2 !important;
-            color: #b91c1c !important;
-        }
-        .dark .agrico-dropdown-item-danger:hover {
-            background: rgba(239, 68, 68, 0.15) !important;
-            color: #fca5a5 !important;
         }
 
         /* ── TABLET BREAKPOINT (< 768px): date moves under Detected Colors so table fits seamlessly ── */
@@ -413,14 +315,8 @@
             }
         }
 
-        /* ── MOBILE BREAKPOINT (< 680px): table fits screen, Action is single ⋮ button ── */
+        /* ── MOBILE BREAKPOINT (< 680px): table fits screen ── */
         @media (max-width: 679px) {
-            .soil-action-title-desktop {
-                display: none !important;
-            }
-            .soil-action-title-mobile {
-                display: inline !important;
-            }
             .soil-table-container {
                 overflow: visible !important;
                 width: 100% !important;
@@ -480,30 +376,39 @@
                 margin-right: 3px !important;
             }
 
-            /* Action column: always visible, single "⋮" button */
+            /* Action column on mobile: two buttons side-by-side */
             .soil-table th.col-sticky-action,
             .soil-table td.col-sticky-action {
                 display: table-cell !important;
                 position: static !important;
                 left: auto !important;
                 right: auto !important;
-                width: 58px !important;
-                min-width: 58px !important;
-                max-width: 58px !important;
+                width: 92px !important;
+                min-width: 92px !important;
+                max-width: 96px !important;
                 padding: 10px 4px !important;
                 text-align: center !important;
                 box-shadow: none !important;
                 border-left: none !important;
                 border-right: none !important;
             }
-            .soil-desktop-actions {
-                display: none !important;
+            .soil-action-btns {
+                gap: 5px !important;
             }
-            .soil-mobile-actions {
-                display: inline-flex !important;
-                position: relative !important;
-                justify-content: center !important;
-                align-items: center !important;
+            .soil-table .agrico-view-btn,
+            .soil-table .agrico-delete-btn {
+                width: 34px !important;
+                height: 34px !important;
+                min-width: 34px !important;
+                max-width: 34px !important;
+                min-height: 34px !important;
+                max-height: 34px !important;
+                border-radius: 10px !important;
+            }
+            .soil-table .agrico-view-btn svg,
+            .soil-table .agrico-delete-btn svg {
+                width: 16px !important;
+                height: 16px !important;
             }
         }
     </style>
@@ -600,8 +505,7 @@
 
                         {{-- ACTION (no sorting) --}}
                         <th class="px-3 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap col-sticky-action">
-                            <span class="soil-action-title-desktop">ACTIONS</span>
-                            <span class="soil-action-title-mobile">ACTION</span>
+                            ACTIONS
                         </th>
                     </tr>
                 </thead>
@@ -673,8 +577,7 @@
 
                         {{-- ACTION --}}
                         <td class="px-3 py-4 whitespace-nowrap col-sticky-action text-center">
-                            {{-- DESKTOP INLINE ACTIONS --}}
-                            <div class="soil-desktop-actions">
+                            <div class="soil-action-btns">
                                 {{-- VIEW (Line Eye) --}}
                                 <button
                                     wire:click="$dispatch('view-soil',{id:{{ $scan->soil_scan_id }}})"
@@ -697,63 +600,6 @@
                                         <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
                                 </button>
-                            </div>
-
-                            {{-- MOBILE MORE ACTIONS "⋮" DROPDOWN --}}
-                            <div class="soil-mobile-actions" x-data="{ open: false, dropUp: false }" @click.outside="open = false" :style="open ? 'z-index: 60;' : ''">
-                                <button
-                                    @click="dropUp = ($el.getBoundingClientRect().bottom + 130 > window.innerHeight); open = !open"
-                                    type="button"
-                                    class="agrico-more-btn"
-                                    title="More Actions"
-                                    aria-label="More Actions"
-                                >
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;">
-                                        <circle cx="12" cy="5" r="2"/>
-                                        <circle cx="12" cy="12" r="2"/>
-                                        <circle cx="12" cy="19" r="2"/>
-                                    </svg>
-                                </button>
-
-                                <div
-                                    x-show="open"
-                                    x-cloak
-                                    x-transition:enter="transition ease-out duration-150"
-                                    x-transition:enter-start="opacity-0 scale-95"
-                                    x-transition:enter-end="opacity-100 scale-100"
-                                    x-transition:leave="transition ease-in duration-100"
-                                    x-transition:leave-start="opacity-100 scale-100"
-                                    x-transition:leave-end="opacity-0 scale-95"
-                                    class="agrico-mobile-dropdown"
-                                    :style="dropUp ? 'bottom: calc(100% + 6px); top: auto;' : 'top: calc(100% + 6px); bottom: auto;'"
-                                >
-                                    <button
-                                        @click="open = false"
-                                        wire:click="$dispatch('view-soil',{id:{{ $scan->soil_scan_id }}})"
-                                        type="button"
-                                        class="agrico-dropdown-item"
-                                    >
-                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="color:#2563eb; flex-shrink:0;">
-                                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                        <span>View Scan</span>
-                                    </button>
-
-                                    <div class="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
-
-                                    <button
-                                        @click="open = false"
-                                        wire:click="$dispatch('delete-soil',{id:{{ $scan->soil_scan_id }}})"
-                                        type="button"
-                                        class="agrico-dropdown-item agrico-dropdown-item-danger"
-                                    >
-                                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="color:#ef4444; flex-shrink:0;">
-                                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                        </svg>
-                                        <span>Delete Scan</span>
-                                    </button>
-                                </div>
                             </div>
                         </td>
                     </tr>
