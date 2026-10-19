@@ -236,11 +236,23 @@
                 font-size: 14px !important;
             }
 
-            /* ── MOBILE TABLE RESPONSIVE LAYOUT (3 CLEAN COLUMNS FOR PERFECT MOBILE FIT) ── */
+            /* ── MOBILE TABLE RESPONSIVE LAYOUT (MATCHING ADMIN SCAN HISTORY EXACTLY) ── */
             .ws-table-section {
                 padding: 0 6px 40px !important;
             }
+            .ws-table-container,
+            .ws-table-card > div[style*="overflow-x:auto"],
+            .ws-table-card > div[style*="overflow-x: auto"] {
+                overflow: visible !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
             .ws-table-card {
+                overflow: visible !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
                 border-radius: 16px !important;
             }
             .ws-table-header {
@@ -250,69 +262,95 @@
             .col-th-desc, .col-soil-desc,
             .col-th-code, .col-soil-code,
             .col-th-seq-count, .col-soil-seq,
-            .col-th-date, .col-soil-date {
+            .col-th-date, .col-soil-date,
+            .col-scan-date,
+            table.ws-table th.col-scan-date,
+            table.ws-table td.col-scan-date,
+            table.ws-table th.col-soil-date,
+            table.ws-table td.col-soil-date {
                 display: none !important;
             }
 
-            .mobile-code-inline {
-                display: inline-block !important;
+            .soil-mobile-date {
+                display: block !important;
+                font-size: 11px !important;
+                font-weight: 600 !important;
+                color: #8EB69B !important;
+                margin-top: 2px !important;
+            }
+            html.light-mode .soil-mobile-date {
+                color: #94a3b8 !important;
             }
 
             table.ws-table {
+                table-layout: fixed !important;
                 width: 100% !important;
                 min-width: 0 !important;
                 max-width: 100% !important;
-                table-layout: fixed !important;
                 border-collapse: collapse !important;
+                box-sizing: border-box !important;
             }
 
             table.ws-table th,
             table.ws-table td {
+                padding-top: 10px !important;
+                padding-bottom: 10px !important;
                 box-sizing: border-box !important;
             }
 
-            th.col-th-seq, td.col-seq {
-                width: 10% !important;
-                min-width: 0 !important;
-                max-width: none !important;
-                font-size: 11.5px !important;
-                font-weight: 700 !important;
-                padding: 10px 2px 10px 6px !important;
+            th.col-th-seq, td.col-seq,
+            table.ws-table th.col-seq,
+            table.ws-table td.col-seq {
+                width: 38px !important;
+                min-width: 38px !important;
+                max-width: 42px !important;
+                padding-left: 10px !important;
+                padding-right: 4px !important;
+                font-size: 13px !important;
                 text-align: left !important;
             }
 
-            th.col-th-detected, td.col-detected-colors {
-                width: 38% !important;
+            th.col-th-detected, td.col-detected-colors,
+            table.ws-table th.col-detected-colors,
+            table.ws-table td.col-detected-colors {
+                width: auto !important;
                 min-width: 0 !important;
-                max-width: none !important;
-                font-size: 12px !important;
-                font-weight: 800 !important;
-                white-space: nowrap !important;
+                padding-left: 6px !important;
+                padding-right: 6px !important;
                 overflow: hidden !important;
-                text-overflow: ellipsis !important;
-                padding: 10px 4px !important;
             }
 
-            th.col-th-hue, td.col-soil-hue {
-                width: 28% !important;
-                min-width: 0 !important;
-                max-width: none !important;
+            th.col-th-hue, td.col-soil-hue,
+            table.ws-table th.col-soil-hue,
+            table.ws-table td.col-soil-hue {
+                width: 82px !important;
+                min-width: 82px !important;
+                max-width: 88px !important;
+                padding-left: 4px !important;
+                padding-right: 4px !important;
+            }
+            .hue-badge-pill {
                 font-size: 12px !important;
-                font-weight: 700 !important;
-                padding: 10px 4px !important;
-                white-space: nowrap !important;
-                overflow: hidden !important;
-                text-overflow: ellipsis !important;
+                margin-right: 3px !important;
             }
 
-            th.col-th-action, td.col-action {
-                width: 24% !important;
-                min-width: 0 !important;
-                max-width: none !important;
-                text-align: right !important;
-                padding: 10px 10px 10px 2px !important;
-                white-space: nowrap !important;
-                overflow: visible !important;
+            th.col-th-action, td.col-action,
+            table.ws-table th.col-sticky-action,
+            table.ws-table td.col-sticky-action,
+            table.ws-table th.col-action,
+            table.ws-table td.col-action {
+                display: table-cell !important;
+                position: static !important;
+                left: auto !important;
+                right: auto !important;
+                width: 92px !important;
+                min-width: 92px !important;
+                max-width: 96px !important;
+                padding: 10px 4px !important;
+                text-align: center !important;
+                box-shadow: none !important;
+                border-left: none !important;
+                border-right: none !important;
             }
 
             th.col-th-action {
@@ -323,10 +361,10 @@
             }
 
             .btn-view-scan {
-                padding: 4px 10px !important;
-                font-size: 10.5px !important;
+                padding: 5px 12px !important;
+                font-size: 11px !important;
                 font-weight: 700 !important;
-                border-radius: 12px !important;
+                border-radius: 10px !important;
                 display: inline-block !important;
                 white-space: nowrap !important;
                 box-sizing: border-box !important;
@@ -2016,6 +2054,128 @@
         }
 
         /* ── TABLE STYLING FOR DARK MODE ── */
+        .ws-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: auto !important;
+            overflow-y: visible !important;
+            position: relative !important;
+            -webkit-overflow-scrolling: touch !important;
+            box-sizing: border-box !important;
+        }
+
+        table.ws-table {
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            border-collapse: collapse !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Desktop / Tablet defaults */
+        table.ws-table th.col-seq,
+        table.ws-table td.col-seq,
+        th.col-th-seq {
+            width: 60px !important;
+            min-width: 60px !important;
+            padding-left: 20px !important;
+            padding-right: 10px !important;
+        }
+        table.ws-table th.col-detected-colors,
+        table.ws-table td.col-detected-colors,
+        th.col-th-detected {
+            width: auto !important;
+        }
+        table.ws-table th.col-soil-hue,
+        table.ws-table td.col-soil-hue,
+        th.col-th-hue {
+            width: 22% !important;
+            min-width: 100px !important;
+        }
+        table.ws-table th.col-scan-date,
+        table.ws-table td.col-scan-date,
+        table.ws-table th.col-soil-date,
+        table.ws-table td.col-soil-date,
+        th.col-th-date {
+            width: 18% !important;
+            min-width: 100px !important;
+        }
+
+        /* ── ACTION COLUMN: ALWAYS VISIBLE & STICKY ON RIGHT ACROSS ALL DESKTOP / TABLET SIZES ── */
+        table.ws-table th.col-sticky-action,
+        table.ws-table td.col-sticky-action,
+        table.ws-table th.col-action,
+        table.ws-table td.col-action,
+        th.col-th-action {
+            position: sticky !important;
+            right: 0 !important;
+            width: 110px !important;
+            min-width: 110px !important;
+            max-width: 110px !important;
+            white-space: nowrap !important;
+            box-shadow: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            z-index: 12 !important;
+            background-color: #0B2B26 !important;
+            text-align: center !important;
+            padding-left: 8px !important;
+            padding-right: 14px !important;
+            display: table-cell !important;
+        }
+        table.ws-table th.col-sticky-action,
+        table.ws-table th.col-action,
+        th.col-th-action {
+            z-index: 22 !important;
+            background-color: #0B2B26 !important;
+            text-align: center !important;
+        }
+        table.ws-table tbody tr:hover td.col-sticky-action,
+        table.ws-table tbody tr:hover td.col-action {
+            background: linear-gradient(145deg, #113832 0%, #163832 100%) !important;
+        }
+
+        /* Light mode sticky action overrides */
+        html.light-mode table.ws-table th.col-sticky-action,
+        html.light-mode table.ws-table th.col-action,
+        html.light-mode th.col-th-action {
+            background-color: #F1FBF1 !important;
+            color: #0f172a !important;
+        }
+        html.light-mode table.ws-table td.col-sticky-action,
+        html.light-mode table.ws-table td.col-action {
+            background-color: #ffffff !important;
+        }
+        html.light-mode table.ws-table tbody tr:hover td.col-sticky-action,
+        html.light-mode table.ws-table tbody tr:hover td.col-action {
+            background-color: #f0fdf4 !important;
+        }
+
+        .soil-mobile-date {
+            display: none;
+        }
+
+        /* ── TABLET BREAKPOINT (< 768px): date moves under Detected Colors so table fits seamlessly ── */
+        @media (max-width: 767px) {
+            table.ws-table th.col-scan-date,
+            table.ws-table td.col-scan-date,
+            table.ws-table th.col-soil-date,
+            table.ws-table td.col-soil-date,
+            th.col-th-date {
+                display: none !important;
+            }
+            .soil-mobile-date {
+                display: block !important;
+                font-size: 11.5px;
+                font-weight: 600;
+                color: #8EB69B;
+                margin-top: 2px;
+            }
+            html.light-mode .soil-mobile-date {
+                color: #94a3b8 !important;
+            }
+        }
+
         .col-seq {
             color: #8EB69B;
             font-weight: 600;
@@ -2073,6 +2233,20 @@
         table.ws-table tbody tr:hover .col-soil-name {
             color: #FFFFFF !important;
             transition: color 0.25s ease;
+        }
+
+        html.light-mode .col-seq {
+            color: #475569 !important;
+        }
+        html.light-mode .detected-badge {
+            color: #1e293b !important;
+        }
+        html.light-mode .hue-badge-pill {
+            color: #1e293b !important;
+        }
+        html.light-mode .col-soil-date,
+        html.light-mode .col-scan-date {
+            color: #64748b !important;
         }
 
         .btn-view-scan {
@@ -5285,15 +5459,15 @@
                 <span class="ws-badge-count" id="savedScansCountBadge">{{ $isLoggedIn ? $scans->total() : '0' }} total scans</span>
             </div>
             @if($isLoggedIn)
-            <div style="overflow-x:auto;">
+            <div class="ws-table-container" style="overflow-x:auto;">
                 <table class="ws-table" style="width: 100%;">
                     <thead>
                         <tr>
-                            <th class="col-th-seq" style="width: 8%; text-overflow: clip; overflow: visible; padding-left: 16px;">#</th>
-                            <th class="col-th-detected" style="width: 28%;">DETECTED COLORS</th>
-                            <th class="col-th-hue" style="width: 28%;">HUE</th>
-                            <th class="col-th-date" style="width: 20%;">SCAN DATE</th>
-                            <th class="col-th-action" style="width: 16%; text-overflow: clip; overflow: visible;">ACTION</th>
+                            <th class="col-seq col-th-seq">#</th>
+                            <th class="col-detected-colors col-th-detected">DETECTED COLORS</th>
+                            <th class="col-soil-hue col-th-hue">HUE</th>
+                            <th class="col-scan-date col-soil-date col-th-date">SCAN DATE</th>
+                            <th class="col-sticky-action col-action col-th-action">ACTION</th>
                         </tr>
                     </thead>
                     <tbody id="savedScansTbody">
@@ -5473,23 +5647,24 @@
                             }
                         @endphp
                         <tr>
-                            <td class="col-seq" style="font-size:13px; font-weight:600; padding-left:16px; padding-right:6px; overflow:visible; text-overflow:clip; white-space:nowrap;">
+                            <td class="col-seq">
                                 {{ $rowSeqNum }}
                             </td>
-                            <td class="col-detected-colors" style="font-size:13.5px; font-weight:700; white-space:nowrap;">
+                            <td class="col-detected-colors">
                                 <span class="detected-badge">
                                     {{ $detectedColorsCount === 1 ? '1 Color' : "{$detectedColorsCount} Colors" }}
                                 </span>
+                                <span class="soil-mobile-date">{{ $scanDateCol }}</span>
                             </td>
-                            <td class="col-soil-hue" style="font-size:13px; font-weight:700; white-space:nowrap;">
+                            <td class="col-soil-hue">
                                 @foreach($detectedHues as $h)
                                     <span class="hue-badge-pill">{{ $h }}</span>
                                 @endforeach
                             </td>
-                            <td class="col-soil-date" style="font-size:13px; font-weight:600;">
+                            <td class="col-soil-date col-scan-date">
                                 {{ $scanDateCol }}
                             </td>
-                            <td class="col-action" style="font-size:13px; font-weight:700; overflow:visible !important; text-overflow:clip !important; white-space:nowrap !important;">
+                            <td class="col-action col-sticky-action text-center">
                                 <button type="button" class="btn-view-scan" onclick="openScanModalFromBtn(this, event)"
                                     data-name="{{ $soilName }}"
                                     data-code="{{ $fCode }}"
@@ -8602,11 +8777,11 @@
                 const huesBadgesHtml = huesList.map(h => `<span class="hue-badge-pill">${h}</span>`).join('');
 
                 tr.innerHTML = `
-                    <td class="col-seq" style="font-size:13px; font-weight:600; padding-left:16px; padding-right:6px; overflow:visible; text-overflow:clip; white-space:nowrap;">${newSeqNum}</td>
-                    <td class="col-detected-colors" style="font-size:13.5px; font-weight:700; white-space:nowrap;">${detectedBadgeHtml}</td>
-                    <td class="col-soil-hue" style="font-size:13px; font-weight:700; white-space:nowrap;">${huesBadgesHtml}</td>
-                    <td class="col-soil-date" style="font-size:13px; font-weight:600;">${dateStr}</td>
-                    <td class="col-action" style="font-size:13px; font-weight:700; overflow:visible !important; text-overflow:clip !important; white-space:nowrap !important;">
+                    <td class="col-seq">${newSeqNum}</td>
+                    <td class="col-detected-colors">${detectedBadgeHtml}<span class="soil-mobile-date">${dateStr}</span></td>
+                    <td class="col-soil-hue">${huesBadgesHtml}</td>
+                    <td class="col-soil-date col-scan-date">${dateStr}</td>
+                    <td class="col-action col-sticky-action text-center">
                         <button type="button" class="btn-view-scan" onclick="openScanModalFromBtn(this, event)"
                             data-name="${safeName}"
                             data-code="${safeCode}"
