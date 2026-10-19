@@ -249,7 +249,6 @@
 
             .col-th-desc, .col-soil-desc,
             .col-th-code, .col-soil-code,
-            .col-th-hue, .col-soil-hue,
             .col-th-seq-count, .col-soil-seq,
             .col-th-date, .col-soil-date {
                 display: none !important;
@@ -282,8 +281,8 @@
                 text-align: left !important;
             }
 
-            th.col-th-name, td.col-soil-name {
-                width: 62% !important;
+            th.col-th-detected, td.col-detected-colors {
+                width: 38% !important;
                 min-width: 0 !important;
                 max-width: none !important;
                 font-size: 12px !important;
@@ -294,8 +293,20 @@
                 padding: 10px 4px !important;
             }
 
-            th.col-th-action, td.col-action {
+            th.col-th-hue, td.col-soil-hue {
                 width: 28% !important;
+                min-width: 0 !important;
+                max-width: none !important;
+                font-size: 12px !important;
+                font-weight: 700 !important;
+                padding: 10px 4px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            th.col-th-action, td.col-action {
+                width: 24% !important;
                 min-width: 0 !important;
                 max-width: none !important;
                 text-align: right !important;
@@ -2015,9 +2026,43 @@
         .col-soil-name { color: #DAF1DE; font-weight: 800; }
         .col-soil-desc { color: #8EB69B; font-weight: 500; }
         .col-soil-code { color: #DAF1DE; font-weight: 700; }
-        .col-soil-hue  { color: #8EB69B; font-weight: 700; }
+        .col-soil-hue  { color: #DAF1DE; font-weight: 700; }
         .col-soil-seq  { color: #DAF1DE; font-weight: 700; }
         .col-soil-date { color: #8EB69B; font-weight: 600; }
+        .col-detected-colors { color: #DAF1DE; font-weight: 700; }
+        .detected-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            font-weight: 700;
+            font-size: 12.5px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            white-space: nowrap;
+        }
+        .detected-badge .detected-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4ade80;
+        }
+        .hue-badge-pill {
+            display: inline-block;
+            padding: 2.5px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(142, 182, 155, 0.15);
+            color: #DAF1DE;
+            border: 1px solid rgba(142, 182, 155, 0.25);
+            margin-right: 4px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+        }
         .col-action,
         th.col-th-action {
             overflow: visible !important;
@@ -3389,8 +3434,26 @@
             font-size: 13px !important;
             font-weight: 700 !important;
         }
+        html.light-mode .col-detected-colors {
+            color: #0f172a !important;
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+        }
+        html.light-mode .detected-badge {
+            background: rgba(22, 163, 74, 0.1) !important;
+            color: #15803d !important;
+            border: 1px solid rgba(22, 163, 74, 0.25) !important;
+        }
+        html.light-mode .detected-badge .detected-dot {
+            background: #15803d !important;
+        }
+        html.light-mode .hue-badge-pill {
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+            border: 1px solid #cbd5e1 !important;
+        }
         html.light-mode .col-soil-hue {
-            color: #475569 !important;
+            color: #0f172a !important;
             font-size: 13px !important;
             font-weight: 700 !important;
         }
@@ -5238,14 +5301,11 @@
                 <table class="ws-table" style="width: 100%;">
                     <thead>
                         <tr>
-                            <th class="col-th-seq" style="width: 5.5%; text-overflow: clip; overflow: visible; padding-left: 16px;">#</th>
-                            <th class="col-th-name" style="width: 21%;">Soil Name</th>
-                            <th class="col-th-desc" style="width: 25%;">Description</th>
-                            <th class="col-th-code" style="width: 13%;">Munsell Code</th>
-                            <th class="col-th-hue" style="width: 6%;">Hue</th>
-                            <th class="col-th-seq-count" style="width: 10%;">Scan Count</th>
-                            <th class="col-th-date" style="width: 10%;">Scan Date</th>
-                            <th class="col-th-action" style="width: 9.5%; text-overflow: clip; overflow: visible;">Action</th>
+                            <th class="col-th-seq" style="width: 8%; text-overflow: clip; overflow: visible; padding-left: 16px;">#</th>
+                            <th class="col-th-detected" style="width: 28%;">DETECTED COLORS</th>
+                            <th class="col-th-hue" style="width: 28%;">HUE</th>
+                            <th class="col-th-date" style="width: 20%;">SCAN DATE</th>
+                            <th class="col-th-action" style="width: 16%; text-overflow: clip; overflow: visible;">ACTION</th>
                         </tr>
                     </thead>
                     <tbody id="savedScansTbody">
@@ -5376,6 +5436,22 @@
                                     $regionsJson = json_encode($scan->regions ?? []);
                                 } catch (\Throwable $e_r) {}
 
+                                $regionsArr = $scan->regions ?? [];
+                                $detectedColorsCount = count($regionsArr) > 0 ? count($regionsArr) : 1;
+                                $detectedHues = [];
+                                if (!empty($regionsArr)) {
+                                    foreach ($regionsArr as $r) {
+                                        $cCode = $r['munsell'] ?? ($r['munsell_code'] ?? ($r['full_code'] ?? ''));
+                                        $h = $cCode ? trim(explode(' ', $cCode)[0]) : ($r['hue'] ?? '');
+                                        if ($h && !in_array($h, $detectedHues)) {
+                                            $detectedHues[] = $h;
+                                        }
+                                    }
+                                }
+                                if (empty($detectedHues)) {
+                                    $detectedHues[] = $sHue ?: '10YR';
+                                }
+
                                 $rowSeqNum = $scans->total() - ($scans->firstItem() - 1 + $idx);
                             } catch (\Throwable $e_fatal) {
                                 $soilName = 'Determined Soil';
@@ -5404,6 +5480,8 @@
                                 $uCode = '';
                                 $uAvatar = 'U';
                                 $regionsJson = '[]';
+                                $detectedColorsCount = 1;
+                                $detectedHues = ['10YR'];
                                 $rowSeqNum = $idx + 1;
                             }
                         @endphp
@@ -5411,20 +5489,16 @@
                             <td class="col-seq" style="font-size:13px; font-weight:600; padding-left:16px; padding-right:6px; overflow:visible; text-overflow:clip; white-space:nowrap;">
                                 {{ $rowSeqNum }}
                             </td>
-                            <td class="col-soil-name" style="font-size:14px; font-weight:700; text-overflow:clip; white-space:nowrap;" title="{{ $soilName }}">
-                                {{ $soilName }}
+                            <td class="col-detected-colors" style="font-size:13.5px; font-weight:700; white-space:nowrap;">
+                                <span class="detected-badge">
+                                    <span class="detected-dot"></span>
+                                    {{ $detectedColorsCount === 1 ? '1 Color' : "{$detectedColorsCount} Colors" }}
+                                </span>
                             </td>
-                            <td class="col-soil-desc" style="font-size:13px; font-weight:500; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="{{ $soilDesc }}">
-                                {{ \Illuminate\Support\Str::limit(trim($soilDesc), 36, '...') }}
-                            </td>
-                            <td class="col-soil-code" style="font-size:13.5px; font-weight:700;">
-                                {{ $fCode }}
-                            </td>
-                            <td class="col-soil-hue" style="font-size:13px; font-weight:700;">
-                                {{ $sHue }}
-                            </td>
-                            <td class="col-soil-seq" style="font-size:13px; font-weight:700;">
-                                {{ $scanSeq }}
+                            <td class="col-soil-hue" style="font-size:13px; font-weight:700; white-space:nowrap;">
+                                @foreach($detectedHues as $h)
+                                    <span class="hue-badge-pill">{{ $h }}</span>
+                                @endforeach
                             </td>
                             <td class="col-soil-date" style="font-size:13px; font-weight:600;">
                                 {{ $scanDateCol }}
@@ -7862,15 +7936,10 @@
                 }
 
                 // Description (Authoritative description from Admin Munsell Color database)
+                // match.desc is already resolved server-side via Soil::getEffectiveDescriptionAttribute()
+                // which prioritises the MunsellColor master catalogue → saved overrides → algorithm fallback.
                 if (resDesc) {
-                    const normCode = (match.code || '').trim().toUpperCase();
-                    const mcFound = Array.isArray(dbMunsellColors)
-                        ? dbMunsellColors.find(c => c.full_code && c.full_code.trim().toUpperCase() === normCode)
-                        : null;
-
-                    let singleDesc = (mcFound && mcFound.description && mcFound.description.trim())
-                        ? mcFound.description.trim()
-                        : (match.desc || '');
+                    let singleDesc = (match.desc && match.desc.trim()) ? match.desc.trim() : '';
 
                     if (!singleDesc || singleDesc.includes('Sample processed')) {
                         const safeCode = (match.code && match.code !== 'undefined' && match.code !== 'null') ? match.code : '';
@@ -8518,13 +8587,39 @@
 
                 const safeRegions = JSON.stringify(match.regions || []).replace(/"/g, '&quot;');
 
+                // Compute detected colors count and badges
+                const regionsList = match.regions && Array.isArray(match.regions) && match.regions.length > 0 ? match.regions : [];
+                const detectedColorsCount = regionsList.length > 0 ? regionsList.length : 1;
+                const detectedBadgeHtml = `
+                    <span class="detected-badge">
+                        <span class="detected-dot"></span>
+                        ${detectedColorsCount === 1 ? '1 Color' : `${detectedColorsCount} Colors`}
+                    </span>
+                `;
+
+                // Collect all detected hues
+                let huesList = [];
+                if (regionsList.length > 0) {
+                    regionsList.forEach(r => {
+                        const cCode = r.munsell || r.munsell_code || r.full_code || '';
+                        let h = cCode ? cCode.trim().split(' ')[0] : (r.hue || '');
+                        if (h && !huesList.includes(h)) {
+                            huesList.push(h);
+                        }
+                    });
+                }
+                if (huesList.length === 0 && match.hue) {
+                    huesList.push(match.hue);
+                }
+                if (huesList.length === 0) {
+                    huesList.push('10YR');
+                }
+                const huesBadgesHtml = huesList.map(h => `<span class="hue-badge-pill">${h}</span>`).join('');
+
                 tr.innerHTML = `
                     <td class="col-seq" style="font-size:13px; font-weight:600; padding-left:16px; padding-right:6px; overflow:visible; text-overflow:clip; white-space:nowrap;">${newSeqNum}</td>
-                    <td class="col-soil-name" style="font-size:14px; font-weight:700; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:200px;" title="${safeSoilName}">${safeSoilName}</td>
-                    <td class="col-soil-desc" style="font-size:13px; font-weight:500;" title="${displayDesc}">${displayDesc.length > 28 ? displayDesc.substring(0, 26) + '…' : displayDesc}</td>
-                    <td class="col-soil-code" style="font-size:13.5px; font-weight:700;">${match.code}</td>
-                    <td class="col-soil-hue" style="font-size:13px; font-weight:700;">${match.hue}</td>
-                    <td class="col-soil-seq opt-scan-seq" style="font-size:13px; font-weight:700;">${displaySeq}</td>
+                    <td class="col-detected-colors" style="font-size:13.5px; font-weight:700; white-space:nowrap;">${detectedBadgeHtml}</td>
+                    <td class="col-soil-hue" style="font-size:13px; font-weight:700; white-space:nowrap;">${huesBadgesHtml}</td>
                     <td class="col-soil-date" style="font-size:13px; font-weight:600;">${dateStr}</td>
                     <td class="col-action" style="font-size:13px; font-weight:700; overflow:visible !important; text-overflow:clip !important; white-space:nowrap !important;">
                         <button type="button" class="btn-view-scan" onclick="openScanModalFromBtn(this, event)"
