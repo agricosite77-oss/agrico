@@ -56,6 +56,7 @@ class SoilScanHistory extends Component
             'soil_name',
             'color_id',
             'full_code',
+            'hue',
             'scan_count',
             'scan_note',
             'admin_id',
@@ -180,6 +181,11 @@ class SoilScanHistory extends Component
             $query->join('soils', 'soils.soil_id', '=', 'soil_scans.soil_id')
                   ->select('soil_scans.*')
                   ->orderBy('soils.scan_count', $this->sortDirection)
+                  ->orderBy('soil_scans.soil_scan_id', 'desc');
+        } elseif ($this->sortField === 'hue') {
+            $query->leftJoin('soils', 'soils.soil_id', '=', 'soil_scans.soil_id')
+                  ->select('soil_scans.*')
+                  ->orderBy('soils.hue', $this->sortDirection)
                   ->orderBy('soil_scans.soil_scan_id', 'desc');
         } else {
             $query->orderBy('soil_scan_id', $this->sortDirection);

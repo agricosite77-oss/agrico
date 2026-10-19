@@ -151,14 +151,14 @@
         </div>
     </div>
 
-    {{-- STYLES FOR RESPONSIVE TABLE & STICKY COLUMNS --}}
+    {{-- STYLES FOR RESPONSIVE TABLE & BADGES --}}
     <style>
         .soil-table-container {
             width: 100% !important;
             overflow-x: auto !important;
             overflow-y: visible !important;
-            scrollbar-width: none !important; /* Firefox */
-            -ms-overflow-style: none !important;  /* IE/Edge */
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
         }
         .soil-table-container::-webkit-scrollbar {
             display: none !important;
@@ -171,176 +171,48 @@
             min-width: 0 !important;
         }
 
-        /* Responsive Column Dropping Hierarchy:
-           - Desktop (>= 1024px): All columns visible with sticky navigation
-           - Tablet (680px - 1023px): Soil Characteristics, Full Code, Scan Date, Action
-           - Mobile (< 680px): Exactly 2 columns: Soil Characteristics (with embedded Code + Date) & Action
-             guaranteeing 100% phone width fit with zero horizontal clipping!
-        */
-        .col-soil-id {
-            display: none !important;
+        .detected-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #15803d;
+            font-weight: 700;
+            font-size: 13.5px;
+            white-space: nowrap;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
         }
-
-        .soil-mobile-meta {
-            display: none !important;
+        .detected-badge .detected-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
         }
-
-        @media (max-width: 1023px) {
-            .col-soil-id,
-            .col-scan-note,
-            .col-user-id {
-                display: none !important;
-            }
+        .hue-badge-pill {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            margin-right: 6px;
+            white-space: nowrap;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
         }
-
-        /* Tablets (680px - 849px): Drop Scan Count so Soil, Code, Date, Action breathe comfortably */
-        @media (max-width: 849px) {
-            .col-scan-count {
-                display: none !important;
-            }
+        .dark .detected-badge {
+            color: #4ade80 !important;
         }
-
-        /* Desktop & Tablet (≥ 680px and < 1024px): When ID is hidden, Soil Characteristics is first visible column -> 20px left padding */
-        @media (min-width: 680px) and (max-width: 1023px) {
-            .soil-table th.col-sticky-soil,
-            .soil-table td.col-sticky-soil {
-                padding-left: 20px !important;
-            }
+        .dark .detected-badge .detected-dot {
+            background: #4ade80 !important;
         }
-
-        /* Mobile (< 680px): Table fits 100% of phone screen. Action is 100% visible! */
-        @media (max-width: 679px) {
-            .soil-table-container {
-                overflow-x: hidden !important;
-                width: 100% !important;
-            }
-            .soil-table {
-                table-layout: fixed !important;
-                width: 100% !important;
-                min-width: 0 !important;
-            }
-            .col-soil-id,
-            .col-full-code,
-            .col-scan-count,
-            .col-scan-note,
-            .col-user-id,
-            .col-scan-date {
-                display: none !important;
-            }
-            .soil-mobile-meta {
-                display: block !important;
-            }
-            .soil-table th,
-            .soil-table td {
-                padding: 12px 6px !important;
-                box-sizing: border-box !important;
-            }
-            .soil-table th.col-sticky-soil,
-            .soil-table td.col-sticky-soil {
-                position: static !important;
-                left: auto !important;
-                right: auto !important;
-                box-shadow: none !important;
-                padding-left: 12px !important;
-                padding-right: 4px !important;
-                width: auto !important;
-                overflow: hidden !important;
-            }
-            .soil-table th.col-sticky-action,
-            .soil-table td.col-sticky-action {
-                position: static !important;
-                left: auto !important;
-                right: auto !important;
-                box-shadow: none !important;
-                padding-left: 8px !important;
-                padding-right: 8px !important;
-                width: 96px !important;
-                min-width: 96px !important;
-                max-width: 96px !important;
-                text-align: center !important;
-            }
-            .soil-table th.col-sticky-action {
-                text-align: center !important;
-            }
-            .soil-table td.col-sticky-action .flex,
-            .soil-table td.col-sticky-action > div {
-                gap: 4px !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-            }
-            .soil-table .agrico-view-btn,
-            .soil-table .agrico-edit-btn,
-            .soil-table .agrico-delete-btn {
-                width: 34px !important;
-                height: 34px !important;
-                min-width: 34px !important;
-                max-width: 34px !important;
-                min-height: 34px !important;
-                max-height: 34px !important;
-                border-radius: 10px !important;
-                padding: 0 !important;
-            }
-            .soil-table .agrico-view-btn svg,
-            .soil-table .agrico-edit-btn svg,
-            .soil-table .agrico-delete-btn svg {
-                width: 16px !important;
-                height: 16px !important;
-            }
-        }
-
-        /* Default (>= 680px and < 1024px): Soil Characteristic is sticky at left: 0 */
-        @media (min-width: 680px) and (max-width: 1023px) {
-            .soil-table th.col-sticky-soil,
-            .soil-table td.col-sticky-soil {
-                position: sticky !important;
-                left: 0 !important;
-                min-width: 180px !important;
-                white-space: normal !important;
-                box-shadow: 4px 0 8px -2px rgba(0, 0, 0, 0.05) !important;
-                z-index: 11 !important;
-                background-color: #ffffff !important;
-                padding-left: 20px !important;
-            }
-            .soil-table th.col-sticky-soil {
-                z-index: 21 !important;
-                background-color: #F1FBF1 !important;
-            }
-            .soil-table th.col-sticky-action,
-            .soil-table td.col-sticky-action {
-                position: sticky !important;
-                right: 0 !important;
-                width: 96px !important;
-                min-width: 96px !important;
-                max-width: 96px !important;
-                white-space: nowrap !important;
-                box-shadow: none !important;
-                z-index: 10 !important;
-                background-color: #ffffff !important;
-                padding-left: 8px !important;
-                padding-right: 8px !important;
-                text-align: center !important;
-            }
-            .soil-table td.col-sticky-action .flex,
-            .soil-table td.col-sticky-action > div {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                gap: 6px !important;
-                width: 100% !important;
-            }
-            .soil-table th.col-sticky-action {
-                z-index: 20 !important;
-                background-color: #F1FBF1 !important;
-                text-align: center !important;
-            }
+        .dark .hue-badge-pill {
+            color: #f1f5f9 !important;
         }
 
         /* Action buttons standard styling */
         .soil-table .agrico-view-btn,
-        .soil-table .agrico-approve-btn,
-        .soil-table .agrico-reject-btn,
-        .soil-table .agrico-edit-btn,
         .soil-table .agrico-delete-btn {
             width: 36px !important;
             height: 36px !important;
@@ -355,107 +227,46 @@
             transition: all 0.2s ease !important;
         }
         .soil-table .agrico-view-btn svg,
-        .soil-table .agrico-approve-btn svg,
-        .soil-table .agrico-reject-btn svg,
-        .soil-table .agrico-edit-btn svg,
         .soil-table .agrico-delete-btn svg {
             width: 17px !important;
             height: 17px !important;
         }
-        .soil-table .agrico-approve-btn {
+        .soil-table .agrico-view-btn {
             background: #f0fdf4 !important;
             border: 1px solid #bbf7d0 !important;
             color: #16a34a !important;
         }
-        .soil-table .agrico-approve-btn:hover {
+        .soil-table .agrico-view-btn:hover {
             background: #16a34a !important;
             color: #ffffff !important;
         }
-        .soil-table .agrico-reject-btn {
+        .soil-table .agrico-delete-btn {
             background: #fef2f2 !important;
             border: 1px solid #fecaca !important;
             color: #ef4444 !important;
         }
-        .soil-table .agrico-reject-btn:hover {
+        .soil-table .agrico-delete-btn:hover {
             background: #ef4444 !important;
             color: #ffffff !important;
         }
 
-        .soil-table tbody tr:hover td.col-sticky-soil,
-        .soil-table tbody tr.hover\:bg-green-50\/40:hover td.col-sticky-soil {
-            background-color: #f7fdf7 !important;
+        .dark .soil-table .agrico-view-btn {
+            background: rgba(34, 197, 94, 0.15) !important;
+            border-color: rgba(34, 197, 94, 0.3) !important;
+            color: #4ade80 !important;
         }
-        .soil-table tbody tr.bg-emerald-50\/80 td.col-sticky-soil {
-            background-color: #ecfdf5 !important;
+        .dark .soil-table .agrico-view-btn:hover {
+            background: #22c55e !important;
+            color: #ffffff !important;
         }
-        .dark .soil-table th.col-sticky-soil {
-            background-color: #1e293b !important;
+        .dark .soil-table .agrico-delete-btn {
+            background: rgba(239, 68, 68, 0.15) !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+            color: #f87171 !important;
         }
-        .dark .soil-table td.col-sticky-soil {
-            background-color: #0f172a !important;
-        }
-
-        .soil-table tbody tr:hover td.col-sticky-action,
-        .soil-table tbody tr.hover\:bg-green-50\/40:hover td.col-sticky-action {
-            background-color: #f7fdf7 !important;
-        }
-        .soil-table tbody tr.bg-emerald-50\/80 td.col-sticky-action {
-            background-color: #ecfdf5 !important;
-        }
-        .dark .soil-table th.col-sticky-action {
-            background-color: #1e293b !important;
-        }
-        .dark .soil-table td.col-sticky-action {
-            background-color: #0f172a !important;
-        }
-
-        /* Desktop / Big screens (>= 1024px): Soil Characteristic is sticky at left: 0 */
-        @media (min-width: 1024px) {
-            .soil-table th.col-sticky-soil,
-            .soil-table td.col-sticky-soil {
-                position: sticky !important;
-                left: 0 !important;
-                min-width: 180px !important;
-                max-width: 280px !important;
-                white-space: nowrap !important;
-                box-shadow: 4px 0 8px -2px rgba(0, 0, 0, 0.05) !important;
-                z-index: 11 !important;
-                background-color: #ffffff !important;
-                padding-left: 20px !important;
-            }
-            .soil-table th.col-sticky-soil {
-                z-index: 21 !important;
-                background-color: #F1FBF1 !important;
-            }
-
-            .soil-table th.col-sticky-action,
-            .soil-table td.col-sticky-action {
-                position: sticky !important;
-                right: 0 !important;
-                width: 96px !important;
-                min-width: 96px !important;
-                max-width: 96px !important;
-                white-space: nowrap !important;
-                box-shadow: none !important;
-                z-index: 10 !important;
-                background-color: #ffffff !important;
-                padding-left: 8px !important;
-                padding-right: 8px !important;
-                text-align: center !important;
-            }
-            .soil-table td.col-sticky-action .flex,
-            .soil-table td.col-sticky-action > div {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                gap: 6px !important;
-                width: 100% !important;
-            }
-            .soil-table th.col-sticky-action {
-                z-index: 20 !important;
-                background-color: #F1FBF1 !important;
-                text-align: center !important;
-            }
+        .dark .soil-table .agrico-delete-btn:hover {
+            background: #ef4444 !important;
+            color: #ffffff !important;
         }
     </style>
 
@@ -472,15 +283,16 @@
             <table class="w-full soil-table">
                 <thead>
                     <tr class="bg-[#F1FBF1] dark:bg-slate-800/80 border-b border-gray-100 dark:border-slate-800">
-                        {{-- SOL NAME --}}
+                        {{-- # / ID --}}
                         <th
-                            wire:click="sortBy('soil_name')"
-                            class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-sticky-soil whitespace-nowrap"
+                            wire:click="sortBy('id')"
+                            class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-seq whitespace-nowrap"
+                            style="width: 8%;"
                         >
                             <div class="flex items-center gap-1">
-                                <span class="group-hover:text-[#22c55e] transition-colors duration-200">SOIL CHARACTERISTICS</span>
+                                <span class="group-hover:text-[#22c55e] transition-colors duration-200">#</span>
                                 <span class="sort-arrows">
-                                    @if($sortField === 'soil_name')
+                                    @if($sortField === 'id')
                                         @if($sortDirection === 'asc')
                                             <svg class="sort-chevron sort-chevron-active sort-chevron-up" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 9L7 5.5L10 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                         @else
@@ -496,15 +308,21 @@
                             </div>
                         </th>
 
-                        {{-- FULL CODE --}}
+                        {{-- DETECTED COLORS --}}
+                        <th class="px-5 py-4 text-left text-xs font-bold text-gray-500 whitespace-nowrap col-detected-colors" style="width: 28%;">
+                            DETECTED COLORS
+                        </th>
+
+                        {{-- HUE --}}
                         <th
-                            wire:click="sortBy('full_code')"
-                            class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-full-code whitespace-nowrap"
+                            wire:click="sortBy('hue')"
+                            class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-soil-hue whitespace-nowrap"
+                            style="width: 28%;"
                         >
                             <div class="flex items-center gap-1">
-                                <span class="group-hover:text-[#22c55e] transition-colors duration-200">FULL CODE</span>
+                                <span class="group-hover:text-[#22c55e] transition-colors duration-200">HUE</span>
                                 <span class="sort-arrows">
-                                    @if($sortField === 'full_code')
+                                    @if($sortField === 'hue')
                                         @if($sortDirection === 'asc')
                                             <svg class="sort-chevron sort-chevron-active sort-chevron-up" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 9L7 5.5L10 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                         @else
@@ -520,59 +338,11 @@
                             </div>
                         </th>
 
-
-                        {{-- SCAN COUNT --}}
-                        <th
-                            wire:click="sortBy('scan_count')"
-                            class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-scan-count"
-                        >
-                            <div class="flex items-center gap-1">
-                                <span class="group-hover:text-[#22c55e] transition-colors duration-200">SCAN COUNT</span>
-                                <span class="sort-arrows">
-                                    @if($sortField === 'scan_count')
-                                        @if($sortDirection === 'asc')
-                                            <svg class="sort-chevron sort-chevron-active sort-chevron-up" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 9L7 5.5L10 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        @else
-                                            <svg class="sort-chevron sort-chevron-active sort-chevron-down" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5L7 8.5L10 5" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        @endif
-                                    @else
-                                        <span class="sort-chevron-pair">
-                                            <svg class="sort-chevron-idle sort-chevron-idle-up" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 5L5 1L9 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                            <svg class="sort-chevron-idle sort-chevron-idle-down" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        </span>
-                                    @endif
-                                </span>
-                            </div>
-                        </th>
-
-                        {{-- SCAN NOTE --}}
-                        <th
-                            wire:click="sortBy('scan_note')"
-                            class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-scan-note"
-                        >
-                            <div class="flex items-center gap-1">
-                                <span class="group-hover:text-[#22c55e] transition-colors duration-200">SCAN NOTE</span>
-                                <span class="sort-arrows">
-                                    @if($sortField === 'scan_note')
-                                        @if($sortDirection === 'asc')
-                                            <svg class="sort-chevron sort-chevron-active sort-chevron-up" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 9L7 5.5L10 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        @else
-                                            <svg class="sort-chevron sort-chevron-active sort-chevron-down" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 5L7 8.5L10 5" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        @endif
-                                    @else
-                                        <span class="sort-chevron-pair">
-                                            <svg class="sort-chevron-idle sort-chevron-idle-up" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 5L5 1L9 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                            <svg class="sort-chevron-idle sort-chevron-idle-down" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        </span>
-                                    @endif
-                                </span>
-                            </div>
-                        </th>
-
-                        {{-- SCAN_DATE --}}
+                        {{-- SCAN DATE --}}
                         <th
                             wire:click="sortBy('created_at')"
                             class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-scan-date whitespace-nowrap"
+                            style="width: 20%;"
                         >
                             <div class="flex items-center gap-1">
                                 <span class="group-hover:text-[#22c55e] transition-colors duration-200">SCAN DATE</span>
@@ -594,7 +364,7 @@
                         </th>
 
                         {{-- ACTION (no sorting) --}}
-                        <th class="px-3 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap col-sticky-action">
+                        <th class="px-3 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap col-sticky-action" style="width: 16%;">
                             ACTIONS
                         </th>
                     </tr>
@@ -615,62 +385,58 @@
                             (!empty($sUser) && stripos((string)$sUser, $searchTrim) !== false) ||
                             (str_starts_with($searchTrim, '#') && '#' . $scan->soil_scan_id === $searchTrim)
                         );
+
+                        $regionsArr = [];
+                        if (!empty($scan->regions_data)) {
+                            $regionsArr = is_array($scan->regions_data) ? $scan->regions_data : (json_decode($scan->regions_data, true) ?: []);
+                        }
+                        if (empty($regionsArr) && !empty($scan->regions)) {
+                            $regionsArr = $scan->regions;
+                        }
+                        $detectedColorsCount = count($regionsArr) > 0 ? count($regionsArr) : 1;
+                        $detectedHues = [];
+                        foreach ($regionsArr as $r) {
+                            $cCode = $r['munsell'] ?? ($r['munsell_code'] ?? ($r['full_code'] ?? ''));
+                            $h = $cCode ? trim(explode(' ', $cCode)[0]) : ($r['hue'] ?? '');
+                            if ($h && !in_array($h, $detectedHues)) {
+                                $detectedHues[] = $h;
+                            }
+                        }
+                        if (empty($detectedHues)) {
+                            $detectedHues[] = $sHue ?: '10YR';
+                        }
+
+                        $rowSeqNum = $soils->total() - ($soils->firstItem() - 1 + $loop->index);
+                        $scanDateFormatted = $scan->scan_date ? \Carbon\Carbon::parse($scan->scan_date)->format('m/d/Y') : $scan->created_at?->format('m/d/Y');
                     @endphp
-                    <tr class="border-b border-gray-100 transition {{ $isSearchMatch ? 'bg-emerald-50/80 border-l-4 border-l-emerald-500 font-medium' : 'hover:bg-green-50/40' }}">
-                        {{-- SOIL CHARACTERISTICS --}}
-                        @php
-                            $hueVal = $soil?->full_code ?? $soil?->munsellColor?->full_code ?? '10YR 4/3';
-                            $scanDateFormatted = $scan->scan_date ? \Carbon\Carbon::parse($scan->scan_date)->format('m/d/Y') : $scan->created_at?->format('m/d/Y');
-                        @endphp
-                        <td class="px-5 py-5 col-sticky-soil">
-                            <div>
-                                <div class="text-sm font-bold text-[#475569] truncate" style="font-size: 14px; font-weight: 700; color: #475569;" title="{{ $soil?->soil_name ?? 'Scanned Soil' }}">
-                                    {{ $soil?->soil_name ?? 'Scanned Soil' }}
-                                </div>
-                                {{-- MOBILE ONLY (<= 679px): Full Code & Date subtitle --}}
-                                <div class="soil-mobile-meta text-xs font-semibold text-[#6b7280] mt-0.5">
-                                    <span>{{ $hueVal }}</span>
-                                    <span class="text-gray-400 font-normal ml-2">{{ $scanDateFormatted }}</span>
-                                </div>
-                                <div class="text-xs font-medium text-slate-400 truncate mt-0.5" style="font-size: 12px; font-weight: 500; color: #94a3b8;" title="{{ $scan->scan_note ?? $soil?->description ?? 'Single soil scan analysis record.' }}">
-                                    {{ \Illuminate\Support\Str::limit($scan->scan_note ?? $soil?->description ?? 'Single soil scan analysis record.', 48, '...') }}
-                                </div>
-                            </div>
+                    <tr class="border-b border-gray-100 dark:border-slate-800 transition {{ $isSearchMatch ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border-l-4 border-l-emerald-500 font-medium' : 'hover:bg-green-50/40 dark:hover:bg-slate-800/50' }}">
+                        {{-- # --}}
+                        <td class="px-5 py-4 whitespace-nowrap text-sm font-bold text-gray-700 dark:text-gray-300 col-seq">
+                            {{ $rowSeqNum }}
                         </td>
 
-                        {{-- FULL CODE --}}
-                        <td class="px-5 py-5 whitespace-nowrap col-full-code">
-                            <span class="font-bold text-sm text-[#6b7280]" style="font-size: 14px; font-weight: 700; color: #6b7280;">
-                                {{ $hueVal }}
+                        {{-- DETECTED COLORS --}}
+                        <td class="px-5 py-4 whitespace-nowrap col-detected-colors">
+                            <span class="detected-badge inline-flex items-center gap-1.5 font-bold text-sm text-emerald-600 dark:text-emerald-400">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 inline-block"></span>
+                                {{ $detectedColorsCount === 1 ? '1 Color' : "{$detectedColorsCount} Colors" }}
                             </span>
                         </td>
 
-
-                        {{-- SCAN COUNT --}}
-                        <td class="px-5 py-5 text-sm text-gray-500 font-bold whitespace-nowrap col-scan-count">
-                            @php
-                                $fCode = $soil?->full_code ?? $soil?->munsellColor?->full_code;
-                                $scanSeq = $fCode 
-                                    ? \App\Models\SoilScan::whereHas('soil', function($q) use ($fCode) {
-                                        $q->where('full_code', $fCode);
-                                      })->where('soil_scan_id', '<=', $scan->soil_scan_id)->count()
-                                    : 1;
-                            @endphp
-                            {{ $scanSeq }}
+                        {{-- HUE --}}
+                        <td class="px-5 py-4 whitespace-nowrap col-soil-hue">
+                            @foreach($detectedHues as $h)
+                                <span class="hue-badge-pill font-bold text-sm text-gray-700 dark:text-gray-200 mr-2">{{ $h }}</span>
+                            @endforeach
                         </td>
 
-                        {{-- SCAN NOTE --}}
-                        <td class="px-5 py-5 text-sm text-gray-500 font-bold max-w-[220px] truncate col-scan-note" title="{{ $scan->has_user_scan_note ? $scan->scan_note : '-' }}">
-                            {{ $scan->has_user_scan_note ? \Illuminate\Support\Str::limit($scan->scan_note, 28, '...') : '-' }}
-                        </td>
-
-                        {{-- SCAN_DATE / TIMESTAMP --}}
-                        <td class="px-5 py-5 text-sm text-gray-500 font-bold whitespace-nowrap col-scan-date">
-                            {{ $scan->scan_date ? \Carbon\Carbon::parse($scan->scan_date)->format('m/d/Y') : $scan->created_at?->format('m/d/Y') }}
+                        {{-- SCAN DATE --}}
+                        <td class="px-5 py-4 whitespace-nowrap text-sm font-semibold text-gray-500 dark:text-gray-400 col-scan-date">
+                            {{ $scanDateFormatted }}
                         </td>
 
                         {{-- ACTION --}}
-                        <td class="px-3 py-5 whitespace-nowrap col-sticky-action text-center">
+                        <td class="px-3 py-4 whitespace-nowrap col-sticky-action text-center">
                             <div class="flex justify-center items-center gap-1.5 whitespace-nowrap">
                                 {{-- VIEW (Line Eye) --}}
                                 <button

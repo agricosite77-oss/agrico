@@ -2034,34 +2034,31 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            background: rgba(34, 197, 94, 0.15);
             color: #4ade80;
             font-weight: 700;
-            font-size: 12.5px;
-            border: 1px solid rgba(34, 197, 94, 0.3);
+            font-size: 13.5px;
             white-space: nowrap;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
         }
         .detected-badge .detected-dot {
             display: inline-block;
-            width: 6px;
-            height: 6px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
             background: #4ade80;
         }
         .hue-badge-pill {
             display: inline-block;
-            padding: 2.5px 8px;
-            border-radius: 6px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
-            background: rgba(142, 182, 155, 0.15);
             color: #DAF1DE;
-            border: 1px solid rgba(142, 182, 155, 0.25);
-            margin-right: 4px;
-            margin-bottom: 2px;
+            margin-right: 6px;
             white-space: nowrap;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
         }
         .col-action,
         th.col-th-action {
@@ -3440,17 +3437,19 @@
             font-weight: 700 !important;
         }
         html.light-mode .detected-badge {
-            background: rgba(22, 163, 74, 0.1) !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
             color: #15803d !important;
-            border: 1px solid rgba(22, 163, 74, 0.25) !important;
         }
         html.light-mode .detected-badge .detected-dot {
             background: #15803d !important;
         }
         html.light-mode .hue-badge-pill {
-            background: #f1f5f9 !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
             color: #0f172a !important;
-            border: 1px solid #cbd5e1 !important;
         }
         html.light-mode .col-soil-hue {
             color: #0f172a !important;
