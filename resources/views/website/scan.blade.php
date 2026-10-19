@@ -2033,21 +2033,13 @@
         .detected-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            color: #4ade80;
+            color: #DAF1DE;
             font-weight: 700;
             font-size: 13.5px;
             white-space: nowrap;
             background: transparent !important;
             border: none !important;
             padding: 0 !important;
-        }
-        .detected-badge .detected-dot {
-            display: inline-block;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #4ade80;
         }
         .hue-badge-pill {
             display: inline-block;
@@ -3440,10 +3432,7 @@
             background: transparent !important;
             border: none !important;
             padding: 0 !important;
-            color: #15803d !important;
-        }
-        html.light-mode .detected-badge .detected-dot {
-            background: #15803d !important;
+            color: #0f172a !important;
         }
         html.light-mode .hue-badge-pill {
             background: transparent !important;
@@ -5489,7 +5478,6 @@
                             </td>
                             <td class="col-detected-colors" style="font-size:13.5px; font-weight:700; white-space:nowrap;">
                                 <span class="detected-badge">
-                                    <span class="detected-dot"></span>
                                     {{ $detectedColorsCount === 1 ? '1 Color' : "{$detectedColorsCount} Colors" }}
                                 </span>
                             </td>
@@ -8590,7 +8578,6 @@
                 const detectedColorsCount = regionsList.length > 0 ? regionsList.length : 1;
                 const detectedBadgeHtml = `
                     <span class="detected-badge">
-                        <span class="detected-dot"></span>
                         ${detectedColorsCount === 1 ? '1 Color' : `${detectedColorsCount} Colors`}
                     </span>
                 `;

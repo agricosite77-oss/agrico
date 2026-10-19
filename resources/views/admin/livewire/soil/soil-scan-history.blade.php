@@ -167,8 +167,7 @@
             width: 100% !important;
             min-width: 0 !important;
             max-width: 100% !important;
-            border-collapse: separate !important;
-            border-spacing: 0 !important;
+            border-collapse: collapse !important;
             box-sizing: border-box !important;
         }
 
@@ -194,21 +193,30 @@
             width: 18% !important;
             min-width: 100px !important;
         }
+
+        /* ── ACTION COLUMN: ALWAYS VISIBLE & STICKY ON RIGHT ACROSS ALL DESKTOP / TABLET SIZES ── */
         .soil-table th.col-sticky-action,
         .soil-table td.col-sticky-action {
+            position: sticky !important;
+            right: 0 !important;
             width: 110px !important;
             min-width: 110px !important;
             max-width: 110px !important;
             white-space: nowrap !important;
+            box-shadow: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            z-index: 12 !important;
+            background-color: #ffffff !important;
             text-align: center !important;
             padding-left: 8px !important;
             padding-right: 14px !important;
-            background-color: #ffffff !important;
-            border-bottom: 1px solid #f1f5f9 !important;
+            display: table-cell !important;
         }
         .soil-table th.col-sticky-action {
+            z-index: 22 !important;
             background-color: #F1FBF1 !important;
-            border-bottom: 1px solid #e5e7eb !important;
+            text-align: center !important;
         }
         .soil-table tbody tr:hover td.col-sticky-action,
         .soil-table tbody tr.hover\:bg-green-50\/40:hover td.col-sticky-action {
@@ -221,17 +229,22 @@
         /* Dark mode for sticky action */
         .dark .soil-table th.col-sticky-action {
             background-color: #1e293b !important;
-            border-bottom: 1px solid #334155 !important;
         }
         .dark .soil-table td.col-sticky-action {
             background-color: #0f172a !important;
-            border-bottom: 1px solid #1e293b !important;
         }
         .dark .soil-table tbody tr:hover td.col-sticky-action {
             background-color: #1e293b !important;
         }
         .dark .soil-table tbody tr.bg-emerald-50\/80 td.col-sticky-action {
             background-color: rgba(6, 78, 59, 0.4) !important;
+        }
+
+        .soil-action-title-desktop {
+            display: inline;
+        }
+        .soil-action-title-mobile {
+            display: none;
         }
 
         .soil-mobile-date {
@@ -241,21 +254,13 @@
         .detected-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            color: #15803d;
+            color: #334155;
             font-weight: 700;
             font-size: 13.5px;
             white-space: nowrap;
             background: transparent !important;
             border: none !important;
             padding: 0 !important;
-        }
-        .detected-badge .detected-dot {
-            display: inline-block;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #22c55e;
         }
         .hue-badge-pill {
             display: inline-block;
@@ -269,10 +274,7 @@
             padding: 0 !important;
         }
         .dark .detected-badge {
-            color: #4ade80 !important;
-        }
-        .dark .detected-badge .detected-dot {
-            background: #4ade80 !important;
+            color: #e2e8f0 !important;
         }
         .dark .hue-badge-pill {
             color: #f1f5f9 !important;
@@ -396,22 +398,8 @@
             color: #fca5a5 !important;
         }
 
-        /* ── MOBILE SCREEN BREAKPOINT (< 640px): table fits the screen, Action never hidden ── */
-        @media (max-width: 639px) {
-            .soil-table-container {
-                overflow: visible !important;
-            }
-            .soil-table-card-wrap {
-                overflow: visible !important;
-            }
-            .soil-table {
-                table-layout: fixed !important;
-                width: 100% !important;
-                min-width: 0 !important;
-                max-width: 100% !important;
-            }
-
-            /* Scan date moves under Detected Colors */
+        /* ── TABLET BREAKPOINT (< 768px): date moves under Detected Colors so table fits seamlessly ── */
+        @media (max-width: 767px) {
             .soil-table th.col-scan-date,
             .soil-table td.col-scan-date {
                 display: none !important;
@@ -422,6 +410,35 @@
                 font-weight: 600;
                 color: #94a3b8;
                 margin-top: 2px;
+            }
+        }
+
+        /* ── MOBILE BREAKPOINT (< 680px): table fits screen, Action is single ⋮ button ── */
+        @media (max-width: 679px) {
+            .soil-action-title-desktop {
+                display: none !important;
+            }
+            .soil-action-title-mobile {
+                display: inline !important;
+            }
+            .soil-table-container {
+                overflow: visible !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .soil-table-card-wrap {
+                overflow: visible !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .soil-table {
+                table-layout: fixed !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
             }
 
             .soil-table th,
@@ -468,12 +485,16 @@
             .soil-table td.col-sticky-action {
                 display: table-cell !important;
                 position: static !important;
+                left: auto !important;
+                right: auto !important;
                 width: 58px !important;
                 min-width: 58px !important;
                 max-width: 58px !important;
                 padding: 10px 4px !important;
                 text-align: center !important;
                 box-shadow: none !important;
+                border-left: none !important;
+                border-right: none !important;
             }
             .soil-desktop-actions {
                 display: none !important;
@@ -579,7 +600,8 @@
 
                         {{-- ACTION (no sorting) --}}
                         <th class="px-3 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap col-sticky-action">
-                            ACTIONS
+                            <span class="soil-action-title-desktop">ACTIONS</span>
+                            <span class="soil-action-title-mobile">ACTION</span>
                         </th>
                     </tr>
                 </thead>
@@ -631,8 +653,7 @@
 
                         {{-- DETECTED COLORS --}}
                         <td class="px-5 py-4 whitespace-nowrap col-detected-colors">
-                            <span class="detected-badge inline-flex items-center gap-1.5 font-bold text-sm text-emerald-600 dark:text-emerald-400">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 inline-block"></span>
+                            <span class="detected-badge inline-flex items-center font-bold text-sm text-gray-700 dark:text-gray-200">
                                 {{ $detectedColorsCount === 1 ? '1 Color' : "{$detectedColorsCount} Colors" }}
                             </span>
                             <span class="soil-mobile-date">{{ $scanDateFormatted }}</span>
@@ -719,7 +740,7 @@
                                         <span>View Scan</span>
                                     </button>
 
-                                    <div style="height:1px; background:#f1f5f9; margin:4px 0;"></div>
+                                    <div class="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
 
                                     <button
                                         @click="open = false"
