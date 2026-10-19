@@ -101,15 +101,15 @@ class Soil extends Model
 
     /**
      * Unified Soil Description:
-     * Custom saved edit -> Master Manage Munsell Color database default -> standard default.
+     * Master Manage Munsell Color database (Admin side) -> Custom saved edit -> standard default.
      */
     public function getEffectiveDescriptionAttribute(): string
     {
-        if (!empty($this->attributes['description']) && trim($this->attributes['description']) !== '') {
-            return $this->attributes['description'];
+        if ($this->dynamic_munsell_color && !empty(trim((string)$this->dynamic_munsell_color->description))) {
+            return trim($this->dynamic_munsell_color->description);
         }
-        if ($this->dynamic_munsell_color && !empty($this->dynamic_munsell_color->description)) {
-            return $this->dynamic_munsell_color->description;
+        if (!empty($this->attributes['description']) && trim((string)$this->attributes['description']) !== '') {
+            return trim($this->attributes['description']);
         }
         return 'Sample processed successfully using AgriCo Munsell Determination Algorithm.';
     }
@@ -121,15 +121,15 @@ class Soil extends Model
 
     /**
      * Unified Soil Name:
-     * Custom saved edit -> Master Manage Munsell Color database default -> standard default.
+     * Master Manage Munsell Color database (Admin side) -> Custom saved edit -> standard default.
      */
     public function getEffectiveSoilNameAttribute(): string
     {
-        if (!empty($this->attributes['soil_name']) && trim($this->attributes['soil_name']) !== '') {
-            return $this->attributes['soil_name'];
+        if ($this->dynamic_munsell_color && !empty(trim((string)$this->dynamic_munsell_color->color_name))) {
+            return trim($this->dynamic_munsell_color->color_name);
         }
-        if ($this->dynamic_munsell_color && !empty($this->dynamic_munsell_color->color_name)) {
-            return $this->dynamic_munsell_color->color_name;
+        if (!empty($this->attributes['soil_name']) && trim((string)$this->attributes['soil_name']) !== '') {
+            return trim($this->attributes['soil_name']);
         }
         return 'Determined Soil Specimen';
     }
@@ -141,15 +141,15 @@ class Soil extends Model
 
     /**
      * Unified Hex Color:
-     * Custom override -> Master Munsell Hex Code -> dynamic algorithm hex.
+     * Master Munsell Hex Code (Admin side) -> Custom override -> dynamic algorithm hex.
      */
     public function getEffectiveHexColorAttribute(): string
     {
-        if (!empty($this->attributes['hex_color']) && trim($this->attributes['hex_color']) !== '') {
-            return $this->attributes['hex_color'];
+        if ($this->dynamic_munsell_color && !empty(trim((string)$this->dynamic_munsell_color->hex_code))) {
+            return trim($this->dynamic_munsell_color->hex_code);
         }
-        if ($this->dynamic_munsell_color && !empty($this->dynamic_munsell_color->hex_code)) {
-            return $this->dynamic_munsell_color->hex_code;
+        if (!empty($this->attributes['hex_color']) && trim((string)$this->attributes['hex_color']) !== '') {
+            return trim($this->attributes['hex_color']);
         }
         if (class_exists(ManageMunsellColor::class)) {
             return ManageMunsellColor::munsellToHex(

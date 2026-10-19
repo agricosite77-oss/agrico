@@ -5856,14 +5856,14 @@
 
             const ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
 
-            const greenColor = '#4ade80';
-
             regions.forEach((r, idx) => {
                 const b = getNormalizedRegionBox(r);
                 if (!b) return;
 
                 const code = r.munsell || r.munsell_code || r.code || '';
                 const roleName = ordinalNames[idx] || `${idx + 1}TH`;
+                let rHex = r.hex || '#4ade80';
+                if (rHex && !rHex.startsWith('#')) rHex = '#' + rHex;
 
                 let left = 50 + (b.x * 50);
                 let top = topBarPct + (b.y * photoHeightPct);
@@ -5908,9 +5908,10 @@
                     top: ${top.toFixed(2)}%;
                     width: ${width.toFixed(2)}%;
                     height: ${height.toFixed(2)}%;
-                    border: 2.5px solid ${greenColor};
+                    border: 2.5px solid ${rHex};
                     border-radius: 4px;
                     box-sizing: border-box;
+                    box-shadow: 0 0 6px rgba(0,0,0,0.5);
                     pointer-events: none;
                 `;
 
@@ -5919,8 +5920,9 @@
                     position: absolute;
                     ${labelAbove ? `bottom: 100%; margin-bottom: 2px;` : `top: 100%; margin-top: 2px;`}
                     ${horizPos}
-                    background: ${greenColor};
-                    color: #051F20;
+                    background: ${rHex};
+                    color: #ffffff;
+                    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
                     font-size: ${labelFontSize}px;
                     font-weight: 800;
                     padding: ${labelPadV}px ${labelPadH}px;
@@ -7757,7 +7759,11 @@
                     chroma:     data.chroma,
                     confidence: window.getNearMatchScore(data, (data.confidence_formatted && data.confidence_formatted !== '100%' && data.confidence_formatted !== '100.0%') ? data.confidence_formatted : '98.2%'),
                     hex:        data.hex || (data.regions && data.regions[0] ? data.regions[0].hex : '#594433'),
-                    desc:       data.description || (data.regions && data.regions[0] ? data.regions[0].description : ''),
+                    desc:       (() => {
+                        const cCode = (data.munsell_code || data.munsell || (data.regions && data.regions[0] ? (data.regions[0].munsell_code || data.regions[0].munsell) : '') || '').trim().toUpperCase();
+                        const mc = Array.isArray(dbMunsellColors) ? dbMunsellColors.find(c => c.full_code && c.full_code.trim().toUpperCase() === cCode) : null;
+                        return (mc && mc.description && mc.description.trim()) ? mc.description.trim() : (data.description || (data.regions && data.regions[0] ? data.regions[0].description : ''));
+                    })(),
                     organic:    data.organic_matter || (data.regions && data.regions[0] ? data.regions[0].organic_matter : '—'),
                     drainage:   data.drainage_profile || (data.regions && data.regions[0] ? (data.regions[0].soil_type || data.regions[0].soil_name) : '—'),
                     crops:      data.recommended_crops,
@@ -7855,18 +7861,23 @@
                     }
                 }
 
-                // Description (Single clean description line)
+                // Description (Authoritative description from Admin Munsell Color database)
                 if (resDesc) {
-                    let singleDesc = match.desc;
+                    const normCode = (match.code || '').trim().toUpperCase();
+                    const mcFound = Array.isArray(dbMunsellColors)
+                        ? dbMunsellColors.find(c => c.full_code && c.full_code.trim().toUpperCase() === normCode)
+                        : null;
+
+                    let singleDesc = (mcFound && mcFound.description && mcFound.description.trim())
+                        ? mcFound.description.trim()
+                        : (match.desc || '');
+
                     if (!singleDesc || singleDesc.includes('Sample processed')) {
                         const safeCode = (match.code && match.code !== 'undefined' && match.code !== 'null') ? match.code : '';
                         const safeName = (match.color_name && match.color_name !== 'undefined' && match.color_name !== 'null') ? match.color_name : 'Determined Soil Specimen';
                         singleDesc = safeCode ? `${safeCode} - ${safeName}` : safeName;
                     } else {
                         singleDesc = singleDesc.replace(/\.{2,}\s*[a-zA-Z]*$/g, '.').replace(/\.{2,}/g, '.').trim();
-                    }
-                    if (singleDesc.includes('\n')) {
-                        singleDesc = singleDesc.split('\n')[0].trim();
                     }
                     singleDesc = singleDesc.replace(/\bundefined\b/gi, '').replace(/\bnull\b/gi, '').replace(/\s*-\s*$/, '').trim();
                     if (!singleDesc) {
@@ -8044,7 +8055,13 @@
                     const rNote = (hasPin && r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
                         ? r.scan_note 
                         : '-';
-                    const rDesc = r.description || `${rCode} - ${rLabel}`;
+                    const rNormCode = (rCode || '').trim().toUpperCase();
+                    const rMcFound = Array.isArray(dbMunsellColors)
+                        ? dbMunsellColors.find(c => c.full_code && c.full_code.trim().toUpperCase() === rNormCode)
+                        : null;
+                    const rDesc = (rMcFound && rMcFound.description && rMcFound.description.trim())
+                        ? rMcFound.description.trim()
+                        : (r.description || `${rCode} - ${rLabel}`);
 
                     // Update hero banner with dynamic contrast
                     window.updateLiveBannerTheme(rHex, rCode, rLabel, rPct);
@@ -8760,7 +8777,13 @@
                     const rNote = (hasPin && r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
                         ? r.scan_note 
                         : '-';
-                    let rDesc = r.description || `${rCode} - ${rLabel}`;
+                    const rNormCode = (rCode || '').trim().toUpperCase();
+                    const rMcFound = Array.isArray(dbMunsellColors)
+                        ? dbMunsellColors.find(c => c.full_code && c.full_code.trim().toUpperCase() === rNormCode)
+                        : null;
+                    let rDesc = (rMcFound && rMcFound.description && rMcFound.description.trim())
+                        ? rMcFound.description.trim()
+                        : (r.description || `${rCode} - ${rLabel}`);
                     rDesc = rDesc.replace(/\bundefined\b/gi, '').replace(/\bnull\b/gi, '').replace(/\s*-\s*$/, '').trim();
                     if (!rDesc) rDesc = rLabel;
 
@@ -8892,10 +8915,14 @@
                     }
                 }
 
-                let cleanDesc = data.desc ? data.desc.replace(/\.{2,}\s*[a-zA-Z]*$/g, '.').replace(/\.{2,}/g, '.').trim() : (code + ' - ' + name);
-                if (cleanDesc.includes('\n')) {
-                    cleanDesc = cleanDesc.split('\n')[0].trim();
-                }
+                const mCodeNorm = (code || '').trim().toUpperCase();
+                const mColorFound = Array.isArray(dbMunsellColors)
+                    ? dbMunsellColors.find(c => c.full_code && c.full_code.trim().toUpperCase() === mCodeNorm)
+                    : null;
+                let cleanDesc = (mColorFound && mColorFound.description && mColorFound.description.trim())
+                    ? mColorFound.description.trim()
+                    : (data.desc ? data.desc.replace(/\.{2,}\s*[a-zA-Z]*$/g, '.').replace(/\.{2,}/g, '.').trim() : (code + ' - ' + name));
+                cleanDesc = cleanDesc.replace(/\bundefined\b/gi, '').replace(/\bnull\b/gi, '').replace(/\s*-\s*$/, '').trim();
                 if (modalCardDesc) modalCardDesc.textContent = cleanDesc;
 
                 if (modalCardDate) modalCardDate.textContent = data.date || '—';
@@ -9661,7 +9688,11 @@
                     modalBadge.style.color = '';
                     modalBadge.style.background = '';
                 }
-                const reg = window.currentDetectedSoilRegion || window.currentBeforeAfterRegion;
+                let reg = (Array.isArray(window.currentActiveScanRegions) && window.currentActiveScanRegions.length > 0)
+                    ? window.currentActiveScanRegions
+                    : ((Array.isArray(window.currentBeforeAfterRegions) && window.currentBeforeAfterRegions.length > 0)
+                        ? window.currentBeforeAfterRegions
+                        : (window.currentDetectedSoilRegion || window.currentBeforeAfterRegion));
                 if (zoomBoxes && reg) {
                     renderBeforeAfterBoxes(zoomBoxes, Array.isArray(reg) ? reg : [reg]);
                 } else if (zoomBoxes) {

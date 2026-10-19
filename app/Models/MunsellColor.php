@@ -58,6 +58,46 @@ class MunsellColor extends Model
                 }
             }
         });
+
+        static::saved(function ($model) {
+            // Synchronize with soils table so admin changes (description, name, etc.) immediately reflect everywhere
+            $soilUpdates = [];
+            if ($model->description !== null && trim($model->description) !== '') {
+                $soilUpdates['description'] = trim($model->description);
+            }
+            if ($model->color_name !== null && trim($model->color_name) !== '') {
+                $soilUpdates['soil_name'] = trim($model->color_name);
+            }
+            if (!empty($model->munsell_color_id)) {
+                $soilUpdates['color_id'] = $model->munsell_color_id;
+            }
+            if (!empty($model->hue)) {
+                $soilUpdates['hue'] = $model->hue;
+            }
+
+            if (!empty($soilUpdates)) {
+                $query = Soil::query();
+                $hasCond = false;
+                if (!empty($model->munsell_color_id)) {
+                    $query->where('color_id', $model->munsell_color_id);
+                    $hasCond = true;
+                }
+                if (!empty($model->full_code)) {
+                    $clean = trim($model->full_code);
+                    if ($hasCond) {
+                        $query->orWhere('full_code', $clean)
+                              ->orWhereRaw('UPPER(TRIM(full_code)) = ?', [strtoupper($clean)]);
+                    } else {
+                        $query->where('full_code', $clean)
+                              ->orWhereRaw('UPPER(TRIM(full_code)) = ?', [strtoupper($clean)]);
+                        $hasCond = true;
+                    }
+                }
+                if ($hasCond) {
+                    $query->update($soilUpdates);
+                }
+            }
+        });
     }
 
     public function getSoilOrganicIndexAttribute($value)

@@ -58,6 +58,7 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="${serverBase}/js/lallo-boundary.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body, #soilMap {
@@ -582,6 +583,21 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
     }).addTo(map);
 
     var markersGroup = L.featureGroup().addTo(map);
+
+    // Official Lal-lo municipal & barangay boundary overlay (same module as Website/Admin)
+    try {
+      if (window.LalloBoundary) {
+        window.LalloBoundary.geoJsonUrl = '${serverBase}/geojson/lal-lo-with-barangays.geojson';
+        window.LalloBoundary.render(map, {
+          fitBounds: false,
+          maxBounds: true,
+          maxBoundsPadding: 0.08,
+          minZoom: 11,
+          showTooltips: true,
+          bringMarkersToFront: markersGroup
+        }).catch(function(err) { console.log('Lal-lo boundary note:', err); });
+      }
+    } catch (e) {}
     var allLocationsData = [];
     var activeMarkers = [];
 
@@ -1036,17 +1052,35 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
           var heightPct = bh * 92.59;
           var roleLabel = (ordinalNames[idx] || (idx + 1) + 'TH') + ' COLOR';
 
+          // Resolve per-region hex BEFORE building the overlay box HTML
+          var rHex = r.hex || r.hex_color || null;
+          if (!rHex && Array.isArray(r.rgb) && r.rgb.length >= 3) {
+            rHex = '#' + r.rgb.map(function(v) { return Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0'); }).join('');
+          }
+          if (!rHex) rHex = domHex; // fall back to dominant scan color
+          if (rHex && !rHex.startsWith('#')) rHex = '#' + rHex;
+          if (!rHex) rHex = '#4ade80'; // last-resort fallback
+          var rCode = r.munsell || r.munsell_code || domCode;
+          var rPct = r.percent !== undefined ? Math.round(r.percent) : (r.proportion !== undefined ? Math.round(r.proportion * 100) : domPct);
+
+          // Compute label text color: dark text on light backgrounds, white on dark
+          var labelTextColor = '#ffffff';
+          try {
+            var hex6 = rHex.replace('#', '');
+            if (hex6.length === 3) hex6 = hex6[0]+hex6[0]+hex6[1]+hex6[1]+hex6[2]+hex6[2];
+            var rC = parseInt(hex6.substring(0,2), 16);
+            var gC = parseInt(hex6.substring(2,4), 16);
+            var bC = parseInt(hex6.substring(4,6), 16);
+            var luminance = 0.299 * rC + 0.587 * gC + 0.114 * bC;
+            labelTextColor = luminance > 160 ? '#000000' : '#ffffff';
+          } catch(e) {}
+
           overlayBoxesHtml += '' +
-            '<div style="position: absolute; left: ' + leftPct + '%; top: ' + topPct + '%; width: ' + widthPct + '%; height: ' + heightPct + '%; border: 2.5px solid #4ade80; pointer-events: none; border-radius: 4px; box-sizing: border-box;">' +
-              '<span style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 800; background: #4ade80; color: #000000; padding: 1px 6px; border-radius: 4px; white-space: nowrap; line-height: 1.2; letter-spacing: 0.03em;">' +
+            '<div style="position: absolute; left: ' + leftPct + '%; top: ' + topPct + '%; width: ' + widthPct + '%; height: ' + heightPct + '%; border: 2.5px solid ' + rHex + '; pointer-events: none; border-radius: 4px; box-sizing: border-box;">' +
+              '<span style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 800; background: ' + rHex + '; color: ' + labelTextColor + '; padding: 1px 6px; border-radius: 4px; white-space: nowrap; line-height: 1.2; letter-spacing: 0.03em;">' +
                 roleLabel +
               '</span>' +
             '</div>';
-
-          var rHex = r.hex || domHex;
-          if (rHex && !rHex.startsWith('#')) rHex = '#' + rHex;
-          var rCode = r.munsell || r.munsell_code || domCode;
-          var rPct = r.percent !== undefined ? Math.round(r.percent) : (r.proportion !== undefined ? Math.round(r.proportion * 100) : domPct);
 
           swatchPillsHtml += '' +
             '<div class="soil-swatch-capsule-pill">' +
@@ -1327,6 +1361,38 @@ const HUE_IMAGE_FALLBACK = {
   '2.5YR': SOIL_IMAGES.s6,
   '10R': SOIL_IMAGES.s7,
   '2.5Y': SOIL_IMAGES.s8,
+};
+
+// Region crop PNGs (region_<id>_N.png) are often missing in cloud storage, while the
+// full normalized photo of the same scan (scan_<id>_normalized.jpg) exists. Build that URL.
+const deriveNormalizedScanUrl = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  const m = url.match(/^(.*\/)(?:region|scan)_(.+?)(?:_\d+\.png|_normalized\.jpg|\.\w+)$/i);
+  if (!m) return null;
+  return `${m[1]}scan_${m[2]}_normalized.jpg`;
+};
+
+// Image that retries with the normalized scan photo if the primary URL fails to load.
+const FallbackImage = ({ uri, style, resizeMode = 'cover' }) => {
+  const [src, setSrc] = useState(uri);
+  const [triedFallback, setTriedFallback] = useState(false);
+  useEffect(() => {
+    setSrc(uri);
+    setTriedFallback(false);
+  }, [uri]);
+  return (
+    <Image
+      source={{ uri: src }}
+      style={style}
+      resizeMode={resizeMode}
+      onError={() => {
+        if (triedFallback) return;
+        setTriedFallback(true);
+        const alt = deriveNormalizedScanUrl(src);
+        if (alt && alt !== src) setSrc(alt);
+      }}
+    />
+  );
 };
 
 // Helper: Safely resolve image from DB scanImage URI or offline high-res sample
@@ -1926,12 +1992,26 @@ export default function HomeScreen({ navigation, route }) {
       : [{ norm_x: 0.25, norm_y: 0.25, norm_w: 0.5, norm_h: 0.5 }];
     return regions.map((r, idx) => {
       const bData = normalizeBox(r);
+      // Resolve this region's specific hex color — never fall back to global scan color here
+      let rHex = r.hex || r.hex_color || null;
+      if (!rHex && Array.isArray(r.rgb) && r.rgb.length >= 3) {
+        rHex = `#${r.rgb.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('')}`;
+      }
+      rHex = rHex || '#4ade80'; // default to green only if truly no color available
+      if (!rHex.startsWith('#')) rHex = `#${rHex}`;
+      const rCode = r.munsell_code || r.munsell || r.notation || '';
+      const rPct = r.percent !== undefined
+        ? Math.round(r.percent)
+        : (r.proportion !== undefined ? Math.round(r.proportion * 100) : null);
       return {
         leftPct: 50 + (bData.raw_x * 50),
         topPct: 7.41 + (bData.raw_y * 92.59),
         widthPct: bData.raw_w * 50,
         heightPct: bData.raw_h * 92.59,
         roleLabel: `${ordinalNames[idx] || (idx + 1) + 'TH'} COLOR`,
+        hex: rHex,
+        munsellCode: rCode,
+        percent: rPct,
       };
     });
   }, [detailNormRegions]);
@@ -2081,7 +2161,28 @@ export default function HomeScreen({ navigation, route }) {
             scanImage: fixMediaUrl(s.scan_image_url || s.scan_image),
             beforeAfterImage: fixMediaUrl(s.before_after_image_url || s.before_after_image),
             beforeAfterImageUrl: fixMediaUrl(s.before_after_image_url || s.before_after_image),
-            regions: Array.isArray(s.regions) ? s.regions : (Array.isArray(s.regions_data) ? s.regions_data : []),
+            regions: (() => {
+              let raw = Array.isArray(s.regions) && s.regions.length > 0
+                ? s.regions
+                : (Array.isArray(s.regions_data) && s.regions_data.length > 0 ? s.regions_data : []);
+              if ((!raw || raw.length === 0) && typeof s.regions === 'string') {
+                try { raw = JSON.parse(s.regions); } catch (e) {}
+              }
+              if ((!raw || raw.length === 0) && typeof s.regions_data === 'string') {
+                try { raw = JSON.parse(s.regions_data); } catch (e) {}
+              }
+              if (!Array.isArray(raw)) return [];
+              return raw.map((r) => ({
+                ...r,
+                hex: r.hex || r.hex_color || (Array.isArray(r.rgb) && r.rgb.length >= 3
+                  ? `#${r.rgb.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('')}`
+                  : null) || null,
+                munsell_code: r.munsell_code || r.munsell || r.notation || null,
+                percent: r.percent !== undefined
+                  ? r.percent
+                  : (r.proportion !== undefined ? Math.round(r.proportion * 100) : undefined),
+              }));
+            })(),
             rawDate: s.scan_date || s.created_at,
             scanTime: s.scan_time || '',
             dateGroup: s.date_group || 'Earlier',
@@ -2472,8 +2573,8 @@ export default function HomeScreen({ navigation, route }) {
                               ]}
                             >
                               {hasCameraPhoto ? (
-                                <Image
-                                  source={{ uri: item.scanImage }}
+                                <FallbackImage
+                                  uri={item.scanImage}
                                   style={styles.recentSoilThumb}
                                   resizeMode="cover"
                                 />
@@ -3083,8 +3184,8 @@ export default function HomeScreen({ navigation, route }) {
                   {!isMunsellDetail && (
                     <View style={styles.soilBannerAvatarContainer}>
                       {detailSoil.scanImage ? (
-                        <Image
-                          source={{ uri: detailSoil.scanImage }}
+                        <FallbackImage
+                          uri={detailSoil.scanImage}
                           style={styles.soilBannerAvatarImg}
                           resizeMode="cover"
                         />
@@ -3257,7 +3358,7 @@ export default function HomeScreen({ navigation, route }) {
                             style={styles.soilNormImage}
                             resizeMode="cover"
                           />
-                          {/* Overlaid green ROI bounding boxes */}
+                          {/* Overlaid ROI bounding boxes — colored with each region's real detected soil color */}
                           {detailNormBoxes.map((b, idx) => (
                             <View
                               key={`norm_box_${idx}`}
@@ -3267,13 +3368,15 @@ export default function HomeScreen({ navigation, route }) {
                                 top: `${b.topPct}%`,
                                 width: `${b.widthPct}%`,
                                 height: `${b.heightPct}%`,
-                                borderWidth: 2,
-                                borderColor: '#4ade80',
+                                borderWidth: 2.5,
+                                borderColor: b.hex,
                                 borderRadius: 4,
                               }}
                             >
-                              <View style={styles.normRoleBadge}>
-                                <Text style={styles.normRoleBadgeText}>{b.roleLabel}</Text>
+                              <View style={[styles.normRoleBadge, { backgroundColor: b.hex, borderColor: 'rgba(0,0,0,0.3)', borderWidth: 1 }]}>
+                                <Text style={[styles.normRoleBadgeText, { color: '#fff', textShadowColor: 'rgba(0,0,0,0.8)', textShadowRadius: 2 }]}>
+                                  {b.roleLabel}{b.munsellCode ? ` · ${b.munsellCode}` : ''}{b.percent != null ? ` (${b.percent}%)` : ''}
+                                </Text>
                               </View>
                             </View>
                           ))}
@@ -3288,15 +3391,15 @@ export default function HomeScreen({ navigation, route }) {
                             </Text>
                           </View>
                           <View style={{ flexDirection: 'row', height: 135 }}>
-                            <Image
-                              source={{ uri: detailSoil.scanImage }}
+                            <FallbackImage
+                              uri={detailSoil.scanImage}
                               style={{ flex: 1, height: '100%' }}
                               resizeMode="cover"
                             />
                             <View style={{ width: 1.5, backgroundColor: 'rgba(255, 255, 255, 0.3)' }} />
                             <View style={{ flex: 1, height: '100%', position: 'relative' }}>
-                              <Image
-                                source={{ uri: detailSoil.scanImage }}
+                              <FallbackImage
+                                uri={detailSoil.scanImage}
                                 style={{ width: '100%', height: '100%' }}
                                 resizeMode="cover"
                               />
@@ -3368,23 +3471,39 @@ export default function HomeScreen({ navigation, route }) {
                       )}
                     </View>
 
-                    {/* Swatch Capsule Pills */}
+                    {/* Swatch Capsule Pills — each shows its REAL detected Stage 3/4 soil color */}
                     <View style={styles.normSwatchesRow}>
                       {detailNormRegions.map((r, idx) => {
-                        let rHex = r.hex || r.hex_color || detailSoil.hexCode || detailSoil.hexColor || '#8F694E';
+                        // Resolve hex from region-specific fields only (do NOT fall back to global scan color)
+                        let rHex = r.hex || r.hex_color || null;
+                        if (!rHex && Array.isArray(r.rgb) && r.rgb.length >= 3) {
+                          rHex = `#${r.rgb.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('')}`;
+                        }
+                        // Only fall back to global color if this is the ONLY region (dominant)
+                        if (!rHex && detailNormRegions.length === 1) {
+                          rHex = detailMunsellMatch?.hexCode || detailSoil.hexCode || detailSoil.hexColor || '#8F694E';
+                        }
+                        rHex = (rHex || '#888888');
                         if (!rHex.startsWith('#')) rHex = `#${rHex}`;
-                        const rCode = r.munsell || r.munsell_code || detailSoil.munsellCode || detailSoil.fullCode || '';
-                        const rPct = r.percent !== undefined 
-                          ? Math.round(r.percent) 
-                          : (r.proportion !== undefined 
-                              ? Math.round(r.proportion * 100) 
-                              : (detailSoil.soilPercentage || 100));
+
+                        // Resolve munsell code from region-specific fields only
+                        const rCode = r.munsell_code || r.munsell || r.notation || null;
+                        // Show global munsell only if this is the single dominant region
+                        const displayCode = rCode || (detailNormRegions.length === 1
+                          ? (detailMunsellMatch?.munsellCode || detailSoil.munsellCode || detailSoil.fullCode || '')
+                          : '');
+
+                        const rPct = r.percent !== undefined
+                          ? Math.round(r.percent)
+                          : (r.proportion !== undefined
+                              ? Math.round(r.proportion * 100)
+                              : (detailNormRegions.length === 1 ? (detailSoil.soilPercentage || 100) : null));
                         return (
                           <View key={`swatch_pill_${idx}`} style={styles.soilSwatchCapsulePill}>
                             <View style={[styles.capsulePillSwatch, { backgroundColor: rHex }]} />
                             <Text style={styles.capsulePillHex}>{rHex.toUpperCase()}</Text>
-                            {rCode ? <Text style={styles.capsulePillCode}>({rCode})</Text> : null}
-                            <Text style={styles.capsulePillPct}>{rPct}%</Text>
+                            {displayCode ? <Text style={styles.capsulePillCode}>({displayCode})</Text> : null}
+                            {rPct != null ? <Text style={styles.capsulePillPct}>{rPct}%</Text> : null}
                           </View>
                         );
                       })}

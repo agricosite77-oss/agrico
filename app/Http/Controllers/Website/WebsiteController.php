@@ -972,6 +972,30 @@ class WebsiteController extends Controller
             $authUser = User::where('user_id', session('admin_id'))->first();
         }
 
+        if (!$authUser) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => 'AUTH_REQUIRED',
+                    'message' => 'Please log in or create an account to download the mobile application.',
+                ], 401);
+            }
+
+            return redirect()->route('website.home')->with('login_required_download', true);
+        }
+
+        if (method_exists($authUser, 'isApproved') && !$authUser->isApproved()) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => 'ACCOUNT_PENDING_APPROVAL',
+                    'message' => 'Your account is awaiting admin approval. Mobile app download will be enabled once approved.',
+                ], 403);
+            }
+
+            return redirect()->route('website.home')->with('account_pending_download', true);
+        }
+
         $activeApp = \App\Models\Application::where('status', 'ACTIVE')->first();
 
         // Track download record if possible

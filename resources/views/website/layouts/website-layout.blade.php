@@ -1410,7 +1410,7 @@
 
 
 {{-- Global Login Required Modal for Guest Interceptions --}}
-@guest
+@if(!$isWsAuth)
 <div id="globalLoginRequiredModal" class="global-login-modal-overlay" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(5,31,32,0.82); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
     <div class="global-login-modal-card">
         {{-- Close "X" Exit Button --}}
@@ -1422,11 +1422,15 @@
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
         </div>
-        <h3 class="global-login-title">Login Required</h3>
+        <h3 id="globalLoginModalTitle" class="global-login-title">Login Required</h3>
         <p id="globalLoginModalNotice" class="global-login-notice">You need to be logged in to access the Interactive Soil Map features. Would you like to log in to your account now?</p>
         <div style="display:flex; gap:12px; justify-content:center;">
             <button type="button" class="global-login-btn-secondary" onclick="closeGlobalLoginModal()">No, Thanks</button>
             <a href="{{ route('login') }}" class="global-login-btn-primary">Yes, Log In</a>
+        </div>
+        <div class="global-login-footer-prompt" style="margin-top: 18px; font-size: 13.5px; color: #8EB69B; text-align: center;">
+            Don't have an account? 
+            <a href="{{ route('register') }}" class="global-login-register-link" style="color: #22c55e; font-weight: 700; text-decoration: underline; margin-left: 4px;">Sign Up / Register</a>
         </div>
     </div>
 </div>
@@ -1555,16 +1559,22 @@
         box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
         color: #ffffff !important;
     }
+    html.light-mode .global-login-footer-prompt {
+        color: #64748b !important;
+    }
+    html.light-mode .global-login-register-link {
+        color: #16a34a !important;
+    }
 
     @keyframes globalLoginModalIn {
         from { transform: scale(0.94) translateY(10px); opacity: 0; }
         to   { transform: scale(1) translateY(0); opacity: 1; }
     }
 
-    /* â”€â”€ Universal Modal Close / Exit Circle Button â”€â”€ */
+    /* ── Universal Modal Close / Exit Circle Button ── */
 
 </style>
-@endguest
+@endif
 
 {{-- Global Account Pending Approval Modal --}}
 <div id="globalAccountPendingModal" class="global-pending-modal-overlay" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(5,31,32,0.85); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:16px;">
@@ -1760,7 +1770,7 @@
         } else if (feature === 'profile') {
             if (notice) notice.innerText = 'Please log in to view and manage your AgriCo account profile. Would you like to log in to your account now?';
         } else if (feature === 'download') {
-            if (notice) notice.innerText = 'Please log in to download the AgriCo Mobile Application. Would you like to log in to your account now?';
+            if (notice) notice.innerText = 'Please log in to your account to download the AgriCo Mobile Application. If you do not have an account yet, you can sign up for free!';
         }
         if (modal) {
             modal.style.display = 'flex';

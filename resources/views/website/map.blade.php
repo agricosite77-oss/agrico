@@ -1846,6 +1846,9 @@
                 });
             } else {
                 regions = Array.isArray(m.regions) && m.regions.length > 0 ? m.regions : [];
+                if (regions.length <= 1 && m.soil_scan && Array.isArray(m.soil_scan.regions) && m.soil_scan.regions.length > 1) {
+                    regions = m.soil_scan.regions;
+                }
                 if (regions.length === 0) {
                     regions = [{
                         munsell: fullCode,
@@ -2158,19 +2161,18 @@
                 const widthPct = bw * 50;
                 const heightPct = bh * 92.59;
                 const roleLabel = (ordinalNames[idx] || (idx + 1) + 'TH') + ' COLOR';
-
-                overlayBoxesHtml += `
-                    <div style="position: absolute; left: ${leftPct}%; top: ${topPct}%; width: ${widthPct}%; height: ${heightPct}%; border: 2.5px solid #4ade80; pointer-events: none; border-radius: 4px; box-sizing: border-box;">
-                        <span style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 800; background: #4ade80; color: #000000; padding: 1px 6px; border-radius: 4px; white-space: nowrap; line-height: 1.2; letter-spacing: 0.03em;">
-                            ${roleLabel}
-                        </span>
-                    </div>
-                `;
-
                 let rHex = r.hex || domHex;
                 if (rHex && !rHex.startsWith('#')) rHex = '#' + rHex;
                 const rCode = r.munsell || r.munsell_code || domCode;
                 const rPct = r.percent !== undefined ? Math.round(r.percent) : (r.proportion !== undefined ? Math.round(r.proportion * 100) : domPct);
+
+                overlayBoxesHtml += `
+                    <div style="position: absolute; left: ${leftPct}%; top: ${topPct}%; width: ${widthPct}%; height: ${heightPct}%; border: 2.5px solid ${rHex}; pointer-events: none; border-radius: 4px; box-sizing: border-box; box-shadow: 0 0 6px rgba(0,0,0,0.5);">
+                        <span style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 800; background: ${rHex}; color: #ffffff; padding: 1px 6px; border-radius: 4px; white-space: nowrap; line-height: 1.2; letter-spacing: 0.03em; text-shadow: 0 1px 2px rgba(0,0,0,0.6);">
+                            ${roleLabel}
+                        </span>
+                    </div>
+                `;
 
                 swatchPillsHtml += `
                     <div class="soil-swatch-capsule-pill">

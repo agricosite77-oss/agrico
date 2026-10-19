@@ -240,6 +240,82 @@ class LocationMapping extends Model
         $sMColor = $sSoil?->munsellColor;
         $scan = $this->soilScan;
 
+        // If the scan has multiple detected regions, format and return ALL of them
+        if ($scan && !empty($scan->regions) && count($scan->regions) > 1) {
+            $allScanRegions = $scan->regions;
+            $pinnedIdx = $this->pinned_soil_index;
+            $ordered = array_values($allScanRegions);
+
+            // If this location pin is for a specific sub-layer, place it at index 0
+            if ($pinnedIdx !== null && isset($ordered[$pinnedIdx]) && $pinnedIdx > 0) {
+                $pinnedItem = $ordered[$pinnedIdx];
+                array_splice($ordered, $pinnedIdx, 1);
+                array_unshift($ordered, $pinnedItem);
+            } elseif ($this->soil_id) {
+                $matchIdx = null;
+                foreach ($ordered as $idx => $r) {
+                    if ((isset($r['soil_id']) && $r['soil_id'] == $this->soil_id) ||
+                        (isset($r['munsell']) && $r['munsell'] == ($sSoil?->full_code ?? ''))) {
+                        $matchIdx = $idx;
+                        break;
+                    }
+                }
+                if ($matchIdx !== null && $matchIdx > 0) {
+                    $matched = $ordered[$matchIdx];
+                    array_splice($ordered, $matchIdx, 1);
+                    array_unshift($ordered, $matched);
+                }
+            }
+
+            $formatted = [];
+            foreach ($ordered as $idx => $r) {
+                $rSoil = null;
+                $rCode = $r['munsell'] ?? ($r['munsell_code'] ?? ($r['code'] ?? ($idx === 0 ? ($sSoil?->full_code ?? '—') : '—')));
+                if (!empty($rCode) && $rCode !== '—') {
+                    $rSoil = \App\Models\Soil::where('full_code', $rCode)->first();
+                }
+                $rMColor = $rSoil?->munsellColor;
+                $rHex = $r['hex'] ?? ($rSoil?->effective_hex_color ?: ($rSoil?->hex_color ?: ($rMColor?->hex_code ?: '#8F694E')));
+                if ($rHex && !str_starts_with($rHex, '#')) $rHex = '#' . $rHex;
+
+                $rPct = (float) filter_var($r['percent'] ?? ($r['proportion'] ? $r['proportion'] * 100 : 100), FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+                if ($idx === 0 && $this->soil_percentage) {
+                    $overridePct = (float) filter_var($this->soil_percentage, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+                    if ($overridePct > 0) $rPct = $overridePct;
+                }
+                $rConf = $r['confidence'] ?? $r['near_match'] ?? '96.5%';
+                if (is_numeric($rConf)) $rConf = round((float)$rConf, 1) . '%';
+                $rBox = $r['box'] ?? ($r['bounding_box'] ?? null);
+                $rLabel = $r['label'] ?? ($r['color_name'] ?? ($rSoil?->soil_name ?: ($rMColor?->color_name ?: 'Soil Color')));
+
+                $formatted[] = [
+                    'scan_id'          => $r['scan_id'] ?? ($this->soil_scan_id ?: $this->location_mapping_id),
+                    'is_primary'       => ($idx === 0),
+                    'munsell'          => $rCode,
+                    'munsell_code'     => $rCode,
+                    'label'            => $rLabel,
+                    'color_name'       => $rLabel,
+                    'hex'              => $rHex,
+                    'percent'          => $rPct,
+                    'proportion'       => $rPct / 100,
+                    'confidence'       => $rConf,
+                    'near_match'       => $rConf,
+                    'organic_matter'   => $r['organic_matter'] ?? ($rSoil?->effective_organic_matter ?: 'Moderate (2.2% – 3.7%)'),
+                    'soil_name'        => $r['soil_name'] ?? ($rSoil?->effective_soil_type ?: 'Well-Drained Clay / Latosol'),
+                    'soil_type'        => $r['soil_type'] ?? ($rSoil?->effective_soil_type ?: 'Well-Drained Clay / Latosol'),
+                    'description'      => $r['description'] ?? ($rSoil?->effective_description ?: "{$rCode} - {$rLabel}"),
+                    'box'              => $rBox,
+                    'bounding_box'     => $rBox,
+                    'image'            => $scan ? \App\Helpers\SoilImageHelper::scanImageUrl($scan) : null,
+                    'region_thumbnail' => $r['region_thumbnail'] ?? null,
+                    'pinned_index'     => $idx,
+                ];
+            }
+            if (count($formatted) > 1) {
+                return $formatted;
+            }
+        }
+
         $sHex = $meta['hex'] ?? ($sSoil?->effective_hex_color ?: ($sSoil?->hex_color ?: ($sMColor?->hex_code ?: '#8F694E')));
         if ($sHex && !str_starts_with($sHex, '#')) $sHex = '#' . $sHex;
 

@@ -69,8 +69,8 @@ class SoilFormModal extends Component
 
         $this->scanId        = $scan ? $scan->soil_scan_id : null;
         $this->soilId        = $soil->soil_id;
-        $this->name          = $soil->soil_name;
-        $this->description   = $soil->description ?? ($soil->dynamic_munsell_color?->description ?? '');
+        $this->name          = $soil->effective_soil_name;
+        $this->description   = $soil->effective_description;
         $this->scan_note     = $scan ? ($scan->has_user_scan_note ? $scan->scan_note : '') : '';
         $this->soil_type     = $soil->soil_type ?? $soil->computed_soil_type;
         $this->organic_matter= $soil->organic_matter ?? $soil->computed_organic_matter;

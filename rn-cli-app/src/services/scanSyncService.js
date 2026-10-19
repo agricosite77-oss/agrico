@@ -210,7 +210,8 @@ export function mapServerScan(scan, data = {}) {
   const munsellCode = scan?.munsell_code || data?.munsell || data?.munsell_code || '10R 4/1';
   const name = scan?.soil_name || data?.soil_name || data?.color_name || 'Determined Soil';
   const hueCode = scan?.hue || data?.hue || (munsellCode.includes(' ') ? munsellCode.split(' ')[0] : '10R');
-  const hexColor = data?.hex || '#66503C';
+  // scan resource returns 'hex_color'; data (raw analysis) returns 'hex'
+  const hexColor = scan?.hex_color || data?.hex || data?.hex_color || '#66503C';
   const confidence = scan?.confidence || data?.confidence_formatted || data?.confidence || '95%';
   const confStr = typeof confidence === 'number' ? `${confidence}%` : String(confidence).includes('%') ? confidence : `${confidence}%`;
   const organicIndex = data?.organic_matter || data?.organic_index || 'Moderate';
@@ -232,7 +233,28 @@ export function mapServerScan(scan, data = {}) {
   const imageUrl = fixMediaUrl(rawImg);
   const rawBaImg = data?.before_after_image_url || data?.before_after_image || scan?.before_after_image_url || scan?.before_after_image;
   const beforeAfterImage = fixMediaUrl(rawBaImg);
-  const regions = Array.isArray(data?.regions) ? data.regions : (Array.isArray(scan?.regions) ? scan.regions : []);
+  // Merge regions: prefer data.regions (raw pipeline output with per-region hex/munsell_code)
+  // then fall back to scan.regions (API resource regions from regions_data column)
+  const rawRegions = Array.isArray(data?.regions) && data.regions.length > 0
+    ? data.regions
+    : (Array.isArray(scan?.regions) && scan.regions.length > 0 ? scan.regions : []);
+  // Normalize each region so the renderer can read .hex and .munsell_code reliably
+  const regions = rawRegions.map((r) => ({
+    ...r,
+    // Guarantee .hex field (RGB array → hex string if needed)
+    hex: r.hex ||
+      r.hex_color ||
+      (Array.isArray(r.rgb) && r.rgb.length >= 3
+        ? `#${r.rgb.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('')}`
+        : null) ||
+      null,
+    // Guarantee .munsell_code field
+    munsell_code: r.munsell_code || r.munsell || r.notation || null,
+    // Guarantee .percent field
+    percent: r.percent !== undefined
+      ? r.percent
+      : (r.proportion !== undefined ? Math.round(r.proportion * 100) : undefined),
+  }));
 
   const hasPin = Boolean(scan?.location_id || scan?.location || data?.hasPin || data?.location_id || data?.location || data?.latitude);
   const rawNote = scan?.scan_note || data?.scan_note || '';

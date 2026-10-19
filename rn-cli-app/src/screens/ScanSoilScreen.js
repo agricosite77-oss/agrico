@@ -386,15 +386,30 @@ export default function ScanSoilScreen({ navigation }) {
       : [{ norm_x: 0.25, norm_y: 0.25, norm_w: 0.5, norm_h: 0.5 }];
     return regions.map((r, idx) => {
       const bData = normalizeBox(r);
+      // Resolve this region's specific hex color — never fall back to global scan color here
+      let rHex = r.hex || r.hex_color || null;
+      if (!rHex && Array.isArray(r.rgb) && r.rgb.length >= 3) {
+        rHex = `#${r.rgb.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('')}`;
+      }
+      rHex = rHex || '#4ade80'; // default to green only if truly no color available
+      if (!rHex.startsWith('#')) rHex = `#${rHex}`;
+      const rCode = r.munsell_code || r.munsell || r.notation || '';
+      const rPct = r.percent !== undefined
+        ? Math.round(r.percent)
+        : (r.proportion !== undefined ? Math.round(r.proportion * 100) : null);
       return {
         leftPct: 50 + (bData.raw_x * 50),
         topPct: 7.41 + (bData.raw_y * 92.59),
         widthPct: bData.raw_w * 50,
         heightPct: bData.raw_h * 92.59,
         roleLabel: `${ordinalNames[idx] || (idx + 1) + 'TH'} COLOR`,
+        hex: rHex,
+        munsellCode: rCode,
+        percent: rPct,
       };
     });
   }, [specimenNormRegions]);
+
 
   const handleSaveSpecimenCopy = async (targetSpecimen, munsellMatch, resolvedDesc) => {
     if (!targetSpecimen) return;
@@ -1577,7 +1592,7 @@ export default function ScanSoilScreen({ navigation }) {
                           style={styles.soilNormImage}
                           resizeMode="cover"
                         />
-                        {/* Overlaid green ROI bounding boxes */}
+                        {/* Overlaid ROI bounding boxes — colored with each region's real detected soil color */}
                         {specimenNormBoxes.map((b, idx) => (
                           <View
                             key={`norm_box_${idx}`}
@@ -1587,16 +1602,19 @@ export default function ScanSoilScreen({ navigation }) {
                               top: `${b.topPct}%`,
                               width: `${b.widthPct}%`,
                               height: `${b.heightPct}%`,
-                              borderWidth: 2,
-                              borderColor: '#4ade80',
+                              borderWidth: 2.5,
+                              borderColor: b.hex,
                               borderRadius: 4,
                             }}
                           >
-                            <View style={styles.normRoleBadge}>
-                              <Text style={styles.normRoleBadgeText}>{b.roleLabel}</Text>
+                            <View style={[styles.normRoleBadge, { backgroundColor: b.hex, borderColor: 'rgba(0,0,0,0.3)', borderWidth: 1 }]}>
+                              <Text style={[styles.normRoleBadgeText, { color: '#fff', textShadowColor: 'rgba(0,0,0,0.8)', textShadowRadius: 2 }]}>
+                                {b.roleLabel}{b.munsellCode ? ` · ${b.munsellCode}` : ''}{b.percent != null ? ` (${b.percent}%)` : ''}
+                              </Text>
                             </View>
                           </View>
                         ))}
+
                       </View>
                     ) : currentSpecimen.scanImage || userCustomImage || croppedSpecimenUri ? (
                       /* Simulated split Before / After frame if before_after is not yet rendered */
@@ -1688,27 +1706,44 @@ export default function ScanSoilScreen({ navigation }) {
                     )}
                   </View>
 
-                  {/* Swatch Capsule Pills */}
+                  {/* Swatch Capsule Pills — each shows its REAL detected Stage 3/4 soil color */}
                   <View style={styles.normSwatchesRow}>
                     {specimenNormRegions.map((r, idx) => {
-                      let rHex = r.hex || r.hex_color || currentSpecimen.hexColor || currentSpecimen.hex || '#8F694E';
+                      // Resolve hex from region-specific fields only (do NOT fall back to global scan color)
+                      let rHex = r.hex || r.hex_color || null;
+                      if (!rHex && Array.isArray(r.rgb) && r.rgb.length >= 3) {
+                        rHex = `#${r.rgb.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('')}`;
+                      }
+                      // Only fall back to global color if this is the ONLY region (dominant)
+                      if (!rHex && specimenNormRegions.length === 1) {
+                        rHex = currentSpecimen.hexColor || currentSpecimen.hex || '#8F694E';
+                      }
+                      rHex = (rHex || '#888888');
                       if (!rHex.startsWith('#')) rHex = `#${rHex}`;
-                      const rCode = r.munsell || r.munsell_code || currentSpecimen.munsellCode || currentSpecimen.fullCode || '';
-                      const rPct = r.percent !== undefined 
-                        ? Math.round(r.percent) 
-                        : (r.proportion !== undefined 
-                            ? Math.round(r.proportion * 100) 
-                            : (currentSpecimen.soilPercentage || 100));
+
+                      // Resolve munsell code from region-specific fields only
+                      const rCode = r.munsell_code || r.munsell || r.notation || null;
+                      // Show global munsell only if this is the single dominant region
+                      const displayCode = rCode || (specimenNormRegions.length === 1
+                        ? (currentSpecimen.munsellCode || currentSpecimen.fullCode || '')
+                        : '');
+
+                      const rPct = r.percent !== undefined
+                        ? Math.round(r.percent)
+                        : (r.proportion !== undefined
+                            ? Math.round(r.proportion * 100)
+                            : (specimenNormRegions.length === 1 ? (currentSpecimen.soilPercentage || 100) : null));
                       return (
                         <View key={`swatch_pill_${idx}`} style={styles.soilSwatchCapsulePill}>
                           <View style={[styles.capsulePillSwatch, { backgroundColor: rHex }]} />
                           <Text style={styles.capsulePillHex}>{rHex.toUpperCase()}</Text>
-                          {rCode ? <Text style={styles.capsulePillCode}>({rCode})</Text> : null}
-                          <Text style={styles.capsulePillPct}>{rPct}%</Text>
+                          {displayCode ? <Text style={styles.capsulePillCode}>({displayCode})</Text> : null}
+                          {rPct != null ? <Text style={styles.capsulePillPct}>{rPct}%</Text> : null}
                         </View>
                       );
                     })}
                   </View>
+
 
                   {/* Metadata Row */}
                   <View style={styles.soilNormMetaRow}>

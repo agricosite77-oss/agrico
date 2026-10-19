@@ -154,10 +154,11 @@ class SoilMLAnalysisService
                 $r['full_code'] = $cleanMunsell;
                 $r['color_name'] = $colorName;
                 $r['name'] = $colorName;
-                $r['soil_name'] = $soil?->effective_soil_name ?? $colorName;
                 $r['organic_matter'] = $soil?->effective_organic_matter ?? ($mc?->organic_matter ?? 'Moderate (2.2% – 3.7%)');
                 $r['soil_type'] = $soil?->effective_soil_type ?? ($mc?->soil_type ?? 'Agricultural Loam');
-                $r['description'] = $soil?->effective_description ?? ($mc?->description ?? "{$cleanMunsell} - {$colorName}");
+                $r['description'] = (!empty($mc?->description) ? trim($mc->description) : null)
+                    ?? (!empty($soil?->effective_description) ? trim($soil->effective_description) : null)
+                    ?? "{$cleanMunsell} - {$colorName}";
 
                 $rDeltaE = isset($r['color_delta_e']) && is_numeric($r['color_delta_e']) ? (float)$r['color_delta_e'] : 3.0;
                 $regNearScore = round(max(65.0, min(90.0, 90.0 - ($rDeltaE * 1.25))), 1);
@@ -343,14 +344,15 @@ class SoilMLAnalysisService
                 $analysis['hex'] = $mc->hex_code;
             }
             if ($existingSoil) {
-                $analysis['soil_name'] = $existingSoil->effective_soil_name;
+                $analysis['soil_name'] = (!empty($mc?->color_name) ? trim($mc->color_name) : null) ?? $existingSoil->effective_soil_name;
                 $analysis['organic_matter'] = $existingSoil->effective_organic_matter;
                 $analysis['soil_type'] = $existingSoil->effective_soil_type;
-                $analysis['description'] = $existingSoil->effective_description;
+                $analysis['description'] = (!empty($mc?->description) ? trim($mc->description) : null)
+                    ?? $existingSoil->effective_description;
             } elseif ($mc) {
                 $analysis['organic_matter'] = $analysis['organic_matter'] ?? ($mc->organic_matter ?? 'Moderate (2.2% – 3.7%)');
                 $analysis['soil_type'] = $analysis['soil_type'] ?? ($mc->soil_type ?? 'Agricultural Loam');
-                $analysis['description'] = $mc->description ?? "{$munsellCode} - {$mc->color_name}";
+                $analysis['description'] = (!empty($mc->description) ? trim($mc->description) : "{$munsellCode} - {$mc->color_name}");
             }
         }
 
@@ -603,7 +605,7 @@ class SoilMLAnalysisService
                 $layerName = $mColor?->color_name ?? ($r['label'] ?? 'Soil Layer');
                 $layerHue  = $mColor?->hue ?? (explode(' ', $mCode)[0] ?? '10YR');
                 $layerColorId = $mColor?->munsell_color_id ?? null;
-                $layerDesc = $mColor?->description ?? "{$mCode} - {$layerName}";
+                $layerDesc = (!empty($mColor?->description) ? trim($mColor->description) : null) ?? ($r['description'] ?? "{$mCode} - {$layerName}");
                 $pctVal  = $r['percent'] ?? (!empty($r['proportion']) ? round($r['proportion'] * 100, 1) : null);
                 $rDeltaE = isset($r['color_delta_e']) && is_numeric($r['color_delta_e']) ? (float)$r['color_delta_e'] : (isset($analysis['color_delta_e']) ? (float)$analysis['color_delta_e'] : (isset($analysis['delta_e']) ? (float)$analysis['delta_e'] : 3.0));
                 $confVal = round(max(88.5, min(99.6, 99.4 - ($rDeltaE * 0.45))), 1) . '%';
@@ -613,13 +615,17 @@ class SoilMLAnalysisService
                      'description' => $layerDesc, 'status' => 'Active', 'scan_count' => 0,
                      'color_id' => $layerColorId, 'admin_id' => $userId]
                 );
+                // Ensure existing soil record is updated with admin Munsell description if it had a generic string
+                if (!empty($mColor?->description) && $layerSoil->getRawOriginal('description') !== trim($mColor->description)) {
+                    $layerSoil->update(['description' => trim($mColor->description), 'color_id' => $layerColorId ?: $layerSoil->color_id]);
+                }
                 $layerSoil->increment('scan_count');
                 $note = "Determined Soil: {$layerSoil->effective_soil_name} ({$mCode})" . ($pctVal ? " - Soil Percentage: {$pctVal}%" : "") . " - Confidence: {$confVal}";
                 $rImgPath = $saveRegionImage($r['region_thumbnail'] ?? null, $i);
                 $subScan = SoilScan::create([
                     'user_id' => $userId, 'soil_id' => $layerSoil->soil_id,
                     'platform' => $platform, 'scan_note' => $note,
-                    'regions_data' => [$r], 'scan_date' => now(),
+                    'regions_data' => $regions, 'scan_date' => now(),
                     'scan_image' => $rImgPath,
                     'before_after_image' => $publicBaRelativePath,
                     'thumbnail_image' => $publicThumbRelativePath ?: $rImgPath,
@@ -633,7 +639,7 @@ class SoilMLAnalysisService
                     'hex' => $layerSoil->effective_hex_color ?? ($r['hex'] ?? '#8F694E'),
                     'desc' => $layerSoil->effective_description, 'organic' => $layerSoil->effective_organic_matter,
                     'drainage' => $layerSoil->effective_soil_type, 'soil_type' => $layerSoil->effective_soil_type,
-                    'confidence' => $confVal, 'percent' => $pctVal, 'regions' => [$r],
+                    'confidence' => $confVal, 'percent' => $pctVal, 'regions' => $regions,
                     'image' => $rImgPath ? asset($rImgPath) : ($publicScanRelativePath ? asset($publicScanRelativePath) : null),
                     'scan_image' => $rImgPath ? asset($rImgPath) : ($publicScanRelativePath ? asset($publicScanRelativePath) : null),
                 ];
@@ -644,7 +650,7 @@ class SoilMLAnalysisService
             $domName = $domMColor?->color_name ?? ($analysis['soil_name'] ?? 'Dominant Soil Layer');
             $domHue  = $domMColor?->hue ?? ($analysis['hue'] ?? (explode(' ', $domCode)[0] ?? '10YR'));
             $domColorId = $domMColor?->munsell_color_id ?? ($analysis['color_id'] ?? null);
-            $domDesc = $domMColor?->description ?? ($analysis['description'] ?? "{$domCode} - {$domName}");
+            $domDesc = (!empty($domMColor?->description) ? trim($domMColor->description) : null) ?? ($analysis['description'] ?? "{$domCode} - {$domName}");
             $domPct  = $domR['percent'] ?? (!empty($domR['proportion']) ? round($domR['proportion'] * 100, 1) : null);
             $domDeltaE = isset($domR['color_delta_e']) && is_numeric($domR['color_delta_e']) ? (float)$domR['color_delta_e'] : (isset($analysis['color_delta_e']) ? (float)$analysis['color_delta_e'] : (isset($analysis['delta_e']) ? (float)$analysis['delta_e'] : 3.0));
             $domConf = round(max(88.5, min(99.6, 99.4 - ($domDeltaE * 0.45))), 1) . '%';
@@ -654,6 +660,9 @@ class SoilMLAnalysisService
                  'description' => $domDesc, 'status' => 'Active', 'scan_count' => 0,
                  'color_id' => $domColorId, 'admin_id' => $userId]
             );
+            if (!empty($domMColor?->description) && $soil->getRawOriginal('description') !== trim($domMColor->description)) {
+                $soil->update(['description' => trim($domMColor->description), 'color_id' => $domColorId ?: $soil->color_id]);
+            }
             $soil->increment('scan_count');
             $analysis['description']    = $soil->effective_description;
             $analysis['soil_name']      = $soil->effective_soil_name;
@@ -664,7 +673,7 @@ class SoilMLAnalysisService
             $soilScan = SoilScan::create([
                 'user_id' => $userId, 'soil_id' => $soil->soil_id, 'platform' => $platform,
                 'scan_note' => "Determined Soil: {$soil->effective_soil_name} ({$domCode})" . ($domPct ? " - Soil Percentage: {$domPct}%" : "") . " - Confidence: {$domConf}",
-                'regions_data' => [$domR], 'scan_date' => now(),
+                'regions_data' => $regions, 'scan_date' => now(),
                 'scan_image' => $dominantScanImage,
                 'before_after_image' => $publicBaRelativePath,
                 'thumbnail_image' => $publicThumbRelativePath ?: $domImgPath,
@@ -678,7 +687,7 @@ class SoilMLAnalysisService
                 'hex' => $soil->effective_hex_color ?? ($domR['hex'] ?? '#8F694E'),
                 'desc' => $soil->effective_description, 'organic' => $soil->effective_organic_matter,
                 'drainage' => $soil->effective_soil_type, 'soil_type' => $soil->effective_soil_type,
-                'confidence' => $domConf, 'percent' => $domPct, 'regions' => [$domR],
+                'confidence' => $domConf, 'percent' => $domPct, 'regions' => $regions,
                 'image' => $dominantScanImage ? asset($dominantScanImage) : null,
                 'scan_image' => $dominantScanImage ? asset($dominantScanImage) : null,
             ]];
@@ -690,13 +699,20 @@ class SoilMLAnalysisService
         } else {
             // Single-layer scan
             $singleCode = $analysis['munsell_code'] ?? ($analysis['munsell']['notation'] ?? ($analysis['full_code'] ?? ($regions[0]['munsell_code'] ?? ($regions[0]['munsell'] ?? '10YR 5/3'))));
+            $sMColor = MunsellColor::where('full_code', $singleCode)->first();
+            $sDesc = (!empty($sMColor?->description) ? trim($sMColor->description) : null) ?? ($analysis['description'] ?? "{$singleCode}");
             $soil = Soil::firstOrCreate(
                 ['full_code' => $singleCode],
-                ['soil_name' => $analysis['soil_name'] ?? 'Soil Specimen', 'hue' => $analysis['hue'] ?? (explode(' ', $singleCode)[0] ?? '10YR'),
-                 'full_code' => $singleCode, 'description' => $analysis['description'] ?? "{$singleCode}",
+                ['soil_name' => $sMColor?->color_name ?? ($analysis['soil_name'] ?? 'Soil Specimen'),
+                 'hue' => $sMColor?->hue ?? ($analysis['hue'] ?? (explode(' ', $singleCode)[0] ?? '10YR')),
+                 'full_code' => $singleCode, 'description' => $sDesc,
                  'status' => 'Active', 'scan_count' => 0,
-                 'color_id' => $analysis['color_id'] ?? null, 'admin_id' => $userId]
+                 'color_id' => $sMColor?->munsell_color_id ?? ($analysis['color_id'] ?? null),
+                 'admin_id' => $userId]
             );
+            if (!empty($sMColor?->description) && $soil->getRawOriginal('description') !== trim($sMColor->description)) {
+                $soil->update(['description' => trim($sMColor->description), 'color_id' => $sMColor?->munsell_color_id ?: $soil->color_id]);
+            }
             $soil->increment('scan_count');
             $analysis['description']    = $soil->effective_description;
             $analysis['soil_name']      = $soil->effective_soil_name;
