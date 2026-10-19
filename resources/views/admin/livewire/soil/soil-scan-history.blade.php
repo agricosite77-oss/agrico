@@ -157,18 +157,106 @@
             width: 100% !important;
             overflow-x: auto !important;
             overflow-y: visible !important;
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
+            position: relative !important;
+            -webkit-overflow-scrolling: touch !important;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
         }
         .soil-table-container::-webkit-scrollbar {
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
+            height: 5px;
+        }
+        .soil-table-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .soil-table-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+        .soil-table-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .dark .soil-table-container {
+            scrollbar-color: #334155 transparent;
+        }
+        .dark .soil-table-container::-webkit-scrollbar-thumb {
+            background: #334155;
         }
 
         .soil-table {
             width: 100% !important;
-            min-width: 0 !important;
+            min-width: 520px !important;
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+        }
+
+        /* ── ALWAYS VISIBLE & STICKY ACTION COLUMN ── */
+        .soil-table th.col-sticky-action,
+        .soil-table td.col-sticky-action {
+            position: sticky !important;
+            right: 0 !important;
+            width: 110px !important;
+            min-width: 110px !important;
+            max-width: 110px !important;
+            white-space: nowrap !important;
+            text-align: center !important;
+            padding-left: 8px !important;
+            padding-right: 14px !important;
+            box-shadow: -4px 0 8px -2px rgba(0, 0, 0, 0.05) !important;
+            z-index: 10 !important;
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+        }
+        .soil-table th.col-sticky-action {
+            z-index: 20 !important;
+            background-color: #F1FBF1 !important;
+            text-align: center !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+        .soil-table tbody tr:hover td.col-sticky-action,
+        .soil-table tbody tr.hover\:bg-green-50\/40:hover td.col-sticky-action {
+            background-color: #f7fdf7 !important;
+        }
+        .soil-table tbody tr.bg-emerald-50\/80 td.col-sticky-action {
+            background-color: #ecfdf5 !important;
+        }
+
+        /* Dark mode for sticky action */
+        .dark .soil-table th.col-sticky-action {
+            background-color: #1e293b !important;
+            border-bottom: 1px solid #334155 !important;
+            box-shadow: -4px 0 8px -2px rgba(0, 0, 0, 0.35) !important;
+        }
+        .dark .soil-table td.col-sticky-action {
+            background-color: #0f172a !important;
+            border-bottom: 1px solid #1e293b !important;
+            box-shadow: -4px 0 8px -2px rgba(0, 0, 0, 0.35) !important;
+        }
+        .dark .soil-table tbody tr:hover td.col-sticky-action {
+            background-color: #1e293b !important;
+        }
+        .dark .soil-table tbody tr.bg-emerald-50\/80 td.col-sticky-action {
+            background-color: rgba(6, 78, 59, 0.4) !important;
+        }
+
+        /* Responsive Column Widths & Alignments */
+        .soil-table th.col-seq,
+        .soil-table td.col-seq {
+            width: 58px !important;
+            min-width: 58px !important;
+            padding-left: 20px !important;
+            padding-right: 10px !important;
+        }
+        .soil-table th.col-detected-colors,
+        .soil-table td.col-detected-colors {
+            min-width: 140px !important;
+        }
+        .soil-table th.col-soil-hue,
+        .soil-table td.col-soil-hue {
+            min-width: 120px !important;
+        }
+        .soil-table th.col-scan-date,
+        .soil-table td.col-scan-date {
+            min-width: 110px !important;
         }
 
         .detected-badge {
@@ -268,6 +356,68 @@
             background: #ef4444 !important;
             color: #ffffff !important;
         }
+
+        /* Mobile adjustments (< 640px) */
+        @media (max-width: 639px) {
+            .soil-table {
+                min-width: 440px !important;
+            }
+            .soil-table th,
+            .soil-table td {
+                padding-top: 12px !important;
+                padding-bottom: 12px !important;
+            }
+            .soil-table th.col-seq,
+            .soil-table td.col-seq {
+                width: 44px !important;
+                min-width: 44px !important;
+                padding-left: 12px !important;
+                padding-right: 4px !important;
+                font-size: 13px !important;
+            }
+            .soil-table th.col-detected-colors,
+            .soil-table td.col-detected-colors {
+                min-width: 110px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+            }
+            .soil-table th.col-soil-hue,
+            .soil-table td.col-soil-hue {
+                min-width: 90px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+            }
+            .soil-table th.col-scan-date,
+            .soil-table td.col-scan-date {
+                min-width: 90px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+                font-size: 13px !important;
+            }
+            .soil-table th.col-sticky-action,
+            .soil-table td.col-sticky-action {
+                width: 92px !important;
+                min-width: 92px !important;
+                max-width: 92px !important;
+                padding-left: 4px !important;
+                padding-right: 8px !important;
+            }
+            .soil-table .agrico-view-btn,
+            .soil-table .agrico-delete-btn {
+                width: 32px !important;
+                height: 32px !important;
+                min-width: 32px !important;
+                max-width: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                border-radius: 9px !important;
+            }
+            .soil-table .agrico-view-btn svg,
+            .soil-table .agrico-delete-btn svg {
+                width: 15px !important;
+                height: 15px !important;
+            }
+        }
     </style>
 
     {{-- TABLE CARD --}}
@@ -287,7 +437,6 @@
                         <th
                             wire:click="sortBy('id')"
                             class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-seq whitespace-nowrap"
-                            style="width: 8%;"
                         >
                             <div class="flex items-center gap-1">
                                 <span class="group-hover:text-[#22c55e] transition-colors duration-200">#</span>
@@ -309,7 +458,7 @@
                         </th>
 
                         {{-- DETECTED COLORS --}}
-                        <th class="px-5 py-4 text-left text-xs font-bold text-gray-500 whitespace-nowrap col-detected-colors" style="width: 28%;">
+                        <th class="px-5 py-4 text-left text-xs font-bold text-gray-500 whitespace-nowrap col-detected-colors">
                             DETECTED COLORS
                         </th>
 
@@ -317,7 +466,6 @@
                         <th
                             wire:click="sortBy('hue')"
                             class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-soil-hue whitespace-nowrap"
-                            style="width: 28%;"
                         >
                             <div class="flex items-center gap-1">
                                 <span class="group-hover:text-[#22c55e] transition-colors duration-200">HUE</span>
@@ -342,7 +490,6 @@
                         <th
                             wire:click="sortBy('created_at')"
                             class="px-5 py-4 text-left text-xs font-bold text-gray-500 cursor-pointer select-none group col-scan-date whitespace-nowrap"
-                            style="width: 20%;"
                         >
                             <div class="flex items-center gap-1">
                                 <span class="group-hover:text-[#22c55e] transition-colors duration-200">SCAN DATE</span>
@@ -364,7 +511,7 @@
                         </th>
 
                         {{-- ACTION (no sorting) --}}
-                        <th class="px-3 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap col-sticky-action" style="width: 16%;">
+                        <th class="px-3 py-4 text-center text-xs font-bold text-gray-500 whitespace-nowrap col-sticky-action">
                             ACTIONS
                         </th>
                     </tr>
@@ -502,29 +649,29 @@
         </div>
 
         {{-- PAGINATION FOOTER --}}
-        <div style="padding: 16px 24px; border-top: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; background: #fff;">
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #64748b;">
+        <div class="px-4 py-3 sm:px-6 sm:py-4 border-t border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 <span>Rows per page:</span>
                 <select
                     wire:model.live="perPage"
-                    style="border: 1px solid #e2e8f0; background: #fff; border-radius: 8px; padding: 4px 8px; font-size: 13px; color: #334155; font-weight: 600; outline: none; cursor: pointer;"
+                    class="border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-2 py-1 text-xs sm:text-sm text-gray-700 dark:text-gray-200 font-semibold outline-none cursor-pointer"
                 >
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="20">20</option>
                     <option value="50">50</option>
                 </select>
-                <span style="color: #94a3b8; font-size: 13px; margin-left: 4px;">
+                <span class="text-gray-400 dark:text-gray-500 ml-1">
                     {{ $soils->firstItem() ?? 0 }}–{{ $soils->lastItem() ?? 0 }} of {{ $soils->total() }}
                 </span>
             </div>
 
             @if ($soils->hasPages())
-                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: nowrap;">
+                <div class="flex items-center gap-1.5 flex-nowrap">
                     @if ($soils->onFirstPage())
-                        <button disabled style="padding: 5px 12px; border-radius: 8px; border: 1px solid #f1f5f9; background: #f8fafc; color: #cbd5e1; font-size: 12.5px; font-weight: 600; cursor: not-allowed;">Prev</button>
+                        <button disabled class="px-3 py-1.5 rounded-lg border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 text-gray-300 dark:text-gray-600 text-xs font-semibold cursor-not-allowed">Prev</button>
                     @else
-                        <button wire:click="previousPage" style="padding: 5px 12px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #475569; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#22c55e'; this.style.color='#22c55e';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#475569';">Prev</button>
+                        <button wire:click="previousPage" class="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-600 text-xs font-semibold cursor-pointer transition">Prev</button>
                     @endif
 
                     @php
@@ -549,25 +696,25 @@
                     @endphp
 
                     @if ($startPage > 1)
-                        <button wire:click="gotoPage({{ max(1, $startPage - 1) }})" style="min-width: 24px; height: 32px; background: transparent; border: none; color: #64748b; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0 4px; transition: color 0.15s ease;" onmouseover="this.style.color='#22c55e';" onmouseout="this.style.color='#64748b';" title="Page {{ max(1, $startPage - 1) }}">...</button>
+                        <button wire:click="gotoPage({{ max(1, $startPage - 1) }})" class="w-7 h-7 bg-transparent border-0 text-gray-500 hover:text-emerald-600 text-xs font-bold cursor-pointer inline-flex items-center justify-center transition" title="Page {{ max(1, $startPage - 1) }}">...</button>
                     @endif
 
                     @foreach ($soils->getUrlRange($startPage, $endPage) as $page => $url)
                         @if ($page == $currentPage)
-                            <button wire:click="gotoPage({{ $page }})" style="width: 32px; height: 32px; border-radius: 8px; background: #22c55e !important; color: #fff !important; font-size: 13px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(34,197,94,0.35);">{{ $page }}</button>
+                            <button wire:click="gotoPage({{ $page }})" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#22c55e] text-white text-xs sm:text-sm font-bold border-0 cursor-pointer inline-flex items-center justify-center shadow-sm">{{ $page }}</button>
                         @else
-                            <button wire:click="gotoPage({{ $page }})" style="width: 32px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; color: #334155; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#22c55e'; this.style.color='#22c55e';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#334155';">{{ $page }}</button>
+                            <button wire:click="gotoPage({{ $page }})" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-600 text-xs sm:text-sm font-semibold cursor-pointer inline-flex items-center justify-center transition">{{ $page }}</button>
                         @endif
                     @endforeach
 
                     @if ($endPage < $lastPage)
-                        <button wire:click="gotoPage({{ min($lastPage, $endPage + 1) }})" style="min-width: 24px; height: 32px; background: transparent; border: none; color: #64748b; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0 4px; transition: color 0.15s ease;" onmouseover="this.style.color='#22c55e';" onmouseout="this.style.color='#64748b';" title="Page {{ min($lastPage, $endPage + 1) }}">...</button>
+                        <button wire:click="gotoPage({{ min($lastPage, $endPage + 1) }})" class="w-7 h-7 bg-transparent border-0 text-gray-500 hover:text-emerald-600 text-xs font-bold cursor-pointer inline-flex items-center justify-center transition" title="Page {{ min($lastPage, $endPage + 1) }}">...</button>
                     @endif
 
                     @if ($soils->hasMorePages())
-                        <button wire:click="nextPage" style="padding: 5px 12px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #475569; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#22c55e'; this.style.color='#22c55e';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#475569';">Next</button>
+                        <button wire:click="nextPage" class="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-600 text-xs font-semibold cursor-pointer transition">Next</button>
                     @else
-                        <button disabled style="padding: 5px 12px; border-radius: 8px; border: 1px solid #f1f5f9; background: #f8fafc; color: #cbd5e1; font-size: 12.5px; font-weight: 600; cursor: not-allowed;">Next</button>
+                        <button disabled class="px-3 py-1.5 rounded-lg border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 text-gray-300 dark:text-gray-600 text-xs font-semibold cursor-not-allowed">Next</button>
                     @endif
                 </div>
             @endif
