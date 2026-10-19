@@ -5436,16 +5436,15 @@
                                     $regionsJson = json_encode($scan->regions ?? []);
                                 } catch (\Throwable $e_r) {}
 
-                                $regionsArr = $scan->regions ?? [];
+                                // Re-use already-fetched JSON — do NOT call $scan->regions again (N+1 risk)
+                                $regionsArr = json_decode($regionsJson, true) ?: [];
                                 $detectedColorsCount = count($regionsArr) > 0 ? count($regionsArr) : 1;
                                 $detectedHues = [];
-                                if (!empty($regionsArr)) {
-                                    foreach ($regionsArr as $r) {
-                                        $cCode = $r['munsell'] ?? ($r['munsell_code'] ?? ($r['full_code'] ?? ''));
-                                        $h = $cCode ? trim(explode(' ', $cCode)[0]) : ($r['hue'] ?? '');
-                                        if ($h && !in_array($h, $detectedHues)) {
-                                            $detectedHues[] = $h;
-                                        }
+                                foreach ($regionsArr as $r) {
+                                    $cCode = $r['munsell'] ?? ($r['munsell_code'] ?? ($r['full_code'] ?? ''));
+                                    $h = $cCode ? trim(explode(' ', $cCode)[0]) : ($r['hue'] ?? '');
+                                    if ($h && !in_array($h, $detectedHues)) {
+                                        $detectedHues[] = $h;
                                     }
                                 }
                                 if (empty($detectedHues)) {
