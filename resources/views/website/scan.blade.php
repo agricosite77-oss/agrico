@@ -1,4 +1,4 @@
-<x-website-layout>
+﻿<x-website-layout>
     <x-slot name="title">Soil Color Scan</x-slot>
 
     {{-- Leaflet Map Assets for Pin Soil Location Modal --}}
@@ -2223,12 +2223,14 @@
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             border-bottom: 1px solid rgba(142, 182, 155, 0.15);
         }
+        /* Dark mode hover - !important on ALL props beats later light-mode rules */
+        html:not(.light-mode) table.ws-table tbody tr:hover,
         table.ws-table tbody tr:hover {
             background: linear-gradient(145deg, #113832 0%, #163832 100%) !important;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(35, 83, 71, 0.3), inset 4px 0 0 #DAF1DE !important;
-            transform: translateY(-2px);
-            position: relative;
-            z-index: 5;
+            transform: translateY(-2px) !important;
+            position: relative !important;
+            z-index: 5 !important;
         }
         table.ws-table tbody tr:hover .col-soil-name {
             color: #FFFFFF !important;
