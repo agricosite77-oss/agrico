@@ -722,8 +722,8 @@
             border: 1.5px solid #8EB69B !important;
             box-shadow: 0 4px 14px rgba(35, 83, 71, 0.4) !important;
         }
-        .scanner-btn-primary:hover,
-        .scanner-btn-cam:hover {
+        html:not(.light-mode):not([class*="light"]) .scanner-btn-primary:hover,
+        html:not(.light-mode):not([class*="light"]) .scanner-btn-cam:hover {
             background: linear-gradient(135deg, #2e695a, #1c453d) !important;
             border-color: #DAF1DE !important;
             color: #ffffff !important;
@@ -1077,7 +1077,7 @@
             min-width: 0;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         }
-        .color-space-card:hover {
+        html:not(.light-mode):not([class*="light"]) .color-space-card:hover {
             border-color: rgba(74, 222, 128, 0.45);
             background: rgba(11, 43, 38, 0.95);
             transform: translateY(-1px);
@@ -1241,7 +1241,7 @@
             border-bottom: 1px solid rgba(142, 182, 155, 0.1);
             transition: background 0.15s;
         }
-        table.ws-table tbody tr:hover { background: rgba(35, 83, 71, 0.3); }
+        html:not(.light-mode):not([class*="light"]) table.ws-table tbody tr:hover { background: rgba(35, 83, 71, 0.3); }
         table.ws-table tbody tr:last-child { border-bottom: none; }
         table.ws-table tbody td {
             padding: 16px 12px;
@@ -1556,7 +1556,15 @@
             border: none !important;
             box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
         }
-        html.light-mode .scanner-btn-primary:hover {
+        html.light-mode .scanner-btn-primary:hover,
+        html.light-mode .scanner-btn-cam:hover,
+        html.light-mode .scanner-btn-cta:hover,
+        .light-mode .scanner-btn-primary:hover,
+        .light-mode .scanner-btn-cam:hover,
+        .light-mode .scanner-btn-cta:hover,
+        body.light-mode .scanner-btn-primary:hover,
+        body.light-mode .scanner-btn-cam:hover,
+        body.light-mode .scanner-btn-cta:hover {
             background: #16a34a !important;
             box-shadow: 0 6px 18px rgba(34, 197, 94, 0.45) !important;
             transform: translateY(-1px) !important;
@@ -2012,9 +2020,19 @@
             background: #dbeafe !important;
             border-color: #bfdbfe !important;
         }
-        html.light-mode .color-space-card {
+        html.light-mode .color-space-card,
+        .light-mode .color-space-card,
+        body.light-mode .color-space-card {
             background: #FFFFFF !important;
             border: 1px solid #e2e8f0 !important;
+        }
+        html.light-mode .color-space-card:hover,
+        .light-mode .color-space-card:hover,
+        body.light-mode .color-space-card:hover {
+            background: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+            transform: translateY(-1px) !important;
         }
         html.light-mode .cs-badge-pill {
             color: #64748b !important;
@@ -2131,8 +2149,8 @@
             text-align: center !important;
         }
         /* Dark mode sticky action hover */
-        html:not(.light-mode) table.ws-table tbody tr:hover td.col-sticky-action,
-        html:not(.light-mode) table.ws-table tbody tr:hover td.col-action {
+        html:not(.light-mode):not([class*="light"]) table.ws-table tbody tr:hover td.col-sticky-action,
+        html:not(.light-mode):not([class*="light"]) table.ws-table tbody tr:hover td.col-action {
             background: linear-gradient(145deg, #113832 0%, #163832 100%) !important;
             background-image: linear-gradient(145deg, #113832 0%, #163832 100%) !important;
         }
@@ -2143,7 +2161,10 @@
         html.light-mode th.col-th-action,
         .light-mode table.ws-table th.col-sticky-action,
         .light-mode table.ws-table th.col-action,
-        .light-mode th.col-th-action {
+        .light-mode th.col-th-action,
+        body.light-mode table.ws-table th.col-sticky-action,
+        body.light-mode table.ws-table th.col-action,
+        body.light-mode th.col-th-action {
             background: #F1FBF1 !important;
             background-color: #F1FBF1 !important;
             background-image: none !important;
@@ -2152,7 +2173,9 @@
         html.light-mode table.ws-table td.col-sticky-action,
         html.light-mode table.ws-table td.col-action,
         .light-mode table.ws-table td.col-sticky-action,
-        .light-mode table.ws-table td.col-action {
+        .light-mode table.ws-table td.col-action,
+        body.light-mode table.ws-table td.col-sticky-action,
+        body.light-mode table.ws-table td.col-action {
             background: #ffffff !important;
             background-color: #ffffff !important;
             background-image: none !important;
@@ -2160,10 +2183,14 @@
         html.light-mode table.ws-table tbody tr:hover td.col-sticky-action,
         html.light-mode table.ws-table tbody tr:hover td.col-action,
         .light-mode table.ws-table tbody tr:hover td.col-sticky-action,
-        .light-mode table.ws-table tbody tr:hover td.col-action {
-            background: #f0fdf4 !important;
-            background-color: #f0fdf4 !important;
+        .light-mode table.ws-table tbody tr:hover td.col-action,
+        body.light-mode table.ws-table tbody tr:hover td.col-sticky-action,
+        body.light-mode table.ws-table tbody tr:hover td.col-action {
+            background: #f7fdf7 !important;
+            background-color: #f7fdf7 !important;
             background-image: none !important;
+            box-shadow: none !important;
+            transform: none !important;
         }
 
         .soil-mobile-date {
@@ -2239,14 +2266,14 @@
             border-bottom: 1px solid rgba(142, 182, 155, 0.15);
         }
         /* Dark mode hover - scoped strictly to dark mode */
-        html:not(.light-mode) table.ws-table tbody tr:hover {
+        html:not(.light-mode):not([class*="light"]) table.ws-table tbody tr:hover {
             background: linear-gradient(145deg, #113832 0%, #163832 100%) !important;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(35, 83, 71, 0.3), inset 4px 0 0 #DAF1DE !important;
             transform: translateY(-2px) !important;
             position: relative !important;
             z-index: 5 !important;
         }
-        html:not(.light-mode) table.ws-table tbody tr:hover .col-soil-name {
+        html:not(.light-mode):not([class*="light"]) table.ws-table tbody tr:hover .col-soil-name {
             color: #FFFFFF !important;
             transition: color 0.25s ease;
         }
@@ -2280,8 +2307,8 @@
             box-sizing: border-box !important;
             box-shadow: 0 4px 14px rgba(35, 83, 71, 0.45) !important;
         }
-        html:not(.light-mode) .btn-view-scan:hover,
-        html:not(.light-mode) table.ws-table tbody tr:hover .btn-view-scan {
+        html:not(.light-mode):not([class*="light"]) .btn-view-scan:hover,
+        html:not(.light-mode):not([class*="light"]) table.ws-table tbody tr:hover .btn-view-scan {
             color: #ffffff !important;
             background: #235347 !important;
             border-color: #DAF1DE !important;
@@ -2341,24 +2368,43 @@
             z-index: 8 !important;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
         }
-        html.light-mode table.ws-table tbody tr {
+        html.light-mode table.ws-table tbody tr,
+        .light-mode table.ws-table tbody tr,
+        body.light-mode table.ws-table tbody tr {
             border-bottom: 1px solid #f1f5f9 !important;
             background: #ffffff !important;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            transition: background-color 0.15s ease !important;
+            transform: none !important;
+            box-shadow: none !important;
         }
-        html.light-mode table.ws-table tbody tr:hover {
-            background: #f0fdf4 !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.12), inset 4px 0 0 #22c55e !important;
-            transform: translateY(-2px) !important;
-            position: relative !important;
-            z-index: 5 !important;
+        html.light-mode table.ws-table tbody tr:hover,
+        .light-mode table.ws-table tbody tr:hover,
+        body.light-mode table.ws-table tbody tr:hover {
+            background: #f7fdf7 !important;
+            background-color: #f7fdf7 !important;
+            background-image: none !important;
+            box-shadow: none !important;
+            transform: none !important;
+            position: static !important;
+            z-index: auto !important;
         }
-        html.light-mode table.ws-table tbody tr:hover .col-soil-name {
+        html.light-mode table.ws-table tbody tr:hover td,
+        .light-mode table.ws-table tbody tr:hover td,
+        body.light-mode table.ws-table tbody tr:hover td {
+            background-color: #f7fdf7 !important;
+            background-image: none !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+        html.light-mode table.ws-table tbody tr:hover .col-soil-name,
+        .light-mode table.ws-table tbody tr:hover .col-soil-name,
+        body.light-mode table.ws-table tbody tr:hover .col-soil-name {
             color: #16a34a !important;
         }
 
         html.light-mode .btn-view-scan:hover,
-        .light-mode .btn-view-scan:hover {
+        .light-mode .btn-view-scan:hover,
+        body.light-mode .btn-view-scan:hover {
             color: #ffffff !important;
             background: #16a34a !important;
             border: none !important;
@@ -2366,14 +2412,16 @@
             transform: translateY(-1px) !important;
         }
         html.light-mode table.ws-table tbody tr:hover .btn-view-scan,
-        .light-mode table.ws-table tbody tr:hover .btn-view-scan {
+        .light-mode table.ws-table tbody tr:hover .btn-view-scan,
+        body.light-mode table.ws-table tbody tr:hover .btn-view-scan {
             color: #ffffff !important;
             background: #22c55e !important;
             border: none !important;
             box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3) !important;
         }
         html.light-mode table.ws-table tbody tr:hover .btn-view-scan:hover,
-        .light-mode table.ws-table tbody tr:hover .btn-view-scan:hover {
+        .light-mode table.ws-table tbody tr:hover .btn-view-scan:hover,
+        body.light-mode table.ws-table tbody tr:hover .btn-view-scan:hover {
             color: #ffffff !important;
             background: #16a34a !important;
             border: none !important;
@@ -3708,7 +3756,8 @@
             white-space: nowrap !important;
         }
         html.light-mode .btn-view-scan,
-        .light-mode .btn-view-scan {
+        .light-mode .btn-view-scan,
+        body.light-mode .btn-view-scan {
             color: #ffffff !important;
             background: #22c55e !important;
             border: none !important;
@@ -3719,7 +3768,8 @@
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
         html.light-mode .btn-view-scan:hover,
-        .light-mode .btn-view-scan:hover {
+        .light-mode .btn-view-scan:hover,
+        body.light-mode .btn-view-scan:hover {
             color: #ffffff !important;
             background: #16a34a !important;
             border: none !important;
@@ -3727,14 +3777,16 @@
             transform: translateY(-1px) !important;
         }
         html.light-mode table.ws-table tbody tr:hover .btn-view-scan,
-        .light-mode table.ws-table tbody tr:hover .btn-view-scan {
+        .light-mode table.ws-table tbody tr:hover .btn-view-scan,
+        body.light-mode table.ws-table tbody tr:hover .btn-view-scan {
             color: #ffffff !important;
             background: #22c55e !important;
             border: none !important;
             box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3) !important;
         }
         html.light-mode table.ws-table tbody tr:hover .btn-view-scan:hover,
-        .light-mode table.ws-table tbody tr:hover .btn-view-scan:hover {
+        .light-mode table.ws-table tbody tr:hover .btn-view-scan:hover,
+        body.light-mode table.ws-table tbody tr:hover .btn-view-scan:hover {
             color: #ffffff !important;
             background: #16a34a !important;
             border: none !important;
