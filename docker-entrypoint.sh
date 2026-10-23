@@ -11,6 +11,12 @@ if [ -n "$SCAN_SOIL_ROOT" ]; then
   fi
 fi
 
+# Ensure APP_KEY exists
+if [ -z "$APP_KEY" ]; then
+  echo "APP_KEY is not set. Generating key..."
+  php artisan key:generate --force 2>/dev/null || true
+fi
+
 # Ensure public storage is linked
 php artisan storage:link --force 2>/dev/null || true
 
@@ -22,7 +28,7 @@ php artisan config:cache 2>/dev/null || true
 php artisan route:cache 2>/dev/null || true
 php artisan view:cache 2>/dev/null || true
 
-# FrankenPHP binds to the port provided by Railway ($PORT)
+# FrankenPHP binds to the port provided by Render / Railway ($PORT)
 export SERVER_NAME=":${PORT:-8080}"
 
 exec frankenphp run --config /etc/caddy/Caddyfile

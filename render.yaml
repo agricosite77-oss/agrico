@@ -1,0 +1,57 @@
+# Render Infrastructure-as-Code Blueprint for AgriCo
+# https://render.com/docs/blueprint-spec
+
+services:
+  # ---------------------------------------------------------------------------
+  # AgriCo Production Web Application
+  # Runs FrankenPHP (PHP 8.4) with embedded Caddy + Python 3 Scientific ML venv
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: agrico-web
+    runtime: docker
+    plan: starter # Change to 'free' or other plan as desired
+    region: singapore # Choose closest region: singapore, oregon, frankfurt, ohio
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: APP_NAME
+        value: AgriCo
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        sync: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: agrico-postgres
+          property: connectionString
+      - key: DB_URL
+        fromDatabase:
+          name: agrico-postgres
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+
+databases:
+  # ---------------------------------------------------------------------------
+  # Managed PostgreSQL Database for AgriCo on Render
+  # ---------------------------------------------------------------------------
+  - name: agrico-postgres
+    plan: free # Free tier available on Render (or upgrade to starter for persistent DB)
+    region: singapore
+    databaseName: agrico
+    user: agrico_user
