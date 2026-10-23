@@ -1347,28 +1347,29 @@
 
         /* Multi-Layer Sub-layer Accordions (Dark Mode Default) */
         .layer-accordion-item {
-            border: 1px solid rgba(142, 182, 155, 0.2);
-            border-radius: 14px;
+            border: 1px solid rgba(142, 182, 155, 0.25);
+            border-radius: 18px;
             overflow: hidden;
             background: rgba(11, 43, 38, 0.5);
             transition: all 0.2s ease;
             margin-bottom: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         .layer-accordion-header {
             width: 100%;
-            padding: 11px 14px;
+            padding: 13px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(11, 43, 38, 0.35);
+            background: transparent;
             border: none;
             cursor: pointer;
             color: #DAF1DE;
             font-family: inherit;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 13.5px;
+            font-weight: 800;
             text-align: left;
-            gap: 8px;
+            gap: 10px;
             box-sizing: border-box;
             transition: background 0.2s ease;
             user-select: none;
@@ -1378,8 +1379,30 @@
         }
         .layer-accordion-header .layer-chevron {
             color: #8EB69B;
+            font-size: 11px;
             transition: transform 0.2s ease;
             flex-shrink: 0;
+        }
+        .layer-accordion-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 13.5px;
+            min-width: 0;
+            color: inherit;
+        }
+        .layer-hex-pill {
+            font-size: 12px !important;
+            font-weight: 800 !important;
+            color: #ffffff !important;
+            padding: 4px 14px !important;
+            border-radius: 9999px !important;
+            font-family: monospace !important;
+            letter-spacing: 0.02em !important;
+            flex-shrink: 0 !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
         }
         .layer-accordion-body {
             padding: 12px 14px;
@@ -1678,17 +1701,22 @@
         html.light-mode .layer-accordion-item {
             background: #ffffff !important;
             border: 1.5px solid #e2e8f0 !important;
+            border-radius: 18px !important;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
         }
         html.light-mode .layer-accordion-header {
-            background: #f8fafc !important;
-            color: #1e293b !important;
+            background: transparent !important;
+            color: #0f172a !important;
+            padding: 13px 18px !important;
         }
         html.light-mode .layer-accordion-header:hover {
-            background: #f1f5f9 !important;
+            background: rgba(0, 0, 0, 0.02) !important;
         }
         html.light-mode .layer-accordion-header .layer-chevron {
-            color: #64748b !important;
+            color: #0f172a !important;
+        }
+        html.light-mode .layer-accordion-header .layer-accordion-title {
+            color: #0f172a !important;
         }
         html.light-mode .layer-accordion-body {
             background: #ffffff !important;
@@ -2602,9 +2630,18 @@
             min-height: 78px !important;
             transition: background-color 0.3s ease !important;
         }
+        /* Result Card Metrics (Paired Grid Cards matching Image 1 Design) */
+        #resultContent .soil-metrics-container {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 8px !important;
+            margin-bottom: 12px !important;
+            width: 100% !important;
+        }
+        #resultContent .soil-modal-grid-2,
         .soil-modal-grid-2 {
             display: grid !important;
-            grid-template-columns: 1fr 1fr !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
             gap: 10px !important;
             margin-bottom: 8px !important;
             box-sizing: border-box !important;
@@ -2626,12 +2663,14 @@
             transition: all 0.2s ease !important;
         }
         /* Default / Dark Mode for Grid Cards */
-        html:not(.light-mode) .soil-modal-grid-card {
+        html:not(.light-mode) .soil-modal-grid-card,
+        html:not(.light-mode) #resultContent .soil-modal-grid-card {
             background: #163832 !important;
             border: 1px solid rgba(142, 182, 155, 0.25) !important;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
         }
-        html:not(.light-mode) .soil-modal-label {
+        html:not(.light-mode) .soil-modal-label,
+        html:not(.light-mode) #resultContent .soil-modal-label {
             font-size: 11px !important;
             font-weight: 700 !important;
             color: #8EB69B !important;
@@ -2641,7 +2680,8 @@
             word-break: break-word !important;
             text-transform: uppercase !important;
         }
-        html:not(.light-mode) .soil-modal-value {
+        html:not(.light-mode) .soil-modal-value,
+        html:not(.light-mode) #resultContent .soil-modal-value {
             font-size: 13.5px !important;
             font-weight: 700 !important;
             color: #DAF1DE !important;
@@ -2649,14 +2689,20 @@
         }
         /* Light Mode & Modal Overrides for Grid Cards */
         html.light-mode .soil-modal-grid-card,
+        html.light-mode #resultContent .soil-modal-grid-card,
+        .light-mode .soil-modal-grid-card,
         #soilRecordModal .soil-modal-grid-card {
             background: #ffffff !important;
-            border: 1.5px solid #f1f5f9 !important;
+            border: 1.5px solid #e2e8f0 !important;
             border-radius: 16px !important;
             padding: 12px 16px !important;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+            box-sizing: border-box !important;
+            min-width: 0 !important;
         }
         html.light-mode .soil-modal-label,
+        html.light-mode #resultContent .soil-modal-label,
+        .light-mode .soil-modal-label,
         #soilRecordModal .soil-modal-label {
             font-size: 11px !important;
             font-weight: 700 !important;
@@ -2666,12 +2712,16 @@
             white-space: normal !important;
             word-break: break-word !important;
             text-transform: uppercase !important;
+            line-height: 1.2 !important;
         }
         html.light-mode .soil-modal-value,
+        html.light-mode #resultContent .soil-modal-value,
+        .light-mode .soil-modal-value,
         #soilRecordModal .soil-modal-value {
             font-size: 13.5px !important;
             font-weight: 700 !important;
             color: #0f172a !important;
+            line-height: 1.35 !important;
             word-break: break-word !important;
         }
         #modalCardConfidence,
@@ -3449,16 +3499,27 @@
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
-            .soil-modal-grid-card {
+            html.light-mode .soil-modal-grid-card,
+            .light-mode .soil-modal-grid-card {
                 background: #ffffff !important;
-                border: 1.5px solid #f1f5f9 !important;
+                border: 1.5px solid #e2e8f0 !important;
                 border-radius: 14px !important;
                 padding: 10px 12px !important;
-                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
                 box-sizing: border-box !important;
                 min-width: 0 !important;
             }
-            .soil-modal-label {
+            html:not(.light-mode) .soil-modal-grid-card {
+                background: #163832 !important;
+                border: 1px solid rgba(142, 182, 155, 0.25) !important;
+                border-radius: 14px !important;
+                padding: 10px 12px !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+                box-sizing: border-box !important;
+                min-width: 0 !important;
+            }
+            html.light-mode .soil-modal-label,
+            .light-mode .soil-modal-label {
                 font-size: 11px !important;
                 margin-bottom: 3px !important;
                 font-weight: 700 !important;
@@ -3466,11 +3527,29 @@
                 text-transform: uppercase !important;
                 letter-spacing: 0.03em !important;
             }
-            .soil-modal-value {
+            html:not(.light-mode) .soil-modal-label {
+                font-size: 11px !important;
+                margin-bottom: 3px !important;
+                font-weight: 700 !important;
+                color: #8EB69B !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.03em !important;
+            }
+            html.light-mode .soil-modal-value,
+            .light-mode .soil-modal-value {
                 font-size: 14px !important;
                 line-height: 1.35 !important;
                 font-weight: 700 !important;
                 color: #0f172a !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                min-width: 0 !important;
+            }
+            html:not(.light-mode) .soil-modal-value {
+                font-size: 14px !important;
+                line-height: 1.35 !important;
+                font-weight: 700 !important;
+                color: #DAF1DE !important;
                 overflow-wrap: anywhere !important;
                 word-break: break-word !important;
                 min-width: 0 !important;
@@ -8190,7 +8269,15 @@
                 const resMetaCreated = document.getElementById('resMetaCreated');
                 const resMetaLayers = document.getElementById('resMetaLayers');
 
-                const regions = Array.isArray(data.regions) ? data.regions : [];
+                const regions = (Array.isArray(data.regions) && data.regions.length > 0)
+                    ? data.regions
+                    : (Array.isArray(data.layers) && data.layers.length > 0)
+                        ? data.layers
+                        : (Array.isArray(data.detected_layers) && data.detected_layers.length > 0)
+                            ? data.detected_layers
+                            : (Array.isArray(data.colors) && data.colors.length > 0)
+                                ? data.colors
+                                : [];
                 regions.forEach((r, idx) => {
                     r.pinned_index = idx;
                     r.index = idx;
@@ -8584,14 +8671,14 @@
                             const avatarId = `res-region-avatar-${idx}`;
 
                             itemDiv.innerHTML = `
-                                <button type="button" class="layer-accordion-header" style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;">
-                                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; min-width: 0;">
+                                <button type="button" class="layer-accordion-header" style="width: 100%; padding: 13px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;">
+                                    <div class="layer-accordion-title" style="display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 13.5px; min-width: 0;">
                                         <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease; transform: rotate(0deg);">▶</span>
-                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell} &bull; ${rLabel}</span>
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell} (Soil Percentage - ${rPct}%)</span>
                                     </div>
-                                    <div style="display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                                        <span style="font-size: 11px; font-weight: 800; background: rgba(0,0,0,0.3); color: #fff; padding: 2px 7px; border-radius: 9999px;">${rPct}%</span>
-                                    </div>
+                                    <span class="layer-hex-pill" style="font-size: 12px; font-weight: 800; color: #ffffff; background-color: ${rHex}; padding: 4px 14px; border-radius: 9999px; font-family: monospace; letter-spacing: 0.02em; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
+                                        ${rHex.toUpperCase()}
+                                    </span>
                                 </button>
                                 <div class="layer-accordion-body" style="display: none; padding: 14px;">
 
@@ -9504,12 +9591,12 @@
                         const avatarId = `modal-region-avatar-${idx}`;
 
                         itemDiv.innerHTML = `
-                            <button type="button" class="layer-accordion-header" style="width: 100%; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;">
-                                <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; min-width: 0;">
-                                    <span class="layer-chevron" style="font-size: 11px; transition: transform 0.2s ease;">▶</span>
+                            <button type="button" class="layer-accordion-header" style="width: 100%; padding: 13px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: none; text-align: left; font-family: inherit; user-select: none;">
+                                <div class="layer-accordion-title" style="display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 13.5px; min-width: 0;">
+                                    <span class="layer-chevron" style="display: inline-block; font-size: 11px; transition: transform 0.2s ease; transform: rotate(0deg);">▶</span>
                                     <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rMunsell} (Soil Percentage - ${rPct}%)</span>
                                 </div>
-                                <span style="font-size: 11px; font-weight: 800; color: #ffffff; background: ${rHex}; padding: 3px 10px; border-radius: 12px; font-family: monospace; text-shadow: none; flex-shrink: 0;">
+                                <span class="layer-hex-pill" style="font-size: 12px; font-weight: 800; color: #ffffff; background-color: ${rHex}; padding: 4px 14px; border-radius: 9999px; font-family: monospace; letter-spacing: 0.02em; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
                                     ${rHex.toUpperCase()}
                                 </span>
                             </button>
