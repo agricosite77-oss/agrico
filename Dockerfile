@@ -68,9 +68,9 @@ COPY --from=node_builder /app/public/build /app/public/build
 # Install PHP production dependencies
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-req=php+
 
-# Copy Caddyfile and ensure entrypoint is executable
+# Copy Caddyfile and ensure entrypoint is executable with Linux LF line endings
 COPY Caddyfile /etc/caddy/Caddyfile
-RUN chmod +x /app/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /app/docker-entrypoint.sh && chmod +x /app/docker-entrypoint.sh
 
 # Configure file permissions for storage and cache
 RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs storage/app/public/scans \
@@ -83,4 +83,4 @@ ENV SERVER_NAME=":${PORT}"
 
 EXPOSE ${PORT}
 
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]

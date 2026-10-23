@@ -9,7 +9,7 @@ services:
   - type: web
     name: agrico-web
     runtime: docker
-    plan: starter # Change to 'free' or other plan as desired
+    plan: free # Change to starter/standard if needed
     region: singapore # Choose closest region: singapore, oregon, frankfurt, ohio
     branch: main
     dockerfilePath: ./Dockerfile
