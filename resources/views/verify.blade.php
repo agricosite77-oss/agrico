@@ -279,7 +279,7 @@
     <!-- Turnstile Widget (Declarative Cloudflare Mount) -->
     <div id="turnstile-widget"
          class="cf-turnstile"
-         data-sitekey="{{ config('services.turnstile.key', '0x4AAAAAAE7UD3OjLmMRWxlW') }}"
+         data-sitekey="{{ config('services.turnstile.key', '0x4AAAAAAE7UD3KzzR4K4rVNAgYGCmVmkxk') }}"
          data-callback="onTurnstileSuccess"
          data-error-callback="onTurnstileError"
          data-theme="light"></div>

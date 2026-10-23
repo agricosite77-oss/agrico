@@ -46,7 +46,7 @@ services:
       - key: LOG_LEVEL
         value: info
       - key: TURNSTILE_SITE_KEY
-        sync: false
+        value: 0x4AAAAAAE7UD3KzzR4K4rVNAgYGCmVmkxk
       - key: TURNSTILE_SECRET
         sync: false
 
