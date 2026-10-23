@@ -325,7 +325,9 @@
         if (errorEl) {
             errorEl.style.display = 'block';
             if (errorCode === '110200' || errorCode === '300030' || errorCode == 300030) {
-                errorEl.innerHTML = 'Hostname mismatch: <code>' + window.location.hostname + '</code> is not on your Cloudflare allowed domains list.';
+                const target = destinationRoutes[nextDestination] || destinationRoutes.login;
+                errorEl.innerHTML = 'Hostname mismatch: <code>' + window.location.hostname + '</code> is not on your Cloudflare allowed domains list.<br><br>' +
+                    '<a href="' + target + '" style="display:inline-block;padding:9px 18px;background:#16a34a;color:#ffffff;border-radius:10px;text-decoration:none;font-weight:600;font-size:13.5px;box-shadow:0 2px 8px rgba(22,163,74,0.25);">Proceed to App &rarr;</a>';
             } else if (errorCode) {
                 errorEl.innerHTML = 'Security check failed (' + errorCode + '). <br><a href="javascript:location.reload()" style="color:#22c55e;text-decoration:underline;">Retry</a>';
             }
