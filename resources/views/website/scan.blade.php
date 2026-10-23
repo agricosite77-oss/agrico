@@ -1,4 +1,4 @@
-﻿<x-website-layout>
+<x-website-layout>
     <x-slot name="title">Soil Color Scan</x-slot>
 
     {{-- Leaflet Map Assets for Pin Soil Location Modal --}}
@@ -2130,25 +2130,40 @@
             background-color: #0B2B26 !important;
             text-align: center !important;
         }
-        table.ws-table tbody tr:hover td.col-sticky-action,
-        table.ws-table tbody tr:hover td.col-action {
+        /* Dark mode sticky action hover */
+        html:not(.light-mode) table.ws-table tbody tr:hover td.col-sticky-action,
+        html:not(.light-mode) table.ws-table tbody tr:hover td.col-action {
             background: linear-gradient(145deg, #113832 0%, #163832 100%) !important;
+            background-image: linear-gradient(145deg, #113832 0%, #163832 100%) !important;
         }
 
         /* Light mode sticky action overrides */
         html.light-mode table.ws-table th.col-sticky-action,
         html.light-mode table.ws-table th.col-action,
-        html.light-mode th.col-th-action {
+        html.light-mode th.col-th-action,
+        .light-mode table.ws-table th.col-sticky-action,
+        .light-mode table.ws-table th.col-action,
+        .light-mode th.col-th-action {
+            background: #F1FBF1 !important;
             background-color: #F1FBF1 !important;
+            background-image: none !important;
             color: #0f172a !important;
         }
         html.light-mode table.ws-table td.col-sticky-action,
-        html.light-mode table.ws-table td.col-action {
+        html.light-mode table.ws-table td.col-action,
+        .light-mode table.ws-table td.col-sticky-action,
+        .light-mode table.ws-table td.col-action {
+            background: #ffffff !important;
             background-color: #ffffff !important;
+            background-image: none !important;
         }
         html.light-mode table.ws-table tbody tr:hover td.col-sticky-action,
-        html.light-mode table.ws-table tbody tr:hover td.col-action {
+        html.light-mode table.ws-table tbody tr:hover td.col-action,
+        .light-mode table.ws-table tbody tr:hover td.col-sticky-action,
+        .light-mode table.ws-table tbody tr:hover td.col-action {
+            background: #f0fdf4 !important;
             background-color: #f0fdf4 !important;
+            background-image: none !important;
         }
 
         .soil-mobile-date {
@@ -2223,16 +2238,15 @@
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             border-bottom: 1px solid rgba(142, 182, 155, 0.15);
         }
-        /* Dark mode hover - !important on ALL props beats later light-mode rules */
-        html:not(.light-mode) table.ws-table tbody tr:hover,
-        table.ws-table tbody tr:hover {
+        /* Dark mode hover - scoped strictly to dark mode */
+        html:not(.light-mode) table.ws-table tbody tr:hover {
             background: linear-gradient(145deg, #113832 0%, #163832 100%) !important;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(35, 83, 71, 0.3), inset 4px 0 0 #DAF1DE !important;
             transform: translateY(-2px) !important;
             position: relative !important;
             z-index: 5 !important;
         }
-        table.ws-table tbody tr:hover .col-soil-name {
+        html:not(.light-mode) table.ws-table tbody tr:hover .col-soil-name {
             color: #FFFFFF !important;
             transition: color 0.25s ease;
         }
@@ -2266,13 +2280,13 @@
             box-sizing: border-box !important;
             box-shadow: 0 4px 14px rgba(35, 83, 71, 0.45) !important;
         }
-        .btn-view-scan:hover,
-        table.ws-table tbody tr:hover .btn-view-scan {
+        html:not(.light-mode) .btn-view-scan:hover,
+        html:not(.light-mode) table.ws-table tbody tr:hover .btn-view-scan {
             color: #ffffff !important;
             background: #235347 !important;
             border-color: #DAF1DE !important;
             box-shadow: 0 6px 20px rgba(35, 83, 71, 0.6) !important;
-            transform: translateY(-2px) !important;
+            transform: translateY(-1px) !important;
         }
 
         .ws-table-pagination-footer {
@@ -2344,12 +2358,27 @@
         }
 
         html.light-mode .btn-view-scan:hover,
-        html.light-mode table.ws-table tbody tr:hover .btn-view-scan {
+        .light-mode .btn-view-scan:hover {
             color: #ffffff !important;
             background: #16a34a !important;
             border: none !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4) !important;
+            transform: translateY(-1px) !important;
+        }
+        html.light-mode table.ws-table tbody tr:hover .btn-view-scan,
+        .light-mode table.ws-table tbody tr:hover .btn-view-scan {
+            color: #ffffff !important;
+            background: #22c55e !important;
+            border: none !important;
+            box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3) !important;
+        }
+        html.light-mode table.ws-table tbody tr:hover .btn-view-scan:hover,
+        .light-mode table.ws-table tbody tr:hover .btn-view-scan:hover {
+            color: #ffffff !important;
+            background: #16a34a !important;
+            border: none !important;
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4) !important;
+            transform: translateY(-1px) !important;
         }
 
         /* ── LIGHT MODE OVERRIDES FOR EMPTY STATE ── */
@@ -2525,23 +2554,61 @@
             min-height: 78px !important;
             transition: background-color 0.3s ease !important;
         }
-        #soilRecordModal .soil-modal-grid-2 {
+        .soil-modal-grid-2 {
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
             gap: 10px !important;
-            margin-bottom: 10px !important;
+            margin-bottom: 8px !important;
             box-sizing: border-box !important;
             width: 100% !important;
         }
+        .soil-modal-grid-3 {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 10px !important;
+            margin-bottom: 8px !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
+        }
+        .soil-modal-grid-card {
+            border-radius: 16px !important;
+            padding: 12px 16px !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+            transition: all 0.2s ease !important;
+        }
+        /* Default / Dark Mode for Grid Cards */
+        html:not(.light-mode) .soil-modal-grid-card {
+            background: #163832 !important;
+            border: 1px solid rgba(142, 182, 155, 0.25) !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+        }
+        html:not(.light-mode) .soil-modal-label {
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            color: #8EB69B !important;
+            margin-bottom: 4px !important;
+            letter-spacing: 0.03em !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            text-transform: uppercase !important;
+        }
+        html:not(.light-mode) .soil-modal-value {
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            color: #DAF1DE !important;
+            word-break: break-word !important;
+        }
+        /* Light Mode & Modal Overrides for Grid Cards */
+        html.light-mode .soil-modal-grid-card,
         #soilRecordModal .soil-modal-grid-card {
             background: #ffffff !important;
             border: 1.5px solid #f1f5f9 !important;
             border-radius: 16px !important;
             padding: 12px 16px !important;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
-            min-width: 0 !important;
-            box-sizing: border-box !important;
         }
+        html.light-mode .soil-modal-label,
         #soilRecordModal .soil-modal-label {
             font-size: 11px !important;
             font-weight: 700 !important;
@@ -2552,13 +2619,16 @@
             word-break: break-word !important;
             text-transform: uppercase !important;
         }
+        html.light-mode .soil-modal-value,
         #soilRecordModal .soil-modal-value {
             font-size: 13.5px !important;
             font-weight: 700 !important;
             color: #0f172a !important;
             word-break: break-word !important;
         }
-        #modalCardConfidence {
+        #modalCardConfidence,
+        #resConfidence,
+        .card-near-match .soil-modal-value {
             color: #10b981 !important;
             font-weight: 800 !important;
         }
@@ -3637,23 +3707,39 @@
             text-overflow: clip !important;
             white-space: nowrap !important;
         }
-        html.light-mode .btn-view-scan {
+        html.light-mode .btn-view-scan,
+        .light-mode .btn-view-scan {
             color: #ffffff !important;
             background: #22c55e !important;
             border: none !important;
             font-weight: 700 !important;
             padding: 6px 16px !important;
             border-radius: 12px !important;
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35) !important;
+            box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3) !important;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
         html.light-mode .btn-view-scan:hover,
-        html.light-mode table.ws-table tbody tr:hover .btn-view-scan {
+        .light-mode .btn-view-scan:hover {
             color: #ffffff !important;
             background: #16a34a !important;
             border: none !important;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45) !important;
-            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4) !important;
+            transform: translateY(-1px) !important;
+        }
+        html.light-mode table.ws-table tbody tr:hover .btn-view-scan,
+        .light-mode table.ws-table tbody tr:hover .btn-view-scan {
+            color: #ffffff !important;
+            background: #22c55e !important;
+            border: none !important;
+            box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3) !important;
+        }
+        html.light-mode table.ws-table tbody tr:hover .btn-view-scan:hover,
+        .light-mode table.ws-table tbody tr:hover .btn-view-scan:hover {
+            color: #ffffff !important;
+            background: #16a34a !important;
+            border: none !important;
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4) !important;
+            transform: translateY(-1px) !important;
         }
         /* ── PAGINATION FOOTER STYLING ── */
         .ws-page-info { color: #8EB69B; font-size: 13px; font-weight: 500; }
@@ -5244,35 +5330,51 @@
                         </div>
                     </div>
 
-                    <!-- Row 1: Code Details (3 Columns: Color Name, Full Code, Scan Count) -->
-                    <div class="soil-modal-grid-3 soil-metrics-row-1" style="margin-bottom: 8px;">
-                        <div class="soil-modal-grid-card">
-                            <div class="soil-modal-label">Color Name</div>
-                            <div class="soil-modal-value" id="resName" style="font-size: 13px; font-weight: 700;">Dark Brown</div>
-                        </div>
-                        <div class="soil-modal-grid-card">
-                            <div class="soil-modal-label">Full Code</div>
-                            <div class="soil-modal-value" id="resFullCode" style="font-size: 13px; font-weight: 700;">10YR 4/3</div>
-                        </div>
-                        <div class="soil-modal-grid-card">
-                            <div class="soil-modal-label">Scan Count</div>
-                            <div class="soil-modal-value" id="resScanCount" style="font-size: 13px; font-weight: 700;">1</div>
-                        </div>
-                    </div>
+                    <!-- Metrics Container (2-Column Paired Grids matching Modal and Admin) -->
+                    <div class="soil-metrics-container">
+                        <!-- Row 1: Color Name & Full Code -->
+                        <div class="soil-modal-grid-2" style="margin-bottom: 8px;">
+                            <!-- Color Name Card -->
+                            <div class="soil-modal-grid-card soil-card-color-name">
+                                <div class="soil-modal-label">Color Name</div>
+                                <div class="soil-modal-value" id="resName" style="font-size: 13px; font-weight: 700;">Dark Brown</div>
+                            </div>
 
-                    <!-- Row 2: Soil Properties (3 Columns: Soil Organic, Soil Type, Near-Match Emerald #10b981) -->
-                    <div class="soil-modal-grid-3 soil-metrics-row-2" style="margin-bottom: 14px;">
-                        <div class="soil-modal-grid-card">
-                            <div class="soil-modal-label">Soil Organic</div>
-                            <div class="soil-modal-value" id="resOrganic" style="font-size: 13px; font-weight: 700;">High (3.8%)</div>
+                            <!-- Full Code Card -->
+                            <div class="soil-modal-grid-card soil-card-full-code">
+                                <div class="soil-modal-label">Full Code</div>
+                                <div class="soil-modal-value" id="resFullCode" style="font-size: 13px; font-weight: 700;">10YR 4/3</div>
+                            </div>
                         </div>
-                        <div class="soil-modal-grid-card">
-                            <div class="soil-modal-label">Soil Type</div>
-                            <div class="soil-modal-value" id="resDrainage" style="font-size: 13px; font-weight: 700;">Well-Drained Loam</div>
+
+                        <!-- Row 2: Soil Organic & Soil Type -->
+                        <div class="soil-modal-grid-2" style="margin-bottom: 8px;">
+                            <!-- Soil Organic Card -->
+                            <div class="soil-modal-grid-card soil-card-organic">
+                                <div class="soil-modal-label">Soil Organic</div>
+                                <div class="soil-modal-value" id="resOrganic" style="font-size: 13px; font-weight: 700;">High (3.8%)</div>
+                            </div>
+
+                            <!-- Soil Type Card -->
+                            <div class="soil-modal-grid-card soil-card-soil-type">
+                                <div class="soil-modal-label">Soil Type</div>
+                                <div class="soil-modal-value" id="resDrainage" style="font-size: 13px; font-weight: 700;">Well-Drained Loam</div>
+                            </div>
                         </div>
-                        <div class="soil-modal-grid-card card-near-match">
-                            <div class="soil-modal-label">Near-Match</div>
-                            <div class="soil-modal-value" id="resConfidence" style="font-size: 13.5px; font-weight: 800; color: #10b981 !important;">98.4%</div>
+
+                        <!-- Row 3: Scan Count & Near-Match -->
+                        <div class="soil-modal-grid-2" style="margin-bottom: 12px;">
+                            <!-- Scan Count Card -->
+                            <div class="soil-modal-grid-card soil-card-scan-count">
+                                <div class="soil-modal-label">Scan Count</div>
+                                <div class="soil-modal-value" id="resScanCount" style="font-size: 13px; font-weight: 700;">1</div>
+                            </div>
+
+                            <!-- Near-Match Rating Card -->
+                            <div class="soil-modal-grid-card card-near-match soil-card-confidence">
+                                <div class="soil-modal-label">Near-Match</div>
+                                <div class="soil-modal-value" id="resConfidence" style="font-size: 13.5px; font-weight: 800; color: #10b981 !important;">98.4%</div>
+                            </div>
                         </div>
                     </div>
 
@@ -8415,6 +8517,13 @@
                             const rItemNote = (hasPin && r.scan_note && !r.scan_note.startsWith('Determined Soil:') && r.scan_note !== '—' && r.scan_note !== '-') 
                                 ? r.scan_note 
                                 : '-';
+                            const rNormCode = (rMunsell || '').trim().toUpperCase();
+                            const rMcFound = Array.isArray(dbMunsellColors)
+                                ? dbMunsellColors.find(c => c.full_code && c.full_code.trim().toUpperCase() === rNormCode)
+                                : null;
+                            const rDesc = (rMcFound && rMcFound.description && rMcFound.description.trim())
+                                ? rMcFound.description.trim()
+                                : (r.description || `${rMunsell} - ${rLabel}`);
 
                             const itemTheme = window.getContrastColor(rHex);
                             const itemDiv = document.createElement('div');
@@ -8475,7 +8584,7 @@
                                         </div>
                                         <div class="soil-modal-grid-card">
                                             <div class="soil-modal-label">Near-Match</div>
-                                            <div class="soil-modal-value" style="color: #10b981;">${rConf}</div>
+                                            <div class="soil-modal-value" style="color: #10b981; font-weight: 800;">${rConf}</div>
                                         </div>
                                     </div>
 
