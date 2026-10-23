@@ -324,12 +324,15 @@
         if (statusEl) statusEl.style.display = 'none';
         if (errorEl) {
             errorEl.style.display = 'block';
+            const target = destinationRoutes[nextDestination] || destinationRoutes.login;
+            const proceedBtn = '<br><br><a href="' + target + '" style="display:inline-block;padding:9px 18px;background:#16a34a;color:#ffffff;border-radius:10px;text-decoration:none;font-weight:600;font-size:13.5px;box-shadow:0 2px 8px rgba(22,163,74,0.25);">Proceed to App &rarr;</a>';
+
             if (errorCode === '110200' || errorCode === '300030' || errorCode == 300030) {
-                const target = destinationRoutes[nextDestination] || destinationRoutes.login;
-                errorEl.innerHTML = 'Hostname mismatch: <code>' + window.location.hostname + '</code> is not on your Cloudflare allowed domains list.<br><br>' +
-                    '<a href="' + target + '" style="display:inline-block;padding:9px 18px;background:#16a34a;color:#ffffff;border-radius:10px;text-decoration:none;font-weight:600;font-size:13.5px;box-shadow:0 2px 8px rgba(22,163,74,0.25);">Proceed to App &rarr;</a>';
+                errorEl.innerHTML = 'Hostname mismatch: <code>' + window.location.hostname + '</code> is not on your Cloudflare allowed domains list.' + proceedBtn;
+            } else if (errorCode === '400020' || errorCode == 400020) {
+                errorEl.innerHTML = 'Cloudflare Site Key not recognized (' + errorCode + '). Check your widget Site Key in Cloudflare.' + proceedBtn;
             } else if (errorCode) {
-                errorEl.innerHTML = 'Security check failed (' + errorCode + '). <br><a href="javascript:location.reload()" style="color:#22c55e;text-decoration:underline;">Retry</a>';
+                errorEl.innerHTML = 'Security check failed (' + errorCode + '). <br><a href="javascript:location.reload()" style="color:#22c55e;text-decoration:underline;">Retry</a>' + proceedBtn;
             }
         }
     }
