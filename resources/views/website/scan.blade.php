@@ -6378,10 +6378,10 @@
                     top: ${top.toFixed(2)}%;
                     width: ${width.toFixed(2)}%;
                     height: ${height.toFixed(2)}%;
-                    border: 2.5px solid ${rHex};
+                    border: 2.5px solid #10b981;
                     border-radius: 4px;
                     box-sizing: border-box;
-                    box-shadow: 0 0 6px rgba(0,0,0,0.5);
+                    box-shadow: 0 0 8px rgba(16, 185, 129, 0.75), inset 0 0 4px rgba(16, 185, 129, 0.25);
                     pointer-events: none;
                 `;
 
@@ -6390,12 +6390,12 @@
                     position: absolute;
                     ${labelAbove ? `bottom: 100%; margin-bottom: 2px;` : `top: 100%; margin-top: 2px;`}
                     ${horizPos}
-                    background: ${rHex};
+                    background: #10b981;
                     color: #ffffff;
                     text-shadow: 0 1px 2px rgba(0,0,0,0.6);
                     font-size: ${labelFontSize}px;
                     font-weight: 800;
-                    padding: ${labelPadV}px ${labelPadH}px;
+                    padding: ${labelPadV}px ${labelPadH + 2}px;
                     border-radius: 3px;
                     white-space: nowrap;
                     max-width: none;
@@ -6403,8 +6403,12 @@
                     line-height: 1.3;
                     letter-spacing: 0.03em;
                     text-transform: uppercase;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.45);
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 3px;
                 `;
-                label.textContent = `${roleName} COLOR`;
+                label.innerHTML = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${rHex};border:1px solid #ffffff;flex-shrink:0;"></span>${roleName} COLOR`;
 
                 box.appendChild(label);
                 containerEl.appendChild(box);
