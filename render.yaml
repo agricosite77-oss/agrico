@@ -25,16 +25,24 @@ services:
         generateValue: true
       - key: APP_URL
         sync: false
+      - key: DATABASE_URL
+        value: ""
+      - key: DB_URL
+        value: ""
       - key: DB_CONNECTION
         value: pgsql
-      - key: DATABASE_URL
-        fromDatabase:
-          name: agrico-postgres
-          property: connectionString
-      - key: DB_URL
-        fromDatabase:
-          name: agrico-postgres
-          property: connectionString
+      - key: DB_HOST
+        value: aws-0-ap-southeast-1.pooler.supabase.com
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        value: postgres
+      - key: DB_USERNAME
+        value: postgres.qbgrxnbayyykrycgtbig
+      - key: DB_PASSWORD
+        value: '/AgriCo"_^(|SD|)'
+      - key: DB_SSLMODE
+        value: require
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE
@@ -45,17 +53,21 @@ services:
         value: stderr
       - key: LOG_LEVEL
         value: info
-      - key: TURNSTILE_SITE_KEY
-        value: 1x00000000000000000000AA
-      - key: TURNSTILE_SECRET
-        value: 1x0000000000000000000000000000000AA
-
-databases:
-  # ---------------------------------------------------------------------------
-  # Managed PostgreSQL Database for AgriCo on Render
-  # ---------------------------------------------------------------------------
-  - name: agrico-postgres
-    plan: free # Free tier available on Render (or upgrade to starter for persistent DB)
-    region: singapore
-    databaseName: agrico
-    user: agrico_user
+      - key: AWS_ENDPOINT
+        value: https://qbgrxnbayyykrycgtbig.supabase.co/storage/v1/s3
+      - key: AWS_URL
+        value: https://qbgrxnbayyykrycgtbig.supabase.co/storage/v1/object/public/agrico-scans
+      - key: SUPABASE_STORAGE_ACCESS_KEY_ID
+        value: 6b474d635d54659b2ac8d62fdb87d6a0
+      - key: SUPABASE_STORAGE_SECRET_ACCESS_KEY
+        value: 2ecb5e6da41d810955805186a086bd6317316278a38110e01b55c225cf590380
+      - key: SUPABASE_STORAGE_BUCKET
+        value: agrico-scans
+      - key: SUPABASE_STORAGE_REGION
+        value: ap-southeast-1
+      - key: SUPABASE_STORAGE_ENDPOINT
+        value: https://qbgrxnbayyykrycgtbig.supabase.co/storage/v1/s3
+      - key: SUPABASE_STORAGE_URL
+        value: https://qbgrxnbayyykrycgtbig.supabase.co/storage/v1/object/public/agrico-scans
+      - key: SUPABASE_PROJECT_REF
+        value: qbgrxnbayyykrycgtbig
