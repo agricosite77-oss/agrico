@@ -29,6 +29,8 @@ php artisan route:cache 2>/dev/null || true
 php artisan view:cache 2>/dev/null || true
 
 # FrankenPHP binds to the port provided by Render / Railway ($PORT)
-export SERVER_NAME=":${PORT:-8080}"
+export PORT="${PORT:-8080}"
+export SERVER_NAME="http://:${PORT}"
 
-exec frankenphp run --config /etc/caddy/Caddyfile
+echo "Starting AgriCo application with FrankenPHP on port $PORT..."
+exec /usr/local/bin/frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile

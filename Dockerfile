@@ -20,6 +20,7 @@ FROM dunglas/frankenphp:1-php8.4-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
+    libcap2-bin \
     libpq-dev \
     libpng-dev \
     libjpeg-dev \
@@ -72,6 +73,10 @@ RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoload
 COPY Caddyfile /etc/caddy/Caddyfile
 RUN sed -i 's/\r$//' /app/docker-entrypoint.sh && chmod +x /app/docker-entrypoint.sh
 
+# Strip Linux file capabilities from FrankenPHP binary to run in Render's unprivileged container runtime
+# (prevents Exit Status 126 / Permission Denied error on cloud container platforms)
+RUN setcap -r /usr/local/bin/frankenphp && chmod 755 /usr/local/bin/frankenphp
+
 # Configure file permissions for storage and cache
 RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs storage/app/public/scans \
     && chown -R www-data:www-data storage bootstrap/cache \
@@ -79,7 +84,7 @@ RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/fra
 
 # Environment defaults
 ENV PORT=8080
-ENV SERVER_NAME=":${PORT}"
+ENV SERVER_NAME="http://:${PORT}"
 
 EXPOSE ${PORT}
 

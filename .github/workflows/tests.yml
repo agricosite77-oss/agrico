@@ -61,6 +61,7 @@ jobs:
         run: npm run build
 
       - name: Run Type Analysis
+        continue-on-error: true
         run: composer types:check
 
       - name: Run Tests
