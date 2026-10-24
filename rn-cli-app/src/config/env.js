@@ -1,6 +1,6 @@
 export const ENV = {
-  // Production Railway URL
-  API_URL: 'https://agrico-production-1eb3.up.railway.app/api',
+  // Production Render URL
+  API_URL: 'https://agrico-j7la.onrender.com/api',
   GOOGLE_CLIENT_ID_IOS: '',
   GOOGLE_CLIENT_ID_ANDROID: '',
   GOOGLE_CLIENT_ID_WEB: '',

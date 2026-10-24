@@ -19,12 +19,45 @@ class LocationController extends Controller
      */
     public function index(Request $request)
     {
-        $locations = LocationMapping::with(['soil.munsellColor', 'soilScan'])
+        $locations = LocationMapping::with([
+            'soil.munsellColor',
+            'soilScan:soil_scan_id,scan_note,scan_date,platform,user_id,regions_data'
+        ])
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
-            ->where('status', 'Active')
+            ->where(function ($q) {
+                $q->where('status', 'Active')
+                  ->orWhereNull('status')
+                  ->orWhere('status', '');
+            })
+            ->whereDoesntHave('soilScan', function ($sq) {
+                $sq->where('verification_status', 'Rejected');
+            })
             ->orderBy('location_mapping_id', 'desc')
             ->get();
+
+        $locations->each(function ($m) {
+            $covStr = '';
+            if ($m->soilScan?->scan_note && preg_match('/\[Covered Area:\s*([^\]]+)\]/i', $m->soilScan->scan_note, $cm)) {
+                $covStr = trim($cm[1]);
+            }
+            $m->setAttribute('coverage', $covStr ?: '500 m²');
+
+            if (empty($m->barangay) || strtolower($m->barangay) === 'lal-lo overall' || strtolower($m->barangay) === 'all barangays') {
+                $m->barangay = LocationMapping::resolveNearestBarangay((float) $m->latitude, (float) $m->longitude);
+            }
+
+            $fullCode = $m->soil?->full_code ?? $m->soil?->munsellColor?->full_code ?? '';
+            $munsellSoilType = $m->soil?->effective_soil_type ?: ($m->soil?->munsellColor?->soil_type ?? null);
+            if (!$munsellSoilType && $fullCode) {
+                $lookup = \App\Services\MunsellLookupService::lookup($fullCode);
+                $munsellSoilType = $lookup['soil_type'] ?? null;
+            }
+            if (!$munsellSoilType && !empty($m->soil?->soil_type)) {
+                $munsellSoilType = $m->soil->soil_type;
+            }
+            $m->setAttribute('munsell_soil_type', $munsellSoilType ?: 'Leached grayish brown');
+        });
 
         return response()->json([
             'status' => 'success',

@@ -33,7 +33,9 @@ class SoilDetailModal extends Component
         }
 
         $loc = $this->scan?->location ?: \App\Models\LocationMapping::where('soil_scan_id', $this->scan?->soil_scan_id)->latest('location_mapping_id')->first();
-        if (!$loc && $this->soil) {
+        // Only fall back to soil_id lookup when the modal was opened directly from a Soil record
+        // (not a SoilScan). When opened from a scan, show location ONLY if THAT scan was pinned.
+        if (!$loc && $this->soil && !$this->scan) {
             $loc = \App\Models\LocationMapping::where('soil_id', $this->soil->soil_id)->latest('location_mapping_id')->first();
         }
 

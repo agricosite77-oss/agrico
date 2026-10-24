@@ -26,7 +26,7 @@ const api = axios.create({
     'Accept': 'application/json',
     'Bypass-Tunnel-Reminder': 'true',
   },
-  timeout: 4000,
+  timeout: 15000,
 });
 
 export const getActiveBaseUrl = () => activeBaseUrl;
@@ -69,9 +69,9 @@ api.interceptors.response.use(
   async (error) => {
     const config = error.config;
 
-    // If request failed with network error (server unreachable) and has not tried fallbacks yet:
+    // If request failed with network error or timeout (server unreachable) and has not tried fallbacks yet:
     if (
-      (!error.response || error.code === 'ERR_NETWORK' || error.message?.includes('Network Error')) &&
+      (!error.response || error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED' || error.message?.includes('Network Error') || error.message?.includes('timeout')) &&
       config &&
       !config._fallbackAttempted
     ) {

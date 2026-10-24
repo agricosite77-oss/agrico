@@ -1315,12 +1315,13 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
 
     function handleIncomingMessage(event) {
       try {
-        var msg = JSON.parse(event.data);
-        if (msg.type === 'SET_LOCATIONS') {
+        var rawData = event.data;
+        var msg = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+        if (msg && msg.type === 'SET_LOCATIONS') {
           renderMarkers(msg.locations);
-        } else if (msg.type === 'SET_CENTER') {
+        } else if (msg && msg.type === 'SET_CENTER') {
           setLocation(msg.lat, msg.lng, msg.zoom);
-        } else if (msg.type === 'FOCUS_LOCATION') {
+        } else if (msg && msg.type === 'FOCUS_LOCATION') {
           focusLocation(msg.lat, msg.lng, msg.zoom);
         }
       } catch (err) {}

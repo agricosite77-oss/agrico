@@ -5779,10 +5779,10 @@
 
                                 $loc = null;
                                 try {
+                                    // Only show location if THIS exact scan was explicitly pinned.
+                                    // Do NOT fall back to soil_id — other scans of the same soil type
+                                    // must not inherit a location the user never pinned for this scan.
                                     $loc = $scan->location ?: \App\Models\LocationMapping::where('soil_scan_id', $scan->soil_scan_id)->latest('location_mapping_id')->first();
-                                    if (!$loc && $scan->soil_id) {
-                                        $loc = \App\Models\LocationMapping::where('soil_id', $scan->soil_id)->latest('location_mapping_id')->first();
-                                    }
                                 } catch (\Throwable $e_loc) {
                                     $loc = null;
                                 }
