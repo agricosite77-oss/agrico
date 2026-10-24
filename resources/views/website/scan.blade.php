@@ -5848,10 +5848,13 @@
 
                                 $scanDateCol = '—';
                                 $scanDateModal = '—';
+                                $scanTimeModal = '—';
                                 try {
                                     if ($scan->scan_date) {
-                                        $scanDateCol = \Carbon\Carbon::parse($scan->scan_date)->format('d M Y');
-                                        $scanDateModal = \Carbon\Carbon::parse($scan->scan_date)->format('m/d/Y');
+                                        $cDate = \Carbon\Carbon::parse($scan->scan_date);
+                                        $scanDateCol = $cDate->format('d M Y');
+                                        $scanDateModal = $cDate->format('m/d/Y');
+                                        $scanTimeModal = $cDate->format('h:i A');
                                     }
                                 } catch (\Throwable $e_d) {}
 
@@ -5942,6 +5945,7 @@
                                     data-hex="{{ $sHex }}"
                                     data-seq="{{ $scanSeq }}"
                                     data-date="{{ $scanDateModal }}"
+                                    data-time="{{ $scanTimeModal }}"
                                     data-desc="{{ $soilDesc }}"
                                     data-scan-note="{{ $userNote }}"
                                     data-organic="{{ $sOrganic }}"
@@ -8841,7 +8845,8 @@
                     const mm = String(now.getMonth() + 1).padStart(2, '0');
                     const dd = String(now.getDate()).padStart(2, '0');
                     const yyyy = now.getFullYear();
-                    if (resMetaCreated) resMetaCreated.textContent = `${mm}/${dd}/${yyyy}`;
+                    const timeFormatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                    if (resMetaCreated) resMetaCreated.textContent = `${mm}/${dd}/${yyyy} ${timeFormatted}`;
                     if (resMetaLayers) resMetaLayers.textContent = Math.max(regions.length, 1);
                 }
 
@@ -8998,7 +9003,10 @@
 
                 const currentTotal = badgeCount ? (parseInt(badgeCount.textContent) || 0) : tbody.children.length;
                 const newSeqNum = currentTotal + 1;
-                const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                const modalDateStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}/${now.getFullYear()}`;
 
                 const rawSoilName = (match.color_name || match.name || '—').replace(/\s*\([A-Za-z0-9\/\.\s]+\)$/i, '');
                 const safeSoilName = rawSoilName.replace(/"/g, '&quot;');
@@ -9071,7 +9079,8 @@
                             data-raw-image="${safeRawImage}"
                             data-scan-id="${scanId || ''}"
                             data-seq="${displaySeq}"
-                            data-date="${dateStr}"
+                            data-date="${modalDateStr}"
+                            data-time="${timeStr}"
                             data-desc="${safeDesc}"
                             data-scan-note="${safeScanNote}"
                             data-organic="${safeOrganic}"
@@ -9118,6 +9127,7 @@
                 hex: btn.getAttribute('data-hex'),
                 seq: btn.getAttribute('data-seq'),
                 date: btn.getAttribute('data-date'),
+                time: btn.getAttribute('data-time') || null,
                 desc: btn.getAttribute('data-desc'),
                 scan_note: btn.getAttribute('data-scan-note') || null,
                 percent: btn.getAttribute('data-percent'),
@@ -9593,10 +9603,26 @@
                     renderStage3Swatches(modalBeforeAfterSwatches, regions, { hex: hex, munsell: code, proportion: 0.7 });
                 }
 
-                // Update Metadata Row inside Before/After Card
+                // Update Metadata Row inside Before/After Card (Remove duplicate Creation Date, display Time & Detected Colors)
                 const metaText = document.getElementById('modalBeforeAfterMetaText');
                 if (metaText) {
-                    metaText.textContent = `CREATED: ${data.date || '—'}  |  DETECTED COLORS: ${regions.length || 1}`;
+                    let resolvedTime = data.time && data.time !== '—' ? data.time : null;
+                    if (!resolvedTime && data.scan_date && data.scan_date.includes(' ')) {
+                        const parts = data.scan_date.split(' ');
+                        if (parts[1]) {
+                            const timeParts = parts[1].split(':');
+                            let h = parseInt(timeParts[0], 10);
+                            const m = timeParts[1] || '00';
+                            const ampm = h >= 12 ? 'PM' : 'AM';
+                            h = h % 12 || 12;
+                            resolvedTime = `${String(h).padStart(2, '0')}:${m} ${ampm}`;
+                        }
+                    }
+                    if (!resolvedTime && typeof currentScanResponseData !== 'undefined' && currentScanResponseData && data === currentScanResponseData) {
+                        resolvedTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                    }
+                    const timePrefix = resolvedTime ? `TIME: ${resolvedTime}  |  ` : '';
+                    metaText.textContent = `${timePrefix}DETECTED COLORS: ${regions.length || 1}`;
                 }
 
                 // Multi-Layer Accordion for Secondary Layers
@@ -12230,7 +12256,7 @@
                     <div id="modalBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(142, 182, 155, 0.25); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;">
                         <strong>METADATA</strong>
-                        <span id="modalBeforeAfterMetaText" style="font-weight: 600; opacity: 0.8;">CREATED: — | DETECTED COLORS: 1</span>
+                        <span id="modalBeforeAfterMetaText" style="font-weight: 600; opacity: 0.8;">DETECTED COLORS: 1</span>
                     </div>
                 </div>
 
