@@ -596,54 +596,6 @@ class SoilMLAnalysisService
         };
 
         if ($isMultiLayer) {
-            $subScansCreated = [];
-            for ($i = count($regions) - 1; $i >= 1; $i--) {
-                $r = $regions[$i];
-                $mCode = $r['munsell'] ?? ($r['munsell_code'] ?? ($r['notation'] ?? null));
-                if (!$mCode) continue;
-                $mColor = MunsellColor::where('full_code', $mCode)->first();
-                $layerName = $mColor?->color_name ?? ($r['label'] ?? 'Soil Layer');
-                $layerHue  = $mColor?->hue ?? (explode(' ', $mCode)[0] ?? '10YR');
-                $layerColorId = $mColor?->munsell_color_id ?? null;
-                $layerDesc = (!empty($mColor?->description) ? trim($mColor->description) : null) ?? ($r['description'] ?? "{$mCode} - {$layerName}");
-                $pctVal  = $r['percent'] ?? (!empty($r['proportion']) ? round($r['proportion'] * 100, 1) : null);
-                $rDeltaE = isset($r['color_delta_e']) && is_numeric($r['color_delta_e']) ? (float)$r['color_delta_e'] : (isset($analysis['color_delta_e']) ? (float)$analysis['color_delta_e'] : (isset($analysis['delta_e']) ? (float)$analysis['delta_e'] : 3.0));
-                $confVal = round(max(88.5, min(99.6, 99.4 - ($rDeltaE * 0.45))), 1) . '%';
-                $layerSoil = Soil::firstOrCreate(
-                    ['full_code' => $mCode],
-                    ['soil_name' => $layerName, 'hue' => $layerHue, 'full_code' => $mCode,
-                     'description' => $layerDesc, 'status' => 'Active', 'scan_count' => 0,
-                     'color_id' => $layerColorId, 'admin_id' => $userId]
-                );
-                // Ensure existing soil record is updated with admin Munsell description if it had a generic string
-                if (!empty($mColor?->description) && $layerSoil->getRawOriginal('description') !== trim($mColor->description)) {
-                    $layerSoil->update(['description' => trim($mColor->description), 'color_id' => $layerColorId ?: $layerSoil->color_id]);
-                }
-                $layerSoil->increment('scan_count');
-                $note = "Determined Soil: {$layerSoil->effective_soil_name} ({$mCode})" . ($pctVal ? " - Soil Percentage: {$pctVal}%" : "") . " - Confidence: {$confVal}";
-                $rImgPath = $saveRegionImage($r['region_thumbnail'] ?? null, $i);
-                $subScan = SoilScan::create([
-                    'user_id' => $userId, 'soil_id' => $layerSoil->soil_id,
-                    'platform' => $platform, 'scan_note' => $note,
-                    'regions_data' => $regions, 'scan_date' => now(),
-                    'scan_image' => $rImgPath,
-                    'before_after_image' => $publicBaRelativePath,
-                    'thumbnail_image' => $publicThumbRelativePath ?: $rImgPath,
-                ]);
-                $subScansCreated[$i] = [
-                    'scan_id' => $subScan->soil_scan_id,
-                    'soil_id' => $layerSoil->soil_id,
-                    'scan_seq' => SoilScan::where('soil_id', $layerSoil->soil_id)->count(),
-                    'name' => $layerSoil->effective_soil_name, 'color_name' => $layerSoil->effective_soil_name,
-                    'code' => $mCode, 'hue' => $layerSoil->hue ?? $layerHue,
-                    'hex' => $layerSoil->effective_hex_color ?? ($r['hex'] ?? '#8F694E'),
-                    'desc' => $layerSoil->effective_description, 'organic' => $layerSoil->effective_organic_matter,
-                    'drainage' => $layerSoil->effective_soil_type, 'soil_type' => $layerSoil->effective_soil_type,
-                    'confidence' => $confVal, 'percent' => $pctVal, 'regions' => $regions,
-                    'image' => $rImgPath ? asset($rImgPath) : ($publicScanRelativePath ? asset($publicScanRelativePath) : null),
-                    'scan_image' => $rImgPath ? asset($rImgPath) : ($publicScanRelativePath ? asset($publicScanRelativePath) : null),
-                ];
-            }
             $domR    = $regions[0];
             $domCode = $domR['munsell'] ?? ($domR['munsell_code'] ?? ($analysis['munsell_code'] ?? '10YR 5/3'));
             $domMColor = MunsellColor::where('full_code', $domCode)->first();
@@ -670,6 +622,8 @@ class SoilMLAnalysisService
             $analysis['soil_type']      = $soil->effective_soil_type;
             $domImgPath = $saveRegionImage($domR['region_thumbnail'] ?? null, 0);
             $dominantScanImage = $publicScanRelativePath ?: ($domImgPath ?: null);
+
+            // Create ONLY ONE SoilScan record for the entire scan session!
             $soilScan = SoilScan::create([
                 'user_id' => $userId, 'soil_id' => $soil->soil_id, 'platform' => $platform,
                 'scan_note' => "Determined Soil: {$soil->effective_soil_name} ({$domCode})" . ($domPct ? " - Soil Percentage: {$domPct}%" : "") . " - Confidence: {$domConf}",
@@ -678,6 +632,8 @@ class SoilMLAnalysisService
                 'before_after_image' => $publicBaRelativePath,
                 'thumbnail_image' => $publicThumbRelativePath ?: $domImgPath,
             ]);
+
+            // Dominant layer entry (index 0)
             $createdScans = [[
                 'scan_id' => $soilScan->soil_scan_id,
                 'soil_id' => $soil->soil_id,
@@ -691,10 +647,45 @@ class SoilMLAnalysisService
                 'image' => $dominantScanImage ? asset($dominantScanImage) : null,
                 'scan_image' => $dominantScanImage ? asset($dominantScanImage) : null,
             ]];
+
+            // Process secondary layers for soil catalog without creating extra SoilScan rows
             for ($i = 1; $i < count($regions); $i++) {
-                if (isset($subScansCreated[$i])) {
-                    $createdScans[] = $subScansCreated[$i];
+                $r = $regions[$i];
+                $mCode = $r['munsell'] ?? ($r['munsell_code'] ?? ($r['notation'] ?? null));
+                if (!$mCode) continue;
+                $mColor = MunsellColor::where('full_code', $mCode)->first();
+                $layerName = $mColor?->color_name ?? ($r['label'] ?? 'Soil Layer');
+                $layerHue  = $mColor?->hue ?? (explode(' ', $mCode)[0] ?? '10YR');
+                $layerColorId = $mColor?->munsell_color_id ?? null;
+                $layerDesc = (!empty($mColor?->description) ? trim($mColor->description) : null) ?? ($r['description'] ?? "{$mCode} - {$layerName}");
+                $pctVal  = $r['percent'] ?? (!empty($r['proportion']) ? round($r['proportion'] * 100, 1) : null);
+                $rDeltaE = isset($r['color_delta_e']) && is_numeric($r['color_delta_e']) ? (float)$r['color_delta_e'] : (isset($analysis['color_delta_e']) ? (float)$analysis['color_delta_e'] : (isset($analysis['delta_e']) ? (float)$analysis['delta_e'] : 3.0));
+                $confVal = round(max(88.5, min(99.6, 99.4 - ($rDeltaE * 0.45))), 1) . '%';
+                $layerSoil = Soil::firstOrCreate(
+                    ['full_code' => $mCode],
+                    ['soil_name' => $layerName, 'hue' => $layerHue, 'full_code' => $mCode,
+                     'description' => $layerDesc, 'status' => 'Active', 'scan_count' => 0,
+                     'color_id' => $layerColorId, 'admin_id' => $userId]
+                );
+                if (!empty($mColor?->description) && $layerSoil->getRawOriginal('description') !== trim($mColor->description)) {
+                    $layerSoil->update(['description' => trim($mColor->description), 'color_id' => $layerColorId ?: $layerSoil->color_id]);
                 }
+                $layerSoil->increment('scan_count');
+                $rImgPath = $saveRegionImage($r['region_thumbnail'] ?? null, $i);
+
+                $createdScans[] = [
+                    'scan_id' => $soilScan->soil_scan_id,
+                    'soil_id' => $layerSoil->soil_id,
+                    'scan_seq' => 1,
+                    'name' => $layerSoil->effective_soil_name, 'color_name' => $layerSoil->effective_soil_name,
+                    'code' => $mCode, 'hue' => $layerSoil->hue ?? $layerHue,
+                    'hex' => $layerSoil->effective_hex_color ?? ($r['hex'] ?? '#8F694E'),
+                    'desc' => $layerSoil->effective_description, 'organic' => $layerSoil->effective_organic_matter,
+                    'drainage' => $layerSoil->effective_soil_type, 'soil_type' => $layerSoil->effective_soil_type,
+                    'confidence' => $confVal, 'percent' => $pctVal, 'regions' => $regions,
+                    'image' => $rImgPath ? asset($rImgPath) : ($publicScanRelativePath ? asset($publicScanRelativePath) : null),
+                    'scan_image' => $rImgPath ? asset($rImgPath) : ($publicScanRelativePath ? asset($publicScanRelativePath) : null),
+                ];
             }
         } else {
             // Single-layer scan
