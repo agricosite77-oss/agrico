@@ -1590,6 +1590,27 @@ function SaveTrayIcon({ size = 14, color = '#ffffff' }) {
   );
 }
 
+// Helper lighting icon matching website Stage 2 illumination normalizer header
+function SunLightingIcon({ size = 13, color = '#10b981' }) {
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          width: size * 0.52,
+          height: size * 0.52,
+          borderRadius: (size * 0.52) / 2,
+          borderWidth: 1.4,
+          borderColor: color,
+        }}
+      />
+      <View style={{ position: 'absolute', top: 0, width: 1.4, height: size * 0.18, backgroundColor: color }} />
+      <View style={{ position: 'absolute', bottom: 0, width: 1.4, height: size * 0.18, backgroundColor: color }} />
+      <View style={{ position: 'absolute', left: 0, height: 1.4, width: size * 0.18, backgroundColor: color }} />
+      <View style={{ position: 'absolute', right: 0, height: 1.4, width: size * 0.18, backgroundColor: color }} />
+    </View>
+  );
+}
+
 export default function HomeScreen({ navigation, route }) {
   const { user, logout, checkAuth } = useContext(AuthContext);
 
@@ -1619,6 +1640,12 @@ export default function HomeScreen({ navigation, route }) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [detailSoil, setDetailSoil] = useState(null);
   const [isSavedCopy, setIsSavedCopy] = useState(false);
+  const [expandedLayers, setExpandedLayers] = useState({});
+
+  useEffect(() => {
+    setExpandedLayers({});
+  }, [detailSoil]);
+
   const [isLoadingSoils, setIsLoadingSoils] = useState(false);
   const [showAllCards, setShowAllCards] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -1963,17 +1990,46 @@ export default function HomeScreen({ navigation, route }) {
     }];
   }, [detailSoil, detailMunsellMatch]);
 
-  const detailNormDate = useMemo(() => {
-    if (!detailSoil) return 'Today';
+  const detailNormDateTime = useMemo(() => {
+    if (!detailSoil) {
+      const now = new Date();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      return {
+        dateStr: `${mm}/${dd}/${yyyy}`,
+        timeStr: `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`,
+      };
+    }
+
     const raw = detailSoil.rawDate || detailSoil.scanDate || detailSoil.createdDate || detailSoil.created_at;
-    if (!raw) return 'Today';
-    const d = new Date(typeof raw === 'string' ? raw.replace(' ', 'T') : raw);
-    if (isNaN(d.getTime())) return String(raw);
+    let d = raw ? new Date(typeof raw === 'string' ? raw.replace(' ', 'T') : raw) : new Date();
+    if (isNaN(d.getTime())) d = new Date();
+
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
     const yyyy = d.getFullYear();
-    return `${mm}/${dd}/${yyyy}`;
+    const dateStr = `${mm}/${dd}/${yyyy}`;
+
+    let timeStr = '';
+    if (detailSoil.scanTime && typeof detailSoil.scanTime === 'string' && detailSoil.scanTime.trim()) {
+      timeStr = detailSoil.scanTime.trim();
+    } else {
+      let hours = d.getHours();
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      timeStr = `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
+    }
+
+    return { dateStr, timeStr };
   }, [detailSoil]);
+
+  const detailNormDate = detailNormDateTime.dateStr;
 
   const avatarRoiBox = useMemo(() => {
     if (!detailSoil || isMunsellDetail) return null;
@@ -3232,9 +3288,20 @@ export default function HomeScreen({ navigation, route }) {
                     <Text style={styles.soilBannerMunsellCode}>
                       {detailMunsellMatch?.munsellCode || detailSoil.munsellCode || detailSoil.fullCode || '7.5YR 5/3'}
                     </Text>
-                    <Text style={styles.soilBannerSubLabel} numberOfLines={1}>
-                      {detailMunsellMatch?.colorName || detailSoil.colorName || detailSoil.name || 'Determined Soil'}
-                    </Text>
+                    {detailNormRegions.length > 1 ? (
+                      <Text style={styles.soilBannerPercentageText}>
+                        Soil Percentage ({(() => {
+                          const first = detailNormRegions[0];
+                          if (first && first.percent !== undefined) return Math.round(first.percent);
+                          if (first && first.proportion !== undefined) return Math.round(first.proportion * 100);
+                          return detailSoil.soilPercentage || 60;
+                        })()}%)
+                      </Text>
+                    ) : (
+                      <Text style={styles.soilBannerSubLabel} numberOfLines={1}>
+                        {detailMunsellMatch?.colorName || detailSoil.colorName || detailSoil.name || 'Determined Soil'}
+                      </Text>
+                    )}
                   </View>
 
                   {/* Right Hex Pill (Website #modalHexPill) */}
@@ -3339,16 +3406,237 @@ export default function HomeScreen({ navigation, route }) {
                   </Text>
                 </View>
 
+                {/* Soil Pin Location & Covered Area Card (Matches Website #modalSoilLocationCard - Placed AFTER Description Card) */}
+                {!isMunsellDetail && (() => {
+                  const hasPin = Boolean(detailSoil.hasPin || detailSoil.location_id || detailSoil.location || detailSoil.latitude);
+                  if (!hasPin) return null;
+                  const lat = parseFloat(detailSoil.latitude || detailSoil.lat || (detailSoil.location && detailSoil.location.latitude));
+                  const lng = parseFloat(detailSoil.longitude || detailSoil.lng || (detailSoil.location && detailSoil.location.longitude));
+                  const brgy = detailSoil.barangay || detailSoil.barangay_name || (detailSoil.location && detailSoil.location.barangay) || 'Poblacion';
+                  const status = (detailSoil.status || (detailSoil.location && detailSoil.location.status) || 'approved').toLowerCase();
+                  const coverage = detailSoil.covered_area_sqm || (detailSoil.location && detailSoil.location.covered_area_sqm)
+                    ? ((detailSoil.covered_area_sqm || detailSoil.location.covered_area_sqm) / 10000).toFixed(2)
+                    : null;
+                  return (
+                    <TouchableOpacity
+                      style={styles.soilModalLocationCard}
+                      onPress={() => {
+                        setDetailSoil(null);
+                        setActiveTab('Map');
+                      }}
+                      activeOpacity={0.88}
+                    >
+                      <View style={styles.soilLocHeaderRow}>
+                        <Text style={styles.soilLocTitleText}>
+                          SOIL PIN LOCATION &amp; COVERED AREA
+                        </Text>
+                        <View style={styles.soilLocBadgesRow}>
+                          <View
+                            style={[
+                              styles.soilLocBadgeStatus,
+                              status === 'approved' ? styles.soilLocBadgeApproved : styles.soilLocBadgePending,
+                            ]}
+                          >
+                            <Text
+                              style={[
+                                styles.soilLocBadgeStatusText,
+                                { color: status === 'approved' ? '#16a34a' : '#d97706' },
+                              ]}
+                            >
+                              {status === 'approved' ? 'Approved' : 'Pending'}
+                            </Text>
+                          </View>
+                          <View style={styles.soilLocBadgeBrgy}>
+                            <Text style={styles.soilLocBadgeBrgyText}>📍 {brgy}</Text>
+                          </View>
+                          {coverage && (
+                            <View style={styles.soilLocBadgeCoverage}>
+                              <Text style={styles.soilLocBadgeCoverageText}>{coverage} ha</Text>
+                            </View>
+                          )}
+                          {!isNaN(lat) && !isNaN(lng) && (
+                            <View style={styles.soilLocBadgeCoords}>
+                              <Text style={styles.soilLocBadgeCoordsText}>
+                                {lat.toFixed(4)}°N, {lng.toFixed(4)}°E
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                      </View>
+                      <View style={styles.soilMapPreviewFrame}>
+                        <View style={styles.soilMapCenterMarker}>
+                          <MapPinIcon size={22} color="#22c55e" />
+                          <View style={styles.soilMapCoordsCallout}>
+                            <Text style={styles.soilMapCoordsCalloutText} numberOfLines={1}>
+                              {brgy} {!isNaN(lat) && !isNaN(lng) ? `· ${lat.toFixed(4)}°, ${lng.toFixed(4)}°` : ''}
+                            </Text>
+                          </View>
+                        </View>
+                        <Text style={styles.soilMapWatermark}>AgriCo Soil GPS Preview</Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })()}
+
+                {/* Multi-Layer Accordion Section (Matches Website #modalMultiLayerSection) */}
+                {!isMunsellDetail && detailNormRegions.length > 1 && (
+                  <View style={styles.multiLayerSection}>
+                    <View style={styles.multiLayerHeaderRow}>
+                      <Text style={styles.multiLayerSectionTitle}>
+                        ALL DETECTED SOIL LAYERS ({detailNormRegions.length})
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          const allExpanded = detailNormRegions.slice(1).every((_, i) => expandedLayers[i]);
+                          const next = {};
+                          detailNormRegions.slice(1).forEach((_, i) => {
+                            next[i] = !allExpanded;
+                          });
+                          setExpandedLayers(next);
+                        }}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.multiLayerToggleAllText}>
+                          {detailNormRegions.slice(1).every((_, i) => expandedLayers[i]) ? 'Collapse All' : 'Expand All'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Secondary Layer Accordion Items */}
+                    <View style={{ gap: 8 }}>
+                      {detailNormRegions.slice(1).map((r, idx) => {
+                        const isExpanded = Boolean(expandedLayers[idx]);
+                        const rPct = r.percent !== undefined
+                          ? Math.round(r.percent)
+                          : (r.proportion !== undefined ? Math.round(r.proportion * 100) : 25);
+                        const rCode = (r.munsell_code || r.munsell || r.notation || detailSoil.fullCode || '10YR 4/1').trim();
+                        let rHex = r.hex || r.hex_color || null;
+                        if (!rHex && Array.isArray(r.rgb) && r.rgb.length >= 3) {
+                          rHex = `#${r.rgb.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('')}`;
+                        }
+                        rHex = rHex || detailSoil.hexColor || detailSoil.hexCode || '#8F694E';
+                        if (!rHex.startsWith('#')) rHex = `#${rHex}`;
+
+                        const matchedMunsell = OFFLINE_MUNSELL_COLORS.find(
+                          c => (c.munsellCode || c.full_code || '').trim().toUpperCase() === rCode.toUpperCase()
+                        );
+                        const rName = r.color_name || r.name || r.label || matchedMunsell?.colorName || 'Determined Soil';
+                        const rOrganic = r.organic_matter || r.soil_organic_index || matchedMunsell?.soil_organic_index || 'Moderate (2.2% – 3.7%)';
+                        const rSoilType = r.soil_type || r.soil_name || matchedMunsell?.soil_type || 'Determined Soil';
+                        const rConf = r.confidence ? `${r.confidence}%` : '96.8%';
+                        const rDesc = matchedMunsell?.description || r.description || `${rCode} - ${rName}`;
+                        const hasPin = Boolean(detailSoil.hasPin || detailSoil.location_id || detailSoil.location || detailSoil.latitude);
+                        const rawNote = r.scan_note || detailSoil.scanNote || detailSoil.scan_note || '';
+                        const rNote = (hasPin && rawNote && !rawNote.startsWith('Determined Soil:') && rawNote !== '—' && rawNote !== '-') ? rawNote : '-';
+
+                        return (
+                          <View key={`sec_layer_${idx}`} style={styles.layerAccordionItem}>
+                            {/* Layer Accordion Header */}
+                            <TouchableOpacity
+                              style={styles.layerAccordionHeader}
+                              onPress={() => setExpandedLayers(prev => ({ ...prev, [idx]: !prev[idx] }))}
+                              activeOpacity={0.8}
+                            >
+                              <View style={styles.layerAccordionTitleRow}>
+                                <Text style={styles.layerChevron}>{isExpanded ? '▼' : '▶'}</Text>
+                                <Text style={styles.layerAccordionTitleText} numberOfLines={1}>
+                                  {rCode} (Soil Percentage - {rPct}%)
+                                </Text>
+                              </View>
+                              <View style={[styles.layerHexPill, { backgroundColor: rHex }]}>
+                                <Text style={styles.layerHexPillText}>{rHex.toUpperCase()}</Text>
+                              </View>
+                            </TouchableOpacity>
+
+                            {/* Layer Accordion Body */}
+                            {isExpanded && (
+                              <View style={styles.layerAccordionBody}>
+                                {/* Hero Swatch Banner */}
+                                <View style={[styles.layerBannerHero, { backgroundColor: rHex }]}>
+                                  <View style={styles.layerAvatarSquare}>
+                                    <View style={{ width: '100%', height: '100%', backgroundColor: rHex }} />
+                                  </View>
+                                  <View style={styles.layerBannerCodeCol}>
+                                    <Text style={styles.layerBannerCode}>{rCode}</Text>
+                                    <Text style={styles.layerBannerName} numberOfLines={1}>{rName}</Text>
+                                  </View>
+                                  <View style={styles.layerBannerHexBadge}>
+                                    <Text style={styles.layerBannerHexBadgeText}>{rHex.toUpperCase()}</Text>
+                                  </View>
+                                </View>
+
+                                {/* 3-Column Grid Row 1: Color Name, Full Code, Proportion */}
+                                <View style={styles.soilGridRow3}>
+                                  <View style={styles.soilModalGridCardSmall}>
+                                    <Text style={styles.soilModalLabelSmall}>COLOR NAME</Text>
+                                    <Text style={styles.soilModalValueSmall} numberOfLines={1}>{rName}</Text>
+                                  </View>
+                                  <View style={styles.soilModalGridCardSmall}>
+                                    <Text style={styles.soilModalLabelSmall}>FULL CODE</Text>
+                                    <Text style={styles.soilModalValueSmall} numberOfLines={1}>{rCode}</Text>
+                                  </View>
+                                  <View style={styles.soilModalGridCardSmall}>
+                                    <Text style={styles.soilModalLabelSmall}>PROPORTION</Text>
+                                    <Text style={styles.soilModalValueSmall}>{rPct}%</Text>
+                                  </View>
+                                </View>
+
+                                {/* 3-Column Grid Row 2: Soil Organic, Soil Type, Near-Match */}
+                                <View style={styles.soilGridRow3}>
+                                  <View style={styles.soilModalGridCardSmall}>
+                                    <Text style={styles.soilModalLabelSmall}>SOIL ORGANIC</Text>
+                                    <Text style={styles.soilModalValueSmall} numberOfLines={2}>{rOrganic}</Text>
+                                  </View>
+                                  <View style={styles.soilModalGridCardSmall}>
+                                    <Text style={styles.soilModalLabelSmall}>SOIL TYPE</Text>
+                                    <Text style={styles.soilModalValueSmall} numberOfLines={2}>{rSoilType}</Text>
+                                  </View>
+                                  <View style={styles.soilModalGridCardSmall}>
+                                    <Text style={styles.soilModalLabelSmall}>NEAR-MATCH</Text>
+                                    <Text style={[styles.soilModalValueSmall, { color: '#10b981', fontWeight: '800' }]}>{rConf}</Text>
+                                  </View>
+                                </View>
+
+                                {/* Scan Note Card */}
+                                <View style={styles.soilModalFullCardSmall}>
+                                  <Text style={styles.soilModalLabelSmall}>SCAN NOTE</Text>
+                                  <Text style={styles.soilModalDescTextSmall}>{rNote}</Text>
+                                </View>
+
+                                {/* Description Card */}
+                                <View style={styles.soilModalFullCardSmall}>
+                                  <Text style={styles.soilModalLabelSmall}>DESCRIPTION</Text>
+                                  <Text style={styles.soilModalDescTextSmall}>{rDesc}</Text>
+                                </View>
+                              </View>
+                            )}
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </View>
+                )}
+
                 {/* Soil Normalization Card (Matches Website / Mobile Specification - Scan History Only) */}
                 {!isMunsellDetail && (
                   <View style={styles.soilModalNormCard}>
                     {/* Card Header: Label & Pill Badge */}
                     <View style={styles.soilModalNormHeader}>
-                      <Text style={styles.soilModalNormLabel}>SOIL NORMALIZATION</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <SunLightingIcon size={14} color="#10b981" />
+                        <Text style={[styles.soilModalNormLabel, { color: '#10b981' }]}>
+                          SOIL NORMALIZATION
+                        </Text>
+                      </View>
                       <View style={styles.beforeAfterBadge}>
                         <Text style={styles.beforeAfterBadgeText}>BEFORE / AFTER</Text>
                       </View>
                     </View>
+
+                    {/* Subtitle matching website #resStage2EngineDesc */}
+                    <Text style={styles.soilModalNormDesc}>
+                      Uneven illumination &amp; shadows corrected before Munsell color matching.
+                    </Text>
 
                     {/* Image Frame with Overlays */}
                     <View style={styles.soilModalNormImageFrame}>
@@ -3510,11 +3798,11 @@ export default function HomeScreen({ navigation, route }) {
                       })}
                     </View>
 
-                    {/* Metadata Row */}
+                    {/* Metadata Row matching website exactly */}
                     <View style={styles.soilNormMetaRow}>
                       <Text style={styles.soilNormMetaTitle}>METADATA</Text>
                       <Text style={styles.soilNormMetaInfo}>
-                        CREATED: {detailNormDate}  |  DETECTED COLORS: {detailNormRegions.length}
+                        DATE: {detailNormDateTime.dateStr}  |  TIME: {detailNormDateTime.timeStr}  |  DETECTED COLORS: {Math.max(detailNormRegions.length, 1)}
                       </Text>
                     </View>
                   </View>
@@ -5207,5 +5495,325 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#475569',
     letterSpacing: 0.2,
+  },
+  soilBannerPercentageText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: 'rgba(255, 255, 255, 0.88)',
+    marginTop: 2,
+    letterSpacing: 0.2,
+  },
+  soilModalNormDesc: {
+    fontSize: 11,
+    color: '#64748b',
+    marginBottom: 8,
+    lineHeight: 15,
+  },
+
+  // Soil Pin Location & Covered Area Card
+  soilModalLocationCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    padding: 12,
+    marginBottom: 10,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  soilLocHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 8,
+  },
+  soilLocTitleText: {
+    fontSize: 10.5,
+    fontWeight: '800',
+    color: '#64748b',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  soilLocBadgesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  soilLocBadgeStatus: {
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 9999,
+  },
+  soilLocBadgePending: {
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.35)',
+  },
+  soilLocBadgeApproved: {
+    backgroundColor: 'rgba(22, 163, 74, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(22, 163, 74, 0.35)',
+  },
+  soilLocBadgeStatusText: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+  },
+  soilLocBadgeBrgy: {
+    backgroundColor: 'rgba(15, 23, 42, 0.06)',
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: 'rgba(15, 23, 42, 0.12)',
+  },
+  soilLocBadgeBrgyText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#334155',
+  },
+  soilLocBadgeCoverage: {
+    backgroundColor: 'rgba(13, 148, 136, 0.12)',
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: 'rgba(13, 148, 136, 0.25)',
+  },
+  soilLocBadgeCoverageText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#0d9488',
+  },
+  soilLocBadgeCoords: {
+    backgroundColor: 'rgba(15, 23, 42, 0.06)',
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: 'rgba(15, 23, 42, 0.12)',
+  },
+  soilLocBadgeCoordsText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#475569',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  soilMapPreviewFrame: {
+    height: 140,
+    borderRadius: 12,
+    backgroundColor: '#0c1a17',
+    borderWidth: 1,
+    borderColor: 'rgba(142, 182, 155, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  soilMapCenterMarker: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  soilMapCoordsCallout: {
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginTop: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  soilMapCoordsCalloutText: {
+    color: '#ffffff',
+    fontSize: 10.5,
+    fontWeight: '700',
+  },
+  soilMapWatermark: {
+    position: 'absolute',
+    bottom: 8,
+    right: 10,
+    color: 'rgba(255, 255, 255, 0.45)',
+    fontSize: 9.5,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+
+  // Multi-Layer Accordion Section
+  multiLayerSection: {
+    marginTop: 2,
+    marginBottom: 12,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(142, 182, 155, 0.25)',
+    borderStyle: 'dashed',
+    paddingTop: 12,
+  },
+  multiLayerHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  multiLayerSectionTitle: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#10b981',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  multiLayerToggleAllText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#0d9488',
+    textDecorationLine: 'underline',
+  },
+  layerAccordionItem: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    borderRadius: 14,
+    overflow: 'hidden',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  layerAccordionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  layerAccordionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+    minWidth: 0,
+    paddingRight: 8,
+  },
+  layerChevron: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#64748b',
+  },
+  layerAccordionTitleText: {
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: '#0f172a',
+    flexShrink: 1,
+  },
+  layerHexPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 3.5,
+    borderRadius: 9999,
+  },
+  layerHexPillText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: '800',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  layerAccordionBody: {
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+    paddingTop: 10,
+  },
+  layerBannerHero: {
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
+  layerAvatarSquare: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  layerBannerCodeCol: {
+    flex: 1,
+    minWidth: 0,
+  },
+  layerBannerCode: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  layerBannerName: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.9)',
+  },
+  layerBannerHexBadge: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  layerBannerHexBadgeText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '800',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  soilGridRow3: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 6,
+    width: '100%',
+  },
+  soilModalGridCardSmall: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    justifyContent: 'center',
+  },
+  soilModalLabelSmall: {
+    fontSize: 9.5,
+    fontWeight: '700',
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
+    marginBottom: 2,
+  },
+  soilModalValueSmall: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: '#0f172a',
+  },
+  soilModalFullCardSmall: {
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginBottom: 6,
+  },
+  soilModalDescTextSmall: {
+    fontSize: 11.5,
+    color: '#334155',
+    lineHeight: 16,
+    fontWeight: '600',
   },
 });
