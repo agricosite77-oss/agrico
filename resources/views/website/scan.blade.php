@@ -8884,22 +8884,12 @@
                 lastScanLat = null;
                 lastScanLng = null;
 
-                if (data.created_scans && Array.isArray(data.created_scans) && data.created_scans.length > 1) {
-                    const prevNewScans = document.querySelectorAll('#savedScansTbody .is-new-scan-row');
-                    prevNewScans.forEach(r => r.classList.remove('is-new-scan-row'));
-
-                    const scansToAdd = [...data.created_scans].reverse();
-                    scansToAdd.forEach(sc => {
-                        sc.image = actualScanImage;
-                        sc.before_after_image_url = data.before_after_image_url || null;
-                        sc.raw_image_url = data.raw_image_url || null;
-                        autoRecordScanToHistory(sc, null, null, sc.scan_seq || 1, sc.scan_id, true);
-                    });
-                } else {
-                    match.before_after_image_url = data.before_after_image_url || null;
-                    match.raw_image_url = data.raw_image_url || null;
-                    autoRecordScanToHistory(match, null, null, data.scan_seq, data.scan_id, false);
-                }
+                // Record exactly ONE entry in the Scan History table, keeping all detected layers in regions
+                match.image = actualScanImage;
+                match.before_after_image_url = data.before_after_image_url || null;
+                match.raw_image_url = data.raw_image_url || null;
+                match.regions = (Array.isArray(regions) && regions.length > 0) ? regions : (match.regions || []);
+                autoRecordScanToHistory(match, null, null, data.scan_seq, data.scan_id, false);
 
                 const btnSave = document.getElementById('btnSaveSoilScan');
                 if (btnSave) {
