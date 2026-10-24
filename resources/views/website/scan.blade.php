@@ -9974,7 +9974,6 @@
                 // Soil Pin Location & Covered Area Map Card (Placed AFTER Description card if single pin)
                 const modalSoilLocationCard = document.getElementById('modalSoilLocationCard');
                 const modalDescCard = document.getElementById('modalDescCard');
-                const modalMultiLayerSection = document.getElementById('modalMultiLayerSection');
                 const modalLocStatusBadge = document.getElementById('modalLocStatusBadge');
                 const modalLocBrgyBadge = document.getElementById('modalLocBrgyBadge');
                 const modalLocCoverageBadge = document.getElementById('modalLocCoverageBadge');
