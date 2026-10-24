@@ -2214,8 +2214,8 @@
         .light-mode table.ws-table tbody tr:hover td.col-action,
         body.light-mode table.ws-table tbody tr:hover td.col-sticky-action,
         body.light-mode table.ws-table tbody tr:hover td.col-action {
-            background: #f7fdf7 !important;
-            background-color: #f7fdf7 !important;
+            background: #edf9eb !important;
+            background-color: #edf9eb !important;
             background-image: none !important;
             box-shadow: none !important;
             transform: none !important;
@@ -2408,8 +2408,8 @@
         html.light-mode table.ws-table tbody tr:hover,
         .light-mode table.ws-table tbody tr:hover,
         body.light-mode table.ws-table tbody tr:hover {
-            background: #f7fdf7 !important;
-            background-color: #f7fdf7 !important;
+            background: #edf9eb !important;
+            background-color: #edf9eb !important;
             background-image: none !important;
             box-shadow: none !important;
             transform: none !important;
@@ -2419,7 +2419,7 @@
         html.light-mode table.ws-table tbody tr:hover td,
         .light-mode table.ws-table tbody tr:hover td,
         body.light-mode table.ws-table tbody tr:hover td {
-            background-color: #f7fdf7 !important;
+            background-color: #edf9eb !important;
             background-image: none !important;
             box-shadow: none !important;
             transform: none !important;
@@ -3712,6 +3712,18 @@
         .ws-table tbody tr.is-new-scan-row td {
             color: #DAF1DE !important;
         }
+        .ws-table tbody tr.is-new-scan-row td.col-sticky-action,
+        .ws-table tbody tr.is-new-scan-row td.col-action {
+            background: #113832 !important;
+            background-color: #113832 !important;
+            background-image: none !important;
+        }
+        .ws-table tbody tr.is-new-scan-row:hover td.col-sticky-action,
+        .ws-table tbody tr.is-new-scan-row:hover td.col-action {
+            background: #16433c !important;
+            background-color: #16433c !important;
+            background-image: none !important;
+        }
         .ws-table tbody tr.is-new-scan-row .col-seq {
             color: #4ade80 !important;
             font-weight: 800 !important;
@@ -3730,31 +3742,54 @@
         }
 
         /* ── SINGLE NEW SCAN ROW HIGHLIGHT (LIGHT MODE OVERRIDE) ── */
+        html.light-mode table.ws-table tbody tr.is-new-scan-row,
+        .light-mode table.ws-table tbody tr.is-new-scan-row,
+        body.light-mode table.ws-table tbody tr.is-new-scan-row,
         html.light-mode .ws-table tbody tr.is-new-scan-row {
             background: #eefbe7 !important;
+            background-color: #eefbe7 !important;
             box-shadow: inset 4px 0 0 #22c55e, 0 4px 14px rgba(34, 197, 94, 0.15) !important;
         }
+        html.light-mode table.ws-table tbody tr.is-new-scan-row td,
+        .light-mode table.ws-table tbody tr.is-new-scan-row td,
+        body.light-mode table.ws-table tbody tr.is-new-scan-row td,
         html.light-mode .ws-table tbody tr.is-new-scan-row td {
+            background: #eefbe7 !important;
+            background-color: #eefbe7 !important;
             color: #0f172a !important;
         }
-        html.light-mode .ws-table tbody tr.is-new-scan-row .col-seq {
-            color: #15803d !important;
-            font-weight: 800 !important;
+        html.light-mode table.ws-table tbody tr.is-new-scan-row td.col-sticky-action,
+        html.light-mode table.ws-table tbody tr.is-new-scan-row td.col-action,
+        .light-mode table.ws-table tbody tr.is-new-scan-row td.col-sticky-action,
+        .light-mode table.ws-table tbody tr.is-new-scan-row td.col-action,
+        body.light-mode table.ws-table tbody tr.is-new-scan-row td.col-sticky-action,
+        body.light-mode table.ws-table tbody tr.is-new-scan-row td.col-action,
+        html.light-mode .ws-table tbody tr.is-new-scan-row td.col-sticky-action,
+        html.light-mode .ws-table tbody tr.is-new-scan-row td.col-action {
+            background: #eefbe7 !important;
+            background-color: #eefbe7 !important;
+            background-image: none !important;
+            box-shadow: none !important;
         }
-        html.light-mode .ws-table tbody tr.is-new-scan-row .col-soil-name {
-            color: #0f172a !important;
-            font-weight: 800 !important;
-        }
-        html.light-mode .ws-table tbody tr.is-new-scan-row .col-soil-desc,
-        html.light-mode .ws-table tbody tr.is-new-scan-row .col-soil-code,
-        html.light-mode .ws-table tbody tr.is-new-scan-row .col-soil-hue,
-        html.light-mode .ws-table tbody tr.is-new-scan-row .col-soil-seq,
-        html.light-mode .ws-table tbody tr.is-new-scan-row .col-soil-date {
-            color: #1e293b !important;
-            font-weight: 600 !important;
-        }
-        html.light-mode .ws-table tbody tr.is-new-scan-row td {
-            color: #0f172a !important;
+        html.light-mode table.ws-table tbody tr.is-new-scan-row:hover,
+        .light-mode table.ws-table tbody tr.is-new-scan-row:hover,
+        body.light-mode table.ws-table tbody tr.is-new-scan-row:hover,
+        html.light-mode .ws-table tbody tr.is-new-scan-row:hover,
+        html.light-mode table.ws-table tbody tr.is-new-scan-row:hover td,
+        .light-mode table.ws-table tbody tr.is-new-scan-row:hover td,
+        body.light-mode table.ws-table tbody tr.is-new-scan-row:hover td,
+        html.light-mode .ws-table tbody tr.is-new-scan-row:hover td,
+        html.light-mode table.ws-table tbody tr.is-new-scan-row:hover td.col-sticky-action,
+        html.light-mode table.ws-table tbody tr.is-new-scan-row:hover td.col-action,
+        .light-mode table.ws-table tbody tr.is-new-scan-row:hover td.col-sticky-action,
+        .light-mode table.ws-table tbody tr.is-new-scan-row:hover td.col-action,
+        body.light-mode table.ws-table tbody tr.is-new-scan-row:hover td.col-sticky-action,
+        body.light-mode table.ws-table tbody tr.is-new-scan-row:hover td.col-action,
+        html.light-mode .ws-table tbody tr.is-new-scan-row:hover td.col-sticky-action,
+        html.light-mode .ws-table tbody tr.is-new-scan-row:hover td.col-action {
+            background: #e2f6d9 !important;
+            background-color: #e2f6d9 !important;
+            background-image: none !important;
         }
         html.light-mode .ws-table tbody tr.is-new-scan-row .col-seq {
             color: #15803d !important;
