@@ -183,7 +183,7 @@ function MapPinIcon({ size = 18, color = '#ffffff' }) {
 }
 
 // Helper download tray icon matching website Save Copy button
-function SaveTrayIcon({ size = 15, color = '#DAF1DE' }) {
+function SaveTrayIcon({ size = 15, color = '#ffffff' }) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{ width: 1.8, height: size * 0.42, backgroundColor: color, marginBottom: -1 }} />
@@ -215,7 +215,7 @@ function SaveTrayIcon({ size = 15, color = '#DAF1DE' }) {
 }
 
 // Helper refresh icon matching website Retake / Live Camera button
-function RefreshIcon({ size = 15, color = '#DAF1DE' }) {
+function RefreshIcon({ size = 15, color = '#334155' }) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
       <Text style={{ fontSize: size * 1.1, color, fontWeight: '800', lineHeight: size * 1.2 }}>↻</Text>
@@ -1801,8 +1801,9 @@ export default function ScanSoilScreen({ navigation }) {
                                   </View>
                                 </View>
 
-                                {/* 3-Column Grid Row 1: Color Name, Full Code, Proportion */}
-                                <View style={styles.soilGridRow3}>
+                                 {/* 2-Column Paired Grids matching website .soil-modal-grid-2 */}
+                                {/* Row 1: Color Name & Full Code */}
+                                <View style={styles.soilGridRow2}>
                                   <View style={styles.soilModalGridCardSmall}>
                                     <Text style={styles.soilModalLabelSmall}>COLOR NAME</Text>
                                     <Text style={styles.soilModalValueSmall} numberOfLines={1}>{rName}</Text>
@@ -1811,14 +1812,10 @@ export default function ScanSoilScreen({ navigation }) {
                                     <Text style={styles.soilModalLabelSmall}>FULL CODE</Text>
                                     <Text style={styles.soilModalValueSmall} numberOfLines={1}>{rCode}</Text>
                                   </View>
-                                  <View style={styles.soilModalGridCardSmall}>
-                                    <Text style={styles.soilModalLabelSmall}>PROPORTION</Text>
-                                    <Text style={styles.soilModalValueSmall}>{rPct}%</Text>
-                                  </View>
                                 </View>
 
-                                {/* 3-Column Grid Row 2: Soil Organic, Soil Type, Near-Match */}
-                                <View style={styles.soilGridRow3}>
+                                {/* Row 2: Soil Organic & Soil Type */}
+                                <View style={styles.soilGridRow2}>
                                   <View style={styles.soilModalGridCardSmall}>
                                     <Text style={styles.soilModalLabelSmall}>SOIL ORGANIC</Text>
                                     <Text style={styles.soilModalValueSmall} numberOfLines={2}>{rOrganic}</Text>
@@ -1827,7 +1824,15 @@ export default function ScanSoilScreen({ navigation }) {
                                     <Text style={styles.soilModalLabelSmall}>SOIL TYPE</Text>
                                     <Text style={styles.soilModalValueSmall} numberOfLines={2}>{rSoilType}</Text>
                                   </View>
+                                </View>
+
+                                {/* Row 3: Proportion & Near-Match */}
+                                <View style={styles.soilGridRow2}>
                                   <View style={styles.soilModalGridCardSmall}>
+                                    <Text style={styles.soilModalLabelSmall}>PROPORTION</Text>
+                                    <Text style={styles.soilModalValueSmall}>{rPct}%</Text>
+                                  </View>
+                                  <View style={[styles.soilModalGridCardSmall, { borderColor: 'rgba(16, 185, 129, 0.35)' }]}>
                                     <Text style={styles.soilModalLabelSmall}>NEAR-MATCH</Text>
                                     <Text style={[styles.soilModalValueSmall, { color: '#10b981', fontWeight: '800' }]}>{rConf}</Text>
                                   </View>
@@ -2866,16 +2871,16 @@ const styles = StyleSheet.create({
 
   // State B (Camera preview bottom card) styles
   stateBResultCard: {
-    backgroundColor: '#0B2B26',
-    borderWidth: 1,
-    borderColor: 'rgba(142, 182, 155, 0.25)',
+    backgroundColor: '#ffffff',
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
     borderRadius: 20,
     padding: 14,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
     shadowRadius: 12,
-    elevation: 8,
+    elevation: 6,
   },
   stateBHeaderRow: {
     flexDirection: 'row',
@@ -2883,7 +2888,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(142, 182, 155, 0.2)',
+    borderBottomColor: '#f1f5f9',
     marginBottom: 10,
   },
   stateBHeaderTitle: {
@@ -2962,16 +2967,16 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 38,
     borderRadius: 9999,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#f1f5f9',
     borderWidth: 1,
-    borderColor: 'rgba(142, 182, 155, 0.25)',
+    borderColor: '#e2e8f0',
     alignItems: 'center',
     justifyContent: 'center',
   },
   stateBRetakeBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#DAF1DE',
+    color: '#334155',
   },
 
   autoSaveToast: {
@@ -3060,7 +3065,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scanLoadingBadgePercent: {
-    color: '#DAF1DE',
+    color: '#22c55e',
     fontSize: 12,
     fontWeight: '900',
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
@@ -3069,12 +3074,12 @@ const styles = StyleSheet.create({
   scanLoadingProgressTrack: {
     width: 180,
     height: 5,
-    backgroundColor: 'rgba(142, 182, 155, 0.22)',
+    backgroundColor: '#e2e8f0',
     borderRadius: 9999,
     overflow: 'hidden',
     marginTop: 10,
     borderWidth: 0.5,
-    borderColor: 'rgba(142, 182, 155, 0.15)',
+    borderColor: '#cbd5e1',
   },
   scanLoadingProgressFill: {
     height: '100%',
@@ -3122,10 +3127,10 @@ const styles = StyleSheet.create({
 
   /* 6-Stage ML Soil Determination Pipeline Modal Card (matching website .pipeline-overview-card) */
   pipelineOverviewCardModal: {
-    backgroundColor: '#0c1f1b',
+    backgroundColor: '#ffffff',
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(142, 182, 155, 0.25)',
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
     padding: 14,
     marginBottom: 12,
   },
@@ -3135,24 +3140,24 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(142, 182, 155, 0.15)',
+    borderBottomColor: '#f1f5f9',
   },
   pipelineTitleIconBox: {
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
   },
   pipelineTitleCheckIcon: {
-    color: '#22c55e',
+    color: '#16a34a',
     fontSize: 11,
     fontWeight: '900',
   },
   pipelineOverviewTitleText: {
-    color: '#22c55e',
+    color: '#16a34a',
     fontSize: 11.5,
     fontWeight: '800',
     textTransform: 'uppercase',
@@ -3164,24 +3169,24 @@ const styles = StyleSheet.create({
   pipelineStageItemModal: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(22, 56, 50, 0.55)',
+    backgroundColor: '#f8fafc',
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: 'rgba(142, 182, 155, 0.12)',
+    borderColor: '#e2e8f0',
   },
   pipelineStageBadgeBox: {
-    backgroundColor: 'rgba(34, 197, 94, 0.18)',
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
     borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.35)',
+    borderColor: 'rgba(34, 197, 94, 0.3)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
     marginRight: 10,
   },
   pipelineStageBadgeText: {
-    color: '#22c55e',
+    color: '#16a34a',
     fontSize: 9.5,
     fontWeight: '900',
     letterSpacing: 0.4,
@@ -3191,13 +3196,13 @@ const styles = StyleSheet.create({
     paddingRight: 6,
   },
   pipelineStageNameText: {
-    color: '#DAF1DE',
+    color: '#0f172a',
     fontSize: 11.5,
     fontWeight: '700',
     marginBottom: 1,
   },
   pipelineStageSubText: {
-    color: '#8EB69B',
+    color: '#64748b',
     fontSize: 9.5,
     fontWeight: '500',
   },
@@ -3208,7 +3213,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   pipelineStageStatusText: {
-    color: '#22c55e',
+    color: '#16a34a',
     fontSize: 9,
     fontWeight: '800',
     letterSpacing: 0.3,
@@ -3230,14 +3235,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   cameraFallbackTitle: {
-    color: '#DAF1DE',
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: 6,
   },
   cameraFallbackSub: {
-    color: '#8EB69B',
+    color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 12.5,
     textAlign: 'center',
     lineHeight: 18,
@@ -3298,9 +3303,9 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     overflow: 'hidden',
-    backgroundColor: '#0c1a17',
+    backgroundColor: '#f8fafc',
     borderWidth: 1,
-    borderColor: 'rgba(142, 182, 155, 0.25)',
+    borderColor: '#e2e8f0',
   },
   soilNormImage: {
     width: '100%',
@@ -3312,18 +3317,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
-    backgroundColor: '#0c1a17',
+    backgroundColor: '#f1f5f9',
   },
   normHeaderBefore: {
     fontSize: 9.5,
     fontWeight: '800',
-    color: '#fbbf24',
+    color: '#d97706',
     letterSpacing: 0.4,
   },
   normHeaderAfter: {
     fontSize: 9.5,
     fontWeight: '800',
-    color: '#86efac',
+    color: '#16a34a',
     letterSpacing: 0.4,
   },
   normRoleBadge: {
@@ -3506,9 +3511,9 @@ const styles = StyleSheet.create({
   soilMapPreviewFrame: {
     height: 140,
     borderRadius: 12,
-    backgroundColor: '#0c1a17',
+    backgroundColor: '#f8fafc',
     borderWidth: 1,
-    borderColor: 'rgba(142, 182, 155, 0.25)',
+    borderColor: '#e2e8f0',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -3538,7 +3543,7 @@ const styles = StyleSheet.create({
     right: 8,
     fontSize: 9,
     fontWeight: '700',
-    color: 'rgba(142, 182, 155, 0.6)',
+    color: '#94a3b8',
     letterSpacing: 0.3,
   },
   btnPrimaryPinLocation: {
@@ -3571,7 +3576,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginBottom: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(142, 182, 155, 0.25)',
+    borderTopColor: '#e2e8f0',
     borderStyle: 'dashed',
     paddingTop: 12,
   },

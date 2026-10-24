@@ -886,9 +886,9 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
           '<span class="soil-swatch-hex-pill">' + domHex.toUpperCase() + '</span>' +
         '</div>';
 
-      // 3. METRICS ROW 1 (Color Name, Full Code, Scan Count) (Matching Screenshot 2)
+      // 3. METRICS ROW 1 (Color Name & Full Code) (2-Column Paired Grid matching website .soil-modal-grid-2)
       bodyHtml += '' +
-        '<div class="soil-modal-grid-3">' +
+        '<div class="soil-modal-grid-2">' +
           '<div class="soil-metric-card">' +
             '<div class="soil-metric-card-label">Color Name</div>' +
             '<div class="soil-metric-card-val truncate" title="' + domName + '">' + domName + '</div>' +
@@ -897,15 +897,11 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
             '<div class="soil-metric-card-label">Full Code</div>' +
             '<div class="soil-metric-card-val">' + domCode + '</div>' +
           '</div>' +
-          '<div class="soil-metric-card">' +
-            '<div class="soil-metric-card-label">Scan Count</div>' +
-            '<div class="soil-metric-card-val">' + scanCount + '</div>' +
-          '</div>' +
         '</div>';
 
-      // 4. METRICS ROW 2 (Soil Organic, Soil Type, Near-Match) (Matching Screenshot 2)
+      // 4. METRICS ROW 2 (Soil Organic & Soil Type)
       bodyHtml += '' +
-        '<div class="soil-modal-grid-3">' +
+        '<div class="soil-modal-grid-2">' +
           '<div class="soil-metric-card">' +
             '<div class="soil-metric-card-label">Soil Organic</div>' +
             '<div class="soil-metric-card-val truncate" title="' + domOrganic + '">' + domOrganic + '</div>' +
@@ -914,13 +910,22 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
             '<div class="soil-metric-card-label">Soil Type</div>' +
             '<div class="soil-metric-card-val truncate" title="' + domSoilType + '">' + domSoilType + '</div>' +
           '</div>' +
+        '</div>';
+
+      // 5. METRICS ROW 3 (Scan Count & Near-Match)
+      bodyHtml += '' +
+        '<div class="soil-modal-grid-2">' +
           '<div class="soil-metric-card">' +
+            '<div class="soil-metric-card-label">Scan Count</div>' +
+            '<div class="soil-metric-card-val">' + scanCount + '</div>' +
+          '</div>' +
+          '<div class="soil-metric-card" style="border-color: rgba(16, 185, 129, 0.3);">' +
             '<div class="soil-metric-card-label">Near-Match</div>' +
             '<div class="soil-metric-card-val" style="color: #10b981; font-weight: 800;">' + domConf + '</div>' +
           '</div>' +
         '</div>';
 
-      // 5. SCAN NOTE (Matching Screenshot 3)
+      // 6. SCAN NOTE (Matching Website)
       bodyHtml += '' +
         '<div class="soil-metric-card">' +
           '<div class="soil-metric-card-label">Scan Note</div>' +
@@ -929,7 +934,7 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
           '</div>' +
         '</div>';
 
-      // 6. DESCRIPTION (Matching Screenshot 3)
+      // 7. DESCRIPTION (Matching Website)
       bodyHtml += '' +
         '<div class="soil-metric-card">' +
           '<div class="soil-metric-card-label">Description</div>' +
@@ -938,7 +943,7 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
           '</div>' +
         '</div>';
 
-      // 7. SECONDARY DETECTED SOIL LAYERS ACCORDIONS (Matching Screenshot 3)
+      // 8. SECONDARY DETECTED SOIL LAYERS ACCORDIONS (Matching Website)
       if (isMulti) {
         bodyHtml += '' +
           '<div style="margin: 4px 0 6px; border-top: 1px dashed #cbd5e1; padding-top: 10px;">' +
@@ -984,7 +989,7 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
                   '<span class="soil-swatch-hex-pill">' + subHex.toUpperCase() + '</span>' +
                 '</div>' +
 
-                '<div class="soil-modal-grid-3">' +
+                '<div class="soil-modal-grid-2">' +
                   '<div class="soil-metric-card">' +
                     '<div class="soil-metric-card-label">Color Name</div>' +
                     '<div class="soil-metric-card-val truncate" title="' + subName + '">' + subName + '</div>' +
@@ -993,13 +998,9 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
                     '<div class="soil-metric-card-label">Full Code</div>' +
                     '<div class="soil-metric-card-val">' + subCode + '</div>' +
                   '</div>' +
-                  '<div class="soil-metric-card">' +
-                    '<div class="soil-metric-card-label">Proportion</div>' +
-                    '<div class="soil-metric-card-val">' + subPct + '%</div>' +
-                  '</div>' +
                 '</div>' +
 
-                '<div class="soil-modal-grid-3">' +
+                '<div class="soil-modal-grid-2">' +
                   '<div class="soil-metric-card">' +
                     '<div class="soil-metric-card-label">Soil Organic</div>' +
                     '<div class="soil-metric-card-val truncate">' + subOrganic + '</div>' +
@@ -1008,7 +1009,14 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
                     '<div class="soil-metric-card-label">Soil Type</div>' +
                     '<div class="soil-metric-card-val truncate" title="' + subSoilType + '">' + subSoilType + '</div>' +
                   '</div>' +
+                '</div>' +
+
+                '<div class="soil-modal-grid-2">' +
                   '<div class="soil-metric-card">' +
+                    '<div class="soil-metric-card-label">Proportion</div>' +
+                    '<div class="soil-metric-card-val">' + subPct + '%</div>' +
+                  '</div>' +
+                  '<div class="soil-metric-card" style="border-color: rgba(16, 185, 129, 0.3);">' +
                     '<div class="soil-metric-card-label">Near-Match</div>' +
                     '<div class="soil-metric-card-val" style="color: #10b981; font-weight: 800;">' + subConf + '</div>' +
                   '</div>' +
@@ -1034,7 +1042,7 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
         bodyHtml += '</div></div>';
       }
 
-      // 8. SOIL NORMALIZATION: BEFORE / AFTER CARD (Matching Screenshot 4)
+      // 9. SOIL NORMALIZATION: BEFORE / AFTER CARD (Matching Website)
       if (baImgUrl) {
         var ordinalNames = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'];
         var overlayBoxesHtml = '';
@@ -1097,7 +1105,7 @@ const buildLeafletMapHtml = (locations = [], serverBase = 'http://10.0.2.2:8080'
               '<div class="soil-metric-card-label" style="margin-bottom: 0;">SOIL NORMALIZATION</div>' +
               '<span style="font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; text-transform: uppercase; letter-spacing: 0.04em;">BEFORE / AFTER</span>' +
             '</div>' +
-            '<div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #0c1a17; border: 1px solid rgba(142, 182, 155, 0.25);">' +
+            '<div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0;">' +
               '<img src="' + baImgUrl + '" alt="Soil Before & After Normalization" style="width: 100%; height: auto; display: block; border-radius: 8px;" />' +
               '<div style="position: absolute; inset: 0; pointer-events: none;">' +
                 overlayBoxesHtml +
@@ -3565,8 +3573,9 @@ export default function HomeScreen({ navigation, route }) {
                                   </View>
                                 </View>
 
-                                {/* 3-Column Grid Row 1: Color Name, Full Code, Proportion */}
-                                <View style={styles.soilGridRow3}>
+                                 {/* 2-Column Paired Grids matching website .soil-modal-grid-2 */}
+                                {/* Row 1: Color Name & Full Code */}
+                                <View style={styles.soilGridRow2}>
                                   <View style={styles.soilModalGridCardSmall}>
                                     <Text style={styles.soilModalLabelSmall}>COLOR NAME</Text>
                                     <Text style={styles.soilModalValueSmall} numberOfLines={1}>{rName}</Text>
@@ -3575,14 +3584,10 @@ export default function HomeScreen({ navigation, route }) {
                                     <Text style={styles.soilModalLabelSmall}>FULL CODE</Text>
                                     <Text style={styles.soilModalValueSmall} numberOfLines={1}>{rCode}</Text>
                                   </View>
-                                  <View style={styles.soilModalGridCardSmall}>
-                                    <Text style={styles.soilModalLabelSmall}>PROPORTION</Text>
-                                    <Text style={styles.soilModalValueSmall}>{rPct}%</Text>
-                                  </View>
                                 </View>
 
-                                {/* 3-Column Grid Row 2: Soil Organic, Soil Type, Near-Match */}
-                                <View style={styles.soilGridRow3}>
+                                {/* Row 2: Soil Organic & Soil Type */}
+                                <View style={styles.soilGridRow2}>
                                   <View style={styles.soilModalGridCardSmall}>
                                     <Text style={styles.soilModalLabelSmall}>SOIL ORGANIC</Text>
                                     <Text style={styles.soilModalValueSmall} numberOfLines={2}>{rOrganic}</Text>
@@ -3591,7 +3596,15 @@ export default function HomeScreen({ navigation, route }) {
                                     <Text style={styles.soilModalLabelSmall}>SOIL TYPE</Text>
                                     <Text style={styles.soilModalValueSmall} numberOfLines={2}>{rSoilType}</Text>
                                   </View>
+                                </View>
+
+                                {/* Row 3: Proportion & Near-Match */}
+                                <View style={styles.soilGridRow2}>
                                   <View style={styles.soilModalGridCardSmall}>
+                                    <Text style={styles.soilModalLabelSmall}>PROPORTION</Text>
+                                    <Text style={styles.soilModalValueSmall}>{rPct}%</Text>
+                                  </View>
+                                  <View style={[styles.soilModalGridCardSmall, { borderColor: 'rgba(16, 185, 129, 0.35)' }]}>
                                     <Text style={styles.soilModalLabelSmall}>NEAR-MATCH</Text>
                                     <Text style={[styles.soilModalValueSmall, { color: '#10b981', fontWeight: '800' }]}>{rConf}</Text>
                                   </View>
@@ -4065,7 +4078,7 @@ const styles = StyleSheet.create({
   sectionHeaderSub: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#8EB69B',
+    color: '#64748b',
   },
   seeMoreHeaderBtn: {
     paddingVertical: 3,
@@ -4168,7 +4181,7 @@ const styles = StyleSheet.create({
   munsellCodeLabel: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#8EB69B',
+    color: '#64748b',
     letterSpacing: 0.5,
   },
   cardMunsellCode: {
@@ -5374,9 +5387,9 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     overflow: 'hidden',
-    backgroundColor: '#0c1a17',
+    backgroundColor: '#f8fafc',
     borderWidth: 1,
-    borderColor: 'rgba(142, 182, 155, 0.25)',
+    borderColor: '#e2e8f0',
   },
   soilNormImage: {
     width: '100%',
@@ -5388,12 +5401,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
-    backgroundColor: '#0c1a17',
+    backgroundColor: '#f1f5f9',
   },
   normHeaderBefore: {
     fontSize: 9.5,
     fontWeight: '800',
-    color: '#fbbf24',
+    color: '#d97706',
     letterSpacing: 0.4,
   },
   normHeaderAfter: {
@@ -5608,9 +5621,9 @@ const styles = StyleSheet.create({
   soilMapPreviewFrame: {
     height: 140,
     borderRadius: 12,
-    backgroundColor: '#0c1a17',
+    backgroundColor: '#f8fafc',
     borderWidth: 1,
-    borderColor: 'rgba(142, 182, 155, 0.25)',
+    borderColor: '#e2e8f0',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -5649,7 +5662,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginBottom: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(142, 182, 155, 0.25)',
+    borderTopColor: '#e2e8f0',
     borderStyle: 'dashed',
     paddingTop: 12,
   },
