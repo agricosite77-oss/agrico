@@ -176,11 +176,14 @@
     $dominantDrainage = ($dominant && !empty($dominant['soil_name'])) ? $dominant['soil_name'] : $drainageType;
     $dominantDesc = ($dominant && !empty($dominant['description'])) ? $dominant['description'] : $soilDescription;
 
+    $mappingCarbon = $mapping->timestamp
+        ? \Illuminate\Support\Carbon::parse($mapping->timestamp)
+        : ($mapping->created_at ?: ($mapping->soilScan?->scan_date ? \Illuminate\Support\Carbon::parse($mapping->soilScan->scan_date) : \Illuminate\Support\Carbon::parse('2026-09-27 13:49:00')));
+    $scanDateOnly = $mappingCarbon->format('m/d/Y');
+    $scanTimeOnly = $mappingCarbon->format('h:i A');
     $recordedDate = !empty($mapping->scan_date_formatted) && $mapping->scan_date_formatted !== '—'
         ? $mapping->scan_date_formatted
-        : ($mapping->timestamp
-            ? \Illuminate\Support\Carbon::parse($mapping->timestamp)->format('M d, Y h:i A')
-            : ($mapping->created_at?->format('M d, Y h:i A') ?: 'Sep 27, 2026 01:49 PM'));
+        : $mappingCarbon->format('M d, Y h:i A');
     $resolvedBrgy = $mapping->barangay;
     if (empty($resolvedBrgy) || $resolvedBrgy === 'Lal-lo Overall') {
         $resolvedBrgy = \App\Models\LocationMapping::resolveNearestBarangay((float) $mapping->latitude, (float) $mapping->longitude);
@@ -1131,7 +1134,7 @@
                     {{-- METADATA Line (High Contrast for Dark & Light Mode) --}}
                     <div class="soil-normalization-meta-row">
                         <div><strong class="soil-normalization-meta-title">METADATA</strong></div>
-                        <div class="soil-normalization-meta-info">CREATED: {{ $recordedDate }} &nbsp;|&nbsp; DETECTED COLORS: {{ count($renderRegions) }}</div>
+                        <div class="soil-normalization-meta-info">DATE: {{ $scanDateOnly }} &nbsp;|&nbsp; TIME: {{ $scanTimeOnly }} &nbsp;|&nbsp; DETECTED COLORS: {{ count($renderRegions) }}</div>
                     </div>
                 </div>
 

@@ -1884,6 +1884,30 @@
             const scanImgUrl = m.scan_image_url || '';
             const baImgUrl = m.before_after_image_url || '';
             const recordedDate = m.scan_date_formatted || '09/27/2026';
+            let mapDate = '09/27/2026';
+            let mapTime = '01:49 PM';
+            if (m.scan_date_formatted && m.scan_date_formatted !== '—') {
+                const parts = m.scan_date_formatted.trim().split(' ');
+                if (parts.length >= 4) {
+                    const datePart = parts.slice(0, parts.length - 2).join(' ');
+                    const timePart = parts.slice(parts.length - 2).join(' ');
+                    const dObj = new Date(datePart);
+                    if (!isNaN(dObj.getTime())) {
+                        mapDate = `${String(dObj.getMonth() + 1).padStart(2, '0')}/${String(dObj.getDate()).padStart(2, '0')}/${dObj.getFullYear()}`;
+                    } else {
+                        mapDate = datePart;
+                    }
+                    mapTime = timePart;
+                } else {
+                    mapDate = m.scan_date_formatted;
+                }
+            } else if (m.timestamp) {
+                const dObj = new Date(m.timestamp);
+                if (!isNaN(dObj.getTime())) {
+                    mapDate = `${String(dObj.getMonth() + 1).padStart(2, '0')}/${String(dObj.getDate()).padStart(2, '0')}/${dObj.getFullYear()}`;
+                    mapTime = dObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                }
+            }
             const scannedBy = m.scanned_by || 'Admin Analyst';
             const scanPlatform = m.scan_platform || 'Web';
             const rawNote = m.scan_note_text || (m.soil_scan && m.soil_scan.scan_note ? m.soil_scan.scan_note : '');
@@ -2228,7 +2252,7 @@
                     <!-- METADATA Line (High Contrast for Dark & Light Mode) -->
                     <div class="soil-normalization-meta-row">
                         <div><strong class="soil-normalization-meta-title">METADATA</strong></div>
-                        <div class="soil-normalization-meta-info">CREATED: ${recordedDate} &nbsp;|&nbsp; DETECTED COLORS: ${regions.length}</div>
+                        <div class="soil-normalization-meta-info">DATE: ${mapDate} &nbsp;|&nbsp; TIME: ${mapTime} &nbsp;|&nbsp; DETECTED COLORS: ${regions.length}</div>
                     </div>
                 </div>
             `;

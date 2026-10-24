@@ -172,9 +172,12 @@
         : ($soil?->effective_soil_type ?: ($mColor?->soil_type ?: 'Leached grayish brown'));
     $dominantDrainage = ($dominant && !empty($dominant['soil_name'])) ? $dominant['soil_name'] : $drainageType;
     $dominantDesc = ($dominant && !empty($dominant['description'])) ? $dominant['description'] : $soilDescription;
-    $recordedDate = $scan?->scan_date
-        ? \Carbon\Carbon::parse($scan->scan_date)->format('M d, Y h:i A')
-        : ($soil->created_at?->format('M d, Y h:i A') ?: 'Sep 27, 2026 01:49 PM');
+    $scanCarbon = $scan?->scan_date
+        ? \Carbon\Carbon::parse($scan->scan_date)
+        : ($soil->created_at ?: \Carbon\Carbon::parse('2026-09-27 13:49:00'));
+    $scanDateOnly = $scanCarbon->format('m/d/Y');
+    $scanTimeOnly = $scanCarbon->format('h:i A');
+    $recordedDate = $scanCarbon->format('M d, Y h:i A');
 @endphp
 
 {{-- STYLES FOR SOIL RECORD DETAILS MODAL (DARK MODE THEMED DEFAULT) --}}
@@ -1263,7 +1266,7 @@
                     {{-- METADATA Line (High Contrast for Dark & Light Mode) --}}
                     <div class="soil-normalization-meta-row">
                         <div><strong class="soil-normalization-meta-title">METADATA</strong></div>
-                        <div class="soil-normalization-meta-info">CREATED: {{ $recordedDate }} &nbsp;|&nbsp; DETECTED COLORS: {{ count($renderRegions) }}</div>
+                        <div class="soil-normalization-meta-info">DATE: {{ $scanDateOnly }} &nbsp;|&nbsp; TIME: {{ $scanTimeOnly }} &nbsp;|&nbsp; DETECTED COLORS: {{ count($renderRegions) }}</div>
                     </div>
                 </div>
 

@@ -1683,13 +1683,7 @@
             color: #15803d !important;
             border-color: #bbf7d0 !important;
         }
-        html.light-mode #resMetadataFooter {
-            border-top-color: #e2e8f0 !important;
-            color: #64748b !important;
-        }
-        html.light-mode #resMetadataFooter strong {
-            color: #0f172a !important;
-        }
+
         html.light-mode #resSoilSnippetFallback {
             background: #f1f5f9 !important;
             color: #64748b !important;
@@ -1730,10 +1724,7 @@
             color: #1e293b !important;
             font-weight: 600 !important;
         }
-        html.light-mode #modalMetadataFooter {
-            border-top-color: #e2e8f0 !important;
-            color: #64748b !important;
-        }
+
         html.light-mode #modalSoilSnippetFallback {
             background: #f1f5f9 !important;
             color: #64748b !important;
@@ -1774,38 +1765,7 @@
             color: #0f172a !important;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
         }
-        #resMetadataFooter,
-        #modalMetadataFooter {
-            border-top: 1px solid rgba(142, 182, 155, 0.25) !important;
-            color: #CBD5E1 !important;
-            font-weight: 600;
-        }
-        #resMetadataFooter strong,
-        #modalMetadataFooter strong {
-            color: #4ade80 !important;
-            font-weight: 800;
-        }
-        #resMetadataFooter span,
-        #modalMetadataFooter span {
-            color: #DAF1DE !important;
-            font-weight: 700;
-        }
-        html.light-mode #resMetadataFooter,
-        html.light-mode #modalMetadataFooter {
-            border-top-color: #e2e8f0 !important;
-            color: #475569 !important;
-            font-weight: 600 !important;
-        }
-        html.light-mode #resMetadataFooter strong,
-        html.light-mode #modalMetadataFooter strong {
-            color: #0f172a !important;
-            font-weight: 800 !important;
-        }
-        html.light-mode #resMetadataFooter span,
-        html.light-mode #modalMetadataFooter span {
-            color: #0f172a !important;
-            font-weight: 700 !important;
-        }
+
         .before-after-swatch-pill {
             display: inline-flex;
             align-items: center;
@@ -5674,6 +5634,10 @@
                             <div id="resBeforeAfterBoxes" style="position: absolute; inset: 0; pointer-events: none; z-index: 10;"></div>
                         </div>
                         <div id="resBeforeAfterSwatches" style="display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px;"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(142, 182, 155, 0.25); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;">
+                            <strong>METADATA</strong>
+                            <span id="resBeforeAfterMetaText" style="font-weight: 600; opacity: 0.8;">DETECTED COLORS: 1</span>
+                        </div>
                     </div>
 
                     {{-- Action Buttons Row: Save Copy (Left) & Pin All Detected (Right) --}}
@@ -5691,12 +5655,6 @@
                             </svg>
                             <span>Pin All</span>
                         </button>
-                    </div>
-
-                    {{-- Metadata Footer --}}
-                    <div id="resMetadataFooter" style="display: none; margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(142, 182, 155, 0.2); font-size: 11px; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 0.04em;">
-                        <div><strong>METADATA</strong></div>
-                        <div>Created: <span id="resMetaCreated">--</span> &nbsp;|&nbsp; Detected Colors: <span id="resMetaLayers">1</span></div>
                     </div>
                 </div>
 
@@ -8363,9 +8321,7 @@
                 const resScanCount = document.getElementById('resScanCount');
                 const resMultiLayerSection = document.getElementById('resMultiLayerSection');
                 const resMultiLayerItems = document.getElementById('resMultiLayerItems');
-                const resMetadataFooter = document.getElementById('resMetadataFooter');
-                const resMetaCreated = document.getElementById('resMetaCreated');
-                const resMetaLayers = document.getElementById('resMetaLayers');
+                const resBeforeAfterMetaText = document.getElementById('resBeforeAfterMetaText');
 
                 const regions = (Array.isArray(data.regions) && data.regions.length > 0)
                     ? data.regions
@@ -8910,16 +8866,15 @@
                     if (btnPinAll) btnPinAll.style.display = 'none';
                 }
 
-                // Metadata Footer (Always show on completed scan)
-                if (resMetadataFooter) {
-                    resMetadataFooter.style.display = 'flex';
+                // Update Metadata Row inside Before/After Card (Date, Time & Detected Colors)
+                const resMetaText = document.getElementById('resBeforeAfterMetaText');
+                if (resMetaText) {
                     const now = new Date();
                     const mm = String(now.getMonth() + 1).padStart(2, '0');
                     const dd = String(now.getDate()).padStart(2, '0');
                     const yyyy = now.getFullYear();
                     const timeFormatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-                    if (resMetaCreated) resMetaCreated.textContent = `${mm}/${dd}/${yyyy} ${timeFormatted}`;
-                    if (resMetaLayers) resMetaLayers.textContent = Math.max(regions.length, 1);
+                    resMetaText.textContent = `DATE: ${mm}/${dd}/${yyyy}  |  TIME: ${timeFormatted}  |  DETECTED COLORS: ${Math.max(regions.length, 1)}`;
                 }
 
                 // Store scan response data and render color space badges
@@ -9474,9 +9429,6 @@
 
                 const modalMultiLayerSection = document.getElementById('modalMultiLayerSection');
                 const modalMultiLayerItems = document.getElementById('modalMultiLayerItems');
-                const modalMetadataFooter = document.getElementById('modalMetadataFooter');
-                const modalMetaCreated = document.getElementById('modalMetaCreated');
-                const modalMetaLayers = document.getElementById('modalMetaLayers');
 
                 const regions = Array.isArray(data.regions) ? data.regions : [];
                 const isMulti = regions.length > 1;
@@ -9860,9 +9812,28 @@
                     renderStage3Swatches(modalBeforeAfterSwatches, regions, { hex: hex, munsell: code, proportion: 0.7 });
                 }
 
-                // Update Metadata Row inside Before/After Card (Remove duplicate Creation Date, display Time & Detected Colors)
+                // Update Metadata Row inside Before/After Card (Date, Time & Detected Colors)
                 const metaText = document.getElementById('modalBeforeAfterMetaText');
                 if (metaText) {
+                    let resolvedDate = data.date && data.date !== '—' ? data.date : null;
+                    if (!resolvedDate && data.scan_date) {
+                        const rawDate = data.scan_date.split(' ')[0];
+                        if (rawDate.includes('-')) {
+                            const dp = rawDate.split('-');
+                            if (dp.length === 3) {
+                                resolvedDate = `${dp[1]}/${dp[2]}/${dp[0]}`;
+                            } else {
+                                resolvedDate = rawDate;
+                            }
+                        } else {
+                            resolvedDate = rawDate;
+                        }
+                    }
+                    if (!resolvedDate) {
+                        const now = new Date();
+                        resolvedDate = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}/${now.getFullYear()}`;
+                    }
+
                     let resolvedTime = data.time && data.time !== '—' ? data.time : null;
                     if (!resolvedTime && data.scan_date && data.scan_date.includes(' ')) {
                         const parts = data.scan_date.split(' ');
@@ -9878,8 +9849,11 @@
                     if (!resolvedTime && typeof currentScanResponseData !== 'undefined' && currentScanResponseData && data === currentScanResponseData) {
                         resolvedTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
                     }
-                    const timePrefix = resolvedTime ? `TIME: ${resolvedTime}  |  ` : '';
-                    metaText.textContent = `${timePrefix}DETECTED COLORS: ${regions.length || 1}`;
+                    if (!resolvedTime) {
+                        resolvedTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                    }
+
+                    metaText.textContent = `DATE: ${resolvedDate}  |  TIME: ${resolvedTime}  |  DETECTED COLORS: ${regions.length || 1}`;
                 }
 
                 // Multi-Layer Accordion for Secondary Layers
@@ -9992,17 +9966,9 @@
                     modalMultiLayerSection.style.display = 'none';
                 }
 
-                // Single vs Multi: Date container vs Metadata footer
-                if (isMulti) {
-                    if (modalCardDateContainer) modalCardDateContainer.style.display = 'none';
-                    if (modalMetadataFooter) {
-                        modalMetadataFooter.style.display = 'flex';
-                        if (modalMetaCreated) modalMetaCreated.textContent = data.date || '—';
-                        if (modalMetaLayers) modalMetaLayers.textContent = regions.length;
-                    }
-                } else {
-                    if (modalCardDateContainer) modalCardDateContainer.style.display = 'grid';
-                    if (modalMetadataFooter) modalMetadataFooter.style.display = 'none';
+                // Single vs Multi: Date container
+                if (modalCardDateContainer) {
+                    modalCardDateContainer.style.display = 'grid';
                 }
 
                 // Soil Pin Location & Covered Area Map Card (Placed AFTER Description card if single pin)
@@ -12552,12 +12518,6 @@
                         <strong>METADATA</strong>
                         <span id="modalBeforeAfterMetaText" style="font-weight: 600; opacity: 0.8;">DETECTED COLORS: 1</span>
                     </div>
-                </div>
-
-                <!-- Metadata Footer -->
-                <div id="modalMetadataFooter" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(142, 182, 155, 0.2); font-size: 11.5px; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 0.04em;">
-                    <div>Created: <span id="modalMetaCreated" style="font-weight: 700;">--</span></div>
-                    <div>Total Layers: <span id="modalMetaLayers" style="font-weight: 700;">1</span></div>
                 </div>
 
             </div>
