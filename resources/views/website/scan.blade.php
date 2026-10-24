@@ -2792,13 +2792,15 @@
             cursor: pointer !important;
             display: block !important;
         }
-        #modalSoilLocationCard {
+        #modalSoilLocationCard,
+        #resSoilLocationCard {
             background: #ffffff !important;
             border: 1.5px solid #f1f5f9 !important;
             border-radius: 16px !important;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
         }
-        #soilRecordModal .modal-loc-badge-brgy {
+        #soilRecordModal .modal-loc-badge-brgy,
+        #resSoilLocationCard .modal-loc-badge-brgy {
             font-size: 10px !important;
             font-weight: 800 !important;
             color: #16a34a !important;
@@ -2809,7 +2811,8 @@
             text-transform: uppercase !important;
             letter-spacing: 0.02em !important;
         }
-        #soilRecordModal .modal-loc-badge-coverage {
+        #soilRecordModal .modal-loc-badge-coverage,
+        #resSoilLocationCard .modal-loc-badge-coverage {
             font-size: 10px !important;
             font-weight: 800 !important;
             color: #065f46 !important;
@@ -2819,7 +2822,8 @@
             border-radius: 6px !important;
             letter-spacing: 0.02em !important;
         }
-        #soilRecordModal .modal-loc-badge-coords {
+        #soilRecordModal .modal-loc-badge-coords,
+        #resSoilLocationCard .modal-loc-badge-coords {
             font-size: 10px !important;
             font-weight: 800 !important;
             color: #0284c7 !important;
@@ -2829,7 +2833,8 @@
             border-radius: 6px !important;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
         }
-        #soilRecordModal .modal-soil-map-wrapper {
+        #soilRecordModal .modal-soil-map-wrapper,
+        #resSoilLocationCard .modal-soil-map-wrapper {
             position: relative !important;
             width: 100% !important;
             border-radius: 12px !important;
@@ -2838,7 +2843,8 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
             background: #f8fafc !important;
         }
-        #soilRecordModal .modal-soil-map-watermark {
+        #soilRecordModal .modal-soil-map-watermark,
+        #resSoilLocationCard .modal-soil-map-watermark {
             position: absolute !important;
             bottom: 8px !important;
             right: 8px !important;
@@ -2854,29 +2860,34 @@
             border: 1px solid #e2e8f0 !important;
             pointer-events: none !important;
         }
-        #soilRecordModal #modalSoilDetailMap .leaflet-bar {
+        #soilRecordModal #modalSoilDetailMap .leaflet-bar,
+        #resSoilLocationCard #resSoilDetailMap .leaflet-bar {
             border: 1px solid #cbd5e1 !important;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
             border-radius: 8px !important;
             overflow: hidden !important;
         }
-        #soilRecordModal #modalSoilDetailMap .leaflet-bar a {
+        #soilRecordModal #modalSoilDetailMap .leaflet-bar a,
+        #resSoilLocationCard #resSoilDetailMap .leaflet-bar a {
             background-color: #ffffff !important;
             color: #334155 !important;
             border-bottom: 1px solid #e2e8f0 !important;
         }
-        #soilRecordModal #modalSoilDetailMap .leaflet-bar a:hover {
+        #soilRecordModal #modalSoilDetailMap .leaflet-bar a:hover,
+        #resSoilLocationCard #resSoilDetailMap .leaflet-bar a:hover {
             background-color: #f1f5f9 !important;
             color: #16a34a !important;
         }
-        #soilRecordModal #modalSoilDetailMap .leaflet-popup-content-wrapper {
+        #soilRecordModal #modalSoilDetailMap .leaflet-popup-content-wrapper,
+        #resSoilLocationCard #resSoilDetailMap .leaflet-popup-content-wrapper {
             background: #ffffff !important;
             color: #0f172a !important;
             border: 1px solid #e2e8f0 !important;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
             border-radius: 14px !important;
         }
-        #soilRecordModal #modalSoilDetailMap .leaflet-popup-tip {
+        #soilRecordModal #modalSoilDetailMap .leaflet-popup-tip,
+        #resSoilLocationCard #resSoilDetailMap .leaflet-popup-tip {
             background: #ffffff !important;
             border: 1px solid #e2e8f0 !important;
             box-shadow: none !important;
@@ -3035,6 +3046,7 @@
 
         /* Leaflet Controls & Popups (Dark Mode Default) */
         #modalSoilDetailMap .leaflet-bar,
+        #resSoilDetailMap .leaflet-bar,
         .admin-soil-detail-map .leaflet-bar {
             border: 1px solid rgba(142, 182, 155, 0.3) !important;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
@@ -3042,17 +3054,20 @@
             overflow: hidden !important;
         }
         #modalSoilDetailMap .leaflet-bar a,
+        #resSoilDetailMap .leaflet-bar a,
         .admin-soil-detail-map .leaflet-bar a {
             background-color: #0B2B26 !important;
             color: #DAF1DE !important;
             border-bottom: 1px solid rgba(142, 182, 155, 0.25) !important;
         }
         #modalSoilDetailMap .leaflet-bar a:hover,
+        #resSoilDetailMap .leaflet-bar a:hover,
         .admin-soil-detail-map .leaflet-bar a:hover {
             background-color: #163832 !important;
             color: #4ade80 !important;
         }
         #modalSoilDetailMap .leaflet-popup-content-wrapper,
+        #resSoilDetailMap .leaflet-popup-content-wrapper,
         .admin-soil-detail-map .leaflet-popup-content-wrapper {
             background: #0B2B26 !important;
             color: #DAF1DE !important;
@@ -3061,18 +3076,21 @@
             border-radius: 14px !important;
         }
         #modalSoilDetailMap .leaflet-popup-tip,
+        #resSoilDetailMap .leaflet-popup-tip,
         .admin-soil-detail-map .leaflet-popup-tip {
             background: #0B2B26 !important;
             border: 1px solid rgba(142, 182, 155, 0.35) !important;
             box-shadow: none !important;
         }
         #modalSoilDetailMap .leaflet-popup-close-button,
+        #resSoilDetailMap .leaflet-popup-close-button,
         .admin-soil-detail-map .leaflet-popup-close-button {
             color: #8EB69B !important;
             font-size: 16px !important;
             padding: 6px 8px 0 0 !important;
         }
         #modalSoilDetailMap .leaflet-popup-close-button:hover,
+        #resSoilDetailMap .leaflet-popup-close-button:hover,
         .admin-soil-detail-map .leaflet-popup-close-button:hover {
             color: #4ade80 !important;
         }
@@ -3215,7 +3233,8 @@
             background: #e2e8f0 !important;
             color: #0f172a !important;
         }
-        html.light-mode #modalSoilLocationCard {
+        html.light-mode #modalSoilLocationCard,
+        html.light-mode #resSoilLocationCard {
             background: #ffffff !important;
             border: 1.5px solid #f1f5f9 !important;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
@@ -3246,22 +3265,26 @@
             border: 1px solid #e2e8f0 !important;
         }
         html.light-mode #modalSoilDetailMap .leaflet-bar,
+        html.light-mode #resSoilDetailMap .leaflet-bar,
         html.light-mode .admin-soil-detail-map .leaflet-bar {
             border: 1px solid #cbd5e1 !important;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
         }
         html.light-mode #modalSoilDetailMap .leaflet-bar a,
+        html.light-mode #resSoilDetailMap .leaflet-bar a,
         html.light-mode .admin-soil-detail-map .leaflet-bar a {
             background-color: #ffffff !important;
             color: #334155 !important;
             border-bottom: 1px solid #e2e8f0 !important;
         }
         html.light-mode #modalSoilDetailMap .leaflet-bar a:hover,
+        html.light-mode #resSoilDetailMap .leaflet-bar a:hover,
         html.light-mode .admin-soil-detail-map .leaflet-bar a:hover {
             background-color: #f1f5f9 !important;
             color: #16a34a !important;
         }
         html.light-mode #modalSoilDetailMap .leaflet-popup-content-wrapper,
+        html.light-mode #resSoilDetailMap .leaflet-popup-content-wrapper,
         html.light-mode .admin-soil-detail-map .leaflet-popup-content-wrapper {
             background: #ffffff !important;
             color: #0f172a !important;
@@ -3269,15 +3292,18 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
         }
         html.light-mode #modalSoilDetailMap .leaflet-popup-tip,
+        html.light-mode #resSoilDetailMap .leaflet-popup-tip,
         html.light-mode .admin-soil-detail-map .leaflet-popup-tip {
             background: #ffffff !important;
             border: 1px solid #e2e8f0 !important;
         }
         html.light-mode #modalSoilDetailMap .leaflet-popup-close-button,
+        html.light-mode #resSoilDetailMap .leaflet-popup-close-button,
         html.light-mode .admin-soil-detail-map .leaflet-popup-close-button {
             color: #64748b !important;
         }
         html.light-mode #modalSoilDetailMap .leaflet-popup-close-button:hover,
+        html.light-mode #resSoilDetailMap .leaflet-popup-close-button:hover,
         html.light-mode .admin-soil-detail-map .leaflet-popup-close-button:hover {
             color: #0f172a !important;
         }
@@ -5564,7 +5590,36 @@
                         </div>
                     </div>
 
-                    {{-- Primary Soil Result: Pin Location Button (Placed directly after Description - Pins active selected soil) --}}
+                    {{-- Soil Pin Location & Covered Area Card (Live Result - Placed AFTER Description Card when pinned) --}}
+                    <div id="resSoilLocationCard" class="soil-modal-grid-card" style="margin-bottom: 12px; padding: 13px 16px 15px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                            <div class="soil-modal-label" style="font-size: 11px; font-weight: 700; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.03em;">
+                                SOIL PIN LOCATION &amp; COVERED AREA
+                            </div>
+                            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                                <span id="resLocStatusBadge" class="modal-loc-badge-status" style="display: none; padding: 2px 8px; border-radius: 9999px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.03em;">
+                                    --
+                                </span>
+                                <span id="resLocBrgyBadge" class="modal-loc-badge-brgy">
+                                    --
+                                </span>
+                                <span id="resLocCoverageBadge" class="modal-loc-badge-coverage" style="display: none;">
+                                    --
+                                </span>
+                                <span id="resLocCoordsBadge" class="modal-loc-badge-coords">
+                                    --
+                                </span>
+                            </div>
+                        </div>
+                        <div class="modal-soil-map-wrapper">
+                            <div id="resSoilDetailMap" style="height: 220px; width: 100%;"></div>
+                            <div class="modal-soil-map-watermark">
+                                AgriCo Soil GPS Preview
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Primary Soil Result: Pin Location Button (Placed directly after Description / Map - Pins active selected soil) --}}
                     <div id="resPrimaryPinLocationWrapper" style="margin-bottom: 12px;">
                         <button type="button" id="btnPinLocationScan" class="btn-res-action btn-res-pin-location" onclick="openPinLocationModal(null, false)" style="width: 100%; justify-content: center;" title="Pin Soil Specimen to Map">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -8614,6 +8669,23 @@
                         else it.classList.remove('is-selected');
                     });
 
+                    // Update live map card if pinned
+                    const activePinLat = r.lat ? parseFloat(r.lat) : (window.currentScanResult && window.currentScanResult.lat ? parseFloat(window.currentScanResult.lat) : null);
+                    const activePinLng = r.lng ? parseFloat(r.lng) : (window.currentScanResult && window.currentScanResult.lng ? parseFloat(window.currentScanResult.lng) : null);
+                    if (activePinLat && activePinLng && !isNaN(activePinLat) && !isNaN(activePinLng)) {
+                        if (typeof window.renderResultSoilMap === 'function') {
+                            window.renderResultSoilMap(
+                                activePinLat,
+                                activePinLng,
+                                r.barangay || (window.currentScanResult ? window.currentScanResult.barangay : null),
+                                r.coverage || (window.currentScanResult ? window.currentScanResult.coverage : null),
+                                r.status || (window.currentScanResult ? window.currentScanResult.status : 'Pending'),
+                                rLabel,
+                                rCode
+                            );
+                        }
+                    }
+
                     // Close dropdown menu
                     const menu = document.getElementById('resLayerDropdownMenu');
                     const chevron = document.getElementById('resDominantChevron');
@@ -8924,6 +8996,31 @@
                 lastScanLat = null;
                 lastScanLng = null;
 
+                // Render or hide the live result pin map preview (Placed after Description card)
+                const resPinLat = data.lat ? parseFloat(data.lat) : (data.location ? parseFloat(data.location.latitude) : null);
+                const resPinLng = data.lng ? parseFloat(data.lng) : (data.location ? parseFloat(data.location.longitude) : null);
+                if (resPinLat && resPinLng && !isNaN(resPinLat) && !isNaN(resPinLng)) {
+                    if (typeof window.renderResultSoilMap === 'function') {
+                        window.renderResultSoilMap(
+                            resPinLat,
+                            resPinLng,
+                            data.barangay || (data.location ? data.location.barangay : null),
+                            data.coverage || (data.location ? data.location.coverage_area : null),
+                            data.status || (data.location ? data.location.status : 'Pending'),
+                            match.color_name,
+                            match.code
+                        );
+                    }
+                } else {
+                    const resSoilLocationCard = document.getElementById('resSoilLocationCard');
+                    if (resSoilLocationCard) resSoilLocationCard.style.display = 'none';
+                    if (resSoilDetailMapInstance) {
+                        try { resSoilDetailMapInstance.remove(); } catch(e) {}
+                        resSoilDetailMapInstance = null;
+                        window.resSoilDetailMapInstance = null;
+                    }
+                }
+
                 // Record exactly ONE entry in the Scan History table, keeping all detected layers in regions
                 match.image = actualScanImage;
                 match.before_after_image_url = data.before_after_image_url || null;
@@ -9185,6 +9282,166 @@
 
         let currentModalScanData = null;
         let modalSoilDetailMapInstance = null;
+        let resSoilDetailMapInstance = null;
+        window.resSoilDetailMapInstance = null;
+
+        window.renderResultSoilMap = function(lat, lng, barangay, coverage, status, soilName, munsellCode) {
+            const resSoilLocationCard = document.getElementById('resSoilLocationCard');
+            const resDescCard = document.getElementById('resDescCard');
+            const resLocStatusBadge = document.getElementById('resLocStatusBadge');
+            const resLocBrgyBadge = document.getElementById('resLocBrgyBadge');
+            const resLocCoverageBadge = document.getElementById('resLocCoverageBadge');
+            const resLocCoordsBadge = document.getElementById('resLocCoordsBadge');
+
+            const sLat = lat ? parseFloat(lat) : null;
+            const sLng = lng ? parseFloat(lng) : null;
+
+            if (!resSoilLocationCard || !sLat || !sLng || isNaN(sLat) || isNaN(sLng)) {
+                if (resSoilLocationCard) resSoilLocationCard.style.display = 'none';
+                if (resSoilDetailMapInstance) {
+                    try { resSoilDetailMapInstance.remove(); } catch(e) {}
+                    resSoilDetailMapInstance = null;
+                    window.resSoilDetailMapInstance = null;
+                }
+                return;
+            }
+
+            // Ensure map card is placed immediately AFTER the Description card
+            if (resDescCard && resSoilLocationCard) {
+                resDescCard.insertAdjacentElement('afterend', resSoilLocationCard);
+            }
+
+            resSoilLocationCard.style.display = 'block';
+
+            const pinMeta = typeof window.getAgricoPinStatusMeta === 'function'
+                ? window.getAgricoPinStatusMeta(status)
+                : {
+                    badgeText: (status && String(status).toLowerCase() === 'active') ? 'VERIFIED (PIN VISIBLE)' : 'PENDING APPROVAL',
+                    textColor: '#15803d',
+                    darkTextColor: '#4ade80',
+                    bgColor: '#dcfce7',
+                    darkBgColor: 'rgba(34, 197, 94, 0.15)',
+                    borderColor: '#bbf7d0',
+                    darkBorderColor: 'rgba(34, 197, 94, 0.3)',
+                    polyBorderColor: '#16a34a',
+                    polyFillColor: '#22c55e',
+                    isApproved: (status && (String(status).toLowerCase() === 'active' || String(status).toLowerCase() === 'approved' || String(status).toLowerCase() === 'verified')),
+                    isRejected: (status && (String(status).toLowerCase() === 'rejected' || String(status).toLowerCase() === 'inactive' || String(status).toLowerCase() === 'disapproved'))
+                };
+
+            if (resLocStatusBadge) {
+                const isLightMode = document.documentElement.classList.contains('light-mode');
+                resLocStatusBadge.textContent = pinMeta.badgeText;
+                resLocStatusBadge.style.display = 'inline-block';
+                resLocStatusBadge.style.color = isLightMode ? pinMeta.textColor : pinMeta.darkTextColor;
+                resLocStatusBadge.style.backgroundColor = isLightMode ? pinMeta.bgColor : pinMeta.darkBgColor;
+                resLocStatusBadge.style.border = `1px solid ${isLightMode ? pinMeta.borderColor : pinMeta.darkBorderColor}`;
+            }
+
+            if (resLocBrgyBadge) resLocBrgyBadge.textContent = barangay || 'Lal-lo Overall';
+            if (resLocCoordsBadge) resLocCoordsBadge.textContent = `${sLat.toFixed(4)}, ${sLng.toFixed(4)}`;
+            if (resLocCoverageBadge) {
+                if (coverage) {
+                    resLocCoverageBadge.textContent = coverage;
+                    resLocCoverageBadge.style.display = 'inline-block';
+                } else {
+                    resLocCoverageBadge.style.display = 'none';
+                }
+            }
+
+            setTimeout(() => {
+                const mapEl = document.getElementById('resSoilDetailMap');
+                if (!mapEl || typeof L === 'undefined') return;
+
+                if (resSoilDetailMapInstance) {
+                    try {
+                        resSoilDetailMapInstance.remove();
+                    } catch(e) {}
+                    resSoilDetailMapInstance = null;
+                }
+
+                resSoilDetailMapInstance = L.map(mapEl, {
+                    zoomControl: true,
+                    attributionControl: false
+                }).setView([sLat, sLng], 15);
+                window.resSoilDetailMapInstance = resSoilDetailMapInstance;
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19
+                }).addTo(resSoilDetailMapInstance);
+
+                const isApproved = pinMeta.isApproved;
+
+                const pinIcon = typeof window.createSoilPinIcon === 'function'
+                    ? window.createSoilPinIcon(status)
+                    : L.icon({
+                        iconUrl: isApproved ? "{{ asset('images/agrico-map-pin.png') }}" : "{{ asset('images/agrico-map-pin-gray.png') }}",
+                        iconSize: [38, 56],
+                        iconAnchor: [19, 56],
+                        popupAnchor: [0, -50]
+                    });
+
+                const marker = L.marker([sLat, sLng], { icon: pinIcon }).addTo(resSoilDetailMapInstance);
+
+                const isLight = document.documentElement.classList.contains('light-mode');
+                const popupBrgyColor = isLight 
+                    ? (pinMeta.isApproved ? '#16a34a' : (pinMeta.isRejected ? '#dc2626' : '#d97706')) 
+                    : (pinMeta.isApproved ? '#4ade80' : (pinMeta.isRejected ? '#f87171' : '#fbbf24'));
+
+                const popupHtml = `
+                    <div style='font-family:inherit; min-width:170px; padding:3px;' class='soil-map-popup-inner'>
+                        <div class='soil-map-popup-brgy' style='font-size:11px; font-weight:800; color:${popupBrgyColor}; text-transform:uppercase;'>${barangay || 'Lal-lo Overall'}</div>
+                        <strong class='soil-map-popup-title' style='font-size:13.5px; color:${isLight ? '#0f172a' : '#DAF1DE'}; display:block; margin:2px 0;'>${soilName || 'Soil Specimen'}</strong>
+                        <div class='soil-map-popup-munsell' style='font-size:11px; color:${isLight ? '#64748b' : '#8EB69B'}; font-family:monospace; margin-bottom:2px;'>Munsell: <strong style='color:${isLight ? '#0f172a' : '#DAF1DE'};'>${munsellCode || ''}</strong></div>
+                        <div class='soil-map-popup-coords' style='font-size:10.5px; color:${isLight ? '#0284c7' : '#38bdf8'}; font-family:monospace;'>${sLat.toFixed(5)}, ${sLng.toFixed(5)}</div>
+                    </div>
+                `;
+                marker.bindPopup(popupHtml, { closeButton: false }).openPopup();
+
+                const covStr = coverage || '500 m²';
+                let boxW = 85, boxH = 85, cornerR = 20;
+                if (covStr.includes('50 m')) { boxW = 35; boxH = 35; cornerR = 8; }
+                else if (covStr.includes('250 m')) { boxW = 55; boxH = 55; cornerR = 13; }
+                else if (covStr.includes('500 m')) { boxW = 75; boxH = 75; cornerR = 18; }
+                else if (covStr.includes('1,000') || covStr.includes('1000')) { boxW = 100; boxH = 100; cornerR = 24; }
+                else if (covStr.includes('2,500') || covStr.includes('2500')) { boxW = 130; boxH = 130; cornerR = 30; }
+                else if (covStr.includes('5,000') || covStr.includes('5000')) { boxW = 160; boxH = 160; cornerR = 36; }
+                else if (covStr.toLowerCase().includes('hectare')) { boxW = 190; boxH = 190; cornerR = 42; }
+
+                const roundedCoords = typeof getRoundedBoxCoords === 'function' 
+                    ? getRoundedBoxCoords(sLat, sLng, boxW, boxH, cornerR)
+                    : [];
+
+                if (roundedCoords.length > 0) {
+                    const polyBorderColor = isLight ? (pinMeta.polyBorderColor || '#16a34a') : (pinMeta.isApproved ? '#4ade80' : '#8EB69B');
+                    const polyFillColor   = isLight ? (pinMeta.polyFillColor || '#22c55e') : (pinMeta.isApproved ? '#22c55e' : '#163832');
+                    const poly = L.polygon(roundedCoords, {
+                        color: polyBorderColor,
+                        fillColor: polyFillColor,
+                        fillOpacity: isLight ? 0.22 : 0.28,
+                        weight: 2.5
+                    }).addTo(resSoilDetailMapInstance);
+
+                    if (covStr) {
+                        const areaPrefix = pinMeta.isApproved ? 'Covered Area' : (pinMeta.isRejected ? 'Unapproved Covered Area' : 'Pending Covered Area');
+                        poly.bindTooltip(`${areaPrefix} (Sakop): ${covStr}`, { sticky: true });
+                    }
+                }
+
+                if (window.LalloBoundary) {
+                    window.LalloBoundary.render(resSoilDetailMapInstance, {
+                        showTooltips: true,
+                        bringMarkersToFront: [marker]
+                    }).catch(() => {});
+                }
+
+                setTimeout(() => { if (resSoilDetailMapInstance) resSoilDetailMapInstance.invalidateSize(); }, 150);
+                setTimeout(() => { if (resSoilDetailMapInstance) resSoilDetailMapInstance.invalidateSize(); }, 400);
+                if (typeof syncScannerCardHeights === 'function') {
+                    syncScannerCardHeights();
+                }
+            }, 80);
+        };
 
         function viewScanDetails(data) {
             if (typeof data === 'string') {
@@ -9748,8 +10005,10 @@
                     if (modalMetadataFooter) modalMetadataFooter.style.display = 'none';
                 }
 
-                // Soil Pin Location & Covered Area Map Card (Placed BEFORE Soil Normalization)
+                // Soil Pin Location & Covered Area Map Card (Placed AFTER Description card if single pin)
                 const modalSoilLocationCard = document.getElementById('modalSoilLocationCard');
+                const modalDescCard = document.getElementById('modalDescCard');
+                const modalMultiLayerSection = document.getElementById('modalMultiLayerSection');
                 const modalLocStatusBadge = document.getElementById('modalLocStatusBadge');
                 const modalLocBrgyBadge = document.getElementById('modalLocBrgyBadge');
                 const modalLocCoverageBadge = document.getElementById('modalLocCoverageBadge');
@@ -9757,6 +10016,18 @@
 
                 const scanLat = data.lat ? parseFloat(data.lat) : null;
                 const scanLng = data.lng ? parseFloat(data.lng) : null;
+
+                const pinCount = (data.pin_count !== undefined && data.pin_count !== null)
+                    ? parseInt(data.pin_count, 10)
+                    : (scanLat && scanLng ? 1 : 0);
+
+                if (modalSoilLocationCard && modalDescCard) {
+                    if (pinCount <= 1) {
+                        modalDescCard.insertAdjacentElement('afterend', modalSoilLocationCard);
+                    } else if (modalMultiLayerSection) {
+                        modalMultiLayerSection.insertAdjacentElement('afterend', modalSoilLocationCard);
+                    }
+                }
 
                 if (modalSoilLocationCard && scanLat && scanLng && !isNaN(scanLat) && !isNaN(scanLng)) {
                     modalSoilLocationCard.style.display = 'block';
@@ -11230,6 +11501,29 @@
                         lastScanMatch.lng = data.location.longitude;
                         lastScanMatch.barangay = data.location.barangay;
                         lastScanMatch.coverage = currentPinCoverageLabel;
+                        lastScanMatch.status = data.location.status || 'Pending';
+                    }
+                    if (window.currentScanResult) {
+                        window.currentScanResult.lat = data.location?.latitude || currentPinLat;
+                        window.currentScanResult.lng = data.location?.longitude || currentPinLng;
+                        window.currentScanResult.barangay = data.location?.barangay || currentPinBarangay;
+                        window.currentScanResult.coverage = currentPinCoverageLabel;
+                        window.currentScanResult.status = data.location?.status || 'Pending';
+                    }
+                    // Render Map Preview immediately after the Description Card in live result view
+                    if (typeof window.renderResultSoilMap === 'function') {
+                        const targetSoil = currentPinTargetSoil || (window.currentActiveScanRegions && window.currentActiveScanRegions[0]) || lastScanMatch;
+                        const sName = targetSoil?.label || targetSoil?.color_name || targetSoil?.name || document.getElementById('resName')?.textContent || 'Soil Specimen';
+                        const mCode = targetSoil?.munsell || targetSoil?.munsell_code || targetSoil?.code || document.getElementById('resFullCode')?.textContent || '';
+                        window.renderResultSoilMap(
+                            data.location?.latitude || currentPinLat,
+                            data.location?.longitude || currentPinLng,
+                            data.location?.barangay || currentPinBarangay,
+                            currentPinCoverageLabel,
+                            data.location?.status || 'Pending',
+                            sName,
+                            mCode
+                        );
                     }
                     if (!window.currentScanPinnedIndices) window.currentScanPinnedIndices = [];
                     if (data.pinned_indices && Array.isArray(data.pinned_indices)) {
@@ -12198,12 +12492,7 @@
                     </div>
                 </div>
 
-                <!-- Multi-Layer Accordion Section (Secondary & Tertiary Layers) -->
-                <div id="modalMultiLayerSection" style="display: none; margin-bottom: 12px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
-                    <div id="modalMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
-                </div>
-
-                <!-- Soil Pin Location & Covered Area Card (Modal - Placed BEFORE Soil Normalization) -->
+                <!-- Soil Pin Location & Covered Area Card (Modal - Placed AFTER Description Card) -->
                 <div id="modalSoilLocationCard" class="soil-modal-grid-card" style="margin-bottom: 12px; padding: 13px 16px 15px; overflow: hidden; max-width: 100%; box-sizing: border-box; display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
                         <div class="soil-modal-label" style="font-size: 11px; font-weight: 700; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.03em;">
@@ -12230,6 +12519,11 @@
                             AgriCo Soil GPS Preview
                         </div>
                     </div>
+                </div>
+
+                <!-- Multi-Layer Accordion Section (Secondary & Tertiary Layers) -->
+                <div id="modalMultiLayerSection" style="display: none; margin-bottom: 12px; border-top: 1px dashed rgba(142, 182, 155, 0.25); padding-top: 12px;">
+                    <div id="modalMultiLayerItems" style="display: flex; flex-direction: column; gap: 8px;"></div>
                 </div>
 
                 <!-- Soil Normalization: Before & After Card (Modal - Placed AFTER the last soil layer result) -->

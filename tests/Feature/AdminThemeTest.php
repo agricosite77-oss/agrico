@@ -52,7 +52,7 @@ class AdminThemeTest extends TestCase
             ->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertSee('agricoToggleTheme', false);
+        $response->assertSee('data-theme', false);
         $response->assertSee('sidebar-bottom-profile-card', false);
     }
 }

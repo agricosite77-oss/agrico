@@ -950,6 +950,41 @@
                     </div>
                 </div>
 
+                {{-- SOIL PIN LOCATION & COVERED AREA MAP (AFTER DESCRIPTION CARD) --}}
+                @if(!empty($location['lat']) && !empty($location['lng']))
+                    <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
+                        <div class="soil-pin-header-row">
+                            <div class="soil-metric-card-label" style="margin-bottom: 0;">
+                                SOIL PIN LOCATION &amp; COVERED AREA
+                            </div>
+                            <div class="soil-pin-badges-group">
+                                <span class="modal-loc-badge-brgy">
+                                    {{ $location['barangay'] }}
+                                </span>
+                                @if(!empty($coverage))
+                                    <span class="modal-loc-badge-coverage">
+                                        {{ $coverage }}
+                                    </span>
+                                @endif
+                                <span class="modal-loc-badge-coords">
+                                    {{ number_format($location['lat'], 4) }}, {{ number_format($location['lng'], 4) }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div
+                            x-data
+                            x-init="$nextTick(() => { window.renderAgricoSoilDetailMap('admin-soil-detail-map-{{ $scan?->soil_scan_id ?? $soil?->soil_id }}', {{ $location['lat'] }}, {{ $location['lng'] }}, @js($location['barangay'] ?? ''), @js($soilName ?? 'Soil Specimen'), @js($fCode ?? ''), @js($coverage ?? ''), @js($location['status'] ?? 'Active')) })"
+                            class="modal-soil-map-wrapper"
+                        >
+                            <div id="admin-soil-detail-map-{{ $scan?->soil_scan_id ?? $soil?->soil_id }}" class="admin-soil-detail-map" style="height: 220px; width: 100%; background: #0c1a17;"></div>
+                            <div class="modal-soil-map-watermark">
+                                AgriCo Soil GPS Preview
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
             @else
                 {{-- 4. MULTI-LAYER DETECTED: SCAN NOTE CARD --}}
                 <div class="soil-metric-card" style="margin-bottom: 10px;">
@@ -970,6 +1005,41 @@
                         {{ $dominantDesc }}
                     </div>
                 </div>
+
+                {{-- SOIL PIN LOCATION & COVERED AREA MAP (AFTER DESCRIPTION CARD - BEFORE SECONDARY LAYERS) --}}
+                @if(!empty($location['lat']) && !empty($location['lng']))
+                    <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
+                        <div class="soil-pin-header-row">
+                            <div class="soil-metric-card-label" style="margin-bottom: 0;">
+                                SOIL PIN LOCATION &amp; COVERED AREA
+                            </div>
+                            <div class="soil-pin-badges-group">
+                                <span class="modal-loc-badge-brgy">
+                                    {{ $location['barangay'] }}
+                                </span>
+                                @if(!empty($coverage))
+                                    <span class="modal-loc-badge-coverage">
+                                        {{ $coverage }}
+                                    </span>
+                                @endif
+                                <span class="modal-loc-badge-coords">
+                                    {{ number_format($location['lat'], 4) }}, {{ number_format($location['lng'], 4) }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div
+                            x-data
+                            x-init="$nextTick(() => { window.renderAgricoSoilDetailMap('admin-soil-detail-map-{{ $scan?->soil_scan_id ?? $soil?->soil_id }}', {{ $location['lat'] }}, {{ $location['lng'] }}, @js($location['barangay'] ?? ''), @js($soilName ?? 'Soil Specimen'), @js($fCode ?? ''), @js($coverage ?? ''), @js($location['status'] ?? 'Active')) })"
+                            class="modal-soil-map-wrapper"
+                        >
+                            <div id="admin-soil-detail-map-{{ $scan?->soil_scan_id ?? $soil?->soil_id }}" class="admin-soil-detail-map" style="height: 220px; width: 100%; background: #0c1a17;"></div>
+                            <div class="modal-soil-map-watermark">
+                                AgriCo Soil GPS Preview
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
 
                 {{-- 6. MULTI-LAYER DETECTED ACCORDION (Secondary Layers) --}}
@@ -1102,40 +1172,6 @@
 
             @endif
 
-            {{-- SOIL PIN LOCATION & COVERED AREA MAP (BEFORE NORMALIZATION) --}}
-            @if(!empty($location['lat']) && !empty($location['lng']))
-                <div class="soil-metric-card" style="margin-bottom: 12px; padding: 13px 16px 15px;">
-                    <div class="soil-pin-header-row">
-                        <div class="soil-metric-card-label" style="margin-bottom: 0;">
-                            SOIL PIN LOCATION &amp; COVERED AREA
-                        </div>
-                        <div class="soil-pin-badges-group">
-                            <span class="modal-loc-badge-brgy">
-                                {{ $location['barangay'] }}
-                            </span>
-                            @if(!empty($coverage))
-                                <span class="modal-loc-badge-coverage">
-                                    {{ $coverage }}
-                                </span>
-                            @endif
-                            <span class="modal-loc-badge-coords">
-                                {{ number_format($location['lat'], 4) }}, {{ number_format($location['lng'], 4) }}
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div
-                        x-data
-                        x-init="$nextTick(() => { window.renderAgricoSoilDetailMap('admin-soil-detail-map-{{ $scan?->soil_scan_id ?? $soil?->soil_id }}', {{ $location['lat'] }}, {{ $location['lng'] }}, @js($location['barangay'] ?? ''), @js($soilName ?? 'Soil Specimen'), @js($fCode ?? ''), @js($coverage ?? ''), @js($location['status'] ?? 'Active')) })"
-                        class="modal-soil-map-wrapper"
-                    >
-                        <div id="admin-soil-detail-map-{{ $scan?->soil_scan_id ?? $soil?->soil_id }}" class="admin-soil-detail-map" style="height: 220px; width: 100%; background: #0c1a17;"></div>
-                        <div class="modal-soil-map-watermark">
-                            AgriCo Soil GPS Preview
-                        </div>
-                    </div>
-                </div>
-            @endif
 
             {{-- 7. SOIL NORMALIZATION: BEFORE / AFTER CARD --}}
             {{-- 7. SOIL NORMALIZATION: BEFORE / AFTER CARD --}}

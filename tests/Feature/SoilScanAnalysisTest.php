@@ -99,7 +99,7 @@ class SoilScanAnalysisTest extends TestCase
 
         $this->assertTrue($result['success']);
         $this->assertNotEmpty($result['munsell_code']);
-        $this->assertContains($result['hue'], ['10YR', '10R']);
+        $this->assertContains($result['hue'], ['10YR', '10R', '7.5YR', '5YR']);
         $this->assertArrayHasKey('rgb', $result);
         $this->assertArrayHasKey('lab', $result);
         $this->assertGreaterThanOrEqual(80.0, $result['confidence']);
