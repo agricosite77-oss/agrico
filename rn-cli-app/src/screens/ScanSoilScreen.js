@@ -247,41 +247,63 @@ function SunLightingIcon({ size = 13, color = '#10b981' }) {
 // Helper: Normalize ROI bounding box for crop avatar & before/after card
 const normalizeBox = (r) => {
   if (!r) return { left: 25, top: 25, width: 50, height: 50, raw_x: 0.25, raw_y: 0.25, raw_w: 0.5, raw_h: 0.5 };
-  let box = r.box || r.bounding_box || null;
-  if (!box && (r.x !== undefined && r.y !== undefined && r.w !== undefined && r.h !== undefined)) {
-    box = { x: r.x, y: r.y, w: r.w, h: r.h };
+  let box = null;
+  if (r.box && typeof r.box === 'object') box = r.box;
+  else if (r.bounding_box && typeof r.bounding_box === 'object') box = r.bounding_box;
+  else if (typeof r.box === 'string') {
+    try { box = JSON.parse(r.box); } catch(e) {}
   }
-  if (!box && (r.norm_x !== undefined && r.norm_y !== undefined && r.norm_w !== undefined && r.norm_h !== undefined)) {
-    box = { x: r.norm_x, y: r.norm_y, w: r.norm_w, h: r.norm_h };
+  if (!box && typeof r.bounding_box === 'string') {
+    try { box = JSON.parse(r.bounding_box); } catch(e) {}
   }
-  if (typeof box === 'string') {
-    try { box = JSON.parse(box); } catch(e) { box = null; }
+  if (!box && (r.norm_x !== undefined || r.x !== undefined)) {
+    box = r;
   }
   if (!box) {
     return { left: 25, top: 25, width: 50, height: 50, raw_x: 0.25, raw_y: 0.25, raw_w: 0.5, raw_h: 0.5 };
   }
-  let bx = parseFloat(box.norm_x !== undefined ? box.norm_x : (box.x !== undefined ? box.x : 0.25));
-  let by = parseFloat(box.norm_y !== undefined ? box.norm_y : (box.y !== undefined ? box.y : 0.25));
-  let bw = parseFloat(box.norm_w !== undefined ? box.norm_w : (box.w !== undefined ? box.w : 0.5));
-  let bh = parseFloat(box.norm_h !== undefined ? box.norm_h : (box.h !== undefined ? box.h : 0.5));
 
-  if (bx > 1.0 || by > 1.0 || bw > 1.0 || bh > 1.0) {
-    bx = bx / 400; by = by / 400; bw = bw / 400; bh = bh / 400;
-  }
-  bx = Math.max(0.02, Math.min(0.88, bx));
-  by = Math.max(0.02, Math.min(0.88, by));
-  bw = Math.max(0.06, Math.min(0.96 - bx, bw));
-  bh = Math.max(0.06, Math.min(0.96 - by, bh));
+  let bx = box.norm_x !== undefined ? box.norm_x : (box.x !== undefined ? box.x : 0.25);
+  let by = box.norm_y !== undefined ? box.norm_y : (box.y !== undefined ? box.y : 0.25);
+  let bw = box.norm_w !== undefined ? box.norm_w : (box.w !== undefined ? box.w : (box.width !== undefined ? box.width : 0.5));
+  let bh = box.norm_h !== undefined ? box.norm_h : (box.h !== undefined ? box.h : (box.height !== undefined ? box.height : 0.5));
+
+  let numX = parseFloat(bx);
+  let numY = parseFloat(by);
+  let numW = parseFloat(bw);
+  let numH = parseFloat(bh);
+  if (isNaN(numX)) numX = 0.25;
+  if (isNaN(numY)) numY = 0.25;
+  if (isNaN(numW)) numW = 0.5;
+  if (isNaN(numH)) numH = 0.5;
+
+  // If in percentage form (1..100), convert to 0..1 range
+  if (numX > 1.0 && numX <= 100.0) numX /= 100.0;
+  if (numY > 1.0 && numY <= 100.0) numY /= 100.0;
+  if (numW > 1.0 && numW <= 100.0) numW /= 100.0;
+  if (numH > 1.0 && numH <= 100.0) numH /= 100.0;
+
+  // If pixel dimensions from non-normalized source
+  if (numX > 1.0) numX = 0.25;
+  if (numY > 1.0) numY = 0.25;
+  if (numW > 1.0) numW = 0.5;
+  if (numH > 1.0) numH = 0.5;
+
+  // Guard against edge clippings
+  numX = Math.max(0.02, Math.min(0.88, numX));
+  numY = Math.max(0.02, Math.min(0.88, numY));
+  numW = Math.max(0.06, Math.min(0.96 - numX, numW));
+  numH = Math.max(0.06, Math.min(0.96 - numY, numH));
 
   return {
-    left: Math.round(bx * 10000) / 100,
-    top: Math.round(by * 10000) / 100,
-    width: Math.round(bw * 10000) / 100,
-    height: Math.round(bh * 10000) / 100,
-    raw_x: bx,
-    raw_y: by,
-    raw_w: bw,
-    raw_h: bh,
+    left: Math.round(numX * 10000) / 100,
+    top: Math.round(numY * 10000) / 100,
+    width: Math.round(numW * 10000) / 100,
+    height: Math.round(numH * 10000) / 100,
+    raw_x: numX,
+    raw_y: numY,
+    raw_w: numW,
+    raw_h: numH,
   };
 };
 
@@ -449,15 +471,43 @@ export default function ScanSoilScreen({ navigation }) {
       const rPct = r.percent !== undefined
         ? Math.round(r.percent)
         : (r.proportion !== undefined ? Math.round(r.proportion * 100) : null);
+
+      // Coordinates for 2-panel composite Before/After comparison image (right 50% pane, with 7.41% top bar)
+      const splitLeft = 50.0 + (bData.raw_x * 50.0);
+      const splitTop = 7.41 + (bData.raw_y * 92.59);
+      const splitWidth = bData.raw_w * 50.0;
+      const splitHeight = bData.raw_h * 92.59;
+
+      // Coordinates for single panel / simulated split pane (100% of panel width/height)
+      const boxLeft = bData.raw_x * 100.0;
+      const boxTop = bData.raw_y * 100.0;
+      const boxWidth = bData.raw_w * 100.0;
+      const boxHeight = bData.raw_h * 100.0;
+
       return {
-        leftPct: 50 + (bData.raw_x * 50),
-        topPct: 7.41 + (bData.raw_y * 92.59),
-        widthPct: bData.raw_w * 50,
-        heightPct: bData.raw_h * 92.59,
+        // Composite image coordinates
+        splitLeftPct: Math.round(splitLeft * 100) / 100,
+        splitTopPct: Math.round(splitTop * 100) / 100,
+        splitWidthPct: Math.round(splitWidth * 100) / 100,
+        splitHeightPct: Math.round(splitHeight * 100) / 100,
+        // Panel / single image coordinates
+        boxLeftPct: Math.round(boxLeft * 100) / 100,
+        boxTopPct: Math.round(boxTop * 100) / 100,
+        boxWidthPct: Math.round(boxWidth * 100) / 100,
+        boxHeightPct: Math.round(boxHeight * 100) / 100,
+        // Backwards compatibility aliases
+        leftPct: Math.round(splitLeft * 100) / 100,
+        topPct: Math.round(splitTop * 100) / 100,
+        widthPct: Math.round(splitWidth * 100) / 100,
+        heightPct: Math.round(splitHeight * 100) / 100,
         roleLabel: `${ordinalNames[idx] || (idx + 1) + 'TH'} COLOR`,
         hex: rHex,
         munsellCode: rCode,
         percent: rPct,
+        raw_x: bData.raw_x,
+        raw_y: bData.raw_y,
+        raw_w: bData.raw_w,
+        raw_h: bData.raw_h,
       };
     });
   }, [specimenNormRegions]);
@@ -812,6 +862,9 @@ export default function ScanSoilScreen({ navigation }) {
           soil_type: offlineSpecimen.soilType,
           nearMatchRating: offlineSpecimen.nearMatchRating,
           confidence: offlineSpecimen.confidence,
+          regions: offlineSpecimen.regions || [],
+          beforeAfterImage: offlineSpecimen.imageUrl || photo.uri,
+          beforeAfterImageUrl: offlineSpecimen.imageUrl || photo.uri,
           latitude: gps?.latitude ?? null,
           longitude: gps?.longitude ?? null,
           locationName: gps?.locationName ?? null,
@@ -1521,7 +1574,7 @@ export default function ScanSoilScreen({ navigation }) {
                         }}
                       />
                     )}
-                    {/* Detected green ROI bounding box overlaid on soil photo */}
+                    {/* Detected ROI bounding box overlaid on soil photo */}
                     {specimenAvatarRoiBox && (
                       <View
                         style={{
@@ -1531,7 +1584,7 @@ export default function ScanSoilScreen({ navigation }) {
                           width: `${specimenAvatarRoiBox.widthPct}%`,
                           height: `${specimenAvatarRoiBox.heightPct}%`,
                           borderWidth: 1.5,
-                          borderColor: '#4ade80',
+                          borderColor: specimenNormBoxes[0]?.hex || '#4ade80',
                           borderRadius: 2,
                         }}
                       />
@@ -1810,7 +1863,29 @@ export default function ScanSoilScreen({ navigation }) {
                                 {/* Hero Swatch Banner */}
                                 <View style={[styles.layerBannerHero, { backgroundColor: rHex }]}>
                                   <View style={styles.layerAvatarSquare}>
-                                    <View style={{ width: '100%', height: '100%', backgroundColor: rHex }} />
+                                    {currentSpecimen.scanImage || croppedSpecimenUri ? (
+                                      <View style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+                                        <Image
+                                          source={{ uri: currentSpecimen.scanImage || croppedSpecimenUri }}
+                                          style={{ width: '100%', height: '100%' }}
+                                          resizeMode="cover"
+                                        />
+                                        <View
+                                          style={{
+                                            position: 'absolute',
+                                            left: `${normalizeBox(r).raw_x * 100}%`,
+                                            top: `${normalizeBox(r).raw_y * 100}%`,
+                                            width: `${normalizeBox(r).raw_w * 100}%`,
+                                            height: `${normalizeBox(r).raw_h * 100}%`,
+                                            borderWidth: 1.5,
+                                            borderColor: rHex,
+                                            borderRadius: 2,
+                                          }}
+                                        />
+                                      </View>
+                                    ) : (
+                                      <View style={{ width: '100%', height: '100%', backgroundColor: rHex }} />
+                                    )}
                                   </View>
                                   <View style={styles.layerBannerCodeCol}>
                                     <Text style={styles.layerBannerCode}>{rCode}</Text>
@@ -1926,10 +2001,10 @@ export default function ScanSoilScreen({ navigation }) {
                             key={`norm_box_${idx}`}
                             style={{
                               position: 'absolute',
-                              left: `${b.leftPct}%`,
-                              top: `${b.topPct}%`,
-                              width: `${b.widthPct}%`,
-                              height: `${b.heightPct}%`,
+                              left: `${b.splitLeftPct}%`,
+                              top: `${b.splitTopPct}%`,
+                              width: `${b.splitWidthPct}%`,
+                              height: `${b.splitHeightPct}%`,
                               borderWidth: 2.5,
                               borderColor: b.hex,
                               borderRadius: 4,
@@ -1959,28 +2034,34 @@ export default function ScanSoilScreen({ navigation }) {
                             resizeMode="cover"
                           />
                           <View style={{ width: 1.5, backgroundColor: 'rgba(255, 255, 255, 0.3)' }} />
-                          <View style={{ flex: 1, height: '100%', position: 'relative' }}>
+                          <View style={{ flex: 1, height: '100%', position: 'relative', overflow: 'hidden' }}>
                             <Image
                               source={{ uri: currentSpecimen.scanImage || croppedSpecimenUri || userCustomImage }}
                               style={{ width: '100%', height: '100%' }}
                               resizeMode="cover"
                             />
-                            <View
-                              style={{
-                                position: 'absolute',
-                                left: '20%',
-                                top: '20%',
-                                width: '60%',
-                                height: '60%',
-                                borderWidth: 2,
-                                borderColor: '#4ade80',
-                                borderRadius: 4,
-                              }}
-                            >
-                              <View style={styles.normRoleBadge}>
-                                <Text style={styles.normRoleBadgeText}>1ST COLOR</Text>
+                            {/* Overlaid detected soil color boxes at actual detected locations */}
+                            {specimenNormBoxes.map((b, idx) => (
+                              <View
+                                key={`sim_norm_box_${idx}`}
+                                style={{
+                                  position: 'absolute',
+                                  left: `${b.boxLeftPct}%`,
+                                  top: `${b.boxTopPct}%`,
+                                  width: `${b.boxWidthPct}%`,
+                                  height: `${b.boxHeightPct}%`,
+                                  borderWidth: 2,
+                                  borderColor: b.hex,
+                                  borderRadius: 4,
+                                }}
+                              >
+                                <View style={[styles.normRoleBadge, { backgroundColor: b.hex, borderColor: 'rgba(0,0,0,0.3)', borderWidth: 1 }]}>
+                                  <Text style={[styles.normRoleBadgeText, { color: '#fff', textShadowColor: 'rgba(0,0,0,0.8)', textShadowRadius: 2 }]}>
+                                    {b.roleLabel}{b.munsellCode ? ` · ${b.munsellCode}` : ''}{b.percent != null ? ` (${b.percent}%)` : ''}
+                                  </Text>
+                                </View>
                               </View>
-                            </View>
+                            ))}
                           </View>
                         </View>
                       </View>
@@ -2009,24 +2090,30 @@ export default function ScanSoilScreen({ navigation }) {
                               height: '100%',
                               backgroundColor: specimenMunsellMatch?.hexCode || currentSpecimen.hexColor || currentSpecimen.hex || '#8F694E',
                               position: 'relative',
+                              overflow: 'hidden',
                             }}
                           >
-                            <View
-                              style={{
-                                position: 'absolute',
-                                left: `${specimenAvatarRoiBox ? specimenAvatarRoiBox.leftPct : 20}%`,
-                                top: `${specimenAvatarRoiBox ? specimenAvatarRoiBox.topPct : 20}%`,
-                                width: `${specimenAvatarRoiBox ? specimenAvatarRoiBox.widthPct : 60}%`,
-                                height: `${specimenAvatarRoiBox ? specimenAvatarRoiBox.heightPct : 60}%`,
-                                borderWidth: 2,
-                                borderColor: '#4ade80',
-                                borderRadius: 4,
-                              }}
-                            >
-                              <View style={styles.normRoleBadge}>
-                                <Text style={styles.normRoleBadgeText}>1ST COLOR</Text>
+                            {specimenNormBoxes.map((b, idx) => (
+                              <View
+                                key={`swatch_norm_box_${idx}`}
+                                style={{
+                                  position: 'absolute',
+                                  left: `${b.boxLeftPct}%`,
+                                  top: `${b.boxTopPct}%`,
+                                  width: `${b.boxWidthPct}%`,
+                                  height: `${b.boxHeightPct}%`,
+                                  borderWidth: 2,
+                                  borderColor: b.hex,
+                                  borderRadius: 4,
+                                }}
+                              >
+                                <View style={[styles.normRoleBadge, { backgroundColor: b.hex, borderColor: 'rgba(0,0,0,0.3)', borderWidth: 1 }]}>
+                                  <Text style={[styles.normRoleBadgeText, { color: '#fff', textShadowColor: 'rgba(0,0,0,0.8)', textShadowRadius: 2 }]}>
+                                    {b.roleLabel}
+                                  </Text>
+                                </View>
                               </View>
-                            </View>
+                            ))}
                           </View>
                         </View>
                       </View>

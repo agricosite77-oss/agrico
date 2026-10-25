@@ -32,6 +32,7 @@ __pycache__/
 *.pyc
 *.zip
 kaggle_dataset.zip
+*.keras
 
 # React Native & Android build ignores
 rn-cli-app/node_modules/

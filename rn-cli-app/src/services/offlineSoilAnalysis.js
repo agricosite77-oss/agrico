@@ -214,6 +214,7 @@ export async function analyzeSoilOffline({ imageUri, imageBase64 }) {
   let tfliteFakeProb = -1.0;
   let tfliteExecuted = false;
   let extractionSuccess = false;
+  let nativeRegions = [];
 
   // 1. Try native Android color & TFLite model extraction from photo file
   if (imageUri && NativeModules.InstallApk && typeof NativeModules.InstallApk.extractSoilColor === 'function') {
@@ -231,6 +232,7 @@ export async function analyzeSoilOffline({ imageUri, imageBase64 }) {
         if (typeof nativeColor.tfliteRealProb === 'number') tfliteRealProb = nativeColor.tfliteRealProb;
         if (typeof nativeColor.tfliteFakeProb === 'number') tfliteFakeProb = nativeColor.tfliteFakeProb;
         if (typeof nativeColor.tfliteExecuted === 'boolean') tfliteExecuted = nativeColor.tfliteExecuted;
+        if (Array.isArray(nativeColor.regions)) nativeRegions = nativeColor.regions;
         extractionSuccess = true;
       }
     } catch (nativeErr) {
@@ -325,6 +327,62 @@ export async function analyzeSoilOffline({ imageUri, imageBase64 }) {
     };
   }
 
+  // Stage 3 & Stage 4: Multi-region color matching & spatial bounding box mapping
+  const processedRegions = [];
+  if (Array.isArray(nativeRegions) && nativeRegions.length > 0) {
+    const totalProp = nativeRegions.reduce((sum, r) => sum + (r.proportion || 0), 0) || 1.0;
+    for (let i = 0; i < nativeRegions.length; i++) {
+      const nr = nativeRegions[i];
+      const rRGB = [nr.r, nr.g, nr.b];
+      const rLab = rgbToLab(nr.r, nr.g, nr.b);
+      let rBest = null;
+      let rMinDist = Infinity;
+      for (const item of munsellList) {
+        if (!item.hexCode) continue;
+        const [mr, mg, mb] = hexToRgb(item.hexCode);
+        const mLab = rgbToLab(mr, mg, mb);
+        const dist = deltaE(rLab, mLab);
+        if (dist < rMinDist) {
+          rMinDist = dist;
+          rBest = item;
+        }
+      }
+      const propNorm = (nr.proportion || (1.0 / nativeRegions.length)) / totalProp;
+      const bData = nr.box || nr.bounding_box || {
+        norm_x: 0.25,
+        norm_y: 0.25,
+        norm_w: 0.5,
+        norm_h: 0.5,
+      };
+      processedRegions.push({
+        hex: nr.hex || rBest?.hexCode || sampledHex,
+        hex_color: nr.hex || rBest?.hexCode || sampledHex,
+        rgb: rRGB,
+        munsell_code: rBest?.munsellCode || bestMatch.munsellCode,
+        colorName: rBest?.colorName || bestMatch.colorName,
+        proportion: Math.round(propNorm * 1000) / 1000,
+        percent: Math.round(propNorm * 100),
+        color_index: i,
+        box: bData,
+        bounding_box: bData,
+      });
+    }
+  } else {
+    // Single primary region representing the sampled soil specimen
+    processedRegions.push({
+      hex: bestMatch.hexCode || sampledHex,
+      hex_color: bestMatch.hexCode || sampledHex,
+      rgb: [sampledR, sampledG, sampledB],
+      munsell_code: bestMatch.munsellCode,
+      colorName: bestMatch.colorName,
+      proportion: 1.0,
+      percent: 100,
+      color_index: 0,
+      box: { norm_x: 0.25, norm_y: 0.25, norm_w: 0.5, norm_h: 0.5 },
+      bounding_box: { norm_x: 0.25, norm_y: 0.25, norm_w: 0.5, norm_h: 0.5 },
+    });
+  }
+
   // 4. Calculate near match rating / confidence
   const confidenceNum = Math.max(76, Math.min(98, Math.round(98 - minDistance * 0.9)));
   const confidenceStr = `${confidenceNum}%`;
@@ -369,5 +427,6 @@ export async function analyzeSoilOffline({ imageUri, imageBase64 }) {
     imageUrl: imageUri || null,
     thumbnail: imageUri ? { uri: imageUri } : null,
     isOffline: true,
+    regions: processedRegions,
   };
 }

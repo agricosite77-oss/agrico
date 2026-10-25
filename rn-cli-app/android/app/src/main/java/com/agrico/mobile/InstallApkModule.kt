@@ -235,6 +235,194 @@ class InstallApkModule(private val reactContext: ReactApplicationContext) : Reac
             val skinRatio = skinPixels.toDouble() / count
             val gradVariance = if (gradCount > 0) gradSum / gradCount else 0.0
 
+            // Stage 3 & Stage 4: Multi-color cluster extraction with genuine spatial bounding boxes
+            class ColorBin(val key: Int) {
+                var pixelCount = 0L
+                var sumR = 0L
+                var sumG = 0L
+                var sumB = 0L
+                var sumX = 0L
+                var sumY = 0L
+                var minX = Int.MAX_VALUE
+                var minY = Int.MAX_VALUE
+                var maxX = Int.MIN_VALUE
+                var maxY = Int.MIN_VALUE
+            }
+
+            val binMap = HashMap<Int, ColorBin>()
+            val sampleStep = Math.max(1, Math.min((endX - startX) / 40, (endY - startY) / 40))
+            var clusterTotalPixels = 0L
+
+            for (y in startY until endY step sampleStep) {
+                for (x in startX until endX step sampleStep) {
+                    val p = bitmap.getPixel(x, y)
+                    val pr = (p shr 16) and 0xFF
+                    val pg = (p shr 8) and 0xFF
+                    val pb = p and 0xFF
+
+                    // Ignore extreme outliers (direct glare or black occlusions)
+                    val lum = 0.2989 * pr + 0.5870 * pg + 0.1140 * pb
+                    if (lum < 20 || lum > 240) continue
+
+                    // 5-bit color quantization bin (32 levels per channel)
+                    val binKey = ((pr shr 3) shl 10) or ((pg shr 3) shl 5) or (pb shr 3)
+                    val bin = binMap.getOrPut(binKey) { ColorBin(binKey) }
+                    bin.pixelCount++
+                    bin.sumR += pr
+                    bin.sumG += pg
+                    bin.sumB += pb
+                    bin.sumX += x
+                    bin.sumY += y
+                    if (x < bin.minX) bin.minX = x
+                    if (x > bin.maxX) bin.maxX = x
+                    if (y < bin.minY) bin.minY = y
+                    if (y > bin.maxY) bin.maxY = y
+                    clusterTotalPixels++
+                }
+            }
+
+            class MergedCluster(
+                var count: Long,
+                var sumR: Long,
+                var sumG: Long,
+                var sumB: Long,
+                var sumX: Long,
+                var sumY: Long,
+                var minX: Int,
+                var minY: Int,
+                var maxX: Int,
+                var maxY: Int
+            )
+
+            val sortedBins = binMap.values.sortedByDescending { it.pixelCount }
+            val mergedClusters = mutableListOf<MergedCluster>()
+
+            for (bin in sortedBins) {
+                val binR = (bin.sumR / bin.pixelCount).toInt()
+                val binG = (bin.sumG / bin.pixelCount).toInt()
+                val binB = (bin.sumB / bin.pixelCount).toInt()
+
+                var matchedCluster: MergedCluster? = null
+                for (mc in mergedClusters) {
+                    val mcR = (mc.sumR / mc.count).toInt()
+                    val mcG = (mc.sumG / mc.count).toInt()
+                    val mcB = (mc.sumB / mc.count).toInt()
+                    val colorDist = Math.abs(binR - mcR) + Math.abs(binG - mcG) + Math.abs(binB - mcB)
+                    if (colorDist < 36) {
+                        matchedCluster = mc
+                        break
+                    }
+                }
+
+                if (matchedCluster != null) {
+                    matchedCluster.count += bin.pixelCount
+                    matchedCluster.sumR += bin.sumR
+                    matchedCluster.sumG += bin.sumG
+                    matchedCluster.sumB += bin.sumB
+                    matchedCluster.sumX += bin.sumX
+                    matchedCluster.sumY += bin.sumY
+                    if (bin.minX < matchedCluster.minX) matchedCluster.minX = bin.minX
+                    if (bin.maxX > matchedCluster.maxX) matchedCluster.maxX = bin.maxX
+                    if (bin.minY < matchedCluster.minY) matchedCluster.minY = bin.minY
+                    if (bin.maxY > matchedCluster.maxY) matchedCluster.maxY = bin.maxY
+                } else if (mergedClusters.size < 4) {
+                    mergedClusters.add(
+                        MergedCluster(
+                            bin.pixelCount,
+                            bin.sumR,
+                            bin.sumG,
+                            bin.sumB,
+                            bin.sumX,
+                            bin.sumY,
+                            bin.minX,
+                            bin.minY,
+                            bin.maxX,
+                            bin.maxY
+                        )
+                    )
+                }
+            }
+
+            // Filter clusters with at least 8% proportion
+            val validClusters = mergedClusters.filter {
+                clusterTotalPixels > 0 && (it.count.toDouble() / clusterTotalPixels) >= 0.08
+            }.take(3)
+
+            val regionsArray = com.facebook.react.bridge.Arguments.createArray()
+            val totalClusterVotes = if (validClusters.isNotEmpty()) validClusters.sumOf { it.count } else 1L
+
+            if (validClusters.isNotEmpty()) {
+                for (cluster in validClusters) {
+                    val cR = (cluster.sumR / cluster.count).toInt()
+                    val cG = (cluster.sumG / cluster.count).toInt()
+                    val cB = (cluster.sumB / cluster.count).toInt()
+                    val cHex = String.format("#%02X%02X%02X", cR, cG, cB)
+                    val cProp = cluster.count.toDouble() / totalClusterVotes
+
+                    val centerX = cluster.sumX.toDouble() / cluster.count
+                    val centerY = cluster.sumY.toDouble() / cluster.count
+                    val compW = Math.max(w * 0.14, (cluster.maxX - cluster.minX) * 0.6)
+                    val compH = Math.max(h * 0.12, (cluster.maxY - cluster.minY) * 0.6)
+                    val boxW = Math.max(w * 0.12, Math.min(w * 0.32, compW))
+                    val boxH = Math.max(h * 0.10, Math.min(h * 0.28, compH))
+
+                    val bx = Math.max(w * 0.04, Math.min(w * 0.96 - boxW, centerX - boxW / 2.0))
+                    val by = Math.max(h * 0.04, Math.min(h * 0.96 - boxH, centerY - boxH / 2.0))
+
+                    val normX = Math.round((bx / w) * 10000.0) / 10000.0
+                    val normY = Math.round((by / h) * 10000.0) / 10000.0
+                    val normW = Math.round((boxW / w) * 10000.0) / 10000.0
+                    val normH = Math.round((boxH / h) * 10000.0) / 10000.0
+
+                    val regionMap = com.facebook.react.bridge.Arguments.createMap().apply {
+                        putString("hex", cHex)
+                        putInt("r", cR)
+                        putInt("g", cG)
+                        putInt("b", cB)
+                        putDouble("proportion", Math.round(cProp * 10000.0) / 10000.0)
+                        val boxMap = com.facebook.react.bridge.Arguments.createMap().apply {
+                            putDouble("norm_x", normX)
+                            putDouble("norm_y", normY)
+                            putDouble("norm_w", normW)
+                            putDouble("norm_h", normH)
+                            putInt("x", (normX * w).toInt())
+                            putInt("y", (normY * h).toInt())
+                            putInt("width", (normW * w).toInt())
+                            putInt("height", (normH * h).toInt())
+                        }
+                        putMap("bounding_box", boxMap)
+                        putMap("box", boxMap)
+                    }
+                    regionsArray.pushMap(regionMap)
+                }
+            } else {
+                // Fallback single central region
+                val normX = 0.25
+                val normY = 0.25
+                val normW = 0.50
+                val normH = 0.50
+                val regionMap = com.facebook.react.bridge.Arguments.createMap().apply {
+                    putString("hex", hex)
+                    putInt("r", avgR)
+                    putInt("g", avgG)
+                    putInt("b", avgB)
+                    putDouble("proportion", 1.0)
+                    val boxMap = com.facebook.react.bridge.Arguments.createMap().apply {
+                        putDouble("norm_x", normX)
+                        putDouble("norm_y", normY)
+                        putDouble("norm_w", normW)
+                        putDouble("norm_h", normH)
+                        putInt("x", (normX * w).toInt())
+                        putInt("y", (normY * h).toInt())
+                        putInt("width", (normW * w).toInt())
+                        putInt("height", (normH * h).toInt())
+                    }
+                    putMap("bounding_box", boxMap)
+                    putMap("box", boxMap)
+                }
+                regionsArray.pushMap(regionMap)
+            }
+
             val map = com.facebook.react.bridge.Arguments.createMap().apply {
                 putInt("r", avgR)
                 putInt("g", avgG)
@@ -246,6 +434,7 @@ class InstallApkModule(private val reactContext: ReactApplicationContext) : Reac
                 putDouble("tfliteRealProb", tfliteRealProb)
                 putDouble("tfliteFakeProb", tfliteFakeProb)
                 putBoolean("tfliteExecuted", tfliteExecuted)
+                putArray("regions", regionsArray)
             }
             promise.resolve(map)
         } catch (e: Exception) {
