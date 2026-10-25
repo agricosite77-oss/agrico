@@ -9,9 +9,41 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.Promise
 import java.io.File
+import java.io.FileInputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.channels.FileChannel
+import org.tensorflow.lite.Interpreter
 
 class InstallApkModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     override fun getName(): String = "InstallApk"
+
+    private var tfliteInterpreter: Interpreter? = null
+    private var interpreterInitAttempted = false
+
+    @Synchronized
+    private fun getInterpreter(): Interpreter? {
+        if (tfliteInterpreter != null) return tfliteInterpreter
+        if (interpreterInitAttempted) return null
+        interpreterInitAttempted = true
+        return try {
+            val afd = reactContext.assets.openFd("soil_gate_model.tflite")
+            val inputStream = FileInputStream(afd.fileDescriptor)
+            val fileChannel = inputStream.channel
+            val startOffset = afd.startOffset
+            val declaredLength = afd.declaredLength
+            val modelBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
+            val options = Interpreter.Options().apply {
+                setNumThreads(2)
+            }
+            tfliteInterpreter = Interpreter(modelBuffer, options)
+            android.util.Log.i("InstallApk", "TFLite Soil Gate model loaded successfully")
+            tfliteInterpreter
+        } catch (e: Exception) {
+            android.util.Log.w("InstallApk", "Could not load TFLite model from assets: ${e.message}")
+            null
+        }
+    }
 
     @ReactMethod
     fun install(filePath: String, promise: Promise) {
@@ -48,7 +80,12 @@ class InstallApkModule(private val reactContext: ReactApplicationContext) : Reac
             }
             return tempFile
         }
-        val cleanPath = uriString.replace("file://", "")
+        val unescaped = try {
+            java.net.URLDecoder.decode(uriString, "UTF-8")
+        } catch (e: Exception) {
+            uriString
+        }
+        val cleanPath = unescaped.replace("file://", "")
         return File(cleanPath)
     }
 
@@ -141,6 +178,45 @@ class InstallApkModule(private val reactContext: ReactApplicationContext) : Reac
                 }
             }
 
+            // Run TensorFlow Lite Stage 1 model inference (soil_gate_model.tflite) on specimen
+            var tfliteRealProb = -1.0
+            var tfliteFakeProb = -1.0
+            var tfliteExecuted = false
+
+            try {
+                val interpreter = getInterpreter()
+                if (interpreter != null) {
+                    val inputDim = 224
+                    val scaledBitmap = android.graphics.Bitmap.createScaledBitmap(bitmap, inputDim, inputDim, true)
+                    val inputBuffer = ByteBuffer.allocateDirect(1 * inputDim * inputDim * 3 * 4).apply {
+                        order(ByteOrder.nativeOrder())
+                        rewind()
+                    }
+                    val pixelValues = IntArray(inputDim * inputDim)
+                    scaledBitmap.getPixels(pixelValues, 0, inputDim, 0, 0, inputDim, inputDim)
+                    for (pixel in pixelValues) {
+                        val rF = (((pixel shr 16) and 0xFF) / 255.0f)
+                        val gF = (((pixel shr 8) and 0xFF) / 255.0f)
+                        val bF = ((pixel and 0xFF) / 255.0f)
+                        inputBuffer.putFloat(rF)
+                        inputBuffer.putFloat(gF)
+                        inputBuffer.putFloat(bF)
+                    }
+                    if (scaledBitmap != bitmap) {
+                        scaledBitmap.recycle()
+                    }
+
+                    val outputProbs = Array(1) { FloatArray(2) }
+                    interpreter.run(inputBuffer, outputProbs)
+                    // Index 0: fake_soil, Index 1: real_soil
+                    tfliteFakeProb = outputProbs[0][0].toDouble()
+                    tfliteRealProb = outputProbs[0][1].toDouble()
+                    tfliteExecuted = true
+                }
+            } catch (tfErr: Exception) {
+                android.util.Log.w("InstallApk", "TFLite inference error: ${tfErr.message}")
+            }
+
             bitmap.recycle()
 
             if (count == 0L) {
@@ -167,6 +243,9 @@ class InstallApkModule(private val reactContext: ReactApplicationContext) : Reac
                 putDouble("stdDev", stdDev)
                 putDouble("skinRatio", skinRatio)
                 putDouble("gradVariance", gradVariance)
+                putDouble("tfliteRealProb", tfliteRealProb)
+                putDouble("tfliteFakeProb", tfliteFakeProb)
+                putBoolean("tfliteExecuted", tfliteExecuted)
             }
             promise.resolve(map)
         } catch (e: Exception) {

@@ -48,16 +48,16 @@ class AppVersionController extends Controller
     {
         $activeApp = Application::where('status', 'ACTIVE')->latest()->first();
 
-        $defaultVersion = 'v1.0.5';
-        $defaultNotes = "• Profile editing & photo sync: Full live synchronization between mobile profile and website database\n• Stage 1 to Stage 6 soil pipeline: Immediate non-soil rejection at Stage 1, plus server-side calibration sync\n• Website 1:1 Result Card & Modal: Matches website layout with overlapping swatch crop, 3-column metric grids, Scan Note, and Pin Location";
-        $defaultSize = '59.5 MB';
-        $defaultUrl = 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.5/agrico-app-v1.0.5.apk';
+        $defaultVersion = 'v1.0.6';
+        $defaultNotes = "• Offline Stage 1 TensorFlow Lite Soil Gate: Native on-device MobileNetV2 neural network strictly verifies real soil vs fake/non-soil\n• Zero-fallback policy: Completely rejects unreadable or non-soil scans instead of defaulting to brown soil\n• Robust camera URI decoding & fast base64 pipeline\n• Updated Munsell spectral reference cache and on-device calibration";
+        $defaultSize = '62.5 MB';
+        $defaultUrl = 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.6/agrico-app-v1.0.6.apk';
 
         $version = $activeApp?->version ?: $defaultVersion;
 
-        // If client is already on latest version (v1.0.5), do not prompt for update
+        // If client is already on latest version (v1.0.6), do not prompt for update
         $clientVersion = $request->query('current_version') ?: $request->header('X-App-Version');
-        if ($clientVersion && in_array(strtolower(trim($clientVersion)), ['v1.0.5', '1.0.5'])) {
+        if ($clientVersion && in_array(strtolower(trim($clientVersion)), ['v1.0.6', '1.0.6'])) {
             $version = $clientVersion;
         }
 

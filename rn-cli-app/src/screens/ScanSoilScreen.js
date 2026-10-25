@@ -651,8 +651,13 @@ export default function ScanSoilScreen({ navigation }) {
         });
         if (photo?.path) {
           const fileUri = photo.path.startsWith('file://') ? photo.path : `file://${photo.path}`;
-          const rawPath = photo.path.replace('file://', '');
-          const base64 = await RNFS.readFile(rawPath, 'base64');
+          let base64 = null;
+          try {
+            const rawPath = photo.path.replace('file://', '');
+            base64 = await RNFS.readFile(rawPath, 'base64');
+          } catch (e) {
+            console.warn('[Camera] Failed reading base64:', e?.message);
+          }
           return { uri: fileUri, base64 };
         }
       }
@@ -668,7 +673,7 @@ export default function ScanSoilScreen({ navigation }) {
         saveToPhotos: false,
       });
       const asset = res.assets?.[0];
-      if (asset?.base64) return { uri: asset.uri, base64: asset.base64 };
+      if (asset?.uri) return { uri: asset.uri, base64: asset.base64 || null };
     } catch (err) {
       console.warn('[Camera] Capture error:', err?.message);
     }
@@ -687,8 +692,26 @@ export default function ScanSoilScreen({ navigation }) {
     playCaptureAnimations();
     startProgressEngine();
 
-    // Development demo fallback when running in simulator or without real camera photo
-    if (photo?.isDemo || !photo?.base64) {
+    // Guard: Missing photo specimen
+    if (!photo?.uri && !photo?.base64 && !photo?.isDemo) {
+      stopProgressEngine();
+      setIsScanning(false);
+      setRejectMsg('No photo specimen captured. Please position the camera over soil and try again.');
+      return;
+    }
+
+    // Lazy load base64 from file uri if not yet in memory
+    if (photo?.uri && !photo?.base64) {
+      try {
+        const rawPath = photo.uri.replace('file://', '');
+        photo.base64 = await RNFS.readFile(rawPath, 'base64');
+      } catch (readErr) {
+        console.warn('[ScanSoilScreen] Error reading base64:', readErr?.message);
+      }
+    }
+
+    // Explicit demo fallback when running in simulator test suite
+    if (photo?.isDemo) {
       setTimeout(() => advanceStage(1), 350);
       setTimeout(() => advanceStage(2), 750);
       setTimeout(() => advanceStage(3), 1150);
@@ -929,17 +952,14 @@ export default function ScanSoilScreen({ navigation }) {
   const handleManualScan = async () => {
     if (isScanning) return;
     const photo = await capturePhoto();
-    if (photo && photo.base64) {
+    if (photo && (photo.base64 || photo.uri)) {
       const uriToUse = photo.uri || `data:image/jpeg;base64,${photo.base64}`;
       frozenOriginalPhotoRef.current = { uri: uriToUse, base64: photo.base64 };
       setUserCustomImage(uriToUse);
       const cropped = await cropToFrame({ uri: uriToUse, base64: photo.base64 });
       setCroppedSpecimenUri(cropped.uri);
       runScan(cropped);
-    } else if (__DEV__) {
-      runScan({ uri: null, base64: null, isDemo: true });
     }
-    // In release builds, cancelled camera does nothing
   };
 
   const handleLaunchGallery = async () => {

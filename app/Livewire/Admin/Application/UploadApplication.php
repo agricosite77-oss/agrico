@@ -43,13 +43,13 @@ class UploadApplication extends Component
             } else {
                 Application::create([
                     'application_name' => 'AgriCo Mobile App',
-                    'version'          => 'v1.0.5',
-                    'filename'         => 'agrico-app-v1.0.5.apk',
-                    'file_size'        => '62.4 MB',
-                    'release_notes'    => "Official AgriCo mobile app release with on-device 6-Stage ML soil scanning, offline crop and soil data, and authenticated sync.",
+                    'version'          => 'v1.0.6',
+                    'filename'         => 'agrico-app-v1.0.6.apk',
+                    'file_size'        => '62.5 MB',
+                    'release_notes'    => "Official AgriCo mobile app release with on-device TensorFlow Lite Stage 1 ML soil scanning, offline crop and soil data, and authenticated sync.",
                     'status'           => 'ACTIVE',
                     'uploaded_by'      => auth()->user()?->name ?? 'AgriCo Administrator',
-                    'file_path'        => 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.5/agrico-app-v1.0.5.apk',
+                    'file_path'        => 'https://github.com/agricosite77-oss/agrico/releases/download/v1.0.6/agrico-app-v1.0.6.apk',
                 ]);
             }
         }
@@ -79,7 +79,7 @@ class UploadApplication extends Component
         }
 
         $activeApp = Application::where('status', 'ACTIVE')->orderBy('application_id', 'desc')->first();
-        $fallbackFilename = $activeApp?->filename ?: 'agrico-app-v1.0.5.apk';
+        $fallbackFilename = $activeApp?->filename ?: 'agrico-app-v1.0.6.apk';
         $samplePath = 'applications/' . $fallbackFilename;
         if (\Illuminate\Support\Facades\Storage::disk('public')->exists($samplePath)) {
             return \Illuminate\Support\Facades\Storage::disk('public')->download($samplePath, $fallbackFilename, [
@@ -87,7 +87,7 @@ class UploadApplication extends Component
             ]);
         }
 
-        return redirect()->away('https://github.com/agricosite77-oss/agrico/releases/download/v1.0.5/agrico-app-v1.0.5.apk');
+        return redirect()->away('https://github.com/agricosite77-oss/agrico/releases/download/v1.0.6/agrico-app-v1.0.6.apk');
     }
 
     public function uploadVersion()

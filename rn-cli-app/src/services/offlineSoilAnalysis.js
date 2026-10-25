@@ -203,15 +203,19 @@ export async function validateSoilGate({
  * Strictly verifies Stage 1 Soil Gate before proceeding to Stages 2-6.
  */
 export async function analyzeSoilOffline({ imageUri, imageBase64 }) {
-  let sampledR = 90;
-  let sampledG = 70;
-  let sampledB = 60;
-  let sampledHex = '#5A4643';
-  let stdDev = 22.0;
+  let sampledR = null;
+  let sampledG = null;
+  let sampledB = null;
+  let sampledHex = null;
+  let stdDev = 0;
   let skinRatio = 0.0;
-  let gradVariance = 28.0;
+  let gradVariance = 0;
+  let tfliteRealProb = -1.0;
+  let tfliteFakeProb = -1.0;
+  let tfliteExecuted = false;
+  let extractionSuccess = false;
 
-  // 1. Try native fast Android color extraction from photo file
+  // 1. Try native Android color & TFLite model extraction from photo file
   if (imageUri && NativeModules.InstallApk && typeof NativeModules.InstallApk.extractSoilColor === 'function') {
     try {
       const rawPath = imageUri.replace('file://', '');
@@ -224,13 +228,48 @@ export async function analyzeSoilOffline({ imageUri, imageBase64 }) {
         if (typeof nativeColor.stdDev === 'number') stdDev = nativeColor.stdDev;
         if (typeof nativeColor.skinRatio === 'number') skinRatio = nativeColor.skinRatio;
         if (typeof nativeColor.gradVariance === 'number') gradVariance = nativeColor.gradVariance;
+        if (typeof nativeColor.tfliteRealProb === 'number') tfliteRealProb = nativeColor.tfliteRealProb;
+        if (typeof nativeColor.tfliteFakeProb === 'number') tfliteFakeProb = nativeColor.tfliteFakeProb;
+        if (typeof nativeColor.tfliteExecuted === 'boolean') tfliteExecuted = nativeColor.tfliteExecuted;
+        extractionSuccess = true;
       }
     } catch (nativeErr) {
-      console.warn('[OfflineSoilAnalysis] Native color extraction fallback:', nativeErr?.message);
+      console.warn('[OfflineSoilAnalysis] Native color extraction failed:', nativeErr?.message);
     }
   }
 
-  // STAGE 1: Soil Gate Validation
+  // Fail-safe: Never fake soil if image pixels could not be extracted
+  if (!extractionSuccess || sampledR === null || sampledG === null || sampledB === null) {
+    return {
+      isValidSoil: false,
+      rejected: true,
+      stage: 1,
+      reason: 'image_read_error',
+      message: 'Stage 1 Soil Gate: Unable to sample image pixels. Ensure camera lens is clean and photo is clear.',
+      imageUrl: imageUri || null,
+      sampledHex: '#000000',
+    };
+  }
+
+  // 1b. Stage 1 TFLite AI Model Gate (soil_gate_model.tflite)
+  if (tfliteExecuted && tfliteRealProb >= 0.0) {
+    // If the mobile TensorFlow Lite deep learning model classifies as non-soil / fake soil
+    if (tfliteRealProb < 0.60 || tfliteFakeProb > 0.40) {
+      return {
+        isValidSoil: false,
+        rejected: true,
+        stage: 1,
+        reason: 'tflite_non_soil_detected',
+        message: `Stage 1 AI Gate: Non-soil or artificial surface detected (${(tfliteFakeProb * 100).toFixed(0)}% non-soil confidence). Please point camera directly at real soil.`,
+        imageUrl: imageUri || null,
+        sampledHex,
+        tfliteRealProb,
+        tfliteFakeProb,
+      };
+    }
+  }
+
+  // STAGE 1: Heuristic, Colorimetric & Spatial Soil Gate Validation
   const gate = await validateSoilGate({
     r: sampledR,
     g: sampledG,
