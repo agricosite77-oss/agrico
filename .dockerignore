@@ -21,3 +21,6 @@ python/external_datasets
 python/depth_anything_v2_repo
 python/promptnorm_repo
 python/pretrained_ckpt
+kaggle_dataset.zip
+*.zip
+
