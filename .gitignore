@@ -30,6 +30,8 @@ python/pretrained_ckpt/
 storage/logs/*.log
 __pycache__/
 *.pyc
+*.zip
+kaggle_dataset.zip
 
 # React Native & Android build ignores
 rn-cli-app/node_modules/

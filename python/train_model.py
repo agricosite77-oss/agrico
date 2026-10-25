@@ -148,20 +148,25 @@ def extract_features(records):
 
 
 def load_image_batch(records, label_to_idx, image_size=(224, 224)):
-    X, y = [], []
+    X, y, kept = [], [], []
     for r in records:
         try:
             img = Image.open(r["file_path"]).convert("RGB").resize(image_size)
             X.append(np.asarray(img, dtype="float32") / 255.0)
             y.append(label_to_idx[r["predicted_label"]])
+            kept.append(r)
         except Exception as exc:  # noqa: BLE001
             print(f"[SKIP] Could not load {r['file_path']}: {exc}", file=sys.stderr)
-    return np.array(X), np.array(y)
+    return np.array(X), np.array(y), kept
 
 
 def evaluate(model, model_type, X_test, y_test, idx_to_label, test_records):
     if model_type == "tensorflow":
-        y_pred = np.argmax(model.predict(X_test), axis=1)
+        y_prob = model.predict(X_test)
+        if y_prob.shape[-1] == 1:
+            y_pred = (y_prob > 0.5).astype("int32").flatten()
+        else:
+            y_pred = np.argmax(y_prob, axis=1)
     else:
         y_pred = model.predict(X_test)
 
@@ -177,12 +182,15 @@ def evaluate(model, model_type, X_test, y_test, idx_to_label, test_records):
     # Per-hue breakdown, real_soil only
     print("\n--- Per-hue accuracy (real_soil subset) ---")
     hue_correct, hue_total = Counter(), Counter()
-    for i, r in enumerate(test_records):
-        if r["predicted_label"] != "real_soil":
+    max_eval = min(len(y_pred), len(test_records))
+    for i in range(max_eval):
+        r = test_records[i]
+        if r.get("predicted_label") != "real_soil":
             continue
-        hue_total[r["munsell_hue"]] += 1
-        if idx_to_label[y_pred[i]] == "real_soil":
-            hue_correct[r["munsell_hue"]] += 1
+        hue = r.get("munsell_hue") or "Unclassified"
+        hue_total[hue] += 1
+        if idx_to_label.get(y_pred[i]) == "real_soil":
+            hue_correct[hue] += 1
     for hue in sorted(hue_total):
         acc = hue_correct[hue] / hue_total[hue]
         print(f"    {hue}: {acc:.2%} ({hue_correct[hue]}/{hue_total[hue]})")
@@ -224,9 +232,9 @@ def main() -> int:
 
     if model_type == "tensorflow":
         print(f"\nLoading images for TensorFlow MobileNetV2 (train={len(train)}, val={len(val)}, test={len(test)})...")
-        X_train, y_train = load_image_batch(train, label_to_idx)
-        X_val, y_val = load_image_batch(val, label_to_idx)
-        X_test, y_test = load_image_batch(test, label_to_idx)
+        X_train, y_train, _ = load_image_batch(train, label_to_idx)
+        X_val, y_val, _ = load_image_batch(val, label_to_idx)
+        X_test, y_test, test = load_image_batch(test, label_to_idx)
 
         print(f"\nTraining MobileNetV2 for {args.epochs} epochs...")
         model.fit(
