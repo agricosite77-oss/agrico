@@ -113,9 +113,13 @@ def main() -> int:
         "--n", type=int, default=10,
         help="Images per subfolder in sampled mode (default: 10)",
     )
+    default_root = os.environ.get(
+        "SCAN_SOIL_ROOT",
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "Scan_Soil_Image")
+    )
     parser.add_argument(
-        "--root", default=os.environ.get("SCAN_SOIL_ROOT", os.path.join(os.getcwd(), "Scan_Soil_Image")),
-        help="Path to Scan_Soil_Image/ (default: $SCAN_SOIL_ROOT or ./Scan_Soil_Image)",
+        "--root", default=default_root,
+        help="Path to Scan_Soil_Image/ (default: $SCAN_SOIL_ROOT or python/Scan_Soil_Image)",
     )
     default_csv = os.path.join(os.path.dirname(os.path.abspath(__file__)), "munsell_reference_full.csv")
     if not os.path.exists(default_csv):

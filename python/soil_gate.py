@@ -261,7 +261,17 @@ def extract_combined_features(img) -> np.ndarray:
 
 def reference_cache_path():
     root = os.environ.get("SCAN_SOIL_ROOT")
-    return os.path.join(root, REF_CACHE_NAME) if root else None
+    if root and os.path.exists(os.path.join(root, REF_CACHE_NAME)):
+        return os.path.join(root, REF_CACHE_NAME)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.join(script_dir, REF_CACHE_NAME),
+        os.path.join(script_dir, "Scan_Soil_Image", REF_CACHE_NAME),
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return os.path.join(root, REF_CACHE_NAME) if root else candidates[0]
 
 
 def _load_reference_cache():

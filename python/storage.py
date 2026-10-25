@@ -179,10 +179,14 @@ class SoilScanStore:
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         uid8 = uuid.uuid4().hex[:8]
         notation_part = _safe_notation_for_filename(result.munsell_notation)
-        filename = f"{result.label}_{notation_part}_{timestamp}_{uid8}{ext}"
 
-        dest_path = os.path.join(dest_dir, filename)
-        shutil.copy2(source_image_path, dest_path)
+        # If source is already in the destination folder, reuse it without duplicating
+        if os.path.abspath(os.path.dirname(source_image_path)) == os.path.abspath(dest_dir):
+            dest_path = source_image_path
+        else:
+            filename = f"{result.label}_{notation_part}_{timestamp}_{uid8}{ext}"
+            dest_path = os.path.join(dest_dir, filename)
+            shutil.copy2(source_image_path, dest_path)
 
         # Save Stage 2 lighting-normalized image in the same folder
         norm_image = getattr(result, "normalized_image", None)

@@ -63,7 +63,11 @@ def acquire_lock(lock):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--root", default=os.environ.get("SCAN_SOIL_ROOT"))
+    default_root = os.environ.get(
+        "SCAN_SOIL_ROOT",
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "Scan_Soil_Image")
+    )
+    ap.add_argument("--root", default=default_root)
     ap.add_argument("--full", action="store_true", help="ignore old cache, re-read everything")
     a = ap.parse_args()
     if not a.root or not os.path.isdir(a.root):

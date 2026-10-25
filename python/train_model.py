@@ -16,6 +16,7 @@ Scan_Soil_Image/ folder tree.
 """
 
 import argparse
+import importlib
 import importlib.util
 import os
 import sqlite3
@@ -98,10 +99,11 @@ def stratified_split(records, val_frac=0.15, test_frac=0.15, seed=42):
     return train, val, test
 
 
-def build_model(num_classes: int, image_size=(224, 224)):
+def build_model(num_classes: int, backend: str = "auto", image_size=(224, 224)):
     has_tf = importlib.util.find_spec("tensorflow") is not None
-    if has_tf:
-        import importlib
+    use_tf = (backend == "tensorflow") or (backend == "auto" and has_tf)
+
+    if use_tf and has_tf:
         tf = importlib.import_module("tensorflow")
         layers = importlib.import_module("tensorflow.keras.layers")
         models = importlib.import_module("tensorflow.keras.models")
@@ -121,21 +123,27 @@ def build_model(num_classes: int, image_size=(224, 224)):
         model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
         return model, "tensorflow"
 
-    print("[INFO] TensorFlow not installed. Using Scikit-Learn Gradient Boosting Classifier.")
-    model = HistGradientBoostingClassifier(random_state=42, max_iter=100)
+    if backend == "tensorflow" and not has_tf:
+        print("[WARN] TensorFlow requested but not installed. Falling back to Scikit-Learn.")
+
+    print("[INFO] Using Scikit-Learn Gradient Boosting Classifier on 17-dim gate features.")
+    model = HistGradientBoostingClassifier(random_state=42, max_iter=150)
     return model, "sklearn"
 
 
 def extract_features(records):
-    """Extracts color, delta_e, and texture features for scikit-learn training."""
+    """Extracts 17-dimensional texture, gradient, and chrominance gate features."""
+    from soil_gate import extract_gate_features
     X = []
-    for r in records:
-        r_val = float(r.get("rgb_r", 0) or 0) / 255.0
-        g_val = float(r.get("rgb_g", 0) or 0) / 255.0
-        b_val = float(r.get("rgb_b", 0) or 0) / 255.0
-        tex = float(r.get("texture_score", 0) or 0)
-        de = float(r.get("color_delta_e", 0) or 0)
-        X.append([r_val, g_val, b_val, tex, de])
+    for i, r in enumerate(records):
+        path = r.get("file_path", "")
+        try:
+            feats = extract_gate_features(path)
+        except Exception:
+            feats = np.zeros(17, dtype="float32")
+        X.append(feats)
+        if (i + 1) % 500 == 0 or (i + 1) == len(records):
+            print(f"    Extracted features for {i + 1}/{len(records)} images...")
     return np.array(X, dtype="float32")
 
 
@@ -181,11 +189,20 @@ def evaluate(model, model_type, X_test, y_test, idx_to_label, test_records):
 
 
 def main() -> int:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    default_root = os.environ.get(
+        "SCAN_SOIL_ROOT",
+        os.path.join(script_dir, "Scan_Soil_Image")
+    )
+    default_model_out = os.path.join(script_dir, "soil_gate_model.keras")
+
     parser = argparse.ArgumentParser(description="Train the soil scan classifier from the SQLite index.")
-    parser.add_argument("--root", default=os.environ.get("SCAN_SOIL_ROOT", "./Scan_Soil_Image"))
-    parser.add_argument("--epochs", type=int, default=10)
-    parser.add_argument("--batch-size", type=int, default=16)
-    parser.add_argument("--model-out", default="./soil_scan_model.h5")
+    parser.add_argument("--root", default=default_root, help="Path to Scan_Soil_Image folder")
+    parser.add_argument("--backend", default="auto", choices=["auto", "tensorflow", "sklearn"],
+                        help="ML framework to use (default: auto)")
+    parser.add_argument("--epochs", type=int, default=10, help="Epochs for deep learning model")
+    parser.add_argument("--batch-size", type=int, default=16, help="Batch size for deep learning model")
+    parser.add_argument("--model-out", default=default_model_out, help="Output path for trained model")
     args = parser.parse_args()
 
     db_path = os.path.join(args.root, "soil_scans_index.sqlite3")
@@ -203,13 +220,15 @@ def main() -> int:
     label_to_idx = {label: i for i, label in enumerate(labels)}
     idx_to_label = {i: label for label, i in label_to_idx.items()}
 
-    model, model_type = build_model(num_classes=len(labels))
+    model, model_type = build_model(num_classes=len(labels), backend=args.backend)
 
     if model_type == "tensorflow":
+        print(f"\nLoading images for TensorFlow MobileNetV2 (train={len(train)}, val={len(val)}, test={len(test)})...")
         X_train, y_train = load_image_batch(train, label_to_idx)
         X_val, y_val = load_image_batch(val, label_to_idx)
         X_test, y_test = load_image_batch(test, label_to_idx)
 
+        print(f"\nTraining MobileNetV2 for {args.epochs} epochs...")
         model.fit(
             X_train, y_train,
             validation_data=(X_val, y_val),
@@ -218,16 +237,30 @@ def main() -> int:
         )
         model.save(args.model_out)
         print(f"\nModel saved to {args.model_out}")
+
+        # Export TFLite model for mobile deployment
+        try:
+            import tensorflow as tf
+            converter = tf.lite.TFLiteConverter.from_keras_model(model)
+            tflite_model = converter.convert()
+            tflite_path = os.path.splitext(args.model_out)[0] + ".tflite"
+            with open(tflite_path, "wb") as f:
+                f.write(tflite_model)
+            print(f"[Mobile] TensorFlow Lite model exported to {tflite_path}")
+        except Exception as exc:
+            print(f"[Mobile] Notice: Could not export TFLite: {exc}")
     else:
+        print(f"\nExtracting 17-dim gate features for Scikit-Learn (train={len(train)}, test={len(test)})...")
         X_train = extract_features(train)
         y_train = np.array([label_to_idx[r["predicted_label"]] for r in train])
         X_test = extract_features(test)
         y_test = np.array([label_to_idx[r["predicted_label"]] for r in test])
 
+        print("\nTraining HistGradientBoostingClassifier...")
         model.fit(X_train, y_train)
-        out_path = args.model_out.replace(".h5", ".joblib")
+        out_path = os.path.splitext(args.model_out)[0] + ".joblib"
         joblib.dump(model, out_path)
-        print(f"\nModel saved to {out_path}")
+        print(f"\nModel saved to {out_path} (Ready for Stage 1 Soil Gate!)")
 
     evaluate(model, model_type, X_test, y_test, idx_to_label, test)
     return 0
