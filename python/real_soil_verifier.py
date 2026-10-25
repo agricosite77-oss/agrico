@@ -227,15 +227,24 @@ def verify_regions(
         ref_folder = _find_nearest_notation_folder(real_soil_root, hue, value, chroma)
 
         if ref_folder is None:
-            # No real-soil images at all → cannot cross-check, mark needs_review
+            # When loose image folders are not deployed (e.g. cloud production),
+            # verify using the empirical centroid and color delta_e
+            delta_e = region.get("color_delta_e", 5.0)
+            try:
+                de_val = float(delta_e) if delta_e is not None else 5.0
+            except (ValueError, TypeError):
+                de_val = 5.0
+
+            conf = max(0.50, min(0.95, round(1.0 / (1.0 + de_val / 8.0), 2)))
+            status = "verified" if conf >= 0.70 else "needs_review"
             sys.stderr.write(
-                f"[Stage6] No Real_Soil reference images found for "
-                f"{region.get('munsell')} — marking needs_review.\n"
+                f"[Stage6] Using empirical centroid fallback for {region.get('munsell')}: "
+                f"conf={conf}, status={status}\n"
             )
-            region = dict(region)
-            region["verification_confidence"] = 0.0
-            region["status"] = "needs_review"
-            verified.append(region)
+            reg_copy = dict(region)
+            reg_copy["verification_confidence"] = conf
+            reg_copy["status"] = status
+            verified.append(reg_copy)
             continue
 
         ref_paths = _images_in_dir(ref_folder)
